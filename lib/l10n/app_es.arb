@@ -44,5 +44,14 @@
   "pleaseAgreeToTerms": "Por favor acepta los Términos y Condiciones",
   "loginAttempt": "Intento de inicio de sesión: {email}",
   "accountCreated": "Cuenta creada para: {name}",
-  "forgotPasswordComingSoon": "La funcionalidad de recuperar contraseña estará disponible pronto"
+  "forgotPasswordComingSoon": "La funcionalidad de recuperar contraseña estará disponible pronto",
+  "loginSuccessful": "¡Inicio de sesión exitoso! Bienvenido de vuelta.",
+  "resetPassword": "Restablecer Contraseña",
+  "resetPasswordSubtitle": "Ingresa tu email para recibir el enlace",
+  "enterEmailForReset": "Ingresa tu dirección de email",
+  "cancel": "Cancelar",
+  "sendResetLink": "Enviar",
+  "emailSent": "¡Email Enviado!",
+  "checkEmailForReset": "Hemos enviado un enlace de restablecimiento de contraseña a {email}. Por favor revisa tu email y sigue las instrucciones para restablecer tu contraseña.",
+  "done": "Listo"
 }

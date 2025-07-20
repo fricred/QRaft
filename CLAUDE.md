@@ -347,7 +347,11 @@ AnimatedContainer(
 - ✅ Professional splash screen with animations
 - ✅ Custom logo and app icon generation
 - ✅ Project architecture and design system
-- 🔄 Login/Register screens implementation (in progress)
+- ✅ Login/Register screens with Firebase authentication
+- ✅ Forgot password functionality with deeplinks
+- ✅ GlassButton component library with glassmorphism effects
+- ✅ iOS and Android deeplink configuration
+- ✅ Keyboard navigation and form validation
 - 🔄 Core QR generation (URL, text, personal info)
 - 🔄 Simple QR scanner (pending iOS dependency resolution)
 - 🔄 Basic marketplace catalog
@@ -392,9 +396,13 @@ Key tables:
 - ✅ Custom logo with QR and laser elements
 - ✅ Splash screen with 8-second animation sequence
 - ✅ Authentication module structure (data/domain/presentation)
+- ✅ Firebase Authentication with error handling
+- ✅ Forgot password with deeplinks (iOS & Android)
+- ✅ GlassButton component with glassmorphism effects
+- ✅ Form validation and keyboard navigation
+- ✅ i18n support (English/Spanish)
 
 **Next Phase Implementation:**
-- 🔄 Login/Register screens with Carden Pro UI
 - 🔄 QR generation functionality (`qr_flutter: ^4.1.0`)
 - 🔄 QR scanning (`mobile_scanner: ^3.5.7` - pending iOS dependency resolution)
 - 🔄 Supabase integration (`supabase_flutter: ^2.0.0`)
@@ -407,3 +415,193 @@ Key tables:
 - Professional splash screen with staged animations
 - Clean architecture foundation with feature-based modules
 - Git repository with comprehensive documentation
+- Complete authentication flow with password recovery
+- Reusable glassmorphism button component library
+
+## Authentication Implementation Details
+
+### Firebase Configuration
+- **Project ID**: qraft-e8a1d
+- **Bundle ID**: io.gothcorp.qraft
+- **Package Name**: io.gothcorp.qraft
+- **Deeplink Domain**: qraft-e8a1d.firebaseapp.com (configured)
+
+### Deeplink Configuration
+
+#### Android (`android/app/src/main/AndroidManifest.xml`)
+```xml
+<intent-filter android:autoVerify="true">
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="https" android:host="qraft-e8a1d.firebaseapp.com" />
+</intent-filter>
+<intent-filter>
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="qraft" />
+</intent-filter>
+```
+
+#### iOS (`ios/Runner/Info.plist`)
+```xml
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>qraft</string>
+        </array>
+    </dict>
+    <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>https</string>
+        </array>
+    </dict>
+</array>
+<key>com.apple.developer.associated-domains</key>
+<array>
+    <string>applinks:qraft-e8a1d.firebaseapp.com</string>
+</array>
+```
+
+### Method Channel Implementation
+
+#### Android (`MainActivity.kt`)
+```kotlin
+class MainActivity: FlutterActivity() {
+    private lateinit var channel: MethodChannel
+    private var initialLink: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        channel = MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, "qraft/deeplink")
+        channel.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "getInitialLink" -> result.success(initialLink)
+                else -> result.notImplemented()
+            }
+        }
+        
+        handleIntent(intent)
+    }
+    
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+    
+    private fun handleIntent(intent: Intent) {
+        if (intent.action == Intent.ACTION_VIEW) {
+            val link = intent.dataString
+            if (link != null) {
+                if (::channel.isInitialized) {
+                    channel.invokeMethod("routeUpdated", link)
+                } else {
+                    initialLink = link
+                }
+            }
+        }
+    }
+}
+```
+
+#### iOS (`AppDelegate.swift`)
+```swift
+@main
+@objc class AppDelegate: FlutterAppDelegate {
+    private var methodChannel: FlutterMethodChannel?
+    private var initialLink: String?
+    
+    override func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        GeneratedPluginRegistrant.register(with: self)
+        
+        guard let controller = window?.rootViewController as? FlutterViewController else {
+            fatalError("rootViewController is not type FlutterViewController")
+        }
+        
+        methodChannel = FlutterMethodChannel(name: "qraft/deeplink", binaryMessenger: controller.binaryMessenger)
+        methodChannel?.setMethodCallHandler(handleMethodCall)
+        
+        if let url = launchOptions?[UIApplication.LaunchOptionsKey.url] as? URL {
+            initialLink = url.absoluteString
+        }
+        
+        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+    
+    private func handleMethodCall(call: FlutterMethodCall, result: @escaping FlutterResult) {
+        switch call.method {
+        case "getInitialLink":
+            result(initialLink)
+            initialLink = nil
+        default:
+            result(FlutterMethodNotImplemented)
+        }
+    }
+    
+    override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        methodChannel?.invokeMethod("routeUpdated", arguments: url.absoluteString)
+        return true
+    }
+    
+    override func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        if userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+           let url = userActivity.webpageURL {
+            methodChannel?.invokeMethod("routeUpdated", arguments: url.absoluteString)
+            return true
+        }
+        return false
+    }
+}
+```
+
+### Firebase Domain Authorization
+
+**Important**: When implementing forgot password functionality, ensure domains are authorized in Firebase Console:
+
+1. Go to Firebase Console → Authentication → Settings
+2. Under "Authorized domains", add:
+   - `localhost` (for development)
+   - `qraft-e8a1d.firebaseapp.com` (default Firebase domain)
+   - Your custom domain (if using one)
+
+**Common Error**: "Domain not authorized" - This occurs when the domain in `ActionCodeSettings` is not listed in Firebase authorized domains.
+
+### GlassButton Component
+
+#### Usage
+```dart
+// Primary button with default gradient
+PrimaryGlassButton(
+  text: "Sign In",
+  onPressed: _handleLogin,
+  isLoading: isLoading,
+  width: double.infinity,
+)
+
+// Custom gradient button
+GlassButton(
+  text: "Custom",
+  onPressed: _handleAction,
+  gradientColors: [Color(0xFFFF6B6B), Color(0xFF4ECDC4)],
+  width: 200,
+  height: 48,
+)
+```
+
+#### Features
+- **Glassmorphism Effect**: BackdropFilter with 15px blur
+- **Multi-layer Glow**: Exterior glow without affecting button size
+- **Loading States**: Animated CircularProgressIndicator
+- **Customizable**: Colors, gradients, dimensions, border radius
+- **Variants**: Primary, Secondary, Success pre-configured
+- **Accessibility**: Full VoiceOver support
+
+The component replaces all gradient buttons across the app for consistency.

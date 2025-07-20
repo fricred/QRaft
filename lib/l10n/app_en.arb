@@ -239,5 +239,56 @@
   "forgotPasswordComingSoon": "Forgot password functionality coming soon",
   "@forgotPasswordComingSoon": {
     "description": "Forgot password placeholder message"
+  },
+  
+  "loginSuccessful": "Login successful! Welcome back.",
+  "@loginSuccessful": {
+    "description": "Success message after successful login"
+  },
+  
+  "resetPassword": "Reset Password",
+  "@resetPassword": {
+    "description": "Reset password dialog title"
+  },
+  
+  "resetPasswordSubtitle": "Enter your email to receive reset link",
+  "@resetPasswordSubtitle": {
+    "description": "Reset password dialog subtitle"
+  },
+  
+  "enterEmailForReset": "Enter your email address",
+  "@enterEmailForReset": {
+    "description": "Placeholder text for email field in reset password dialog"
+  },
+  
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  
+  "sendResetLink": "Send",
+  "@sendResetLink": {
+    "description": "Send reset link button text"
+  },
+  
+  "emailSent": "Email Sent!",
+  "@emailSent": {
+    "description": "Email sent success title"
+  },
+  
+  "checkEmailForReset": "We've sent a password reset link to {email}. Please check your email and follow the instructions to reset your password.",
+  "@checkEmailForReset": {
+    "description": "Email sent success message",
+    "placeholders": {
+      "email": {
+        "type": "String",
+        "example": "user@example.com"
+      }
+    }
+  },
+  
+  "done": "Done",
+  "@done": {
+    "description": "Done button text"
   }
 }

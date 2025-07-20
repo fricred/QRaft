@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../shared/widgets/qraft_logo.dart';
+import '../../../../shared/widgets/glass_button.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -260,48 +261,10 @@ class WelcomeScreen extends StatelessWidget {
     return Column(
       children: [
         // Primary Button - Sign Up
-        SizedBox(
+        PrimaryGlassButton(
+          text: l10n.getStarted,
+          onPressed: onSignUpPressed,
           width: double.infinity,
-          height: 56,
-          child: ElevatedButton(
-            onPressed: onSignUpPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-            child: Ink(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF00FF88).withValues(alpha: 0.4),
-                    blurRadius: 15,
-                    spreadRadius: 1,
-                  ),
-                ],
-              ),
-              child: Container(
-                alignment: Alignment.center,
-                child: Text(
-                  l10n.getStarted,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
         ),
         
         const SizedBox(height: 16),

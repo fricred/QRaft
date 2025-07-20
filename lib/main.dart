@@ -5,6 +5,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'firebase_options.dart';
 import 'features/splash/splash_screen.dart';
 import 'features/auth/presentation/pages/auth_flow.dart';
+import 'features/auth/presentation/controllers/auth_controller.dart';
+import 'features/auth/data/providers/auth_provider.dart';
+import 'features/auth/presentation/widgets/forgot_password_dialog.dart';
+import 'features/home/home_screen.dart';
+import 'core/services/deeplink_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() {
@@ -38,6 +43,11 @@ class _QRaftAppState extends ConsumerState<QRaftApp> {
     super.initState();
     // Initialize Firebase in background but don't wait for it
     initializeApp();
+    
+    // Initialize deeplink handler
+    Future.microtask(() {
+      ref.read(deepLinkHandlerProvider);
+    });
   }
 
   @override
@@ -90,45 +100,123 @@ class AuthWrapper extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final authController = ref.read(authControllerProvider.notifier);
+    final authState = ref.watch(authStateProvider);
+    
+    return authState.when(
+      data: (user) {
+        if (user != null) {
+          // User is authenticated, show home screen
+          return const HomeScreen();
+        } else {
+          // User is not authenticated, show auth flow
+          return AuthFlowWithListeners(
+            l10n: l10n,
+            authController: authController,
+          );
+        }
+      },
+      loading: () => const Scaffold(
+        backgroundColor: Color(0xFF1A1A1A),
+        body: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF00FF88)),
+          ),
+        ),
+      ),
+      error: (error, stack) => Scaffold(
+        backgroundColor: const Color(0xFF1A1A1A),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                color: Colors.red[400],
+                size: 64,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Authentication Error',
+                style: TextStyle(
+                  color: Colors.red[400],
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                error.toString(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AuthFlowWithListeners extends ConsumerWidget {
+  final AppLocalizations l10n;
+  final AuthController authController;
+
+  const AuthFlowWithListeners({
+    super.key,
+    required this.l10n,
+    required this.authController,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Listen to auth state changes for UI feedback
+    ref.listen<AuthState>(authControllerProvider, (previous, next) {
+      // Clear any previous error messages
+      if (previous?.errorMessage != null && next.errorMessage == null) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+      }
+      
+      // Show error messages
+      if (next.errorMessage != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.errorMessage!),
+            backgroundColor: Colors.red[700],
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            action: SnackBarAction(
+              label: 'Dismiss',
+              textColor: Colors.white,
+              onPressed: () {
+                authController.clearError();
+                ScaffoldMessenger.of(context).clearSnackBars();
+              },
+            ),
+          ),
+        );
+      }
+    });
     
     return AuthFlow(
       onLogin: (email, password) async {
-        // TODO: Implement Firebase login logic
-        // Debug: Login attempt for $email
-        // For now, just show a success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.loginAttempt(email)),
-            backgroundColor: const Color(0xFF00FF88),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
+        await authController.signInWithEmailAndPassword(
+          email: email,
+          password: password,
         );
       },
       onSignUp: (name, email, password) async {
-        // TODO: Implement Firebase signup logic
-        // Debug: SignUp attempt for $name, $email
-        // For now, just show a success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.accountCreated(name)),
-            backgroundColor: const Color(0xFF00FF88),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
+        await authController.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+          displayName: name,
         );
       },
       onForgotPassword: () {
-        // TODO: Implement forgot password logic
-        // Debug: Forgot password requested
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.forgotPasswordComingSoon),
-            backgroundColor: const Color(0xFF1A73E8),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-        );
+        showForgotPasswordDialog(context);
       },
     );
   }

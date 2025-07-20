@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/widgets/qraft_logo.dart';
+import '../../../../shared/widgets/glass_button.dart';
+import '../controllers/auth_controller.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   final Function(String email, String password) onLogin;
   final VoidCallback onSignUpPressed;
   final VoidCallback onForgotPasswordPressed;
@@ -18,40 +21,37 @@ class LoginScreen extends StatefulWidget {
   });
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
   bool _obscurePassword = true;
-  bool _isLoading = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
   void _handleLogin() async {
     if (_formKey.currentState?.validate() ?? false) {
-      setState(() => _isLoading = true);
-      
-      try {
-        await widget.onLogin(_emailController.text, _passwordController.text);
-      } finally {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
-      }
+      await widget.onLogin(_emailController.text, _passwordController.text);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final authState = ref.watch(authControllerProvider);
+    final isLoading = authState.isLoading;
     
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
@@ -185,10 +185,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                 _buildTextField(
                                   l10n: l10n,
                                   controller: _emailController,
+                                  focusNode: _emailFocusNode,
                                   label: l10n.email,
                                   hint: l10n.enterEmail,
                                   icon: Icons.email_outlined,
                                   keyboardType: TextInputType.emailAddress,
+                                  textInputAction: TextInputAction.next,
+                                  onSubmitted: () => _passwordFocusNode.requestFocus(),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return l10n.pleaseEnterEmail;
@@ -206,10 +209,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                 _buildTextField(
                                   l10n: l10n,
                                   controller: _passwordController,
+                                  focusNode: _passwordFocusNode,
                                   label: l10n.password,
                                   hint: l10n.enterPassword,
                                   icon: Icons.lock_outline,
                                   obscureText: _obscurePassword,
+                                  textInputAction: TextInputAction.done,
+                                  onSubmitted: _handleLogin,
                                   suffixIcon: IconButton(
                                     onPressed: () {
                                       setState(() => _obscurePassword = !_obscurePassword);
@@ -257,7 +263,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 const SizedBox(height: 24),
                                 
                                 // Login button
-                                _buildLoginButton(l10n),
+                                PrimaryGlassButton(
+                                  text: l10n.signIn,
+                                  onPressed: _handleLogin,
+                                  isLoading: isLoading,
+                                  width: double.infinity,
+                                ),
                               ],
                             ),
                           ).animate()
@@ -306,6 +317,9 @@ class _LoginScreenState extends State<LoginScreen> {
     bool obscureText = false,
     Widget? suffixIcon,
     String? Function(String?)? validator,
+    FocusNode? focusNode,
+    TextInputAction? textInputAction,
+    VoidCallback? onSubmitted,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,9 +335,12 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
+          focusNode: focusNode,
           keyboardType: keyboardType,
           obscureText: obscureText,
           validator: validator,
+          textInputAction: textInputAction,
+          onFieldSubmitted: onSubmitted != null ? (_) => onSubmitted() : null,
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: hint,
@@ -355,64 +372,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildLoginButton(AppLocalizations l10n) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : _handleLogin,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ).copyWith(
-          backgroundColor: WidgetStateProperty.all(Colors.transparent),
-        ),
-        child: Ink(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: _isLoading 
-                ? [Colors.grey[600]!, Colors.grey[700]!]
-                : [const Color(0xFF00FF88), const Color(0xFF1A73E8)],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: _isLoading ? [] : [
-              BoxShadow(
-                color: const Color(0xFF00FF88).withValues(alpha: 0.3),
-                blurRadius: 12,
-                spreadRadius: 1,
-              ),
-            ],
-          ),
-          child: Container(
-            alignment: Alignment.center,
-            child: _isLoading
-              ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-              : Text(
-                  l10n.signIn,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildBackgroundParticle(int index) {
     final positions = [

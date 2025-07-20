@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/widgets/qraft_logo.dart';
+import '../../../../shared/widgets/glass_button.dart';
+import '../controllers/auth_controller.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class SignUpScreen extends StatefulWidget {
+class SignUpScreen extends ConsumerStatefulWidget {
   final Function(String name, String email, String password) onSignUp;
   final VoidCallback onLoginPressed;
   final VoidCallback onBackPressed;
@@ -16,19 +19,22 @@ class SignUpScreen extends StatefulWidget {
   });
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  ConsumerState<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _nameFocusNode = FocusNode();
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
+  final _confirmPasswordFocusNode = FocusNode();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _agreeToTerms = false;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -36,6 +42,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _nameFocusNode.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    _confirmPasswordFocusNode.dispose();
     super.dispose();
   }
 
@@ -54,25 +64,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
         return;
       }
 
-      setState(() => _isLoading = true);
-      
-      try {
-        await widget.onSignUp(
-          _nameController.text,
-          _emailController.text,
-          _passwordController.text,
-        );
-      } finally {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
-      }
+      await widget.onSignUp(
+        _nameController.text,
+        _emailController.text,
+        _passwordController.text,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final authState = ref.watch(authControllerProvider);
+    final isLoading = authState.isLoading;
     
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
@@ -206,9 +210,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 _buildTextField(
                                   l10n: l10n,
                                   controller: _nameController,
+                                  focusNode: _nameFocusNode,
                                   label: l10n.fullName,
                                   hint: l10n.enterFullName,
                                   icon: Icons.person_outline,
+                                  textInputAction: TextInputAction.next,
+                                  onSubmitted: () => _emailFocusNode.requestFocus(),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return l10n.pleaseEnterName;
@@ -226,10 +233,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 _buildTextField(
                                   l10n: l10n,
                                   controller: _emailController,
+                                  focusNode: _emailFocusNode,
                                   label: l10n.email,
                                   hint: l10n.enterEmail,
                                   icon: Icons.email_outlined,
                                   keyboardType: TextInputType.emailAddress,
+                                  textInputAction: TextInputAction.next,
+                                  onSubmitted: () => _passwordFocusNode.requestFocus(),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return l10n.pleaseEnterEmail;
@@ -248,10 +258,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 _buildTextField(
                                   l10n: l10n,
                                   controller: _passwordController,
+                                  focusNode: _passwordFocusNode,
                                   label: l10n.password,
                                   hint: l10n.createPassword,
                                   icon: Icons.lock_outline,
                                   obscureText: _obscurePassword,
+                                  textInputAction: TextInputAction.next,
+                                  onSubmitted: () => _confirmPasswordFocusNode.requestFocus(),
                                   suffixIcon: IconButton(
                                     onPressed: () {
                                       setState(() => _obscurePassword = !_obscurePassword);
@@ -290,10 +303,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 _buildTextField(
                                   l10n: l10n,
                                   controller: _confirmPasswordController,
+                                  focusNode: _confirmPasswordFocusNode,
                                   label: l10n.confirmPassword,
                                   hint: l10n.confirmPasswordHint,
                                   icon: Icons.lock_outline,
                                   obscureText: _obscureConfirmPassword,
+                                  textInputAction: TextInputAction.done,
+                                  onSubmitted: _handleSignUp,
                                   suffixIcon: IconButton(
                                     onPressed: () {
                                       setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
@@ -352,7 +368,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 const SizedBox(height: 24),
                                 
                                 // Sign up button
-                                _buildSignUpButton(l10n),
+                                PrimaryGlassButton(
+                                  text: l10n.createAccount,
+                                  onPressed: _handleSignUp,
+                                  isLoading: isLoading,
+                                  width: double.infinity,
+                                ),
                               ],
                             ),
                           ).animate()
@@ -401,6 +422,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     bool obscureText = false,
     Widget? suffixIcon,
     String? Function(String?)? validator,
+    FocusNode? focusNode,
+    TextInputAction? textInputAction,
+    VoidCallback? onSubmitted,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -416,9 +440,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
+          focusNode: focusNode,
           keyboardType: keyboardType,
           obscureText: obscureText,
           validator: validator,
+          textInputAction: textInputAction,
+          onFieldSubmitted: onSubmitted != null ? (_) => onSubmitted() : null,
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: hint,
@@ -450,64 +477,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildSignUpButton(AppLocalizations l10n) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : _handleSignUp,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ).copyWith(
-          backgroundColor: WidgetStateProperty.all(Colors.transparent),
-        ),
-        child: Ink(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: _isLoading 
-                ? [Colors.grey[600]!, Colors.grey[700]!]
-                : [const Color(0xFF00FF88), const Color(0xFF1A73E8)],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: _isLoading ? [] : [
-              BoxShadow(
-                color: const Color(0xFF00FF88).withValues(alpha: 0.3),
-                blurRadius: 12,
-                spreadRadius: 1,
-              ),
-            ],
-          ),
-          child: Container(
-            alignment: Alignment.center,
-            child: _isLoading
-              ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-              : Text(
-                  l10n.createAccount,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildBackgroundParticle(int index) {
     final positions = [
