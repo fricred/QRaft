@@ -51,7 +51,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Structure
 
-- `lib/main.dart` - Main application entry point with basic counter app
+- `lib/main.dart` - Main application entry point with Firebase initialization and splash screen flow
+- `lib/features/splash/splash_screen.dart` - Animated splash screen with Carden Pro styling
+- `lib/features/auth/` - Firebase authentication module with clean architecture
+- `lib/shared/widgets/qraft_logo.dart` - Custom QRaft logo widget with configurable themes
+- `assets/images/qraft_logo.svg` - Custom SVG logo with QR and laser elements
 - `test/` - Widget and unit tests
 - `android/`, `ios/`, `web/`, `macos/`, `windows/`, `linux/` - Platform-specific configurations
 - `pubspec.yaml` - Flutter project configuration and dependencies
@@ -338,12 +342,16 @@ AnimatedContainer(
 
 ## Implementation Phases
 
-### Phase 1: MVP (2-3 months)
-- Basic authentication (Firebase)
-- Core QR generation (URL, text, personal info)
-- Simple QR scanner
-- Basic marketplace catalog
-- Simple checkout process
+### Phase 1: MVP (Current Status)
+- ✅ Firebase Authentication setup and configuration
+- ✅ Professional splash screen with animations
+- ✅ Custom logo and app icon generation
+- ✅ Project architecture and design system
+- 🔄 Login/Register screens implementation (in progress)
+- 🔄 Core QR generation (URL, text, personal info)
+- 🔄 Simple QR scanner (pending iOS dependency resolution)
+- 🔄 Basic marketplace catalog
+- 🔄 Simple checkout process
 
 ### Phase 2: Enhancement (3-4 months)
 - Advanced QR types (WiFi, vCard, events, location)
@@ -372,16 +380,30 @@ Key tables:
 
 ## Dependencies
 
-**Current Basic Setup:**
-- Flutter SDK 3.6.2+
-- Material Design icons (`cupertino_icons`)
-- Flutter lints (`flutter_lints: ^5.0.0`)
-- Standard `flutter_test` framework
+**Current Implementation Status:**
+- ✅ Flutter SDK 3.6.2+
+- ✅ Firebase Core & Auth (`firebase_core: ^2.24.2`, `firebase_auth: ^4.15.3`)
+- ✅ Riverpod state management (`flutter_riverpod: ^2.4.9`)
+- ✅ Advanced animations (`flutter_animate: ^4.3.0`)
+- ✅ SVG graphics (`flutter_svg: ^2.0.9`)
+- ✅ App icon generation (`flutter_launcher_icons: ^0.13.1`)
+- ✅ Flutter lints (`flutter_lints: ^5.0.0`)
+- ✅ Carden Pro design system implementation
+- ✅ Custom logo with QR and laser elements
+- ✅ Splash screen with 8-second animation sequence
+- ✅ Authentication module structure (data/domain/presentation)
 
-**Required for Full Implementation:**
-- Firebase integration packages
-- Supabase Flutter client
-- QR generation and scanning libraries
-- State management (Riverpod recommended)
-- Navigation (Go Router)
-- UI enhancement packages
+**Next Phase Implementation:**
+- 🔄 Login/Register screens with Carden Pro UI
+- 🔄 QR generation functionality (`qr_flutter: ^4.1.0`)
+- 🔄 QR scanning (`mobile_scanner: ^3.5.7` - pending iOS dependency resolution)
+- 🔄 Supabase integration (`supabase_flutter: ^2.0.0`)
+- 🔄 Navigation system (`go_router: ^13.0.0`)
+- 🔄 Marketplace features
+
+**Production Ready Features:**
+- Cross-platform app icons (iOS, Android, Web, Desktop)
+- Firebase authentication setup for all platforms
+- Professional splash screen with staged animations
+- Clean architecture foundation with feature-based modules
+- Git repository with comprehensive documentation
