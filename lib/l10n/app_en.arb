@@ -1,0 +1,243 @@
+{
+  "appName": "QRaft",
+  "@appName": {
+    "description": "The name of the application"
+  },
+  
+  "welcomeTitle": "Welcome to QRaft!",
+  "@welcomeTitle": {
+    "description": "Welcome screen main title"
+  },
+  
+  "welcomeSubtitle": "Your complete solution for custom QR codes",
+  "@welcomeSubtitle": {
+    "description": "Welcome screen subtitle"
+  },
+  
+  "featureCreateTitle": "Create Custom QR",
+  "@featureCreateTitle": {
+    "description": "Feature card title for QR creation"
+  },
+  
+  "featureCreateDescription": "Design and customize your own QR codes for any purpose.",
+  "@featureCreateDescription": {
+    "description": "Feature card description for QR creation"
+  },
+  
+  "featureShareTitle": "Share Easily",
+  "@featureShareTitle": {
+    "description": "Feature card title for sharing"
+  },
+  
+  "featureShareDescription": "Send your QR codes to your contacts or publish them on your social networks.",
+  "@featureShareDescription": {
+    "description": "Feature card description for sharing"
+  },
+  
+  "featureEngraveTitle": "Engrave on Materials",
+  "@featureEngraveTitle": {
+    "description": "Feature card title for engraving"
+  },
+  
+  "featureEngraveDescription": "Get your QR codes engraved on wood, metal and other quality materials.",
+  "@featureEngraveDescription": {
+    "description": "Feature card description for engraving"
+  },
+  
+  "getStarted": "Get Started",
+  "@getStarted": {
+    "description": "Primary button text to start using the app"
+  },
+  
+  "alreadyHaveAccount": "Already have an account? Sign In",
+  "@alreadyHaveAccount": {
+    "description": "Text for users who already have an account"
+  },
+  
+  "mainFeatures": "Main Features",
+  "@mainFeatures": {
+    "description": "Title for main features section"
+  },
+  
+  "welcomeBack": "Welcome Back",
+  "@welcomeBack": {
+    "description": "Login screen title"
+  },
+  
+  "signInToContinue": "Sign in to continue creating amazing QR codes",
+  "@signInToContinue": {
+    "description": "Login screen subtitle"
+  },
+  
+  "email": "Email",
+  "@email": {
+    "description": "Email field label"
+  },
+  
+  "enterEmail": "Enter your email",
+  "@enterEmail": {
+    "description": "Email field hint"
+  },
+  
+  "password": "Password",
+  "@password": {
+    "description": "Password field label"
+  },
+  
+  "enterPassword": "Enter your password",
+  "@enterPassword": {
+    "description": "Password field hint"
+  },
+  
+  "forgotPassword": "Forgot Password?",
+  "@forgotPassword": {
+    "description": "Forgot password link text"
+  },
+  
+  "signIn": "Sign In",
+  "@signIn": {
+    "description": "Sign in button text"
+  },
+  
+  "dontHaveAccount": "Don't have an account? Sign Up",
+  "@dontHaveAccount": {
+    "description": "Text for users who don't have an account"
+  },
+  
+  "createAccount": "Create Account",
+  "@createAccount": {
+    "description": "Sign up screen title"
+  },
+  
+  "joinQRaft": "Join QRaft and start creating amazing QR codes",
+  "@joinQRaft": {
+    "description": "Sign up screen subtitle"
+  },
+  
+  "fullName": "Full Name",
+  "@fullName": {
+    "description": "Full name field label"
+  },
+  
+  "enterFullName": "Enter your full name",
+  "@enterFullName": {
+    "description": "Full name field hint"
+  },
+  
+  "createPassword": "Create a password",
+  "@createPassword": {
+    "description": "Password creation field hint"
+  },
+  
+  "confirmPassword": "Confirm Password",
+  "@confirmPassword": {
+    "description": "Confirm password field label"
+  },
+  
+  "confirmPasswordHint": "Confirm your password",
+  "@confirmPasswordHint": {
+    "description": "Confirm password field hint"
+  },
+  
+  "agreeToTerms": "I agree to the Terms & Conditions and Privacy Policy",
+  "@agreeToTerms": {
+    "description": "Terms and conditions agreement text"
+  },
+  
+  "alreadyHaveAccountSignIn": "Already have an account? Sign In",
+  "@alreadyHaveAccountSignIn": {
+    "description": "Text for users who already have an account in sign up screen"
+  },
+  
+  "pleaseEnterEmail": "Please enter your email",
+  "@pleaseEnterEmail": {
+    "description": "Email validation error"
+  },
+  
+  "pleaseEnterValidEmail": "Please enter a valid email",
+  "@pleaseEnterValidEmail": {
+    "description": "Email format validation error"
+  },
+  
+  "pleaseEnterPassword": "Please enter your password",
+  "@pleaseEnterPassword": {
+    "description": "Password validation error"
+  },
+  
+  "passwordMinLength": "Password must be at least 6 characters",
+  "@passwordMinLength": {
+    "description": "Password minimum length validation error"
+  },
+  
+  "pleaseEnterName": "Please enter your name",
+  "@pleaseEnterName": {
+    "description": "Name validation error"
+  },
+  
+  "nameMinLength": "Name must be at least 2 characters",
+  "@nameMinLength": {
+    "description": "Name minimum length validation error"
+  },
+  
+  "passwordMinLengthSignUp": "Password must be at least 8 characters",
+  "@passwordMinLengthSignUp": {
+    "description": "Password minimum length validation error for sign up"
+  },
+  
+  "passwordMustContainUppercase": "Password must contain at least one uppercase letter",
+  "@passwordMustContainUppercase": {
+    "description": "Password uppercase validation error"
+  },
+  
+  "passwordMustContainLowercase": "Password must contain at least one lowercase letter",
+  "@passwordMustContainLowercase": {
+    "description": "Password lowercase validation error"
+  },
+  
+  "passwordMustContainNumber": "Password must contain at least one number",
+  "@passwordMustContainNumber": {
+    "description": "Password number validation error"
+  },
+  
+  "pleaseConfirmPassword": "Please confirm your password",
+  "@pleaseConfirmPassword": {
+    "description": "Confirm password validation error"
+  },
+  
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {
+    "description": "Password match validation error"
+  },
+  
+  "pleaseAgreeToTerms": "Please agree to Terms & Conditions",
+  "@pleaseAgreeToTerms": {
+    "description": "Terms agreement validation error"
+  },
+  
+  "loginAttempt": "Login attempt: {email}",
+  "@loginAttempt": {
+    "description": "Login attempt message",
+    "placeholders": {
+      "email": {
+        "type": "String",
+        "example": "user@example.com"
+      }
+    }
+  },
+  
+  "accountCreated": "Account created for: {name}",
+  "@accountCreated": {
+    "description": "Account creation success message",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "John Doe"
+      }
+    }
+  },
+  
+  "forgotPasswordComingSoon": "Forgot password functionality coming soon",
+  "@forgotPasswordComingSoon": {
+    "description": "Forgot password placeholder message"
+  }
+}

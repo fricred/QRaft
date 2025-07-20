@@ -197,37 +197,6 @@ class _SplashScreenState extends State<SplashScreen>
             ),
           ),
           
-          // Bottom branding
-          Positioned(
-            bottom: 48,
-            left: 0,
-            right: 0,
-            child: Column(
-              children: [
-                Text(
-                  'Powered by Firebase',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
-                ).animate()
-                  .fadeIn(duration: 600.ms, delay: 4500.ms),
-                const SizedBox(height: 8),
-                Container(
-                  width: 40,
-                  height: 2,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
-                    ),
-                    borderRadius: BorderRadius.circular(1),
-                  ),
-                ).animate()
-                  .fadeIn(duration: 600.ms, delay: 5100.ms)
-                  .scaleX(begin: 0, duration: 800.ms, delay: 5100.ms),
-              ],
-            ),
-          ),
         ],
       ),
     );
