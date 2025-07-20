@@ -1,0 +1,132 @@
+{
+    "Riverpod Provider": {
+        "prefix": "riverpod_provider",
+        "body": [
+            "final ${1:name}Provider = Provider<${2:Type}>((ref) {",
+            "  return ${3:implementation};",
+            "});"
+        ],
+        "description": "Create a Riverpod Provider"
+    },
+    "Riverpod State Provider": {
+        "prefix": "riverpod_state_provider",
+        "body": [
+            "final ${1:name}Provider = StateProvider<${2:Type}>((ref) {",
+            "  return ${3:initialValue};",
+            "});"
+        ],
+        "description": "Create a Riverpod StateProvider"
+    },
+    "Riverpod Future Provider": {
+        "prefix": "riverpod_future_provider",
+        "body": [
+            "final ${1:name}Provider = FutureProvider<${2:Type}>((ref) async {",
+            "  ${3:// Implementation}",
+            "  return ${4:result};",
+            "});"
+        ],
+        "description": "Create a Riverpod FutureProvider"
+    },
+    "Riverpod Stream Provider": {
+        "prefix": "riverpod_stream_provider",
+        "body": [
+            "final ${1:name}Provider = StreamProvider<${2:Type}>((ref) {",
+            "  ${3:// Implementation}",
+            "  return ${4:stream};",
+            "});"
+        ],
+        "description": "Create a Riverpod StreamProvider"
+    },
+    "Riverpod Notifier Provider": {
+        "prefix": "riverpod_notifier_provider",
+        "body": [
+            "class ${1:Name}Notifier extends Notifier<${2:State}> {",
+            "  @override",
+            "  ${2:State} build() {",
+            "    return ${3:initialState};",
+            "  }",
+            "",
+            "  void ${4:method}() {",
+            "    state = ${5:newState};",
+            "  }",
+            "}",
+            "",
+            "final ${6:name}Provider = NotifierProvider<${1:Name}Notifier, ${2:State}>(() {",
+            "  return ${1:Name}Notifier();",
+            "});"
+        ],
+        "description": "Create a Riverpod NotifierProvider with Notifier class"
+    },
+    "Consumer Widget": {
+        "prefix": "consumer_widget",
+        "body": [
+            "class ${1:WidgetName} extends ConsumerWidget {",
+            "  const ${1:WidgetName}({super.key});",
+            "",
+            "  @override",
+            "  Widget build(BuildContext context, WidgetRef ref) {",
+            "    ${2:// Implementation}",
+            "    return ${3:Container()};",
+            "  }",
+            "}"
+        ],
+        "description": "Create a ConsumerWidget"
+    },
+    "Consumer Stateful Widget": {
+        "prefix": "consumer_stateful_widget",
+        "body": [
+            "class ${1:WidgetName} extends ConsumerStatefulWidget {",
+            "  const ${1:WidgetName}({super.key});",
+            "",
+            "  @override",
+            "  ConsumerState<${1:WidgetName}> createState() => _${1:WidgetName}State();",
+            "}",
+            "",
+            "class _${1:WidgetName}State extends ConsumerState<${1:WidgetName}> {",
+            "  @override",
+            "  Widget build(BuildContext context) {",
+            "    ${2:// Implementation}",
+            "    return ${3:Container()};",
+            "  }",
+            "}"
+        ],
+        "description": "Create a ConsumerStatefulWidget"
+    },
+    "QR Data Model": {
+        "prefix": "qr_model",
+        "body": [
+            "class ${1:QRData} {",
+            "  final String id;",
+            "  final String content;",
+            "  final QRType type;",
+            "  final DateTime createdAt;",
+            "  final String? customization;",
+            "",
+            "  const ${1:QRData}({",
+            "    required this.id,",
+            "    required this.content,",
+            "    required this.type,",
+            "    required this.createdAt,",
+            "    this.customization,",
+            "  });",
+            "",
+            "  Map<String, dynamic> toJson() => {",
+            "    'id': id,",
+            "    'content': content,",
+            "    'type': type.name,",
+            "    'createdAt': createdAt.toIso8601String(),",
+            "    'customization': customization,",
+            "  };",
+            "",
+            "  factory ${1:QRData}.fromJson(Map<String, dynamic> json) => ${1:QRData}(",
+            "    id: json['id'],",
+            "    content: json['content'],",
+            "    type: QRType.values.byName(json['type']),",
+            "    createdAt: DateTime.parse(json['createdAt']),",
+            "    customization: json['customization'],",
+            "  );",
+            "}"
+        ],
+        "description": "Create QR data model"
+    }
+}
