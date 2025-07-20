@@ -2,58 +2,59 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug (iOS Simulator)",
+            "name": "QRaft (Development)",
             "request": "launch",
             "type": "dart",
-            "cwd": "${workspaceFolder}",
             "program": "lib/main.dart",
-            "deviceId": "ios"
-        },
-        {
-            "name": "Debug (Development)",
-            "request": "launch",
-            "type": "dart",
-            "cwd": "${workspaceFolder}",
-            "program": "lib/main.dart",
-            "env": {
-                "FLUTTER_WEB_USE_SKIA": "true"
-            }
-        },
-        {
-            "name": "Debug (Chrome)",
-            "request": "launch",
-            "type": "dart",
-            "cwd": "${workspaceFolder}",
-            "program": "lib/main.dart",
-            "deviceId": "chrome",
             "args": [
-                "--web-renderer",
-                "html"
-            ]
+                "--dart-define-from-file=env.json"
+            ],
+            "console": "debugConsole"
         },
         {
-            "name": "Debug (Android)",
+            "name": "QRaft (Debug Mode)",
             "request": "launch",
             "type": "dart",
-            "cwd": "${workspaceFolder}",
             "program": "lib/main.dart",
-            "deviceId": "android"
+            "args": [
+                "--dart-define-from-file=env.json"
+            ],
+            "flutterMode": "debug",
+            "console": "debugConsole"
         },
         {
-            "name": "Profile Mode",
+            "name": "QRaft (Profile Mode)",
             "request": "launch",
             "type": "dart",
-            "cwd": "${workspaceFolder}",
             "program": "lib/main.dart",
-            "flutterMode": "profile"
+            "args": [
+                "--dart-define-from-file=env.json"
+            ],
+            "flutterMode": "profile",
+            "console": "debugConsole"
         },
         {
-            "name": "Release Mode",
+            "name": "QRaft (Release Mode)",
             "request": "launch",
             "type": "dart",
-            "cwd": "${workspaceFolder}",
             "program": "lib/main.dart",
-            "flutterMode": "release"
+            "args": [
+                "--dart-define-from-file=env.json"
+            ],
+            "flutterMode": "release",
+            "console": "debugConsole"
+        },
+        {
+            "name": "QRaft (Chrome)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--dart-define-from-file=env.json",
+                "-d",
+                "chrome"
+            ],
+            "console": "debugConsole"
         }
     ]
 }

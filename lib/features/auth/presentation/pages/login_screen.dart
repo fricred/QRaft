@@ -3,7 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/widgets/qraft_logo.dart';
 import '../../../../shared/widgets/glass_button.dart';
-import '../controllers/auth_controller.dart';
+import '../../../auth/data/providers/supabase_auth_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -50,8 +50,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final authState = ref.watch(authControllerProvider);
-    final isLoading = authState.isLoading;
+    final authProvider = ref.watch(supabaseAuthProvider);
+    final isLoading = authProvider.isLoading;
     
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),

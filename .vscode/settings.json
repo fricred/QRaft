@@ -1,103 +1,39 @@
 {
-    // Flutter/Dart Settings
-    "dart.flutterSdkPath": "",
-    "dart.previewLsp": true,
-    "dart.debugExternalPackageLibraries": true,
-    "dart.debugSdkLibraries": false,
-    "dart.showInspectorNotificationsForWidgetErrors": true,
-    "dart.openDevTools": "flutter",
-    "dart.warnWhenEditingFilesOutsideWorkspace": true,
-    "dart.lineLength": 100,
-    
-    // Code Formatting
-    "editor.formatOnSave": true,
-    "editor.formatOnType": true,
-    "editor.codeActionsOnSave": {
-        "source.fixAll": "explicit",
-        "source.organizeImports": "explicit"
-    },
-    "editor.rulers": [80, 100],
-    "editor.tabSize": 2,
-    "editor.insertSpaces": true,
-    "editor.detectIndentation": false,
-    
-    // Flutter Specific
-    "flutter.showInspectorNotificationsForWidgetErrors": true,
-    "flutter.hotReloadOnSave": "always",
-    
-    // File Associations
-    "files.associations": {
-        "*.dart": "dart",
-        "*.arb": "json"
-    },
-    
-    // Search and Files
-    "search.exclude": {
-        "**/build": true,
+    "dart.flutterRunAdditionalArgs": [
+        "--dart-define-from-file=env.json"
+    ],
+    "dart.runAdditionalArgs": [
+        "--dart-define-from-file=env.json"
+    ],
+    "dart.debugAdditionalArgs": [
+        "--dart-define-from-file=env.json"
+    ],
+    "dart.flutterTestAdditionalArgs": [
+        "--dart-define-from-file=env.json"
+    ],
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
         "**/.dart_tool": true,
-        "**/.pub-cache": true,
+        "**/build": true,
         "**/ios/Pods": true,
+        "**/ios/.symlinks": true,
         "**/android/.gradle": true,
-        "**/android/build": true
+        "**/android/captures": true,
+        "**/android/gradlew": true,
+        "**/android/gradlew.bat": true,
+        "**/android/local.properties": true,
+        "**/android/**/GeneratedPluginRegistrant.java": true,
+        "**/ios/Runner.xcworkspace": true,
+        "**/ios/Runner.xcodeproj": true,
+        "**/macos/Runner.xcworkspace": true,
+        "**/macos/Runner.xcodeproj": true
     },
-    "files.watcherExclude": {
-        "**/build/**": true,
-        "**/.dart_tool/**": true,
-        "**/ios/Pods/**": true,
-        "**/android/.gradle/**": true,
-        "**/android/build/**": true
-    },
-    
-    // Terminal
-    "terminal.integrated.shell.osx": "/bin/zsh",
-    
-    // Riverpod/State Management
-    "dart.analysisExcludedFolders": [
-        "build/**",
-        ".dart_tool/**"
-    ],
-    
-    // IntelliSense
-    "editor.suggest.showWords": false,
-    "editor.quickSuggestions": {
-        "other": true,
-        "comments": false,
-        "strings": true
-    },
-    
-    // Error Lens
-    "errorLens.enabledDiagnosticLevels": [
-        "error",
-        "warning",
-        "info"
-    ],
-    
-    // TODO Highlighting
-    "todo-tree.general.tags": [
-        "BUG",
-        "HACK",
-        "FIXME",
-        "TODO",
-        "XXX",
-        "[ ]",
-        "[x]"
-    ],
-    "todo-tree.regex.regex": "(//|#|<!--|;|/\\*|^|^\\s*(-|\\d+.))\\s*($TAGS)",
-    
-    // Emmet
-    "emmet.includeLanguages": {
-        "dart": "html"
-    },
-    
-    // Auto Save
-    "files.autoSave": "afterDelay",
-    "files.autoSaveDelay": 1000,
-    
-    // Bracket Pair Colorization
-    "editor.bracketPairColorization.enabled": true,
-    "editor.guides.bracketPairs": "active",
-    
-    // Minimap
-    "editor.minimap.enabled": true,
-    "editor.minimap.maxColumn": 100
+    "dart.previewFlutterUiGuides": true,
+    "dart.previewFlutterUiGuidesCustomTracking": true,
+    "dart.showTodos": true
 }

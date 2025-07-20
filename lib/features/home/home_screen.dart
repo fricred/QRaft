@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../auth/presentation/controllers/auth_controller.dart';
-import '../auth/data/providers/auth_provider.dart';
+import '../auth/data/providers/supabase_auth_provider.dart';
 import '../../shared/widgets/qraft_logo.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -10,8 +9,8 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentUser = ref.watch(currentUserProvider);
-    final authController = ref.read(authControllerProvider.notifier);
+    final authProvider = ref.watch(supabaseAuthProvider);
+    final currentUser = authProvider.currentUser;
     
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
@@ -64,9 +63,9 @@ class HomeScreen extends ConsumerWidget {
                                 fontSize: 20,
                               ),
                             ),
-                            if (currentUser?.displayName != null)
+                            if (currentUser?.userMetadata?['display_name'] != null)
                               Text(
-                                'Hello, ${currentUser!.displayName}',
+                                'Hello, ${currentUser!.userMetadata!['display_name']}',
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Colors.grey[400],
                                   fontSize: 14,
@@ -79,7 +78,7 @@ class HomeScreen extends ConsumerWidget {
                       // Logout button
                       IconButton(
                         onPressed: () async {
-                          await authController.signOut();
+                          await authProvider.signOut();
                         },
                         icon: const Icon(
                           Icons.logout_rounded,
@@ -199,16 +198,16 @@ class HomeScreen extends ConsumerWidget {
                                     fontSize: 14,
                                   ),
                                 ),
-                                if (currentUser.displayName != null)
+                                if (currentUser.userMetadata?['display_name'] != null)
                                   Text(
-                                    'Name: ${currentUser.displayName}',
+                                    'Name: ${currentUser.userMetadata!['display_name']}',
                                     style: TextStyle(
                                       color: Colors.grey[300],
                                       fontSize: 14,
                                     ),
                                   ),
                                 Text(
-                                  'UID: ${currentUser.uid}',
+                                  'UID: ${currentUser.id}',
                                   style: TextStyle(
                                     color: Colors.grey[500],
                                     fontSize: 12,

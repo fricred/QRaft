@@ -4,7 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/widgets/glass_button.dart';
-import '../controllers/auth_controller.dart';
+import '../../data/providers/supabase_auth_provider.dart';
 
 class ForgotPasswordDialog extends ConsumerStatefulWidget {
   const ForgotPasswordDialog({super.key});
@@ -26,12 +26,10 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
 
   void _handleSendResetEmail() async {
     if (_formKey.currentState?.validate() ?? false) {
-      final authController = ref.read(authControllerProvider.notifier);
-      final success = await authController.sendPasswordResetEmail(
-        email: _emailController.text,
-      );
+      final authProvider = ref.read(supabaseAuthProvider);
+      await authProvider.resetPassword(_emailController.text);
 
-      if (success) {
+      if (authProvider.errorMessage == null) {
         setState(() {
           _emailSent = true;
         });
@@ -42,8 +40,8 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final authState = ref.watch(authControllerProvider);
-    final isLoading = authState.isLoading;
+    final authProvider = ref.watch(supabaseAuthProvider);
+    final isLoading = authProvider.isLoading;
 
     return Dialog(
       backgroundColor: Colors.transparent,

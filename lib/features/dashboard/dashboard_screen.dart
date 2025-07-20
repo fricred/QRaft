@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../auth/presentation/controllers/auth_controller.dart';
-import '../auth/data/providers/auth_provider.dart';
+import '../auth/data/providers/supabase_auth_provider.dart';
+import '../profile/presentation/pages/profile_screen.dart';
 import '../../shared/widgets/qraft_logo.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -10,8 +10,8 @@ class DashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentUser = ref.watch(currentUserProvider);
-    final authController = ref.read(authControllerProvider.notifier);
+    final authProvider = ref.watch(supabaseAuthProvider);
+    final currentUser = authProvider.currentUser;
     
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
@@ -65,9 +65,9 @@ class DashboardScreen extends ConsumerWidget {
                                 fontSize: 24,
                               ),
                             ),
-                            if (currentUser?.displayName != null)
+                            if (currentUser?.userMetadata?['display_name'] != null)
                               Text(
-                                'Welcome back, ${currentUser!.displayName}',
+                                'Welcome back, ${currentUser!.userMetadata!['display_name']}',
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Colors.grey[400],
                                   fontSize: 14,
@@ -78,18 +78,29 @@ class DashboardScreen extends ConsumerWidget {
                       ),
                       
                       // Profile/Settings button
-                      IconButton(
-                        onPressed: () async {
-                          await authController.signOut();
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ProfileScreen(),
+                            ),
+                          );
                         },
-                        icon: const Icon(
-                          Icons.account_circle_outlined,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                        style: IconButton.styleFrom(
-                          backgroundColor: const Color(0xFF2E2E2E),
+                        onLongPress: () {
+                          _showQuickActionsMenu(context, ref);
+                        },
+                        child: Container(
                           padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2E2E2E),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.account_circle_outlined,
+                            color: Colors.white,
+                            size: 28,
+                          ),
                         ),
                       ),
                     ],
@@ -189,6 +200,176 @@ class DashboardScreen extends ConsumerWidget {
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showQuickActionsMenu(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF2E2E2E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[600],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Quick Actions',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: Icon(Icons.person_rounded, color: const Color(0xFF00FF88)),
+              title: Text(
+                'View Profile',
+                style: TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.settings_rounded, color: Colors.grey[400]),
+              title: Text(
+                'Settings',
+                style: TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
+                );
+              },
+            ),
+            Divider(color: Colors.grey[700]),
+            ListTile(
+              leading: Icon(Icons.exit_to_app_rounded, color: Colors.red[400]),
+              title: Text(
+                'Sign Out',
+                style: TextStyle(color: Colors.red[400]),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _showQuickSignOutDialog(context, ref);
+              },
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showQuickSignOutDialog(BuildContext context, WidgetRef ref) async {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF2E2E2E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(
+              Icons.exit_to_app_rounded,
+              color: Colors.red[400],
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Sign Out',
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
+        ),
+        content: Text(
+          'Are you sure you want to sign out?',
+          style: TextStyle(color: Colors.grey[300]),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Colors.grey[400]),
+            ),
+          ),
+          Consumer(
+            builder: (context, ref, child) {
+              final authProvider = ref.watch(supabaseAuthProvider);
+              return TextButton(
+                onPressed: authProvider.isLoading ? null : () async {
+                  Navigator.pop(context);
+                  
+                  // Show loading snackbar
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: [
+                          SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Text('Signing out...'),
+                        ],
+                      ),
+                      backgroundColor: const Color(0xFF2E2E2E),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                  
+                  try {
+                    await authProvider.signOut();
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Failed to sign out. Please try again.'),
+                          backgroundColor: Colors.red[700],
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      );
+                    }
+                  }
+                },
+                child: Text(
+                  'Sign Out',
+                  style: TextStyle(color: Colors.red[400]),
+                ),
+              );
+            },
           ),
         ],
       ),

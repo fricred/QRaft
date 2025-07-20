@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../domain/entities/user_entity.dart';
 
 class UserModel extends UserEntity {
@@ -12,16 +12,16 @@ class UserModel extends UserEntity {
     super.lastSignIn,
   });
 
-  /// Create UserModel from Firebase User
-  factory UserModel.fromFirebaseUser(User user) {
+  /// Create UserModel from Supabase User
+  factory UserModel.fromSupabaseUser(User user) {
     return UserModel(
-      uid: user.uid,
+      uid: user.id,
       email: user.email ?? '',
-      displayName: user.displayName,
-      photoURL: user.photoURL,
-      emailVerified: user.emailVerified,
-      createdAt: user.metadata.creationTime,
-      lastSignIn: user.metadata.lastSignInTime,
+      displayName: user.userMetadata?['display_name'],
+      photoURL: user.userMetadata?['avatar_url'],
+      emailVerified: user.emailConfirmedAt != null,
+      createdAt: DateTime.tryParse(user.createdAt ?? ''),
+      lastSignIn: DateTime.tryParse(user.lastSignInAt ?? ''),
     );
   }
 

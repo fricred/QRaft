@@ -26,10 +26,37 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `flutter pub get` - Install dependencies
 - `flutter pub upgrade` - Upgrade dependencies to latest versions
 
+### Environment Configuration
+
+**Flutter 2025 Best Practice: Using `--dart-define-from-file`**
+
+1. **Setup**: Copy `env.example.json` to `env.json` and add your credentials
+```bash
+cp env.example.json env.json
+# Edit env.json with your Supabase credentials
+```
+
+2. **Development**: Use `--dart-define-from-file` for natural environment loading
+```bash
+flutter run --dart-define-from-file=env.json
+```
+
+3. **Production**: Create separate environment files
+```bash
+# env.production.json with production credentials
+flutter build apk --dart-define-from-file=env.production.json
+```
+
+**Security**: 
+- `env.json` is gitignored (contains real credentials)
+- `env.example.json` is committed (template only)
+- Variables are injected at build time (more secure than runtime loading)
+
 ### Development
-- `flutter run` - Run the app in debug mode on connected device/emulator
-- `flutter run -d chrome` - Run the app in web browser
-- `flutter run --hot-reload` - Enable hot reload during development
+- `flutter run --dart-define-from-file=env.json` - 🚀 **RECOMMENDED**: Natural environment loading
+- `flutter run` - Standard run (will show configuration warnings)
+- `flutter run -d chrome --dart-define-from-file=env.json` - Web with environment
+- `flutter run --dart-define=SUPABASE_URL=... --dart-define=SUPABASE_ANON_KEY=...` - Manual setup
 
 ### Code Quality
 - `flutter analyze` - Run static analysis on Dart code
@@ -737,3 +764,20 @@ test/
 - **Isolated Tests**: Each test runs independently with proper setup/teardown
 - **Clear Documentation**: Descriptive test names and organized test structure
 - **Production Ready**: Core authentication and UI components fully tested
+
+## 📁 Project Documentation Files
+
+### Setup and Configuration
+- **`SETUP_GUIDE.md`** - Complete setup guide for new developers and deployment
+- **`supabase_complete_setup.sql`** - Single SQL script to initialize entire Supabase database with tables, RLS policies, indexes, and sample data
+- **`env.json`** - Environment variables template (create this file, never commit to git)
+
+### Development Documentation  
+- **`CLAUDE.md`** - This comprehensive development guide with architecture, implementation details, and testing
+- **`README.md`** - Project overview, quick start instructions, and basic information
+
+### Key Configuration Notes
+- All obsolete SQL and MD files have been cleaned up and consolidated
+- Only essential documentation files remain for clarity
+- Environment setup is streamlined with single env.json file
+- Database initialization requires only one SQL script execution

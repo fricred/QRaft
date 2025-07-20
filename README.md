@@ -66,16 +66,28 @@ QRaft follows the **Carden Pro** design language featuring:
    - Add `google-services.json` to `android/app/`
    - Add `GoogleService-Info.plist` to `ios/Runner/`
 
-4. **Run the application**
+4. **Environment Setup (New 2025 Method)**
    ```bash
-   # Debug mode
-   flutter run
+   # Copy environment template
+   cp env.example.json env.json
    
-   # Web browser
-   flutter run -d chrome
+   # Edit env.json with your credentials
+   {
+     "SUPABASE_URL": "https://your-project-id.supabase.co",
+     "SUPABASE_ANON_KEY": "your-anon-key-here"
+   }
+   ```
+
+5. **Run the application**
+   ```bash
+   # Development (with environment)
+   flutter run --dart-define-from-file=env.json
    
-   # Specific device
-   flutter run -d <device-id>
+   # Web browser (with environment)
+   flutter run --dart-define-from-file=env.json -d chrome
+   
+   # VS Code: Just press F5 (auto-configured)
+   # Android Studio: Use "QRaft (Development)" run config
    ```
 
 ## 🏗️ Architecture

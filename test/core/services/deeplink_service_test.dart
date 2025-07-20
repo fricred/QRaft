@@ -124,11 +124,33 @@ void main() {
   });
 
   group('DeepLinkService Static Methods Tests', () {
-    group('parseFirebaseAuthLink', () {
-      test('parses valid Firebase auth link correctly', () {
-        const validLink = 'https://qraft.gothcorp.io/auth/action?mode=resetPassword&oobCode=test123&continueUrl=https://example.com&lang=es';
+    group('parseSupabaseAuthLink', () {
+      test('parses valid Supabase auth verification link correctly', () {
+        const validLink = 'https://project.supabase.co/auth/v1/verify?token=pkce_123abc&type=signup&redirect_to=qraft://auth/verify';
         
-        final result = DeepLinkService.parseFirebaseAuthLink(validLink);
+        final result = DeepLinkService.parseSupabaseAuthLink(validLink);
+        
+        expect(result, isNotNull);
+        expect(result!['token'], equals('pkce_123abc'));
+        expect(result['type'], equals('signup'));
+        expect(result['redirect_to'], equals('qraft://auth/verify'));
+      });
+
+      test('parses custom QRaft deeplink correctly', () {
+        const customLink = 'qraft://auth/verify?token=xyz789';
+        
+        final result = DeepLinkService.parseSupabaseAuthLink(customLink);
+        
+        expect(result, isNotNull);
+        expect(result!['type'], equals('signup'));
+        expect(result['action'], equals('verify'));
+        expect(result['token'], equals('xyz789'));
+      });
+
+      test('parses legacy Firebase auth link correctly', () {
+        const legacyLink = 'https://qraft.gothcorp.io/auth/action?mode=resetPassword&oobCode=test123&continueUrl=https://example.com&lang=es';
+        
+        final result = DeepLinkService.parseSupabaseAuthLink(legacyLink);
         
         expect(result, isNotNull);
         expect(result!['mode'], equals('resetPassword'));
@@ -137,32 +159,20 @@ void main() {
         expect(result['lang'], equals('es'));
       });
 
-      test('returns null for invalid Firebase auth link', () {
+      test('returns null for invalid auth link', () {
         const invalidLink = 'https://example.com/some/path';
         
-        final result = DeepLinkService.parseFirebaseAuthLink(invalidLink);
+        final result = DeepLinkService.parseSupabaseAuthLink(invalidLink);
         
         expect(result, isNull);
       });
 
-      test('returns null for link missing required parameters', () {
-        const incompleteLink = 'https://qraft.gothcorp.io/auth/action?mode=resetPassword';
+      test('returns null for incomplete Supabase auth link', () {
+        const incompleteLink = 'https://project.supabase.co/auth/v1/verify?token=abc123';
         
-        final result = DeepLinkService.parseFirebaseAuthLink(incompleteLink);
+        final result = DeepLinkService.parseSupabaseAuthLink(incompleteLink);
         
         expect(result, isNull);
-      });
-
-      test('handles missing optional parameters', () {
-        const linkWithoutOptionals = 'https://qraft.gothcorp.io/auth/action?mode=verifyEmail&oobCode=abc123';
-        
-        final result = DeepLinkService.parseFirebaseAuthLink(linkWithoutOptionals);
-        
-        expect(result, isNotNull);
-        expect(result!['mode'], equals('verifyEmail'));
-        expect(result['oobCode'], equals('abc123'));
-        expect(result['continueUrl'], equals(''));
-        expect(result['lang'], equals('en')); // Default value
       });
     });
 
