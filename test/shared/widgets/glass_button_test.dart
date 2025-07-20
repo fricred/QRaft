@@ -165,6 +165,95 @@ void main() {
       
       expect(find.byType(GlassButton), findsOneWidget);
     });
+
+    testWidgets('displays icon when provided', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: GlassButton(
+              text: 'Test Button',
+              icon: Icons.star_rounded,
+              onPressed: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byIcon(Icons.star_rounded), findsOneWidget);
+      expect(find.text('Test Button'), findsOneWidget);
+    });
+
+    testWidgets('displays icon first by default', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: GlassButton(
+              text: 'Test Button',
+              icon: Icons.star_rounded,
+              onPressed: () {},
+            ),
+          ),
+        ),
+      );
+
+      final row = tester.widget<Row>(find.byType(Row));
+      expect(row.children.length, 3); // icon, spacing, text
+      expect((row.children[0] as Icon).icon, Icons.star_rounded);
+    });
+
+    testWidgets('displays icon last when iconFirst is false', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: GlassButton(
+              text: 'Test Button',
+              icon: Icons.star_rounded,
+              iconFirst: false,
+              onPressed: () {},
+            ),
+          ),
+        ),
+      );
+
+      final row = tester.widget<Row>(find.byType(Row));
+      expect(row.children.length, 3); // text, spacing, icon
+      expect((row.children[2] as Icon).icon, Icons.star_rounded);
+    });
+
+    testWidgets('uses custom icon size', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: GlassButton(
+              text: 'Test Button',
+              icon: Icons.star_rounded,
+              iconSize: 30,
+              onPressed: () {},
+            ),
+          ),
+        ),
+      );
+
+      final icon = tester.widget<Icon>(find.byIcon(Icons.star_rounded));
+      expect(icon.size, 30);
+    });
+
+    testWidgets('shows only text when no icon provided', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: GlassButton(
+              text: 'Test Button',
+              onPressed: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Test Button'), findsOneWidget);
+      expect(find.byType(Row), findsNothing);
+      expect(find.byType(Icon), findsNothing);
+    });
   });
 
   group('PrimaryGlassButton Tests', () {

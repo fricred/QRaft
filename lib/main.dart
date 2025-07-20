@@ -8,7 +8,7 @@ import 'features/auth/presentation/pages/auth_flow.dart';
 import 'features/auth/presentation/controllers/auth_controller.dart';
 import 'features/auth/data/providers/auth_provider.dart';
 import 'features/auth/presentation/widgets/forgot_password_dialog.dart';
-import 'features/home/home_screen.dart';
+import 'features/main/main_scaffold.dart';
 import 'core/services/deeplink_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -107,7 +107,7 @@ class AuthWrapper extends ConsumerWidget {
       data: (user) {
         if (user != null) {
           // User is authenticated, show home screen
-          return const HomeScreen();
+          return const MainScaffold();
         } else {
           // User is not authenticated, show auth flow
           return AuthFlowWithListeners(

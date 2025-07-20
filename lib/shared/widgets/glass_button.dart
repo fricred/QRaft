@@ -13,6 +13,9 @@ class GlassButton extends StatelessWidget {
   final FontWeight fontWeight;
   final EdgeInsetsGeometry? margin;
   final BorderRadius? borderRadius;
+  final IconData? icon;
+  final double iconSize;
+  final bool iconFirst;
 
   const GlassButton({
     super.key,
@@ -27,6 +30,9 @@ class GlassButton extends StatelessWidget {
     this.fontWeight = FontWeight.w600,
     this.margin,
     this.borderRadius,
+    this.icon,
+    this.iconSize = 20,
+    this.iconFirst = true,
   });
 
   @override
@@ -151,14 +157,7 @@ class GlassButton extends StatelessWidget {
                                 valueColor: AlwaysStoppedAnimation<Color>(textColor!),
                               ),
                             )
-                          : Text(
-                              text,
-                              style: TextStyle(
-                                fontSize: fontSize,
-                                fontWeight: fontWeight,
-                                color: textColor,
-                              ),
-                            ),
+                          : _buildButtonContent(),
                     ),
                   ),
                 ),
@@ -167,6 +166,49 @@ class GlassButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildButtonContent() {
+    if (icon == null) {
+      return Text(
+        text,
+        style: TextStyle(
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          color: textColor,
+        ),
+      );
+    }
+
+    final iconWidget = Icon(
+      icon,
+      size: iconSize,
+      color: textColor,
+    );
+
+    final textWidget = Text(
+      text,
+      style: TextStyle(
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        color: textColor,
+      ),
+    );
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: iconFirst
+          ? [
+              iconWidget,
+              const SizedBox(width: 8),
+              textWidget,
+            ]
+          : [
+              textWidget,
+              const SizedBox(width: 8),
+              iconWidget,
+            ],
     );
   }
 }
@@ -179,6 +221,9 @@ class PrimaryGlassButton extends StatelessWidget {
   final bool isLoading;
   final double? width;
   final double height;
+  final IconData? icon;
+  final double iconSize;
+  final bool iconFirst;
 
   const PrimaryGlassButton({
     super.key,
@@ -187,6 +232,9 @@ class PrimaryGlassButton extends StatelessWidget {
     this.isLoading = false,
     this.width,
     this.height = 56,
+    this.icon,
+    this.iconSize = 20,
+    this.iconFirst = true,
   });
 
   @override
@@ -197,6 +245,9 @@ class PrimaryGlassButton extends StatelessWidget {
       isLoading: isLoading,
       width: width,
       height: height,
+      icon: icon,
+      iconSize: iconSize,
+      iconFirst: iconFirst,
       gradientColors: const [
         Color(0xFF00FF88),
         Color(0xFF1A73E8),
@@ -211,6 +262,9 @@ class SecondaryGlassButton extends StatelessWidget {
   final bool isLoading;
   final double? width;
   final double height;
+  final IconData? icon;
+  final double iconSize;
+  final bool iconFirst;
 
   const SecondaryGlassButton({
     super.key,
@@ -219,6 +273,9 @@ class SecondaryGlassButton extends StatelessWidget {
     this.isLoading = false,
     this.width,
     this.height = 56,
+    this.icon,
+    this.iconSize = 20,
+    this.iconFirst = true,
   });
 
   @override
@@ -229,6 +286,9 @@ class SecondaryGlassButton extends StatelessWidget {
       isLoading: isLoading,
       width: width,
       height: height,
+      icon: icon,
+      iconSize: iconSize,
+      iconFirst: iconFirst,
       gradientColors: const [
         Color(0xFF1A73E8),
         Color(0xFF6C5CE7),
