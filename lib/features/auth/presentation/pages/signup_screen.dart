@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../shared/widgets/qraft_logo.dart';
@@ -83,290 +82,308 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ...List.generate(12, (index) => _buildBackgroundParticle(index)),
           
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 32),
-                    
-                    // Back button
-                    IconButton(
-                      onPressed: widget.onBackPressed,
-                      icon: const Icon(
-                        Icons.arrow_back_ios_rounded,
-                        color: Colors.white,
-                      ),
-                      style: IconButton.styleFrom(
-                        backgroundColor: const Color(0xFF2E2E2E),
-                        padding: const EdgeInsets.all(12),
-                      ),
-                    ).animate()
-                      .fadeIn(duration: 600.ms)
-                      .slideX(begin: -0.3, duration: 600.ms),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Header section
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Logo
-                        Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF1A73E8), Color(0xFF00FF88)],
+            child: Column(
+              children: [
+                // Top section with back button and header
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    children: [
+                      // Back button row
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: widget.onBackPressed,
+                            icon: const Icon(
+                              Icons.arrow_back_ios_rounded,
+                              color: Colors.white,
+                              size: 20,
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF00FF88).withOpacity(0.2),
-                                blurRadius: 8,
-                                spreadRadius: 1,
-                              ),
-                            ],
-                          ),
-                          child: const QRaftLogo(
-                            size: 40,
-                            primaryColor: Colors.white,
-                          ),
-                        ).animate()
-                          .scale(duration: 600.ms, curve: Curves.elasticOut)
-                          .fadeIn(duration: 400.ms),
-                        
-                        const SizedBox(height: 24),
-                        
-                        // Title
-                        Text(
-                          l10n.createAccount,
-                          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 32,
-                          ),
-                        ).animate()
-                          .fadeIn(duration: 800.ms, delay: 200.ms)
-                          .slideY(begin: 0.3, duration: 800.ms, delay: 200.ms),
-                        
-                        const SizedBox(height: 8),
-                        
-                        // Subtitle
-                        Text(
-                          l10n.joinQRaft,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.grey[400],
-                            fontSize: 16,
-                          ),
-                        ).animate()
-                          .fadeIn(duration: 800.ms, delay: 400.ms)
-                          .slideY(begin: 0.2, duration: 800.ms, delay: 400.ms),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: 40),
-                    
-                    // Form section
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2E2E2E),
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.1),
-                          width: 1,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 16,
-                            offset: const Offset(0, 8),
-                          ),
+                            style: IconButton.styleFrom(
+                              backgroundColor: const Color(0xFF2E2E2E),
+                              padding: const EdgeInsets.all(10),
+                              minimumSize: const Size(40, 40),
+                            ),
+                          ).animate()
+                            .fadeIn(duration: 600.ms)
+                            .slideX(begin: -0.3, duration: 600.ms),
                         ],
                       ),
-                      child: Column(
+                      
+                      const SizedBox(height: 20),
+                      
+                      // Compact header
+                      Row(
                         children: [
-                          // Name field
-                          _buildTextField(
-                            l10n: l10n,
-                            controller: _nameController,
-                            label: l10n.fullName,
-                            hint: l10n.enterFullName,
-                            icon: Icons.person_outline,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return l10n.pleaseEnterName;
-                              }
-                              if (value.length < 2) {
-                                return l10n.nameMinLength;
-                              }
-                              return null;
-                            },
-                          ),
-                          
-                          const SizedBox(height: 20),
-                          
-                          // Email field
-                          _buildTextField(
-                            l10n: l10n,
-                            controller: _emailController,
-                            label: l10n.email,
-                            hint: l10n.enterEmail,
-                            icon: Icons.email_outlined,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return l10n.pleaseEnterEmail;
-                              }
-                              final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-                              if (!emailRegex.hasMatch(value)) {
-                                return l10n.pleaseEnterValidEmail;
-                              }
-                              return null;
-                            },
-                          ),
-                          
-                          const SizedBox(height: 20),
-                          
-                          // Password field
-                          _buildTextField(
-                            l10n: l10n,
-                            controller: _passwordController,
-                            label: l10n.password,
-                            hint: l10n.createPassword,
-                            icon: Icons.lock_outline,
-                            obscureText: _obscurePassword,
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() => _obscurePassword = !_obscurePassword);
-                              },
-                              icon: Icon(
-                                _obscurePassword 
-                                  ? Icons.visibility_off_outlined 
-                                  : Icons.visibility_outlined,
-                                color: Colors.grey[400],
-                                size: 20,
+                          // Small logo
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF1A73E8), Color(0xFF00FF88)],
                               ),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return l10n.pleaseEnterPassword;
-                              }
-                              if (value.length < 8) {
-                                return l10n.passwordMinLengthSignUp;
-                              }
-                              if (!value.contains(RegExp(r'[A-Z]'))) {
-                                return l10n.passwordMustContainUppercase;
-                              }
-                              if (!value.contains(RegExp(r'[a-z]'))) {
-                                return l10n.passwordMustContainLowercase;
-                              }
-                              if (!value.contains(RegExp(r'[0-9]'))) {
-                                return l10n.passwordMustContainNumber;
-                              }
-                              return null;
-                            },
-                          ),
-                          
-                          const SizedBox(height: 20),
-                          
-                          // Confirm Password field
-                          _buildTextField(
-                            l10n: l10n,
-                            controller: _confirmPasswordController,
-                            label: l10n.confirmPassword,
-                            hint: l10n.confirmPasswordHint,
-                            icon: Icons.lock_outline,
-                            obscureText: _obscureConfirmPassword,
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
-                              },
-                              icon: Icon(
-                                _obscureConfirmPassword 
-                                  ? Icons.visibility_off_outlined 
-                                  : Icons.visibility_outlined,
-                                color: Colors.grey[400],
-                                size: 20,
-                              ),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return l10n.pleaseConfirmPassword;
-                              }
-                              if (value != _passwordController.text) {
-                                return l10n.passwordsDoNotMatch;
-                              }
-                              return null;
-                            },
-                          ),
-                          
-                          const SizedBox(height: 24),
-                          
-                          // Terms and conditions
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: Checkbox(
-                                  value: _agreeToTerms,
-                                  onChanged: (value) {
-                                    setState(() => _agreeToTerms = value ?? false);
-                                  },
-                                  activeColor: const Color(0xFF00FF88),
-                                  checkColor: Colors.white,
-                                  side: BorderSide(color: Colors.grey[600]!),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF00FF88).withValues(alpha: 0.2),
+                                  blurRadius: 8,
+                                  spreadRadius: 1,
                                 ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  l10n.agreeToTerms,
-                                  style: TextStyle(
+                              ],
+                            ),
+                            child: const QRaftLogo(
+                              size: 32,
+                              primaryColor: Colors.white,
+                            ),
+                          ),
+                          
+                          const SizedBox(width: 16),
+                          
+                          // Title and subtitle in row
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.createAccount,
+                                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 24,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  l10n.joinQRaft,
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: Colors.grey[400],
                                     fontSize: 14,
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
+                        ],
+                      ).animate()
+                        .fadeIn(duration: 800.ms, delay: 200.ms)
+                        .slideY(begin: 0.3, duration: 800.ms, delay: 200.ms),
+                    ],
+                  ),
+                ),
+                
+                // Form section - takes remaining space
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 20),
                           
-                          const SizedBox(height: 32),
+                          // Form container
+                          Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2E2E2E),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.1),
+                                width: 1,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.2),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                // Name field
+                                _buildTextField(
+                                  l10n: l10n,
+                                  controller: _nameController,
+                                  label: l10n.fullName,
+                                  hint: l10n.enterFullName,
+                                  icon: Icons.person_outline,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return l10n.pleaseEnterName;
+                                    }
+                                    if (value.length < 2) {
+                                      return l10n.nameMinLength;
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                
+                                const SizedBox(height: 20),
+                                
+                                // Email field
+                                _buildTextField(
+                                  l10n: l10n,
+                                  controller: _emailController,
+                                  label: l10n.email,
+                                  hint: l10n.enterEmail,
+                                  icon: Icons.email_outlined,
+                                  keyboardType: TextInputType.emailAddress,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return l10n.pleaseEnterEmail;
+                                    }
+                                    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                                    if (!emailRegex.hasMatch(value)) {
+                                      return l10n.pleaseEnterValidEmail;
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                
+                                const SizedBox(height: 20),
+                                
+                                // Password field
+                                _buildTextField(
+                                  l10n: l10n,
+                                  controller: _passwordController,
+                                  label: l10n.password,
+                                  hint: l10n.createPassword,
+                                  icon: Icons.lock_outline,
+                                  obscureText: _obscurePassword,
+                                  suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() => _obscurePassword = !_obscurePassword);
+                                    },
+                                    icon: Icon(
+                                      _obscurePassword 
+                                        ? Icons.visibility_off_outlined 
+                                        : Icons.visibility_outlined,
+                                      color: Colors.grey[400],
+                                      size: 20,
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return l10n.pleaseEnterPassword;
+                                    }
+                                    if (value.length < 8) {
+                                      return l10n.passwordMinLengthSignUp;
+                                    }
+                                    if (!value.contains(RegExp(r'[A-Z]'))) {
+                                      return l10n.passwordMustContainUppercase;
+                                    }
+                                    if (!value.contains(RegExp(r'[a-z]'))) {
+                                      return l10n.passwordMustContainLowercase;
+                                    }
+                                    if (!value.contains(RegExp(r'[0-9]'))) {
+                                      return l10n.passwordMustContainNumber;
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                
+                                const SizedBox(height: 20),
+                                
+                                // Confirm Password field
+                                _buildTextField(
+                                  l10n: l10n,
+                                  controller: _confirmPasswordController,
+                                  label: l10n.confirmPassword,
+                                  hint: l10n.confirmPasswordHint,
+                                  icon: Icons.lock_outline,
+                                  obscureText: _obscureConfirmPassword,
+                                  suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
+                                    },
+                                    icon: Icon(
+                                      _obscureConfirmPassword 
+                                        ? Icons.visibility_off_outlined 
+                                        : Icons.visibility_outlined,
+                                      color: Colors.grey[400],
+                                      size: 20,
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return l10n.pleaseConfirmPassword;
+                                    }
+                                    if (value != _passwordController.text) {
+                                      return l10n.passwordsDoNotMatch;
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                
+                                const SizedBox(height: 20),
+                                
+                                // Terms and conditions
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: Checkbox(
+                                        value: _agreeToTerms,
+                                        onChanged: (value) {
+                                          setState(() => _agreeToTerms = value ?? false);
+                                        },
+                                        activeColor: const Color(0xFF00FF88),
+                                        checkColor: Colors.white,
+                                        side: BorderSide(color: Colors.grey[600]!),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        l10n.agreeToTerms,
+                                        style: TextStyle(
+                                          color: Colors.grey[400],
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                
+                                const SizedBox(height: 24),
+                                
+                                // Sign up button
+                                _buildSignUpButton(l10n),
+                              ],
+                            ),
+                          ).animate()
+                            .fadeIn(duration: 800.ms, delay: 400.ms)
+                            .slideY(begin: 0.3, duration: 800.ms, delay: 400.ms),
                           
-                          // Sign up button
-                          _buildSignUpButton(l10n),
+                          const SizedBox(height: 24),
+                          
+                          // Login link
+                          TextButton(
+                            onPressed: widget.onLoginPressed,
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            child: Text(
+                              l10n.alreadyHaveAccountSignIn,
+                              style: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 16,
+                              ),
+                            ),
+                          ).animate()
+                            .fadeIn(duration: 600.ms, delay: 600.ms),
+                          
+                          const SizedBox(height: 20),
                         ],
                       ),
-                    ).animate()
-                      .fadeIn(duration: 800.ms, delay: 600.ms)
-                      .slideY(begin: 0.3, duration: 800.ms, delay: 600.ms),
-                    
-                    const SizedBox(height: 32),
-                    
-                    // Login link
-                    Center(
-                      child: TextButton(
-                        onPressed: widget.onLoginPressed,
-                        child: Text(
-                          l10n.alreadyHaveAccountSignIn,
-                          style: TextStyle(
-                            color: Colors.grey[400],
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ).animate()
-                      .fadeIn(duration: 600.ms, delay: 800.ms),
-                    
-                    const SizedBox(height: 32),
-                  ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],
@@ -447,7 +464,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             borderRadius: BorderRadius.circular(16),
           ),
         ).copyWith(
-          backgroundColor: MaterialStateProperty.all(Colors.transparent),
+          backgroundColor: WidgetStateProperty.all(Colors.transparent),
         ),
         child: Ink(
           decoration: BoxDecoration(
@@ -461,7 +478,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: _isLoading ? [] : [
               BoxShadow(
-                color: const Color(0xFF00FF88).withOpacity(0.3),
+                color: const Color(0xFF00FF88).withValues(alpha: 0.3),
                 blurRadius: 12,
                 spreadRadius: 1,
               ),
@@ -518,11 +535,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
         width: 5,
         height: 5,
         decoration: BoxDecoration(
-          color: const Color(0xFF00FF88).withOpacity(0.12),
+          color: const Color(0xFF00FF88).withValues(alpha: 0.12),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF00FF88).withOpacity(0.08),
+              color: const Color(0xFF00FF88).withValues(alpha: 0.08),
               blurRadius: 4,
             ),
           ],

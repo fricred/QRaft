@@ -19,11 +19,16 @@ class WelcomeScreen extends StatelessWidget {
     
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            children: [
+      body: Stack(
+        children: [
+          // Background particles - fireflies effect
+          ...List.generate(15, (index) => _buildBackgroundParticle(index)),
+          
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                children: [
               const SizedBox(height: 60),
               
               // Logo and Title Section
@@ -45,10 +50,12 @@ class WelcomeScreen extends StatelessWidget {
                 .fadeIn(duration: 600.ms, delay: 800.ms)
                 .slideY(begin: 0.2, duration: 600.ms, delay: 800.ms),
               
-              const SizedBox(height: 40),
-            ],
+                const SizedBox(height: 40),
+              ],
+            ),
           ),
         ),
+        ],
       ),
     );
   }
@@ -69,12 +76,12 @@ class WelcomeScreen extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF00FF88).withOpacity(0.4),
+                color: const Color(0xFF00FF88).withValues(alpha: 0.4),
                 blurRadius: 20,
                 spreadRadius: 2,
               ),
               BoxShadow(
-                color: const Color(0xFF1A73E8).withOpacity(0.3),
+                color: const Color(0xFF1A73E8).withValues(alpha: 0.3),
                 blurRadius: 40,
                 spreadRadius: 5,
               ),
@@ -182,12 +189,12 @@ class WelcomeScreen extends StatelessWidget {
         color: const Color(0xFF2E2E2E),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha: 0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -204,7 +211,7 @@ class WelcomeScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: gradient.colors.first.withOpacity(0.3),
+                  color: gradient.colors.first.withValues(alpha: 0.3),
                   blurRadius: 10,
                   spreadRadius: 1,
                 ),
@@ -276,7 +283,7 @@ class WelcomeScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF00FF88).withOpacity(0.4),
+                    color: const Color(0xFF00FF88).withValues(alpha: 0.4),
                     blurRadius: 15,
                     spreadRadius: 1,
                   ),
@@ -325,6 +332,65 @@ class WelcomeScreen extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildBackgroundParticle(int index) {
+    final positions = [
+      const Offset(50, 120),
+      const Offset(300, 180),
+      const Offset(80, 350),
+      const Offset(250, 450),
+      const Offset(160, 280),
+      const Offset(320, 320),
+      const Offset(40, 550),
+      const Offset(280, 650),
+      const Offset(190, 500),
+      const Offset(340, 220),
+      const Offset(120, 400),
+      const Offset(260, 600),
+      const Offset(70, 750),
+      const Offset(310, 800),
+      const Offset(150, 150),
+    ];
+
+    final position = positions[index % positions.length];
+    final delay = (index * 200).milliseconds;
+    final size = (index % 3 == 0) ? 6.0 : 4.0; // Vary sizes
+    final opacity = (index % 2 == 0) ? 0.15 : 0.08; // Vary opacity
+
+    return Positioned(
+      left: position.dx,
+      top: position.dy,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: const Color(0xFF00FF88).withValues(alpha: opacity),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF00FF88).withValues(alpha: opacity * 0.6),
+              blurRadius: size,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+      ).animate(onPlay: (controller) => controller.repeat(reverse: true))
+        .fadeIn(duration: 2500.ms, delay: delay)
+        .scale(
+          begin: const Offset(0.3, 0.3),
+          end: const Offset(1.5, 1.5),
+          duration: 3500.ms,
+          delay: delay,
+        )
+        .then() // Chain another animation
+        .moveY(
+          begin: 0,
+          end: -20,
+          duration: 4000.ms,
+          curve: Curves.easeInOut,
+        ),
     );
   }
 }

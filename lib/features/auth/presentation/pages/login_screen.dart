@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../shared/widgets/qraft_logo.dart';
@@ -59,216 +58,237 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Stack(
         children: [
           // Background particles
-          ...List.generate(10, (index) => _buildBackgroundParticle(index)),
+          ...List.generate(8, (index) => _buildBackgroundParticle(index)),
           
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 32),
-                    
-                    // Back button
-                    IconButton(
-                      onPressed: widget.onBackPressed,
-                      icon: const Icon(
-                        Icons.arrow_back_ios_rounded,
-                        color: Colors.white,
-                      ),
-                      style: IconButton.styleFrom(
-                        backgroundColor: const Color(0xFF2E2E2E),
-                        padding: const EdgeInsets.all(12),
-                      ),
-                    ).animate()
-                      .fadeIn(duration: 600.ms)
-                      .slideX(begin: -0.3, duration: 600.ms),
-                    
-                    const SizedBox(height: 32),
-                    
-                    // Header section
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Logo
-                        Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF1A73E8), Color(0xFF00FF88)],
+            child: Column(
+              children: [
+                // Top section with back button and header
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    children: [
+                      // Back button row
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: widget.onBackPressed,
+                            icon: const Icon(
+                              Icons.arrow_back_ios_rounded,
+                              color: Colors.white,
+                              size: 20,
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF00FF88).withOpacity(0.2),
-                                blurRadius: 8,
-                                spreadRadius: 1,
-                              ),
-                            ],
-                          ),
-                          child: const QRaftLogo(
-                            size: 40,
-                            primaryColor: Colors.white,
-                          ),
-                        ).animate()
-                          .scale(duration: 600.ms, curve: Curves.elasticOut)
-                          .fadeIn(duration: 400.ms),
-                        
-                        const SizedBox(height: 24),
-                        
-                        // Title
-                        Text(
-                          l10n.welcomeBack,
-                          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 32,
-                          ),
-                        ).animate()
-                          .fadeIn(duration: 800.ms, delay: 200.ms)
-                          .slideY(begin: 0.3, duration: 800.ms, delay: 200.ms),
-                        
-                        const SizedBox(height: 8),
-                        
-                        // Subtitle
-                        Text(
-                          l10n.signInToContinue,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.grey[400],
-                            fontSize: 16,
-                          ),
-                        ).animate()
-                          .fadeIn(duration: 800.ms, delay: 400.ms)
-                          .slideY(begin: 0.2, duration: 800.ms, delay: 400.ms),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: 48),
-                    
-                    // Form section
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2E2E2E),
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.1),
-                          width: 1,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 16,
-                            offset: const Offset(0, 8),
-                          ),
+                            style: IconButton.styleFrom(
+                              backgroundColor: const Color(0xFF2E2E2E),
+                              padding: const EdgeInsets.all(10),
+                              minimumSize: const Size(40, 40),
+                            ),
+                          ).animate()
+                            .fadeIn(duration: 600.ms)
+                            .slideX(begin: -0.3, duration: 600.ms),
                         ],
                       ),
+                      
+                      const SizedBox(height: 20),
+                      
+                      // Compact header
+                      Row(
+                        children: [
+                          // Small logo
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF1A73E8), Color(0xFF00FF88)],
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF00FF88).withValues(alpha: 0.2),
+                                  blurRadius: 8,
+                                  spreadRadius: 1,
+                                ),
+                              ],
+                            ),
+                            child: const QRaftLogo(
+                              size: 32,
+                              primaryColor: Colors.white,
+                            ),
+                          ),
+                          
+                          const SizedBox(width: 16),
+                          
+                          // Title and subtitle in row
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.welcomeBack,
+                                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 24,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  l10n.signInToContinue,
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Colors.grey[400],
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ).animate()
+                        .fadeIn(duration: 800.ms, delay: 200.ms)
+                        .slideY(begin: 0.3, duration: 800.ms, delay: 200.ms),
+                    ],
+                  ),
+                ),
+                
+                // Form section - takes remaining space
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Form(
+                      key: _formKey,
                       child: Column(
                         children: [
-                          // Email field
-                          _buildTextField(
-                            l10n: l10n,
-                            controller: _emailController,
-                            label: l10n.email,
-                            hint: l10n.enterEmail,
-                            icon: Icons.email_outlined,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return l10n.pleaseEnterEmail;
-                              }
-                              if (!value.contains('@')) {
-                                return l10n.pleaseEnterValidEmail;
-                              }
-                              return null;
-                            },
-                          ),
-                          
                           const SizedBox(height: 20),
                           
-                          // Password field
-                          _buildTextField(
-                            l10n: l10n,
-                            controller: _passwordController,
-                            label: l10n.password,
-                            hint: l10n.enterPassword,
-                            icon: Icons.lock_outline,
-                            obscureText: _obscurePassword,
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() => _obscurePassword = !_obscurePassword);
-                              },
-                              icon: Icon(
-                                _obscurePassword 
-                                  ? Icons.visibility_off_outlined 
-                                  : Icons.visibility_outlined,
-                                color: Colors.grey[400],
-                                size: 20,
+                          // Form container
+                          Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2E2E2E),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.1),
+                                width: 1,
                               ),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return l10n.pleaseEnterPassword;
-                              }
-                              if (value.length < 6) {
-                                return l10n.passwordMinLength;
-                              }
-                              return null;
-                            },
-                          ),
-                          
-                          const SizedBox(height: 16),
-                          
-                          // Forgot password
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: widget.onForgotPasswordPressed,
-                              child: Text(
-                                l10n.forgotPassword,
-                                style: TextStyle(
-                                  color: const Color(0xFF00FF88),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.2),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 8),
                                 ),
-                              ),
+                              ],
                             ),
-                          ),
+                            child: Column(
+                              children: [
+                                // Email field
+                                _buildTextField(
+                                  l10n: l10n,
+                                  controller: _emailController,
+                                  label: l10n.email,
+                                  hint: l10n.enterEmail,
+                                  icon: Icons.email_outlined,
+                                  keyboardType: TextInputType.emailAddress,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return l10n.pleaseEnterEmail;
+                                    }
+                                    if (!value.contains('@')) {
+                                      return l10n.pleaseEnterValidEmail;
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                
+                                const SizedBox(height: 20),
+                                
+                                // Password field
+                                _buildTextField(
+                                  l10n: l10n,
+                                  controller: _passwordController,
+                                  label: l10n.password,
+                                  hint: l10n.enterPassword,
+                                  icon: Icons.lock_outline,
+                                  obscureText: _obscurePassword,
+                                  suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() => _obscurePassword = !_obscurePassword);
+                                    },
+                                    icon: Icon(
+                                      _obscurePassword 
+                                        ? Icons.visibility_off_outlined 
+                                        : Icons.visibility_outlined,
+                                      color: Colors.grey[400],
+                                      size: 20,
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return l10n.pleaseEnterPassword;
+                                    }
+                                    if (value.length < 6) {
+                                      return l10n.passwordMinLength;
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                
+                                const SizedBox(height: 12),
+                                
+                                // Forgot password
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TextButton(
+                                    onPressed: widget.onForgotPasswordPressed,
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(vertical: 8),
+                                    ),
+                                    child: Text(
+                                      l10n.forgotPassword,
+                                      style: TextStyle(
+                                        color: const Color(0xFF00FF88),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                
+                                const SizedBox(height: 24),
+                                
+                                // Login button
+                                _buildLoginButton(l10n),
+                              ],
+                            ),
+                          ).animate()
+                            .fadeIn(duration: 800.ms, delay: 400.ms)
+                            .slideY(begin: 0.3, duration: 800.ms, delay: 400.ms),
                           
                           const SizedBox(height: 24),
                           
-                          // Login button
-                          _buildLoginButton(l10n),
+                          // Sign up link
+                          TextButton(
+                            onPressed: widget.onSignUpPressed,
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            child: Text(
+                              l10n.dontHaveAccount,
+                              style: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 16,
+                              ),
+                            ),
+                          ).animate()
+                            .fadeIn(duration: 600.ms, delay: 600.ms),
+                          
+                          const SizedBox(height: 20),
                         ],
                       ),
-                    ).animate()
-                      .fadeIn(duration: 800.ms, delay: 600.ms)
-                      .slideY(begin: 0.3, duration: 800.ms, delay: 600.ms),
-                    
-                    const SizedBox(height: 32),
-                    
-                    // Sign up link
-                    Center(
-                      child: TextButton(
-                        onPressed: widget.onSignUpPressed,
-                        child: Text(
-                          l10n.dontHaveAccount,
-                          style: TextStyle(
-                            color: Colors.grey[400],
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ).animate()
-                      .fadeIn(duration: 600.ms, delay: 800.ms),
-                    
-                    const SizedBox(height: 32),
-                  ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],
@@ -349,7 +369,7 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(16),
           ),
         ).copyWith(
-          backgroundColor: MaterialStateProperty.all(Colors.transparent),
+          backgroundColor: WidgetStateProperty.all(Colors.transparent),
         ),
         child: Ink(
           decoration: BoxDecoration(
@@ -363,7 +383,7 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: _isLoading ? [] : [
               BoxShadow(
-                color: const Color(0xFF00FF88).withOpacity(0.3),
+                color: const Color(0xFF00FF88).withValues(alpha: 0.3),
                 blurRadius: 12,
                 spreadRadius: 1,
               ),
@@ -404,8 +424,6 @@ class _LoginScreenState extends State<LoginScreen> {
       const Offset(320, 350),
       const Offset(40, 600),
       const Offset(280, 700),
-      const Offset(180, 550),
-      const Offset(350, 250),
     ];
 
     final position = positions[index % positions.length];
@@ -418,11 +436,11 @@ class _LoginScreenState extends State<LoginScreen> {
         width: 4,
         height: 4,
         decoration: BoxDecoration(
-          color: const Color(0xFF00FF88).withOpacity(0.15),
+          color: const Color(0xFF00FF88).withValues(alpha: 0.15),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF00FF88).withOpacity(0.1),
+              color: const Color(0xFF00FF88).withValues(alpha: 0.1),
               blurRadius: 3,
             ),
           ],
