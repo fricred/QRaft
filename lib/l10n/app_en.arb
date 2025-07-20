@@ -728,5 +728,45 @@
   "retry": "Retry",
   "@retry": {
     "description": "Retry button text"
+  },
+
+  "cropImage": "Crop Image",
+  "@cropImage": {
+    "description": "Title for crop image screen"
+  },
+
+  "crop": "Crop",
+  "@crop": {
+    "description": "Crop button text"
+  },
+
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+
+  "rotateLeft": "Rotate Left",
+  "@rotateLeft": {
+    "description": "Rotate left button text"
+  },
+
+  "rotateRight": "Rotate Right",
+  "@rotateRight": {
+    "description": "Rotate right button text"
+  },
+
+  "cropInstruction": "Adjust the crop area by dragging the corners",
+  "@cropInstruction": {
+    "description": "Instruction text for cropping"
+  },
+
+  "cropFailed": "Failed to crop image. Please try again.",
+  "@cropFailed": {
+    "description": "Error message when image cropping fails"
+  },
+
+  "processingImage": "Processing image...",
+  "@processingImage": {
+    "description": "Loading text while processing image"
   }
 }

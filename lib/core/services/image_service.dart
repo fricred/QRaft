@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'supabase_service.dart';
+import '../../shared/widgets/image_cropper_screen.dart';
 
 enum PermissionResult {
   granted,
@@ -81,6 +84,71 @@ class ImageService {
 
     } catch (e) {
       debugPrint('❌ Error picking image: $e');
+      return null;
+    }
+  }
+
+  /// Pick image from camera or gallery with cropping
+  static Future<File?> pickImageWithCropping({
+    required BuildContext context,
+    required ImageSource source,
+    double aspectRatio = 1.0,
+    bool withCircleUi = true,
+    int imageQuality = 85,
+  }) async {
+    try {
+      // Request permissions
+      bool hasPermission = await _requestPermissions(source);
+      if (!hasPermission) {
+        debugPrint('❌ Permission denied for image source: $source');
+        return null;
+      }
+
+      // Pick image first
+      final XFile? pickedFile = await _picker.pickImage(
+        source: source,
+        imageQuality: imageQuality,
+      );
+
+      if (pickedFile == null) {
+        debugPrint('📷 No image selected');
+        return null;
+      }
+
+      debugPrint('📷 Image picked: ${pickedFile.path}');
+
+      // Read image bytes for cropper
+      final Uint8List imageBytes = await pickedFile.readAsBytes();
+
+      // Navigate to crop screen and wait for result
+      if (!context.mounted) return null;
+      
+      final Uint8List? croppedBytes = await Navigator.of(context).push<Uint8List>(
+        MaterialPageRoute(
+          builder: (context) => ImageCropperScreen(
+            imageData: imageBytes,
+            aspectRatio: aspectRatio,
+            withCircleUi: withCircleUi,
+          ),
+        ),
+      );
+
+      // Check if user cancelled cropping
+      if (croppedBytes == null) {
+        debugPrint('✂️ User cancelled cropping');
+        return null;
+      }
+
+      // Save cropped image to temporary file
+      final String tempPath = '${Directory.systemTemp.path}/cropped_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final File croppedFile = File(tempPath);
+      await croppedFile.writeAsBytes(croppedBytes);
+
+      debugPrint('✂️ Image cropped and saved: $tempPath');
+      return croppedFile;
+
+    } catch (e) {
+      debugPrint('❌ Error picking and cropping image: $e');
       return null;
     }
   }
@@ -203,6 +271,154 @@ class ImageService {
     } catch (e) {
       debugPrint('❌ Error updating user avatar: $e');
       return false;
+    }
+  }
+
+  /// Complete avatar change process with cropping: pick, crop, upload, and update profile
+  static Future<ImageChangeResponse> changeUserAvatarWithCropping({
+    required BuildContext context,
+    required ImageSource source,
+    double aspectRatio = 1.0,
+    bool withCircleUi = true,
+  }) async {
+    try {
+      debugPrint('🚀 Starting avatar change process with cropping from: $source');
+
+      // Step 1: Pick and crop image
+      final File? imageFile = await pickImageWithCropping(
+        context: context,
+        source: source,
+        aspectRatio: aspectRatio,
+        withCircleUi: withCircleUi,
+      );
+      if (imageFile == null) {
+        debugPrint('📷 User cancelled image selection or cropping');
+        return const ImageChangeResponse(result: ImageChangeResult.cancelled);
+      }
+
+      // Show loading indicator now that cropping is complete
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  AppLocalizations.of(context)!.updatingProfilePhoto,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+            backgroundColor: const Color(0xFF2E2E2E),
+            duration: const Duration(seconds: 10),
+          ),
+        );
+      }
+
+      // Step 2: Get current avatar URL to delete later (check multiple sources)
+      final user = SupabaseService.client.auth.currentUser;
+      String? oldAvatarUrl = user?.userMetadata?['avatar_url'];
+      
+      // Also check user profile in database for more accurate avatar URL
+      try {
+        final profileResponse = await SupabaseService.client
+            .from('user_profiles')
+            .select('photo_url')
+            .eq('id', user!.id)
+            .single();
+        
+        // Use database avatar if available, otherwise use auth metadata
+        oldAvatarUrl = profileResponse['photo_url'] ?? oldAvatarUrl;
+        debugPrint('🗑️ Previous avatar to delete: $oldAvatarUrl');
+      } catch (e) {
+        debugPrint('⚠️ Could not fetch previous avatar from profile: $e');
+      }
+
+      // Step 3: Upload new image
+      final String? newAvatarUrl = await uploadAvatarImage(imageFile);
+      if (newAvatarUrl == null) {
+        // Hide loading snackbar on upload failure
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        }
+        
+        debugPrint('❌ Failed to upload new avatar');
+        return const ImageChangeResponse(
+          result: ImageChangeResult.uploadFailed,
+          errorMessage: 'Failed to upload image to storage',
+        );
+      }
+
+      // Step 4: Update user profile
+      final bool updateSuccess = await updateUserAvatar(newAvatarUrl);
+      if (!updateSuccess) {
+        // Hide loading snackbar on profile update failure
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        }
+        
+        debugPrint('❌ Failed to update user profile, rolling back...');
+        // Try to delete the uploaded image
+        await deleteAvatarImage(newAvatarUrl);
+        return const ImageChangeResponse(
+          result: ImageChangeResult.uploadFailed,
+          errorMessage: 'Failed to update user profile',
+        );
+      }
+
+      // Step 5: Delete old avatar (if exists and different)
+      if (oldAvatarUrl != null && 
+          oldAvatarUrl.isNotEmpty && 
+          oldAvatarUrl != newAvatarUrl) {
+        debugPrint('🔄 Cleaning up old avatar...');
+        final bool deleteSuccess = await deleteAvatarImage(oldAvatarUrl);
+        if (deleteSuccess) {
+          debugPrint('✅ Old avatar cleaned up successfully');
+        } else {
+          debugPrint('⚠️ Could not delete old avatar, but continuing...');
+        }
+      } else {
+        debugPrint('ℹ️ No old avatar to delete or same URL');
+      }
+
+      // Step 6: Clean up local file
+      try {
+        await imageFile.delete();
+        debugPrint('🧹 Local image file cleaned up');
+      } catch (e) {
+        debugPrint('⚠️ Could not delete local file: $e');
+      }
+
+      // Hide loading snackbar
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      }
+
+      debugPrint('🎉 Avatar change with cropping completed successfully: $newAvatarUrl');
+      return ImageChangeResponse(
+        result: ImageChangeResult.success,
+        avatarUrl: newAvatarUrl,
+      );
+
+    } catch (e) {
+      // Hide loading snackbar on error
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      }
+      
+      debugPrint('❌ Error in avatar change process with cropping: $e');
+      return ImageChangeResponse(
+        result: ImageChangeResult.unknownError,
+        errorMessage: e.toString(),
+      );
     }
   }
 

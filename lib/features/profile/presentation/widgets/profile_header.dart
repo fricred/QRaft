@@ -245,38 +245,15 @@ class ProfileHeader extends ConsumerWidget {
           break;
       }
       
-      // Show loading snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                l10n.updatingProfilePhoto,
-                style: const TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
-          backgroundColor: const Color(0xFF2E2E2E),
-          duration: const Duration(seconds: 10),
-        ),
+      // Use ImageService to handle complete avatar change process with cropping
+      final response = await ImageService.changeUserAvatarWithCropping(
+        context: context,
+        source: source,
+        aspectRatio: 1.0, // Square for profile photos
+        withCircleUi: true, // Circular cropping UI
       );
 
-      // Use ImageService to handle complete avatar change process
-      final response = await ImageService.changeUserAvatar(source: source);
-
       if (!context.mounted) return;
-
-      // Hide loading snackbar
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
       switch (response.result) {
         case ImageChangeResult.success:

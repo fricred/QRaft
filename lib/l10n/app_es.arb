@@ -125,5 +125,13 @@
   "cameraPermissionDenied": "QRaft necesita acceso a tu cámara para tomar fotos para tu imagen de perfil. Permite el acceso a la cámara en la configuración de tu dispositivo.",
   "galleryPermissionDenied": "QRaft necesita acceso a tu galería de fotos para seleccionar imágenes para tu imagen de perfil. Permite el acceso al almacenamiento en la configuración de tu dispositivo.",
   "imageSelectionCancelled": "Selección de imagen cancelada.",
-  "retry": "Reintentar"
+  "retry": "Reintentar",
+  "cropImage": "Recortar Imagen",
+  "crop": "Recortar",
+  "cancel": "Cancelar",
+  "rotateLeft": "Rotar Izquierda",
+  "rotateRight": "Rotar Derecha",
+  "cropInstruction": "Ajusta el área de recorte arrastrando las esquinas",
+  "cropFailed": "Error al recortar imagen. Inténtalo de nuevo.",
+  "processingImage": "Procesando imagen..."
 }
