@@ -19,7 +19,7 @@ Future<void> initializeApp() async {
     );
   } catch (e) {
     // Firebase already initialized, continue
-    print('Firebase already initialized: $e');
+    // Firebase already initialized, continue
   }
 }
 
@@ -94,7 +94,7 @@ class AuthWrapper extends ConsumerWidget {
     return AuthFlow(
       onLogin: (email, password) async {
         // TODO: Implement Firebase login logic
-        print('Login: $email');
+        // Debug: Login attempt for $email
         // For now, just show a success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -107,7 +107,7 @@ class AuthWrapper extends ConsumerWidget {
       },
       onSignUp: (name, email, password) async {
         // TODO: Implement Firebase signup logic
-        print('SignUp: $name, $email');
+        // Debug: SignUp attempt for $name, $email
         // For now, just show a success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -120,7 +120,7 @@ class AuthWrapper extends ConsumerWidget {
       },
       onForgotPassword: () {
         // TODO: Implement forgot password logic
-        print('Forgot password');
+        // Debug: Forgot password requested
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.forgotPasswordComingSoon),
