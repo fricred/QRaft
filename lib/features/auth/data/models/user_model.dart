@@ -20,7 +20,7 @@ class UserModel extends UserEntity {
       displayName: user.userMetadata?['display_name'],
       photoURL: user.userMetadata?['avatar_url'],
       emailVerified: user.emailConfirmedAt != null,
-      createdAt: DateTime.tryParse(user.createdAt ?? ''),
+      createdAt: DateTime.tryParse(user.createdAt),
       lastSignIn: DateTime.tryParse(user.lastSignInAt ?? ''),
     );
   }

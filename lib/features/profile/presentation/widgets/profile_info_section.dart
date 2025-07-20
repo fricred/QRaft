@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/user_profile_entity.dart';
-import '../../../../shared/widgets/glass_button.dart';
 
 class ProfileInfoSection extends ConsumerStatefulWidget {
   final UserProfileEntity? profile;
@@ -31,8 +30,6 @@ class _ProfileInfoSectionState extends ConsumerState<ProfileInfoSection> {
   late TextEditingController _jobTitleController;
   
   // Individual editing states for each field
-  String? _currentEditingField;
-  bool _isUpdating = false;
 
   @override
   void initState() {
@@ -289,33 +286,5 @@ class _ProfileInfoSectionState extends ConsumerState<ProfileInfoSection> {
         ),
       ],
     );
-  }
-
-  void _saveChanges() {
-    final updatedData = {
-      'displayName': _displayNameController.text.trim().isEmpty 
-          ? null 
-          : _displayNameController.text.trim(),
-      'phoneNumber': _phoneController.text.trim().isEmpty 
-          ? null 
-          : _phoneController.text.trim(),
-      'bio': _bioController.text.trim().isEmpty 
-          ? null 
-          : _bioController.text.trim(),
-      'location': _locationController.text.trim().isEmpty 
-          ? null 
-          : _locationController.text.trim(),
-      'website': _websiteController.text.trim().isEmpty 
-          ? null 
-          : _websiteController.text.trim(),
-      'company': _companyController.text.trim().isEmpty 
-          ? null 
-          : _companyController.text.trim(),
-      'jobTitle': _jobTitleController.text.trim().isEmpty 
-          ? null 
-          : _jobTitleController.text.trim(),
-    };
-
-    widget.onSave(updatedData);
   }
 }

@@ -108,7 +108,7 @@ class ProfileController extends StateNotifier<ProfileState> {
       displayName: user.userMetadata?['display_name'],
       photoUrl: user.userMetadata?['avatar_url'],
       phoneNumber: user.phone,
-      createdAt: DateTime.tryParse(user.createdAt ?? '') ?? now,
+      createdAt: DateTime.tryParse(user.createdAt) ?? now,
       updatedAt: now,
     );
   }
