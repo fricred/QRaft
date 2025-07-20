@@ -1,10 +1,10 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../controllers/auth_controller.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../shared/widgets/glass_button.dart';
+import '../controllers/auth_controller.dart';
 
 class ForgotPasswordDialog extends ConsumerStatefulWidget {
   const ForgotPasswordDialog({super.key});
@@ -30,7 +30,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
       final success = await authController.sendPasswordResetEmail(
         email: _emailController.text,
       );
-      
+
       if (success) {
         setState(() {
           _emailSent = true;
@@ -94,9 +94,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                       size: 24,
                     ),
                   ),
-                  
                   const SizedBox(width: 16),
-                  
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,7 +117,6 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                       ],
                     ),
                   ),
-                  
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
                     icon: const Icon(
@@ -133,12 +130,10 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                     ),
                   ),
                 ],
-              ).animate()
-                .fadeIn(duration: 600.ms)
-                .slideY(begin: -0.3, duration: 600.ms),
-              
+              ).animate().fadeIn(duration: 600.ms).slideY(begin: -0.3, duration: 600.ms),
+
               const SizedBox(height: 32),
-              
+
               // Form
               Form(
                 key: _formKey,
@@ -204,12 +199,13 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                     ),
                   ],
                 ),
-              ).animate()
-                .fadeIn(duration: 800.ms, delay: 200.ms)
-                .slideY(begin: 0.3, duration: 800.ms, delay: 200.ms),
-              
+              )
+                  .animate()
+                  .fadeIn(duration: 800.ms, delay: 200.ms)
+                  .slideY(begin: 0.3, duration: 800.ms, delay: 200.ms),
+
               const SizedBox(height: 32),
-              
+
               // Buttons
               Row(
                 children: [
@@ -236,9 +232,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                       ),
                     ),
                   ),
-                  
                   const SizedBox(width: 16),
-                  
                   Expanded(
                     flex: 1,
                     child: PrimaryGlassButton(
@@ -248,8 +242,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                     ),
                   ),
                 ],
-              ).animate()
-                .fadeIn(duration: 600.ms, delay: 400.ms),
+              ).animate().fadeIn(duration: 600.ms, delay: 400.ms),
             ] else ...[
               // Success state
               Column(
@@ -275,12 +268,11 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                       color: Colors.white,
                       size: 40,
                     ),
-                  ).animate()
-                    .scale(duration: 600.ms, curve: Curves.elasticOut)
-                    .fadeIn(duration: 400.ms),
-                  
+                  )
+                      .animate()
+                      .scale(duration: 600.ms, curve: Curves.elasticOut)
+                      .fadeIn(duration: 400.ms),
                   const SizedBox(height: 24),
-                  
                   Text(
                     l10n.emailSent,
                     style: const TextStyle(
@@ -288,12 +280,11 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
-                  ).animate()
-                    .fadeIn(duration: 800.ms, delay: 200.ms)
-                    .slideY(begin: 0.3, duration: 800.ms, delay: 200.ms),
-                  
+                  )
+                      .animate()
+                      .fadeIn(duration: 800.ms, delay: 200.ms)
+                      .slideY(begin: 0.3, duration: 800.ms, delay: 200.ms),
                   const SizedBox(height: 12),
-                  
                   Text(
                     l10n.checkEmailForReset(_emailController.text),
                     style: TextStyle(
@@ -302,19 +293,19 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                       height: 1.4,
                     ),
                     textAlign: TextAlign.center,
-                  ).animate()
-                    .fadeIn(duration: 800.ms, delay: 400.ms)
-                    .slideY(begin: 0.2, duration: 800.ms, delay: 400.ms),
-                  
+                  )
+                      .animate()
+                      .fadeIn(duration: 800.ms, delay: 400.ms)
+                      .slideY(begin: 0.2, duration: 800.ms, delay: 400.ms),
                   const SizedBox(height: 32),
-                  
                   SuccessGlassButton(
                     text: l10n.done,
                     onPressed: () => Navigator.of(context).pop(),
                     width: double.infinity,
-                  ).animate()
-                    .fadeIn(duration: 600.ms, delay: 600.ms)
-                    .slideY(begin: 0.3, duration: 600.ms, delay: 600.ms),
+                  )
+                      .animate()
+                      .fadeIn(duration: 600.ms, delay: 600.ms)
+                      .slideY(begin: 0.3, duration: 600.ms, delay: 600.ms),
                 ],
               ),
             ],
