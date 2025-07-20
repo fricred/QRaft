@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../controllers/profile_controller.dart';
 import '../widgets/profile_header.dart';
@@ -14,6 +15,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final profileState = ref.watch(profileControllerProvider);
     final isLoading = ref.watch(profileLoadingProvider);
 
@@ -23,7 +25,7 @@ class ProfileScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Profile',
+          l10n.profile,
           style: TextStyle(
             color: Colors.white,
             fontSize: 20,
@@ -33,7 +35,7 @@ class ProfileScreen extends ConsumerWidget {
         actions: [
           IconButton(
             onPressed: () {
-              _showSettingsMenu(context, ref);
+              _showSettingsMenu(context, ref, l10n);
             },
             icon: Icon(
               Icons.settings_rounded,
@@ -157,9 +159,9 @@ class ProfileScreen extends ConsumerWidget {
 
               // Sign out button
               GlassButton(
-                text: 'Sign Out',
+                text: l10n.signOut,
                 onPressed: () async {
-                  await _showSignOutDialog(context, ref);
+                  await _showSignOutDialog(context, ref, l10n);
                 },
                 width: double.infinity,
                 gradientColors: [Colors.red[400]!, Colors.red[600]!],
@@ -176,7 +178,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  void _showSettingsMenu(BuildContext context, WidgetRef ref) {
+  void _showSettingsMenu(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xFF2E2E2E),
@@ -198,8 +200,8 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Settings',
-              style: TextStyle(
+              l10n.settings,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -208,8 +210,8 @@ class ProfileScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             _buildSettingsItem(
               icon: Icons.language_rounded,
-              title: 'Language',
-              subtitle: 'English',
+              title: l10n.language,
+              subtitle: l10n.english,
               onTap: () {
                 Navigator.pop(context);
                 // TODO: Implement language settings
@@ -217,8 +219,8 @@ class ProfileScreen extends ConsumerWidget {
             ),
             _buildSettingsItem(
               icon: Icons.notifications_rounded,
-              title: 'Notifications',
-              subtitle: 'Push notifications',
+              title: l10n.notifications,
+              subtitle: l10n.pushNotifications,
               onTap: () {
                 Navigator.pop(context);
                 // TODO: Implement notification settings
@@ -226,8 +228,8 @@ class ProfileScreen extends ConsumerWidget {
             ),
             _buildSettingsItem(
               icon: Icons.privacy_tip_rounded,
-              title: 'Privacy',
-              subtitle: 'Data and privacy settings',
+              title: l10n.privacy,
+              subtitle: l10n.dataPrivacySettings,
               onTap: () {
                 Navigator.pop(context);
                 // TODO: Implement privacy settings
@@ -235,8 +237,8 @@ class ProfileScreen extends ConsumerWidget {
             ),
             _buildSettingsItem(
               icon: Icons.help_rounded,
-              title: 'Help & Support',
-              subtitle: 'Get help and contact support',
+              title: l10n.helpSupport,
+              subtitle: l10n.helpSupportDescription,
               onTap: () {
                 Navigator.pop(context);
                 // TODO: Implement help screen
@@ -280,7 +282,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _showSignOutDialog(BuildContext context, WidgetRef ref) async {
+  Future<void> _showSignOutDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
     return showDialog(
       context: context,
       barrierDismissible: false,
@@ -295,20 +297,20 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              'Sign Out',
-              style: TextStyle(color: Colors.white),
+              l10n.signOut,
+              style: const TextStyle(color: Colors.white),
             ),
           ],
         ),
         content: Text(
-          'Are you sure you want to sign out of your account?',
+          l10n.signOutConfirm,
           style: TextStyle(color: Colors.grey[300]),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel',
+              l10n.cancel,
               style: TextStyle(color: Colors.grey[400]),
             ),
           ),
@@ -335,8 +337,8 @@ class ProfileScreen extends ConsumerWidget {
                             ),
                             const SizedBox(width: 16),
                             Text(
-                              'Signing out...',
-                              style: TextStyle(color: Colors.white),
+                              l10n.signingOut,
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ],
                         ),
@@ -361,7 +363,7 @@ class ProfileScreen extends ConsumerWidget {
                       // Show error message
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Failed to sign out. Please try again.'),
+                          content: Text(l10n.signOutFailed),
                           backgroundColor: Colors.red[700],
                           behavior: SnackBarBehavior.floating,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -380,7 +382,7 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                     )
                   : Text(
-                      'Sign Out',
+                      l10n.signOut,
                       style: TextStyle(color: Colors.red[400]),
                     ),
               );

@@ -290,5 +290,443 @@
   "done": "Done",
   "@done": {
     "description": "Done button text"
+  },
+
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile screen title and navigation label"
+  },
+
+  "anonymousUser": "Anonymous User",
+  "@anonymousUser": {
+    "description": "Default display name for users without a name"
+  },
+
+  "noEmail": "No email",
+  "@noEmail": {
+    "description": "Default text when user has no email"
+  },
+
+  "changeProfilePhoto": "Change Profile Photo",
+  "@changeProfilePhoto": {
+    "description": "Title for profile photo change modal"
+  },
+
+  "choosePhotoSource": "Choose how you want to update your profile photo",
+  "@choosePhotoSource": {
+    "description": "Subtitle for profile photo change modal"
+  },
+
+  "updatingProfilePhoto": "Updating profile photo...",
+  "@updatingProfilePhoto": {
+    "description": "Loading message while uploading profile photo"
+  },
+
+  "profilePhotoUpdatedSuccess": "Profile photo updated successfully!",
+  "@profilePhotoUpdatedSuccess": {
+    "description": "Success message after profile photo update"
+  },
+
+  "profilePhotoUpdateFailed": "Failed to update profile photo. Please try again.",
+  "@profilePhotoUpdateFailed": {
+    "description": "Error message when profile photo update fails"
+  },
+
+  "error": "Error: {error}",
+  "@error": {
+    "description": "Generic error message with details",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network error"
+      }
+    }
+  },
+
+  "joinedDate": "Joined {date}",
+  "@joinedDate": {
+    "description": "User join date text",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "2 months ago"
+      }
+    }
+  },
+
+  "unknown": "Unknown",
+  "@unknown": {
+    "description": "Fallback text for unknown values"
+  },
+
+  "daysAgo": "{days} days ago",
+  "@daysAgo": {
+    "description": "Date format for days ago",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+
+  "monthsAgo": "{months} month{plural} ago",
+  "@monthsAgo": {
+    "description": "Date format for months ago",
+    "placeholders": {
+      "months": {
+        "type": "int",
+        "example": "3"
+      },
+      "plural": {
+        "type": "String",
+        "example": "s"
+      }
+    }
+  },
+
+  "yearsAgo": "{years} year{plural} ago",
+  "@yearsAgo": {
+    "description": "Date format for years ago",
+    "placeholders": {
+      "years": {
+        "type": "int",
+        "example": "2"
+      },
+      "plural": {
+        "type": "String",
+        "example": "s"
+      }
+    }
+  },
+
+  "personalInformation": "Personal Information",
+  "@personalInformation": {
+    "description": "Section title for personal information"
+  },
+
+  "displayName": "Display Name",
+  "@displayName": {
+    "description": "Label for display name field"
+  },
+
+  "phoneNumber": "Phone Number",
+  "@phoneNumber": {
+    "description": "Label for phone number field"
+  },
+
+  "bio": "Bio",
+  "@bio": {
+    "description": "Label for bio field"
+  },
+
+  "location": "Location",
+  "@location": {
+    "description": "Label for location field"
+  },
+
+  "website": "Website",
+  "@website": {
+    "description": "Label for website field"
+  },
+
+  "company": "Company",
+  "@company": {
+    "description": "Label for company field"
+  },
+
+  "jobTitle": "Job Title",
+  "@jobTitle": {
+    "description": "Label for job title field"
+  },
+
+  "enterField": "Enter {field}",
+  "@enterField": {
+    "description": "Hint text for input fields",
+    "placeholders": {
+      "field": {
+        "type": "String",
+        "example": "Display Name"
+      }
+    }
+  },
+
+  "notProvided": "Not provided",
+  "@notProvided": {
+    "description": "Text shown when a field has no value"
+  },
+
+  "statistics": "Statistics",
+  "@statistics": {
+    "description": "Section title for user statistics"
+  },
+
+  "qrCodes": "QR Codes",
+  "@qrCodes": {
+    "description": "Label for QR codes statistic"
+  },
+
+  "scans": "Scans",
+  "@scans": {
+    "description": "Label for scans statistic"
+  },
+
+  "orders": "Orders",
+  "@orders": {
+    "description": "Label for orders statistic"
+  },
+
+  "daysActive": "Days Active",
+  "@daysActive": {
+    "description": "Label for days active statistic"
+  },
+
+  "quickActions": "Quick Actions",
+  "@quickActions": {
+    "description": "Section title for quick actions"
+  },
+
+  "myQRCodes": "My QR Codes",
+  "@myQRCodes": {
+    "description": "Label for my QR codes action"
+  },
+
+  "scanHistory": "Scan History",
+  "@scanHistory": {
+    "description": "Label for scan history action"
+  },
+
+  "myOrders": "My Orders",
+  "@myOrders": {
+    "description": "Label for my orders action"
+  },
+
+  "shareProfile": "Share Profile",
+  "@shareProfile": {
+    "description": "Label for share profile action"
+  },
+
+  "exportData": "Export Data",
+  "@exportData": {
+    "description": "Title for export data action"
+  },
+
+  "exportDataDescription": "Download your QR codes and data",
+  "@exportDataDescription": {
+    "description": "Description for export data action"
+  },
+
+  "backupSync": "Backup & Sync",
+  "@backupSync": {
+    "description": "Title for backup and sync action"
+  },
+
+  "backupSyncDescription": "Backup your data to cloud",
+  "@backupSyncDescription": {
+    "description": "Description for backup and sync action"
+  },
+
+  "privacySecurity": "Privacy & Security",
+  "@privacySecurity": {
+    "description": "Title for privacy and security action"
+  },
+
+  "privacySecurityDescription": "Manage your privacy settings",
+  "@privacySecurityDescription": {
+    "description": "Description for privacy and security action"
+  },
+
+  "comingSoon": "Coming Soon",
+  "@comingSoon": {
+    "description": "Title for features that are not yet available"
+  },
+
+  "featureComingSoon": "{feature} will be available in a future update.",
+  "@featureComingSoon": {
+    "description": "Message for features that are coming soon",
+    "placeholders": {
+      "feature": {
+        "type": "String",
+        "example": "Export Data"
+      }
+    }
+  },
+
+  "ok": "OK",
+  "@ok": {
+    "description": "OK button text"
+  },
+
+  "saving": "Saving...",
+  "@saving": {
+    "description": "Loading text while saving data"
+  },
+
+  "save": "Save",
+  "@save": {
+    "description": "Save button text"
+  },
+
+  "failedToUpdate": "Failed to update {field}: {error}",
+  "@failedToUpdate": {
+    "description": "Error message when updating a field fails",
+    "placeholders": {
+      "field": {
+        "type": "String",
+        "example": "Display Name"
+      },
+      "error": {
+        "type": "String",
+        "example": "Network error"
+      }
+    }
+  },
+
+  "signOut": "Sign Out",
+  "@signOut": {
+    "description": "Sign out button text"
+  },
+
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings section title"
+  },
+
+  "language": "Language",
+  "@language": {
+    "description": "Language setting label"
+  },
+
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications setting label"
+  },
+
+  "pushNotifications": "Push notifications",
+  "@pushNotifications": {
+    "description": "Push notifications setting description"
+  },
+
+  "privacy": "Privacy",
+  "@privacy": {
+    "description": "Privacy setting label"
+  },
+
+  "dataPrivacySettings": "Data and privacy settings",
+  "@dataPrivacySettings": {
+    "description": "Data and privacy setting description"
+  },
+
+  "helpSupport": "Help & Support",
+  "@helpSupport": {
+    "description": "Help and support setting label"
+  },
+
+  "helpSupportDescription": "Get help and contact support",
+  "@helpSupportDescription": {
+    "description": "Help and support setting description"
+  },
+
+  "signOutConfirm": "Are you sure you want to sign out of your account?",
+  "@signOutConfirm": {
+    "description": "Sign out confirmation dialog message"
+  },
+
+  "signingOut": "Signing out...",
+  "@signingOut": {
+    "description": "Loading text while signing out"
+  },
+
+  "signOutFailed": "Failed to sign out. Please try again.",
+  "@signOutFailed": {
+    "description": "Error message when sign out fails"
+  },
+
+  "selectPhotoSource": "Select Photo Source",
+  "@selectPhotoSource": {
+    "description": "Default title for image source selector"
+  },
+
+  "choosePhotoMethod": "Choose how you want to add your photo",
+  "@choosePhotoMethod": {
+    "description": "Default subtitle for image source selector"
+  },
+
+  "camera": "Camera",
+  "@camera": {
+    "description": "Camera option in image source selector"
+  },
+
+  "takeNewPhoto": "Take a new photo",
+  "@takeNewPhoto": {
+    "description": "Camera option description"
+  },
+
+  "gallery": "Gallery",
+  "@gallery": {
+    "description": "Gallery option in image source selector"
+  },
+
+  "chooseFromPhotos": "Choose from photos",
+  "@chooseFromPhotos": {
+    "description": "Gallery option description"
+  },
+
+  "failedToLoadProfile": "Failed to load profile: {error}",
+  "@failedToLoadProfile": {
+    "description": "Error message when profile loading fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network error"
+      }
+    }
+  },
+
+  "failedToUpdateProfile": "Failed to update profile: {error}",
+  "@failedToUpdateProfile": {
+    "description": "Error message when profile update fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network error"
+      }
+    }
+  },
+
+  "failedToUpdateProfilePhoto": "Failed to update profile photo: {error}",
+  "@failedToUpdateProfilePhoto": {
+    "description": "Error message when profile photo update fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Upload failed"
+      }
+    }
+  },
+
+  "cameraPermissionDenied": "QRaft needs access to your camera to take photos for your profile picture. Please allow camera permission in your device settings.",
+  "@cameraPermissionDenied": {
+    "description": "Error message when camera permission is denied"
+  },
+
+  "galleryPermissionDenied": "QRaft needs access to your photo library to select images for your profile picture. Please allow storage permission in your device settings.",
+  "@galleryPermissionDenied": {
+    "description": "Error message when gallery permission is denied"
+  },
+
+  "imageSelectionCancelled": "Image selection was cancelled.",
+  "@imageSelectionCancelled": {
+    "description": "Message when user cancels image selection"
+  },
+
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
   }
 }

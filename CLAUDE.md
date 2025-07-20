@@ -402,7 +402,7 @@ AnimatedContainer(
 
 ## Database Schema (Supabase)
 
-Key tables:
+### Core Tables
 - `users` - User profiles and preferences
 - `qr_codes` - Generated QR codes with metadata
 - `templates` - QR design templates
@@ -410,6 +410,37 @@ Key tables:
 - `products` - Marketplace catalog
 - `orders` - Purchase orders and status
 - `order_items` - Individual items in orders
+
+### Storage Buckets
+- `avatars` - User profile avatar images (public bucket)
+
+### System Tables
+- `migrations` - Database migration tracking and versioning
+
+## Database Migrations
+
+QRaft uses a structured migration system for database changes. All migrations are located in `supabase/migrations/`.
+
+### Migration Structure
+```
+supabase/
+├── migrations/
+│   ├── README.md                    # Migration documentation
+│   ├── 001_initial_setup.sql       # Initial database schema
+│   └── 002_storage_policies.sql    # Storage bucket and RLS policies
+```
+
+### Applied Migrations
+| Migration | Description | Status |
+|-----------|-------------|---------|
+| `001_initial_setup.sql` | Initial database schema, user profiles, RLS policies | ✅ Applied |
+| `002_storage_policies.sql` | Storage bucket and policies for avatars | ✅ Applied |
+
+### How to Apply Migrations
+1. Go to **Supabase Dashboard** → **SQL Editor**
+2. Copy migration content from `supabase/migrations/{number}_{name}.sql`
+3. Execute in SQL Editor
+4. Migration status is automatically tracked in `public.migrations` table
 
 ## Dependencies
 

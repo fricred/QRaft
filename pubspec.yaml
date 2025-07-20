@@ -68,6 +68,10 @@ dependencies:
   share_plus: ^7.2.1
   haptic_feedback: ^0.5.1+1
 
+  # Image Handling
+  image_picker: ^1.0.7
+  permission_handler: ^11.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../domain/entities/user_profile_entity.dart';
 
 class InlineEditableProfileInfo extends ConsumerStatefulWidget {
@@ -99,7 +100,7 @@ class _InlineEditableProfileInfoState extends ConsumerState<InlineEditableProfil
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to update $fieldKey: $e'),
+            content: Text(AppLocalizations.of(context)!.failedToUpdate(fieldKey, e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -109,6 +110,8 @@ class _InlineEditableProfileInfoState extends ConsumerState<InlineEditableProfil
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -126,7 +129,7 @@ class _InlineEditableProfileInfoState extends ConsumerState<InlineEditableProfil
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Personal Information',
+            l10n.personalInformation,
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -137,16 +140,18 @@ class _InlineEditableProfileInfoState extends ConsumerState<InlineEditableProfil
 
           // Display Name
           _buildEditableField(
+            context: context,
             fieldKey: 'display_name',
-            label: 'Display Name',
+            label: l10n.displayName,
             icon: Icons.person_rounded,
             currentValue: widget.profile?.displayName,
           ),
 
           // Phone Number
           _buildEditableField(
+            context: context,
             fieldKey: 'phone_number',
-            label: 'Phone Number',
+            label: l10n.phoneNumber,
             icon: Icons.phone_rounded,
             currentValue: widget.profile?.phoneNumber,
             keyboardType: TextInputType.phone,
@@ -154,8 +159,9 @@ class _InlineEditableProfileInfoState extends ConsumerState<InlineEditableProfil
 
           // Bio
           _buildEditableField(
+            context: context,
             fieldKey: 'bio',
-            label: 'Bio',
+            label: l10n.bio,
             icon: Icons.info_rounded,
             currentValue: widget.profile?.bio,
             maxLines: 3,
@@ -163,16 +169,18 @@ class _InlineEditableProfileInfoState extends ConsumerState<InlineEditableProfil
 
           // Location
           _buildEditableField(
+            context: context,
             fieldKey: 'location',
-            label: 'Location',
+            label: l10n.location,
             icon: Icons.location_on_rounded,
             currentValue: widget.profile?.location,
           ),
 
           // Website
           _buildEditableField(
+            context: context,
             fieldKey: 'website',
-            label: 'Website',
+            label: l10n.website,
             icon: Icons.language_rounded,
             currentValue: widget.profile?.website,
             keyboardType: TextInputType.url,
@@ -180,16 +188,18 @@ class _InlineEditableProfileInfoState extends ConsumerState<InlineEditableProfil
 
           // Company
           _buildEditableField(
+            context: context,
             fieldKey: 'company',
-            label: 'Company',
+            label: l10n.company,
             icon: Icons.business_rounded,
             currentValue: widget.profile?.company,
           ),
 
           // Job Title
           _buildEditableField(
+            context: context,
             fieldKey: 'job_title',
-            label: 'Job Title',
+            label: l10n.jobTitle,
             icon: Icons.work_rounded,
             currentValue: widget.profile?.jobTitle,
             showDivider: false,
@@ -200,6 +210,7 @@ class _InlineEditableProfileInfoState extends ConsumerState<InlineEditableProfil
   }
 
   Widget _buildEditableField({
+    required BuildContext context,
     required String fieldKey,
     required String label,
     required IconData icon,
@@ -241,7 +252,7 @@ class _InlineEditableProfileInfoState extends ConsumerState<InlineEditableProfil
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     prefixIcon: Icon(icon, color: const Color(0xFF00FF88), size: 20),
-                    hintText: 'Enter $label',
+                    hintText: AppLocalizations.of(context)!.enterField(label),
                     hintStyle: TextStyle(color: Colors.grey[600]),
                     filled: true,
                     fillColor: const Color(0xFF1A1A1A),
@@ -272,7 +283,7 @@ class _InlineEditableProfileInfoState extends ConsumerState<InlineEditableProfil
                       TextButton(
                         onPressed: _isUpdating ? null : _cancelFieldEdit,
                         child: Text(
-                          'Cancel',
+                          AppLocalizations.of(context)!.cancel,
                           style: TextStyle(
                             color: _isUpdating ? Colors.grey[600] : Colors.grey[400],
                             fontSize: 12,
@@ -300,7 +311,7 @@ class _InlineEditableProfileInfoState extends ConsumerState<InlineEditableProfil
                               )
                             : Icon(Icons.check, size: 14),
                         label: Text(
-                          _isUpdating ? 'Saving...' : 'Save',
+                          _isUpdating ? AppLocalizations.of(context)!.saving : AppLocalizations.of(context)!.save,
                           style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
                         ),
                       ),
@@ -327,7 +338,7 @@ class _InlineEditableProfileInfoState extends ConsumerState<InlineEditableProfil
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      currentValue?.isNotEmpty == true ? currentValue! : 'Not provided',
+                      currentValue?.isNotEmpty == true ? currentValue! : AppLocalizations.of(context)!.notProvided,
                       style: TextStyle(
                         color: currentValue?.isNotEmpty == true ? Colors.white : Colors.grey[500],
                         fontSize: 14,

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../domain/entities/user_profile_entity.dart';
 import '../controllers/profile_controller.dart';
+import '../../../../core/services/image_service.dart';
+import '../../../../shared/widgets/image_source_selector.dart';
 
 class ProfileHeader extends ConsumerWidget {
   final UserProfileEntity? profile;
@@ -13,6 +17,7 @@ class ProfileHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -96,7 +101,7 @@ class ProfileHeader extends ConsumerWidget {
 
           // Display name
           Text(
-            profile?.displayName ?? 'Anonymous User',
+            profile?.displayName ?? l10n.anonymousUser,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 24,
@@ -109,7 +114,7 @@ class ProfileHeader extends ConsumerWidget {
 
           // Email
           Text(
-            profile?.email ?? 'No email',
+            profile?.email ?? l10n.noEmail,
             style: TextStyle(
               color: Colors.grey[400],
               fontSize: 14,
@@ -170,7 +175,7 @@ class ProfileHeader extends ConsumerWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                'Joined ${_formatDate(profile?.createdAt)}',
+                l10n.joinedDate(_formatDate(profile?.createdAt, l10n)),
                 style: TextStyle(
                   color: Colors.grey[500],
                   fontSize: 11,
@@ -205,104 +210,322 @@ class ProfileHeader extends ConsumerWidget {
   }
 
   void _showPhotoOptions(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF2E2E2E),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[600],
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Change Profile Photo',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: Icon(Icons.camera_alt_rounded, color: const Color(0xFF00FF88)),
-              title: Text(
-                'Take Photo',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                _takePhoto(ref);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.photo_library_rounded, color: const Color(0xFF00FF88)),
-              title: Text(
-                'Choose from Gallery',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                _chooseFromGallery(ref);
-              },
-            ),
-            if (profile?.photoUrl != null)
-              ListTile(
-                leading: Icon(Icons.delete_rounded, color: Colors.red[400]),
-                title: Text(
-                  'Remove Photo',
-                  style: TextStyle(color: Colors.red[400]),
+    final l10n = AppLocalizations.of(context)!;
+    ImageSourceSelector.show(
+      context,
+      title: l10n.changeProfilePhoto,
+      subtitle: l10n.choosePhotoSource,
+      onSourceSelected: (source) => _handleImageSourceSelection(context, ref, source),
+    );
+  }
+
+  void _handleImageSourceSelection(BuildContext context, WidgetRef ref, ImageSource source) async {
+    if (!context.mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    
+    try {
+      // First, check and request permissions
+      final permissionResult = await ImageService.checkAndRequestPermissions(source);
+      
+      if (!context.mounted) return;
+      
+      // Handle permission results
+      switch (permissionResult) {
+        case PermissionResult.denied:
+          _showPermissionDeniedDialog(context, l10n, source, ref, canRetry: true);
+          return;
+          
+        case PermissionResult.permanentlyDenied:
+          _showPermissionDeniedDialog(context, l10n, source, ref, canRetry: false);
+          return;
+          
+        case PermissionResult.granted:
+        case PermissionResult.notApplicable:
+          // Continue with image selection
+          break;
+      }
+      
+      // Show loading snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
-                onTap: () {
-                  Navigator.pop(context);
-                  _removePhoto(ref);
-                },
               ),
-            const SizedBox(height: 16),
+              const SizedBox(width: 12),
+              Text(
+                l10n.updatingProfilePhoto,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+          backgroundColor: const Color(0xFF2E2E2E),
+          duration: const Duration(seconds: 10),
+        ),
+      );
+
+      // Use ImageService to handle complete avatar change process
+      final response = await ImageService.changeUserAvatar(source: source);
+
+      if (!context.mounted) return;
+
+      // Hide loading snackbar
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      switch (response.result) {
+        case ImageChangeResult.success:
+          // Success - update profile controller
+          ref.read(profileControllerProvider.notifier).updateProfilePhoto(response.avatarUrl!);
+        
+        // Show success message
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Color(0xFF00FF88)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l10n.profilePhotoUpdatedSuccess,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+              backgroundColor: const Color(0xFF2E2E2E),
+              duration: const Duration(seconds: 3),
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
+        }
+          break;
+
+        case ImageChangeResult.cancelled:
+          // User cancelled - no need to show error
+          debugPrint('📷 User cancelled photo selection');
+          break;
+
+        case ImageChangeResult.permissionDenied:
+        case ImageChangeResult.uploadFailed:
+        case ImageChangeResult.unknownError:
+          // Failed - show specific error message
+          String errorMessage;
+          if (response.result == ImageChangeResult.permissionDenied) {
+            errorMessage = source == ImageSource.camera 
+                ? l10n.cameraPermissionDenied
+                : l10n.galleryPermissionDenied;
+          } else {
+            errorMessage = response.errorMessage ?? l10n.profilePhotoUpdateFailed;
+          }
+        
+        if (context.mounted) {
+          // Show both SnackBar and Dialog for better visibility
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.error, color: Colors.red),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      errorMessage,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+              backgroundColor: const Color(0xFF2E2E2E),
+              duration: const Duration(seconds: 5),
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
+          
+          // Also show dialog for better visibility
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: const Color(0xFF2E2E2E),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: Row(
+                children: [
+                  const Icon(Icons.error, color: Colors.red),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Error',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+              content: Text(
+                errorMessage,
+                style: TextStyle(color: Colors.grey[300]),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    l10n.ok,
+                    style: const TextStyle(color: Color(0xFF00FF88)),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+          break;
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      
+      // Hide loading snackbar
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      
+      // Show error message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error, color: Colors.red),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.error(e.toString()),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: const Color(0xFF2E2E2E),
+            duration: const Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  void _showPermissionDeniedDialog(
+    BuildContext context,
+    AppLocalizations l10n,
+    ImageSource source,
+    WidgetRef ref, {
+    required bool canRetry,
+  }) {
+    final String title = source == ImageSource.camera ? l10n.camera : l10n.gallery;
+    final String message = source == ImageSource.camera 
+        ? l10n.cameraPermissionDenied 
+        : l10n.galleryPermissionDenied;
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF2E2E2E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(
+              source == ImageSource.camera ? Icons.camera_alt : Icons.photo_library,
+              color: Colors.orange,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '$title ${l10n.notifications}',
+              style: const TextStyle(color: Colors.white),
+            ),
           ],
         ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              message,
+              style: TextStyle(color: Colors.grey[300]),
+            ),
+            if (!canRetry) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.settings, color: Colors.orange, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Abre Configuración > ${l10n.privacy} > $title para habilitar el acceso.',
+                        style: const TextStyle(color: Colors.orange, fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          if (canRetry)
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                // Retry permission request
+                _handleImageSourceSelection(context, ref, source);
+              },
+              child: Text(
+                l10n.retry,
+                style: const TextStyle(color: Color(0xFF00FF88)),
+              ),
+            ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              l10n.ok,
+              style: TextStyle(color: Colors.grey[400]),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  void _takePhoto(WidgetRef ref) {
-    // TODO: Implement camera photo capture
-    debugPrint('Take photo tapped');
-  }
-
-  void _chooseFromGallery(WidgetRef ref) {
-    // TODO: Implement gallery photo selection
-    debugPrint('Choose from gallery tapped');
-  }
-
-  void _removePhoto(WidgetRef ref) {
-    ref.read(profileControllerProvider.notifier).updateProfilePhoto('');
-  }
-
-  String _formatDate(DateTime? date) {
-    if (date == null) return 'Unknown';
+  String _formatDate(DateTime? date, AppLocalizations l10n) {
+    if (date == null) return l10n.unknown;
     
     final now = DateTime.now();
     final difference = now.difference(date);
     
     if (difference.inDays < 30) {
-      return '${difference.inDays} days ago';
+      return l10n.daysAgo(difference.inDays);
     } else if (difference.inDays < 365) {
       final months = (difference.inDays / 30).floor();
-      return '$months month${months == 1 ? '' : 's'} ago';
+      return l10n.monthsAgo(months, months == 1 ? '' : 's');
     } else {
       final years = (difference.inDays / 365).floor();
-      return '$years year${years == 1 ? '' : 's'} ago';
+      return l10n.yearsAgo(years, years == 1 ? '' : 's');
     }
   }
 }
