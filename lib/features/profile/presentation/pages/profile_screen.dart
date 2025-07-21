@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../shared/widgets/glass_button.dart';
+import '../../../../shared/widgets/language_selector.dart';
 import '../controllers/profile_controller.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/inline_editable_profile_info.dart';
 import '../widgets/profile_stats_section.dart';
 import '../widgets/profile_actions_section.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
+import '../../../../core/providers/locale_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -211,10 +213,10 @@ class ProfileScreen extends ConsumerWidget {
             _buildSettingsItem(
               icon: Icons.language_rounded,
               title: l10n.language,
-              subtitle: l10n.english,
+              subtitle: _getLanguageDisplayName(ref),
               onTap: () {
                 Navigator.pop(context);
-                // TODO: Implement language settings
+                showLanguageSelector(context);
               },
             ),
             _buildSettingsItem(
@@ -249,6 +251,11 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  String _getLanguageDisplayName(WidgetRef ref) {
+    final localeNotifier = ref.read(localeProvider.notifier);
+    return localeNotifier.getCurrentLanguageName();
   }
 
   Widget _buildSettingsItem({

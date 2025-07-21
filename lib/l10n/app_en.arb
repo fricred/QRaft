@@ -602,6 +602,16 @@
     "description": "English language option"
   },
 
+  "spanish": "Spanish",
+  "@spanish": {
+    "description": "Spanish language option"
+  },
+
+  "close": "Close",
+  "@close": {
+    "description": "Close button text"
+  },
+
   "notifications": "Notifications",
   "@notifications": {
     "description": "Notifications setting label"

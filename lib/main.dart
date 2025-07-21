@@ -8,6 +8,7 @@ import 'features/main/main_scaffold.dart';
 import 'core/services/deeplink_service.dart';
 import 'core/services/supabase_service.dart';
 import 'core/config/env_config.dart';
+import 'core/providers/locale_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
@@ -55,9 +56,12 @@ class _QRaftAppState extends ConsumerState<QRaftApp> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = ref.watch(localeProvider);
+    
     return MaterialApp(
       title: 'QRaft',
       debugShowCheckedModeBanner: false,
+      locale: locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

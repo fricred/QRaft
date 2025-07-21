@@ -104,6 +104,10 @@
   "settings": "Configuración",
   "language": "Idioma",
   "english": "Inglés",
+
+  "spanish": "Español",
+
+  "close": "Cerrar",
   "notifications": "Notificaciones",
   "pushNotifications": "Notificaciones push",
   "privacy": "Privacidad",

@@ -67,6 +67,7 @@ dependencies:
   uuid: ^4.2.1
   share_plus: ^7.2.1
   haptic_feedback: ^0.5.1+1
+  shared_preferences: ^2.2.2
 
   # Image Handling
   image_picker: ^1.0.7
