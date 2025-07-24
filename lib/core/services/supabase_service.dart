@@ -384,6 +384,99 @@ class SupabaseService {
   static Future<List<Map<String, dynamic>>> getUserScanHistory(String userId) async {
     return getCurrentUserScanHistory();
   }
+
+  // QR Scanner Operations - New methods for enhanced scanner
+  /// Save scan result using new ScanResult model
+  static Future<void> saveScanResult(scanResult) async {
+    try {
+      final user = client.auth.currentUser;
+      if (user == null) {
+        throw Exception('No authenticated user found');
+      }
+      
+      final scanData = {
+        'id': scanResult.id,
+        'user_id': user.id,
+        'raw_value': scanResult.rawValue,  
+        'qr_type': scanResult.toJson()['type'], // Use the toJson method which has the fix
+        'display_value': scanResult.displayValue,
+        'parsed_data': scanResult.parsedData,
+        'scanned_at': scanResult.scannedAt.toIso8601String(),
+      };
+      
+      await client.from(SupabaseConfig.scanHistoryTable).insert(scanData);
+      debugPrint('✅ Saved scan result: ${scanResult.displayValue}');
+    } catch (e) {
+      debugPrint('❌ Failed to save scan result: $e');
+      throw Exception('Failed to save scan result: $e');
+    }
+  }
+  
+  /// Get scan history as ScanResult objects
+  static Future<List<dynamic>> getScanHistory() async {
+    try {
+      final user = client.auth.currentUser;
+      if (user == null) {
+        throw Exception('No authenticated user found');
+      }
+      
+      final response = await client
+          .from(SupabaseConfig.scanHistoryTable)
+          .select()
+          .eq('user_id', user.id)
+          .order('scanned_at', ascending: false)
+          .limit(100);
+      
+      // Convert to ScanResult objects
+      return response.map((data) {
+        // Import ScanResult dynamically to avoid circular imports
+        return {
+          'id': data['id'],
+          'rawValue': data['raw_value'],
+          'type': data['qr_type'],
+          'displayValue': data['display_value'],
+          'parsedData': data['parsed_data'],
+          'scannedAt': data['scanned_at'],
+        };
+      }).toList();
+    } catch (e) {
+      debugPrint('❌ Failed to get scan history: $e');
+      throw Exception('Failed to get scan history: $e');
+    }
+  }
+  
+  /// Delete specific scan result
+  static Future<void> deleteScanResult(String scanId) async {
+    try {
+      await client
+          .from(SupabaseConfig.scanHistoryTable)
+          .delete()
+          .eq('id', scanId);
+      debugPrint('✅ Deleted scan result: $scanId');
+    } catch (e) {
+      debugPrint('❌ Failed to delete scan result: $e');
+      throw Exception('Failed to delete scan result: $e');
+    }
+  }
+  
+  /// Clear all scan history for current user
+  static Future<void> clearScanHistory() async {
+    try {
+      final user = client.auth.currentUser;
+      if (user == null) {
+        throw Exception('No authenticated user found');
+      }
+      
+      await client
+          .from(SupabaseConfig.scanHistoryTable)
+          .delete()
+          .eq('user_id', user.id);
+      debugPrint('✅ Cleared all scan history');
+    } catch (e) {
+      debugPrint('❌ Failed to clear scan history: $e');
+      throw Exception('Failed to clear scan history: $e');
+    }
+  }
   
   // Template Operations
   static Future<List<Map<String, dynamic>>> getTemplates() async {

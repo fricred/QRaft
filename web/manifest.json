@@ -1,11 +1,11 @@
 {
-    "name": "qraft",
-    "short_name": "qraft",
+    "name": "QRaft",
+    "short_name": "QRaft",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#1A1A1A",
     "theme_color": "#1A73E8",
-    "description": "A new Flutter project.",
+    "description": "QRaft - Your complete solution for custom QR codes",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

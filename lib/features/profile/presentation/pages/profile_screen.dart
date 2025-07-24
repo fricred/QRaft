@@ -355,12 +355,9 @@ class ProfileScreen extends ConsumerWidget {
                     // Perform sign out
                     await authProvider.signOut();
                     
-                    // Close loading dialog
+                    // Close loading dialog - AuthWrapper will handle navigation automatically
                     if (context.mounted) {
                       Navigator.pop(context);
-                      
-                      // Navigate back to auth screen if still in profile
-                      Navigator.of(context).popUntil((route) => route.isFirst);
                     }
                   } catch (e) {
                     // Close loading dialog if it's still open

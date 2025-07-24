@@ -778,5 +778,50 @@
   "processingImage": "Processing image...",
   "@processingImage": {
     "description": "Loading text while processing image"
+  },
+
+  "qrScanner": "QR Scanner",
+  "@qrScanner": {
+    "description": "QR Scanner screen title"
+  },
+
+  "pointCameraAtQR": "Point camera at QR code to scan",
+  "@pointCameraAtQR": {
+    "description": "Instruction text for QR scanner"
+  },
+
+  "copy": "Copy",
+  "@copy": {
+    "description": "Copy button text"
+  },
+
+  "clearAll": "Clear All",
+  "@clearAll": {
+    "description": "Clear all button text"
+  },
+
+  "clearAllHistory": "Clear All History",
+  "@clearAllHistory": {
+    "description": "Clear all history dialog title"
+  },
+
+  "clearAllHistoryConfirm": "Are you sure you want to clear all scan history? This action cannot be undone.",
+  "@clearAllHistoryConfirm": {
+    "description": "Clear all history confirmation message"
+  },
+
+  "noScansYet": "No Scans Yet",
+  "@noScansYet": {
+    "description": "Empty state title when no scans exist"
+  },
+
+  "startScanningToSeeHistory": "Start scanning QR codes to see your history here",
+  "@startScanningToSeeHistory": {
+    "description": "Empty state subtitle when no scans exist"
+  },
+
+  "startScanning": "Start Scanning",
+  "@startScanning": {
+    "description": "Button text to start scanning"
   }
 }
