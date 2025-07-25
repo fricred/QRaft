@@ -369,11 +369,37 @@ class ScanResultDialog extends StatelessWidget {
     try {
       switch (scanResult.type) {
         case QRCodeType.url:
-          final uri = Uri.parse(scanResult.rawValue.startsWith('http') 
-              ? scanResult.rawValue 
-              : 'https://${scanResult.rawValue}');
-          if (await canLaunchUrl(uri)) {
+          final rawUrl = scanResult.rawValue;
+          final formattedUrl = rawUrl.startsWith('http') 
+              ? rawUrl 
+              : 'https://$rawUrl';
+          
+          debugPrint('🌐 URL Action Debug:');
+          debugPrint('   Raw URL: $rawUrl');
+          debugPrint('   Formatted URL: $formattedUrl');
+          
+          final uri = Uri.parse(formattedUrl);
+          debugPrint('   Parsed URI: $uri');
+          debugPrint('   URI scheme: ${uri.scheme}');
+          debugPrint('   URI host: ${uri.host}');
+          
+          final canLaunch = await canLaunchUrl(uri);
+          debugPrint('   Can launch: $canLaunch');
+          
+          if (canLaunch) {
+            debugPrint('   Attempting to launch URL...');
             await launchUrl(uri, mode: LaunchMode.externalApplication);
+            debugPrint('   ✅ URL launched successfully');
+          } else {
+            debugPrint('   ⚠️ canLaunchUrl returned false, trying anyway...');
+            try {
+              // Sometimes canLaunchUrl is overly restrictive, so try anyway
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
+              debugPrint('   ✅ URL launched successfully (despite canLaunchUrl = false)');
+            } catch (launchError) {
+              debugPrint('   ❌ Failed to launch URL: $launchError');
+              throw Exception('Cannot launch URL: $formattedUrl. Error: $launchError');
+            }
           }
           break;
           
@@ -423,14 +449,27 @@ class ScanResultDialog extends StatelessWidget {
         Navigator.of(context).pop();
       }
       
-    } catch (e) {
-      debugPrint('Error performing action: $e');
+    } catch (e, stackTrace) {
+      debugPrint('❌ Error performing action: $e');
+      debugPrint('❌ Stack trace: $stackTrace');
+      debugPrint('❌ QR Type: ${scanResult.type}');
+      debugPrint('❌ Raw Value: ${scanResult.rawValue}');
+      
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Unable to perform action: $e'),
             backgroundColor: Colors.red[700],
             behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            duration: const Duration(seconds: 4),
+            action: SnackBarAction(
+              label: 'Copy URL',
+              textColor: Colors.white,
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: scanResult.rawValue));
+              },
+            ),
           ),
         );
       }
