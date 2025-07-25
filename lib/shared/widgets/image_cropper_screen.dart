@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:crop_your_image/crop_your_image.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qraft/l10n/app_localizations.dart';
 import '../widgets/glass_button.dart';
 
 class ImageCropperScreen extends StatefulWidget {

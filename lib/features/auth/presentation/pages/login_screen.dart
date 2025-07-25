@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/widgets/qraft_logo.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qraft/l10n/app_localizations.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   final Function(String email, String password) onLogin;

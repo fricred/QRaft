@@ -9,7 +9,7 @@ import 'core/services/deeplink_service.dart';
 import 'core/services/supabase_service.dart';
 import 'core/config/env_config.dart';
 import 'core/providers/locale_provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qraft/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -78,12 +78,12 @@ class _QRaftAppState extends ConsumerState<QRaftApp> {
           brightness: Brightness.dark,
         ),
         scaffoldBackgroundColor: const Color(0xFF1A1A1A),
-        cardTheme: CardTheme(
-          color: const Color(0xFF2E2E2E),
+        cardTheme: const CardThemeData(
+          color: Color(0xFF2E2E2E),
           elevation: 8,
           shadowColor: Colors.black26,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
         ),
         useMaterial3: true,

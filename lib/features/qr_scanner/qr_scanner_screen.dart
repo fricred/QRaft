@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qraft/l10n/app_localizations.dart';
 import '../../shared/widgets/glass_button.dart';
 import 'providers/qr_scanner_provider.dart';
 import 'models/scan_result.dart';

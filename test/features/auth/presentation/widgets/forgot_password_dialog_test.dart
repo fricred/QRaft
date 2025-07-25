@@ -5,7 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:qraft/features/auth/presentation/widgets/forgot_password_dialog.dart';
 import 'package:qraft/features/auth/data/providers/supabase_auth_provider.dart';
 import 'package:qraft/shared/widgets/glass_button.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qraft/l10n/app_localizations.dart';
 
 // Mock classes
 class MockSupabaseAuthProvider extends Mock implements SupabaseAuthProvider {}

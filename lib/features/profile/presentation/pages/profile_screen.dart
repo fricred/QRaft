@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qraft/l10n/app_localizations.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../../shared/widgets/language_selector.dart';
 import '../controllers/profile_controller.dart';
