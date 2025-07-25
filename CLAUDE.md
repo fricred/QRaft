@@ -73,6 +73,14 @@ flutter build apk --dart-define-from-file=env.production.json
 - `flutter build windows` - Build Windows desktop app  
 - `flutter build linux` - Build Linux desktop app
 
+### Database Management (Supabase CLI)
+- `supabase --version` - Check CLI version
+- `supabase link --project-ref PROJECT_REF` - Link to remote project
+- `supabase migration new name` - Create new migration
+- `supabase migration list` - List migration status
+- `echo "PASSWORD" | supabase db push` - Apply migrations to remote
+- `echo "PASSWORD" | supabase db pull` - Pull remote schema to local
+
 ### Other Useful Commands
 - `flutter doctor` - Check development environment setup
 - `flutter clean` - Clean build artifacts
@@ -435,12 +443,104 @@ supabase/
 |-----------|-------------|---------|
 | `001_initial_setup.sql` | Initial database schema, user profiles, RLS policies | ✅ Applied |
 | `002_storage_policies.sql` | Storage bucket and policies for avatars | ✅ Applied |
+| `20250725122236_fix_scan_history_schema.sql` | Fixed scan_history table schema for QR scanner functionality | ✅ Applied |
 
 ### How to Apply Migrations
+
+#### **Method 1: Manual (Dashboard)**
 1. Go to **Supabase Dashboard** → **SQL Editor**
 2. Copy migration content from `supabase/migrations/{number}_{name}.sql`
 3. Execute in SQL Editor
 4. Migration status is automatically tracked in `public.migrations` table
+
+#### **Method 2: Supabase CLI (Recommended for Production)**
+
+**Installation:**
+```bash
+# Download and install Supabase CLI (Linux)
+curl -s https://api.github.com/repos/supabase/cli/releases/latest | grep "browser_download_url.*linux_amd64.tar.gz" | cut -d '"' -f 4 | xargs wget -O supabase-cli.tar.gz
+tar -xzf supabase-cli.tar.gz
+mkdir -p ~/bin && mv supabase ~/bin/
+echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
+export PATH="$HOME/bin:$PATH"
+
+# Verify installation
+supabase --version
+```
+
+**Setup and Authentication:**
+```bash
+# 1. Get Personal Access Token from Supabase Dashboard → Settings → Access Tokens
+export SUPABASE_ACCESS_TOKEN="sbp_your_token_here"
+
+# 2. Link to your project (use your Project Reference ID)
+supabase link --project-ref YOUR_PROJECT_REF
+
+# 3. When prompted, enter your database password
+```
+
+**Migration Commands:**
+```bash
+# Create new migration
+supabase migration new migration_name
+
+# List migrations status
+supabase migration list
+
+# Apply migrations to remote database
+echo "YOUR_DB_PASSWORD" | supabase db push
+
+# Pull remote schema to local
+echo "YOUR_DB_PASSWORD" | supabase db pull
+
+# Repair migration history if needed
+echo "YOUR_DB_PASSWORD" | supabase migration repair --status applied MIGRATION_ID
+```
+
+**Project Configuration:**
+- **Project Reference ID**: Found in Supabase Dashboard URL or Settings → General
+- **Database Password**: Available in Dashboard → Settings → Database
+- **Access Token**: Generate in Dashboard → Account → Access Tokens (starts with `sbp_`)
+
+**Common CLI Issues and Solutions:**
+
+1. **`failed SASL auth` Error:**
+   - Usually indicates wrong database password or connection issues
+   - Run with `--debug` flag to see detailed connection logs
+   - Verify password and project reference ID
+
+2. **`supabase_migrations.schema_migrations does not exist`:**
+   - Remote database doesn't have migration tracking initialized
+   - Run `supabase db pull` to initialize migration system
+   - Use `supabase migration repair` to fix history conflicts
+
+3. **Migration History Conflicts:**
+   ```bash
+   # If local and remote migrations don't match
+   supabase migration repair --status applied MIGRATION_TIMESTAMP
+   ```
+
+**QRaft-Specific Migration Example:**
+The QR scanner fix required updating the `scan_history` table schema:
+
+```sql
+-- Migration: 20250725122236_fix_scan_history_schema.sql
+DROP TABLE IF EXISTS scan_history;
+
+CREATE TABLE scan_history (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    raw_value TEXT NOT NULL,           -- The actual QR code content
+    qr_type TEXT NOT NULL,             -- Type: url, text, wifi, email, etc.
+    display_value TEXT NOT NULL,       -- Human-readable version
+    parsed_data JSONB,                 -- Structured parsed data
+    scanned_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Indexes, RLS policies, and permissions...
+```
+
+This resolved the `PostgrestException: Could not find the 'display_value' column` error that was preventing QR scanning functionality.
 
 ## Dependencies
 

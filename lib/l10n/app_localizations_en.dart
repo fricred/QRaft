@@ -173,9 +173,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterEmailForReset => 'Enter your email address';
 
   @override
-  String get cancel => 'Cancel';
-
-  @override
   String get sendResetLink => 'Send';
 
   @override
@@ -444,6 +441,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get crop => 'Crop';
+
+  @override
+  String get cancel => 'Cancel';
 
   @override
   String get rotateLeft => 'Rotate Left';

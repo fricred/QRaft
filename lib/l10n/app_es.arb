@@ -1,4 +1,5 @@
 {
+  "@@locale": "es",
   "appName": "QRaft",
   "welcomeTitle": "¡Bienvenido a QRaft!",
   "welcomeSubtitle": "Tu solución completa para QR personalizados",
@@ -49,7 +50,6 @@
   "resetPassword": "Restablecer Contraseña",
   "resetPasswordSubtitle": "Ingresa tu email para recibir el enlace",
   "enterEmailForReset": "Ingresa tu dirección de email",
-  "cancel": "Cancelar",
   "sendResetLink": "Enviar",
   "emailSent": "¡Email Enviado!",
   "checkEmailForReset": "Hemos enviado un enlace de restablecimiento de contraseña a {email}. Por favor revisa tu email y sigue las instrucciones para restablecer tu contraseña.",
@@ -137,5 +137,14 @@
   "rotateRight": "Rotar Derecha",
   "cropInstruction": "Ajusta el área de recorte arrastrando las esquinas",
   "cropFailed": "Error al recortar imagen. Inténtalo de nuevo.",
-  "processingImage": "Procesando imagen..."
+  "processingImage": "Procesando imagen...",
+  "qrScanner": "Escáner QR",
+  "pointCameraAtQR": "Apunta la cámara al código QR",
+  "copy": "Copiar",
+  "clearAll": "Borrar todo",
+  "clearAllHistory": "Borrar todo el historial",
+  "clearAllHistoryConfirm": "¿Estás seguro de que deseas borrar todo el historial?",
+  "noScansYet": "Aún no hay escaneos",
+  "startScanningToSeeHistory": "Comienza a escanear para ver el historial",
+  "startScanning": "Comenzar a escanear"
 }

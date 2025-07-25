@@ -178,9 +178,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get enterEmailForReset => 'Ingresa tu dirección de email';
 
   @override
-  String get cancel => 'Cancelar';
-
-  @override
   String get sendResetLink => 'Enviar';
 
   @override
@@ -452,6 +449,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get crop => 'Recortar';
 
   @override
+  String get cancel => 'Cancelar';
+
+  @override
   String get rotateLeft => 'Rotar Izquierda';
 
   @override
@@ -468,31 +468,31 @@ class AppLocalizationsEs extends AppLocalizations {
   String get processingImage => 'Procesando imagen...';
 
   @override
-  String get qrScanner => 'QR Scanner';
+  String get qrScanner => 'Escáner QR';
 
   @override
-  String get pointCameraAtQR => 'Point camera at QR code to scan';
+  String get pointCameraAtQR => 'Apunta la cámara al código QR';
 
   @override
-  String get copy => 'Copy';
+  String get copy => 'Copiar';
 
   @override
-  String get clearAll => 'Clear All';
+  String get clearAll => 'Borrar todo';
 
   @override
-  String get clearAllHistory => 'Clear All History';
+  String get clearAllHistory => 'Borrar todo el historial';
 
   @override
   String get clearAllHistoryConfirm =>
-      'Are you sure you want to clear all scan history? This action cannot be undone.';
+      '¿Estás seguro de que deseas borrar todo el historial?';
 
   @override
-  String get noScansYet => 'No Scans Yet';
+  String get noScansYet => 'Aún no hay escaneos';
 
   @override
   String get startScanningToSeeHistory =>
-      'Start scanning QR codes to see your history here';
+      'Comienza a escanear para ver el historial';
 
   @override
-  String get startScanning => 'Start Scanning';
+  String get startScanning => 'Comenzar a escanear';
 }

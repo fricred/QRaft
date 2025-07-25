@@ -1,39 +1,61 @@
 {
-    "dart.flutterRunAdditionalArgs": [
-        "--dart-define-from-file=env.json"
-    ],
-    "dart.runAdditionalArgs": [
-        "--dart-define-from-file=env.json"
-    ],
-    "dart.debugAdditionalArgs": [
-        "--dart-define-from-file=env.json"
-    ],
-    "dart.flutterTestAdditionalArgs": [
-        "--dart-define-from-file=env.json"
-    ],
-    "files.exclude": {
-        "**/.git": true,
-        "**/.svn": true,
-        "**/.hg": true,
-        "**/CVS": true,
-        "**/.DS_Store": true,
-        "**/Thumbs.db": true,
-        "**/.dart_tool": true,
-        "**/build": true,
-        "**/ios/Pods": true,
-        "**/ios/.symlinks": true,
-        "**/android/.gradle": true,
-        "**/android/captures": true,
-        "**/android/gradlew": true,
-        "**/android/gradlew.bat": true,
-        "**/android/local.properties": true,
-        "**/android/**/GeneratedPluginRegistrant.java": true,
-        "**/ios/Runner.xcworkspace": true,
-        "**/ios/Runner.xcodeproj": true,
-        "**/macos/Runner.xcworkspace": true,
-        "**/macos/Runner.xcodeproj": true
-    },
-    "dart.previewFlutterUiGuides": true,
-    "dart.previewFlutterUiGuidesCustomTracking": true,
-    "dart.showTodos": true
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "dart.debugAdditionalArgs": [
+    "--dart-define-from-file=env.json"
+  ],
+  "dart.flutterRunAdditionalArgs": [
+    "--dart-define-from-file=env.json"
+  ],
+  "dart.flutterTestAdditionalArgs": [
+    "--dart-define-from-file=env.json"
+  ],
+  "dart.previewFlutterUiGuides": true,
+  "dart.previewFlutterUiGuidesCustomTracking": true,
+  "dart.runAdditionalArgs": [
+    "--dart-define-from-file=env.json"
+  ],
+  "dart.showTodos": true,
+  "deno.enablePaths": [
+    "supabase/functions"
+  ],
+  "deno.lint": true,
+  "deno.unstable": [
+    "bare-node-builtins",
+    "byonm",
+    "sloppy-imports",
+    "unsafe-proto",
+    "webgpu",
+    "broadcast-channel",
+    "worker-options",
+    "cron",
+    "kv",
+    "ffi",
+    "fs",
+    "http",
+    "net"
+  ],
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/.dart_tool": true,
+    "**/.git": true,
+    "**/.hg": true,
+    "**/.svn": true,
+    "**/CVS": true,
+    "**/Thumbs.db": true,
+    "**/android/**/GeneratedPluginRegistrant.java": true,
+    "**/android/.gradle": true,
+    "**/android/captures": true,
+    "**/android/gradlew": true,
+    "**/android/gradlew.bat": true,
+    "**/android/local.properties": true,
+    "**/build": true,
+    "**/ios/.symlinks": true,
+    "**/ios/Pods": true,
+    "**/ios/Runner.xcodeproj": true,
+    "**/ios/Runner.xcworkspace": true,
+    "**/macos/Runner.xcodeproj": true,
+    "**/macos/Runner.xcworkspace": true
+  }
 }

@@ -16,12 +16,16 @@
     <!-- Internet permission for Supabase -->
     <uses-permission android:name="android.permission.INTERNET" />
     
-    <!-- Camera feature (optional for devices without camera) -->
+    <!-- Camera feature (required for QR scanning) -->
     <uses-feature 
         android:name="android.hardware.camera" 
-        android:required="false" />
+        android:required="true" />
     <uses-feature 
         android:name="android.hardware.camera.autofocus" 
+        android:required="false" />
+    <!-- Flash feature (optional for QR scanning in low light) -->
+    <uses-feature 
+        android:name="android.hardware.camera.flash" 
         android:required="false" />
 
     <application

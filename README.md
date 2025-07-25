@@ -1,232 +1,183 @@
-# QRaft
+# Supabase CLI
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.6.2+-02569B.svg?style=flat&logo=flutter)](https://flutter.dev)
-[![Firebase](https://img.shields.io/badge/Firebase-Enabled-FFCA28.svg?style=flat&logo=firebase)](https://firebase.google.com)
-[![Supabase](https://img.shields.io/badge/Supabase-Ready-3ECF8E.svg?style=flat&logo=supabase)](https://supabase.com)
+[![Coverage Status](https://coveralls.io/repos/github/supabase/cli/badge.svg?branch=main)](https://coveralls.io/github/supabase/cli?branch=main) [![Bitbucket Pipelines](https://img.shields.io/bitbucket/pipelines/supabase-cli/setup-cli/master?style=flat-square&label=Bitbucket%20Canary)](https://bitbucket.org/supabase-cli/setup-cli/pipelines) [![Gitlab Pipeline Status](https://img.shields.io/gitlab/pipeline-status/sweatybridge%2Fsetup-cli?label=Gitlab%20Canary)
+](https://gitlab.com/sweatybridge/setup-cli/-/pipelines)
 
-**QRaft** is a comprehensive Flutter application for QR code generation, scanning, and physical marketplace integration. Create personalized QR codes and order laser-engraved physical products through an integrated marketplace using XTool F1 Ultra laser machine.
+[Supabase](https://supabase.io) is an open source Firebase alternative. We're building the features of Firebase using enterprise-grade open source tools.
 
-![QRaft Logo](assets/images/qraft_logo.svg)
+This repository contains all the functionality for Supabase CLI.
 
-## ✨ Features
+- [x] Running Supabase locally
+- [x] Managing database migrations
+- [x] Creating and deploying Supabase Functions
+- [x] Generating types directly from your database schema
+- [x] Making authenticated HTTP requests to [Management API](https://supabase.com/docs/reference/api/introduction)
 
-### 🎯 Core Functionality
-- **QR Generation**: Create QR codes for personal info, URLs, WiFi, vCards, events, locations
-- **QR Scanner**: Advanced camera-based scanning with history management
-- **Visual Customization**: Personalize QR appearance with colors, logos, and templates
-- **Template Library**: Pre-designed QR templates for various use cases
+## Getting started
 
-### 🛒 Marketplace Integration
-- **Physical Products**: Order laser-engraved QR codes on premium materials
-- **Material Options**: Wood, acrylic, metal, leather, glass, stone
-- **XTool F1 Ultra**: Professional laser engraving integration
-- **Order Tracking**: Complete order management and delivery tracking
+### Install the CLI
 
-### 👤 User Experience
-- **Firebase Authentication**: Secure user registration and login
-- **Profile Management**: Personal settings and preferences
-- **Dark Theme**: Carden Pro design system with neon accents
-- **Cross-Platform**: iOS, Android, Web, and Desktop support
-
-## 🎨 Design System
-
-QRaft follows the **Carden Pro** design language featuring:
-
-- **Primary Colors**: 
-  - Cobalt Blue `#1A73E8` - Technology and innovation
-  - Neon Green `#00FF88` - Energy and progress
-  - Graphite `#2E2E2E` - Professional base
-- **UI Patterns**: Glassmorphism, elevated cards, smooth animations
-- **Dark Theme**: Modern dark interface with strategic neon accents
-- **Animations**: flutter_animate powered micro-interactions
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Flutter SDK 3.6.2 or higher
-- Dart SDK 3.0.0 or higher
-- Firebase project setup
-- Supabase project (for production)
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/fricred/QRaft.git
-   cd QRaft
-   ```
-
-2. **Install dependencies**
-   ```bash
-   flutter pub get
-   ```
-
-3. **Firebase Configuration**
-   - Add `google-services.json` to `android/app/`
-   - Add `GoogleService-Info.plist` to `ios/Runner/`
-
-4. **Environment Setup (New 2025 Method)**
-   ```bash
-   # Copy environment template
-   cp env.example.json env.json
-   
-   # Edit env.json with your credentials
-   {
-     "SUPABASE_URL": "https://your-project-id.supabase.co",
-     "SUPABASE_ANON_KEY": "your-anon-key-here"
-   }
-   ```
-
-5. **Run the application**
-   ```bash
-   # Development (with environment)
-   flutter run --dart-define-from-file=env.json
-   
-   # Web browser (with environment)
-   flutter run --dart-define-from-file=env.json -d chrome
-   
-   # VS Code: Just press F5 (auto-configured)
-   # Android Studio: Use "QRaft (Development)" run config
-   ```
-
-## 🏗️ Architecture
-
-QRaft follows **Clean Architecture** principles with **Riverpod** state management:
-
-```
-lib/
-├── main.dart                    # App entry point
-├── app/                         # App configuration
-│   ├── router/                  # Go Router navigation
-│   └── theme/                   # Material 3 theming
-├── core/                        # Shared utilities
-│   ├── constants/               # App constants
-│   ├── utils/                   # Helper functions
-│   └── errors/                  # Error handling
-├── features/                    # Feature modules
-│   ├── auth/                    # Firebase Authentication
-│   ├── splash/                  # Animated splash screen
-│   ├── qr_generation/           # QR creation logic
-│   ├── qr_scanner/              # Scanning functionality
-│   ├── marketplace/             # E-commerce integration
-│   └── profile/                 # User management
-└── shared/                      # Reusable components
-    ├── widgets/                 # Common UI widgets
-    └── providers/               # Global state providers
-```
-
-### Key Technologies
-
-- **Frontend**: Flutter with Material 3 design
-- **State Management**: Riverpod for reactive state
-- **Authentication**: Firebase Auth
-- **Backend**: Supabase (PostgreSQL + Edge Functions)
-- **Storage**: Firebase Storage + Supabase Storage
-- **Animations**: flutter_animate for advanced effects
-- **Graphics**: flutter_svg for vector graphics
-
-## 📱 Development
-
-### Available Commands
+Available via [NPM](https://www.npmjs.com) as dev dependency. To install:
 
 ```bash
-# Development
-flutter run                     # Run app in debug mode
-flutter run --hot-reload       # Enable hot reload
-flutter devices                # List available devices
-
-# Code Quality
-flutter analyze                # Static code analysis
-flutter test                   # Run unit and widget tests
-flutter test --coverage        # Run tests with coverage
-
-# Building
-flutter build apk              # Android APK
-flutter build ios              # iOS app (macOS required)
-flutter build web              # Web application
-flutter build macos            # macOS desktop app
-flutter build windows          # Windows desktop app
-flutter build linux            # Linux desktop app
-
-# Maintenance
-flutter clean                  # Clean build artifacts
-flutter pub upgrade            # Update dependencies
-flutter doctor                 # Check development setup
+npm i supabase --save-dev
 ```
 
-### Testing
+To install the beta release channel:
 
 ```bash
-# Run all tests
-flutter test
-
-# Run specific test file
-flutter test test/features/auth/auth_test.dart
-
-# Run tests with coverage
-flutter test --coverage
+npm i supabase@beta --save-dev
 ```
 
-## 🚀 Deployment
+When installing with yarn 4, you need to disable experimental fetch with the following nodejs config.
 
-### Android
-1. Configure signing in `android/app/build.gradle`
-2. Build release APK: `flutter build apk --release`
-3. Build App Bundle: `flutter build appbundle --release`
+```
+NODE_OPTIONS=--no-experimental-fetch yarn add supabase
+```
 
-### iOS
-1. Configure signing in Xcode
-2. Build release: `flutter build ios --release`
-3. Archive and distribute through Xcode
+> **Note**
+For Bun versions below v1.0.17, you must add `supabase` as a [trusted dependency](https://bun.sh/guides/install/trusted) before running `bun add -D supabase`.
 
-### Web
-1. Build web app: `flutter build web --release`
-2. Deploy to Firebase Hosting or preferred platform
+<details>
+  <summary><b>macOS</b></summary>
 
-## 🗺️ Roadmap
+  Available via [Homebrew](https://brew.sh). To install:
 
-### Phase 1: MVP (Current)
-- ✅ Firebase Authentication setup
-- ✅ Splash screen with animations
-- ✅ Custom logo and app icons
-- 🔄 Login/Register screens
-- 🔄 Basic QR generation
-- 🔄 QR scanner implementation
+  ```sh
+  brew install supabase/tap/supabase
+  ```
 
-### Phase 2: Enhancement
-- Advanced QR customization
-- Template library
-- Marketplace catalog
-- Shopping cart and checkout
-- Order management
+  To install the beta release channel:
+  
+  ```sh
+  brew install supabase/tap/supabase-beta
+  brew link --overwrite supabase-beta
+  ```
+  
+  To upgrade:
 
-### Phase 3: Polish
-- Analytics integration
-- Social sharing features
-- Premium features
-- Performance optimization
-- Advanced customization
+  ```sh
+  brew upgrade supabase
+  ```
+</details>
 
-## 🤝 Contributing
+<details>
+  <summary><b>Windows</b></summary>
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
+  Available via [Scoop](https://scoop.sh). To install:
 
-## 📄 License
+  ```powershell
+  scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
+  scoop install supabase
+  ```
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+  To upgrade:
 
-## 🔗 Links
+  ```powershell
+  scoop update supabase
+  ```
+</details>
 
-- **Repository**: [github.com/fricred/QRaft](https://github.com/fricred/QRaft)
-- **Issues**: [Report bugs or request features](https://github.com/fricred/QRaft/issues)
-- **Flutter Documentation**: [docs.flutter.dev](https://docs.flutter.dev)
-- **Firebase Console**: [console.firebase.google.com](https://console.firebase.google.com)
+<details>
+  <summary><b>Linux</b></summary>
 
----
+  Available via [Homebrew](https://brew.sh) and Linux packages.
 
-**Built with ❤️ using Flutter and Firebase**
+  #### via Homebrew
+
+  To install:
+
+  ```sh
+  brew install supabase/tap/supabase
+  ```
+
+  To upgrade:
+
+  ```sh
+  brew upgrade supabase
+  ```
+
+  #### via Linux packages
+
+  Linux packages are provided in [Releases](https://github.com/supabase/cli/releases). To install, download the `.apk`/`.deb`/`.rpm`/`.pkg.tar.zst` file depending on your package manager and run the respective commands.
+
+  ```sh
+  sudo apk add --allow-untrusted <...>.apk
+  ```
+
+  ```sh
+  sudo dpkg -i <...>.deb
+  ```
+
+  ```sh
+  sudo rpm -i <...>.rpm
+  ```
+
+  ```sh
+  sudo pacman -U <...>.pkg.tar.zst
+  ```
+</details>
+
+<details>
+  <summary><b>Other Platforms</b></summary>
+
+  You can also install the CLI via [go modules](https://go.dev/ref/mod#go-install) without the help of package managers.
+
+  ```sh
+  go install github.com/supabase/cli@latest
+  ```
+
+  Add a symlink to the binary in `$PATH` for easier access:
+
+  ```sh
+  ln -s "$(go env GOPATH)/bin/cli" /usr/bin/supabase
+  ```
+
+  This works on other non-standard Linux distros.
+</details>
+
+<details>
+  <summary><b>Community Maintained Packages</b></summary>
+
+  Available via [pkgx](https://pkgx.sh/). Package script [here](https://github.com/pkgxdev/pantry/blob/main/projects/supabase.com/cli/package.yml).
+  To install in your working directory:
+
+  ```bash
+  pkgx install supabase
+  ```
+
+  Available via [Nixpkgs](https://nixos.org/). Package script [here](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/supabase-cli/default.nix).
+</details>
+
+### Run the CLI
+
+```bash
+supabase bootstrap
+```
+
+Or using npx:
+
+```bash
+npx supabase bootstrap
+```
+
+The bootstrap command will guide you through the process of setting up a Supabase project using one of the [starter](https://github.com/supabase-community/supabase-samples/blob/main/samples.json) templates.
+
+## Docs
+
+Command & config reference can be found [here](https://supabase.com/docs/reference/cli/about).
+
+## Breaking changes
+
+We follow semantic versioning for changes that directly impact CLI commands, flags, and configurations.
+
+However, due to dependencies on other service images, we cannot guarantee that schema migrations, seed.sql, and generated types will always work for the same CLI major version. If you need such guarantees, we encourage you to pin a specific version of CLI in package.json.
+
+## Developing
+
+To run from source:
+
+```sh
+# Go >= 1.22
+go run . help
+```

@@ -75,7 +75,7 @@
 		<string>applinks:qraft.gothcorp.io</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>QRaft needs access to your camera to take photos for your profile picture.</string>
+	<string>QRaft needs access to your camera to scan QR codes and take photos for your profile picture.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>QRaft needs access to your photo library to select images for your profile picture.</string>
 </dict>

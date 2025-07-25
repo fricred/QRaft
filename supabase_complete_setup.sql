@@ -8,7 +8,7 @@
 
 -- Users table (main profile data)
 CREATE TABLE IF NOT EXISTS users (
-    id TEXT PRIMARY KEY,
+    id UUID PRIMARY KEY,
     email TEXT NOT NULL,
     display_name TEXT,
     photo_url TEXT,
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- QR Codes table
 CREATE TABLE IF NOT EXISTS qr_codes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id TEXT NOT NULL,
+    user_id UUID NOT NULL,
     qr_type TEXT NOT NULL,
     content TEXT NOT NULL,
     qr_data TEXT NOT NULL,
@@ -41,10 +41,11 @@ CREATE TABLE IF NOT EXISTS qr_codes (
 -- Scan History table
 CREATE TABLE IF NOT EXISTS scan_history (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id TEXT NOT NULL,
-    qr_type TEXT NOT NULL,
-    content TEXT NOT NULL,
-    scanned_data TEXT NOT NULL,
+    user_id UUID NOT NULL,
+    raw_value TEXT NOT NULL,           -- The actual QR code content
+    qr_type TEXT NOT NULL,             -- Type: url, text, wifi, email, etc.
+    display_value TEXT NOT NULL,       -- Human-readable version
+    parsed_data JSONB,                 -- Structured parsed data
     scanned_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -74,7 +75,7 @@ CREATE TABLE IF NOT EXISTS products (
 -- Orders table
 CREATE TABLE IF NOT EXISTS orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id TEXT NOT NULL,
+    user_id UUID NOT NULL,
     status TEXT NOT NULL DEFAULT 'pending',
     total_amount DECIMAL(10,2) NOT NULL,
     shipping_address JSONB,
@@ -149,55 +150,55 @@ ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 -- USERS TABLE POLICIES
 CREATE POLICY "users_select_own" ON users
   FOR SELECT TO authenticated
-  USING (id = auth.uid()::text);
+  USING (id = auth.uid());
 
 CREATE POLICY "users_insert_own" ON users
   FOR INSERT TO authenticated
-  WITH CHECK (id = auth.uid()::text);
+  WITH CHECK (id = auth.uid());
 
 CREATE POLICY "users_update_own" ON users
   FOR UPDATE TO authenticated
-  USING (id = auth.uid()::text)
-  WITH CHECK (id = auth.uid()::text);
+  USING (id = auth.uid())
+  WITH CHECK (id = auth.uid());
 
 CREATE POLICY "users_delete_own" ON users
   FOR DELETE TO authenticated
-  USING (id = auth.uid()::text);
+  USING (id = auth.uid());
 
 -- QR CODES TABLE POLICIES
 CREATE POLICY "qr_codes_select_own" ON qr_codes
   FOR SELECT TO authenticated
-  USING (user_id = auth.uid()::text);
+  USING (user_id = auth.uid());
 
 CREATE POLICY "qr_codes_insert_own" ON qr_codes
   FOR INSERT TO authenticated
-  WITH CHECK (user_id = auth.uid()::text);
+  WITH CHECK (user_id = auth.uid());
 
 CREATE POLICY "qr_codes_update_own" ON qr_codes
   FOR UPDATE TO authenticated
-  USING (user_id = auth.uid()::text);
+  USING (user_id = auth.uid());
 
 CREATE POLICY "qr_codes_delete_own" ON qr_codes
   FOR DELETE TO authenticated
-  USING (user_id = auth.uid()::text);
+  USING (user_id = auth.uid());
 
 -- SCAN HISTORY TABLE POLICIES
 CREATE POLICY "scan_history_select_own" ON scan_history
   FOR SELECT TO authenticated
-  USING (user_id = auth.uid()::text);
+  USING (user_id = auth.uid());
 
 CREATE POLICY "scan_history_insert_own" ON scan_history
   FOR INSERT TO authenticated
-  WITH CHECK (user_id = auth.uid()::text);
+  WITH CHECK (user_id = auth.uid());
 
 -- ORDERS TABLE POLICIES
 CREATE POLICY "orders_select_own" ON orders
   FOR SELECT TO authenticated
-  USING (user_id = auth.uid()::text);
+  USING (user_id = auth.uid());
 
 CREATE POLICY "orders_insert_own" ON orders
   FOR INSERT TO authenticated
-  WITH CHECK (user_id = auth.uid()::text);
+  WITH CHECK (user_id = auth.uid());
 
 -- ORDER ITEMS TABLE POLICIES (access through orders)
 CREATE POLICY "order_items_select_own" ON order_items
@@ -206,7 +207,7 @@ CREATE POLICY "order_items_select_own" ON order_items
     EXISTS (
       SELECT 1 FROM orders 
       WHERE orders.id = order_items.order_id 
-      AND orders.user_id = auth.uid()::text
+      AND orders.user_id = auth.uid()
     )
   );
 

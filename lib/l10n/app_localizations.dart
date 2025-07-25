@@ -398,12 +398,6 @@ abstract class AppLocalizations {
   /// **'Enter your email address'**
   String get enterEmailForReset;
 
-  /// Cancel button text
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
-  String get cancel;
-
   /// Send reset link button text
   ///
   /// In en, this message translates to:
@@ -883,6 +877,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Crop'**
   String get crop;
+
+  /// Cancel button text
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
 
   /// Rotate left button text
   ///

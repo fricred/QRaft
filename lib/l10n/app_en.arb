@@ -1,4 +1,5 @@
 {
+  "@@locale": "en",
   "appName": "QRaft",
   "@appName": {
     "description": "The name of the application"
@@ -259,11 +260,6 @@
   "enterEmailForReset": "Enter your email address",
   "@enterEmailForReset": {
     "description": "Placeholder text for email field in reset password dialog"
-  },
-  
-  "cancel": "Cancel",
-  "@cancel": {
-    "description": "Cancel button text"
   },
   
   "sendResetLink": "Send",
