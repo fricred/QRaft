@@ -313,14 +313,34 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
             
             const SizedBox(height: 16),
             
-            // History button
-            SecondaryGlassButton(
-              text: l10n.scanHistory,
-              icon: Icons.history_rounded,
-              height: 48,
-              onPressed: () => _navigateToHistory(),
-            ).animate()
-              .fadeIn(duration: 600.ms, delay: 600.ms),
+            // Action buttons row
+            Row(
+              children: [
+                // Gallery button
+                Expanded(
+                  child: SecondaryGlassButton(
+                    text: "Gallery",
+                    icon: Icons.photo_library_rounded,
+                    height: 48,
+                    onPressed: () => _scanFromGallery(),
+                  ).animate()
+                    .fadeIn(duration: 600.ms, delay: 500.ms),
+                ),
+                
+                const SizedBox(width: 12),
+                
+                // History button
+                Expanded(
+                  child: SecondaryGlassButton(
+                    text: l10n.scanHistory,
+                    icon: Icons.history_rounded,
+                    height: 48,
+                    onPressed: () => _navigateToHistory(),
+                  ).animate()
+                    .fadeIn(duration: 600.ms, delay: 600.ms),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -463,5 +483,10 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
         builder: (context) => const ScanHistoryScreen(),
       ),
     );
+  }
+
+  void _scanFromGallery() {
+    ref.read(qrScannerProvider.notifier).scanFromGallery();
+    HapticFeedback.lightImpact();
   }
 }

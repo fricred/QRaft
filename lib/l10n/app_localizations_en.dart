@@ -1,5 +1,3 @@
-// ignore: unused_import
-import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -21,22 +19,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get featureCreateTitle => 'Create Custom QR';
 
   @override
-  String get featureCreateDescription =>
-      'Design and customize your own QR codes for any purpose.';
+  String get featureCreateDescription => 'Design and customize your own QR codes for any purpose.';
 
   @override
   String get featureShareTitle => 'Share Easily';
 
   @override
-  String get featureShareDescription =>
-      'Send your QR codes to your contacts or publish them on your social networks.';
+  String get featureShareDescription => 'Send your QR codes to your contacts or publish them on your social networks.';
 
   @override
   String get featureEngraveTitle => 'Engrave on Materials';
 
   @override
-  String get featureEngraveDescription =>
-      'Get your QR codes engraved on wood, metal and other quality materials.';
+  String get featureEngraveDescription => 'Get your QR codes engraved on wood, metal and other quality materials.';
 
   @override
   String get getStarted => 'Get Started';
@@ -51,8 +46,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeBack => 'Welcome Back';
 
   @override
-  String get signInToContinue =>
-      'Sign in to continue creating amazing QR codes';
+  String get signInToContinue => 'Sign in to continue creating amazing QR codes';
 
   @override
   String get email => 'Email';
@@ -97,8 +91,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmPasswordHint => 'Confirm your password';
 
   @override
-  String get agreeToTerms =>
-      'I agree to the Terms & Conditions and Privacy Policy';
+  String get agreeToTerms => 'I agree to the Terms & Conditions and Privacy Policy';
 
   @override
   String get alreadyHaveAccountSignIn => 'Already have an account? Sign In';
@@ -122,20 +115,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nameMinLength => 'Name must be at least 2 characters';
 
   @override
-  String get passwordMinLengthSignUp =>
-      'Password must be at least 8 characters';
+  String get passwordMinLengthSignUp => 'Password must be at least 8 characters';
 
   @override
-  String get passwordMustContainUppercase =>
-      'Password must contain at least one uppercase letter';
+  String get passwordMustContainUppercase => 'Password must contain at least one uppercase letter';
 
   @override
-  String get passwordMustContainLowercase =>
-      'Password must contain at least one lowercase letter';
+  String get passwordMustContainLowercase => 'Password must contain at least one lowercase letter';
 
   @override
-  String get passwordMustContainNumber =>
-      'Password must contain at least one number';
+  String get passwordMustContainNumber => 'Password must contain at least one number';
 
   @override
   String get pleaseConfirmPassword => 'Please confirm your password';
@@ -157,8 +146,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get forgotPasswordComingSoon =>
-      'Forgot password functionality coming soon';
+  String get forgotPasswordComingSoon => 'Forgot password functionality coming soon';
 
   @override
   String get loginSuccessful => 'Login successful! Welcome back.';
@@ -199,19 +187,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get changeProfilePhoto => 'Change Profile Photo';
 
   @override
-  String get choosePhotoSource =>
-      'Choose how you want to update your profile photo';
+  String get choosePhotoSource => 'Choose how you want to update your profile photo';
 
   @override
   String get updatingProfilePhoto => 'Updating profile photo...';
 
   @override
-  String get profilePhotoUpdatedSuccess =>
-      'Profile photo updated successfully!';
+  String get profilePhotoUpdatedSuccess => 'Profile photo updated successfully!';
 
   @override
-  String get profilePhotoUpdateFailed =>
-      'Failed to update profile photo. Please try again.';
+  String get profilePhotoUpdateFailed => 'Failed to update profile photo. Please try again.';
 
   @override
   String error(String error) {
@@ -380,8 +365,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpSupportDescription => 'Get help and contact support';
 
   @override
-  String get signOutConfirm =>
-      'Are you sure you want to sign out of your account?';
+  String get signOutConfirm => 'Are you sure you want to sign out of your account?';
 
   @override
   String get signingOut => 'Signing out...';
@@ -423,12 +407,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get cameraPermissionDenied =>
-      'QRaft needs access to your camera to take photos for your profile picture. Please allow camera permission in your device settings.';
+  String get cameraPermissionDenied => 'QRaft needs access to your camera to take photos for your profile picture. Please allow camera permission in your device settings.';
 
   @override
-  String get galleryPermissionDenied =>
-      'QRaft needs access to your photo library to select images for your profile picture. Please allow storage permission in your device settings.';
+  String get galleryPermissionDenied => 'QRaft needs access to your photo library to select images for your profile picture. Please allow storage permission in your device settings.';
 
   @override
   String get imageSelectionCancelled => 'Image selection was cancelled.';
@@ -476,15 +458,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clearAllHistory => 'Clear All History';
 
   @override
-  String get clearAllHistoryConfirm =>
-      'Are you sure you want to clear all scan history? This action cannot be undone.';
+  String get clearAllHistoryConfirm => 'Are you sure you want to clear all scan history? This action cannot be undone.';
 
   @override
   String get noScansYet => 'No Scans Yet';
 
   @override
-  String get startScanningToSeeHistory =>
-      'Start scanning QR codes to see your history here';
+  String get startScanningToSeeHistory => 'Start scanning QR codes to see your history here';
 
   @override
   String get startScanning => 'Start Scanning';

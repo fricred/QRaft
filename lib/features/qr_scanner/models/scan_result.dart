@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:uuid/uuid.dart';
 
 /// Represents different types of QR code content
 enum QRCodeType {
@@ -33,7 +34,8 @@ class ScanResult extends Equatable {
 
   /// Factory constructor to create ScanResult from raw QR data
   factory ScanResult.fromRawValue(String rawValue) {
-    final id = DateTime.now().millisecondsSinceEpoch.toString();
+    const uuid = Uuid();
+    final id = uuid.v4(); // Generate proper UUID
     final scannedAt = DateTime.now();
     
     // Determine QR code type and parse data
