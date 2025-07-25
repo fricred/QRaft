@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:qraft/l10n/app_localizations.dart';
 import '../../shared/widgets/glass_button.dart';
 import 'providers/qr_scanner_provider.dart';
@@ -85,12 +86,15 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
             
             // Camera Preview Area
             Expanded(
-              flex: 3,
+              flex: 2,
               child: _buildCameraPreview(isScanning),
             ),
             
             // Bottom controls
-            _buildBottomControls(l10n, isScanning),
+            Expanded(
+              flex: 1,
+              child: _buildBottomControls(l10n, isScanning),
+            ),
           ],
         ),
       ),
@@ -302,12 +306,11 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
   }
 
   Widget _buildBottomControls(AppLocalizations l10n, bool isScanning) {
-    return Flexible(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
             // Scan button
             _buildScanButton(isScanning),
             
@@ -343,8 +346,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildScanButton(bool isScanning) {
@@ -459,21 +461,52 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
   }
 
   void _showErrorSnackBar(String error) {
+    // Check if this is a permission-related error
+    final isPermissionError = error.toLowerCase().contains('permission');
+    
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(error),
+        content: Row(
+          children: [
+            Icon(
+              isPermissionError ? Icons.lock_outlined : Icons.error_outline,
+              color: Colors.white,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Expanded(child: Text(error)),
+          ],
+        ),
         backgroundColor: Colors.red[700],
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        action: SnackBarAction(
-          label: 'Dismiss',
-          textColor: Colors.white,
-          onPressed: () {
-            ref.read(qrScannerProvider.notifier).clearError();
-          },
-        ),
+        action: isPermissionError 
+          ? SnackBarAction(
+              label: 'Settings',
+              textColor: Colors.white,
+              onPressed: () {
+                ref.read(qrScannerProvider.notifier).clearError();
+                _openAppSettings();
+              },
+            )
+          : SnackBarAction(
+              label: 'Dismiss',
+              textColor: Colors.white,
+              onPressed: () {
+                ref.read(qrScannerProvider.notifier).clearError();
+              },
+            ),
       ),
     );
+  }
+
+  void _openAppSettings() {
+    // Import permission_handler to open app settings
+    try {
+      openAppSettings();
+    } catch (e) {
+      debugPrint('❌ Failed to open app settings: $e');
+    }
   }
 
   void _navigateToHistory() {

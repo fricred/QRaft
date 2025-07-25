@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:io';
 import '../models/scan_result.dart';
 import '../../../core/services/supabase_service.dart';
 
@@ -222,11 +224,74 @@ class QRScannerController extends StateNotifier<QRScannerState> {
     }
   }
 
+  /// Check gallery permissions before accessing
+  Future<bool> _checkGalleryPermissions() async {
+    try {
+      // Web doesn't need explicit permission requests for image picker
+      if (kIsWeb) {
+        return true;
+      }
+      
+      // For gallery access on Android
+      if (Platform.isAndroid) {
+        // Use photos permission for Android 13+ (API 33+)
+        final currentStatus = await Permission.photos.status;
+        debugPrint('📱 Current photos permission status: $currentStatus');
+        
+        if (currentStatus.isGranted || currentStatus.isLimited) {
+          return true;
+        }
+        
+        // If denied permanently, we can't request again
+        if (currentStatus.isPermanentlyDenied) {
+          debugPrint('📱 Photos permission permanently denied');
+          state = state.copyWith(
+            isLoading: false,
+            error: 'Gallery access permission permanently denied. Please enable it in device settings.',
+          );
+          return false;
+        }
+        
+        // Request permission
+        final status = await Permission.photos.request();
+        debugPrint('📱 Photos permission request result: $status');
+        
+        if (!(status.isGranted || status.isLimited)) {
+          state = state.copyWith(
+            isLoading: false,
+            error: 'Gallery access permission is required to scan QR codes from photos.',
+          );
+          return false;
+        }
+        
+        return true;
+      }
+      
+      // iOS doesn't need explicit permission for photo library
+      return true;
+      
+    } catch (e) {
+      debugPrint('❌ Error checking gallery permissions: $e');
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Failed to check gallery permissions: $e',
+      );
+      return false;
+    }
+  }
+
   /// Scan QR code from gallery image
   Future<void> scanFromGallery() async {
     try {
       state = state.copyWith(isLoading: true, error: null);
       debugPrint('📷 Opening gallery for QR scan...');
+
+      // Check permissions first
+      final hasPermission = await _checkGalleryPermissions();
+      if (!hasPermission) {
+        debugPrint('❌ Gallery permission denied');
+        return;
+      }
 
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(
