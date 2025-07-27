@@ -819,5 +819,155 @@
   "startScanning": "Start Scanning",
   "@startScanning": {
     "description": "Button text to start scanning"
+  },
+
+  "createQRCode": "Create QR Code",
+  "@createQRCode": {
+    "description": "QR Generation screen title"
+  },
+
+  "chooseQRType": "Choose the type of QR code you want to create",
+  "@chooseQRType": {
+    "description": "QR Generation subtitle"
+  },
+
+  "qrFormWebsiteUrl": "Website URL",
+  "@qrFormWebsiteUrl": {
+    "description": "Website URL form title"
+  },
+
+  "qrFormWebsiteSubtitle": "Create a QR code that opens a website",
+  "@qrFormWebsiteSubtitle": {
+    "description": "Website URL form subtitle"
+  },
+
+  "urlFieldLabel": "Website URL",
+  "@urlFieldLabel": {
+    "description": "URL field label in QR form"
+  },
+
+  "urlFieldPlaceholder": "https://example.com",
+  "@urlFieldPlaceholder": {
+    "description": "URL field placeholder"
+  },
+
+  "continueButton": "Continue",
+  "@continueButton": {
+    "description": "Continue button text"
+  },
+
+  "urlValidationEmpty": "Please enter a URL",
+  "@urlValidationEmpty": {
+    "description": "URL validation error - empty field"
+  },
+
+  "urlValidationSpaces": "URL cannot contain spaces",
+  "@urlValidationSpaces": {
+    "description": "URL validation error - contains spaces"
+  },
+
+  "urlValidationInvalid": "Please enter a valid URL",
+  "@urlValidationInvalid": {
+    "description": "URL validation error - invalid format"
+  },
+
+  "urlValidationDomain": "Please enter a valid domain",
+  "@urlValidationDomain": {
+    "description": "URL validation error - invalid domain"
+  },
+
+  "customizeQR": "Customize Your QR",
+  "@customizeQR": {
+    "description": "QR Customization screen title"
+  },
+
+  "customizeQRSubtitle": "Make your QR code unique",
+  "@customizeQRSubtitle": {
+    "description": "QR Customization subtitle"
+  },
+
+  "foregroundColor": "Foreground Color",
+  "@foregroundColor": {
+    "description": "Foreground color section title"
+  },
+
+  "backgroundColor": "Background Color",
+  "@backgroundColor": {
+    "description": "Background color section title"
+  },
+
+  "eyeColor": "Eye Color",
+  "@eyeColor": {
+    "description": "Eye color section title"
+  },
+
+  "qrSize": "Size",
+  "@qrSize": {
+    "description": "QR size section title"
+  },
+
+  "templates": "Templates",
+  "@templates": {
+    "description": "Template selection title"
+  },
+
+  "logo": "Logo",
+  "@logo": {
+    "description": "Logo section title"
+  },
+
+  "addLogo": "Add Logo",
+  "@addLogo": {
+    "description": "Add logo button text"
+  },
+
+  "removeLogo": "Remove Logo",
+  "@removeLogo": {
+    "description": "Remove logo button text"
+  },
+
+  "preview": "Preview",
+  "@preview": {
+    "description": "Preview button text"
+  },
+
+  "generateQR": "Generate QR",
+  "@generateQR": {
+    "description": "Generate QR button text"
+  },
+
+  "qrFormCompleteFields": "Complete all fields correctly to continue",
+  "@qrFormCompleteFields": {
+    "description": "Message shown when form fields are incomplete"
+  },
+
+  "qrFormStepEnterInfo": "Enter information",
+  "@qrFormStepEnterInfo": {
+    "description": "Step 1 title for QR form"
+  },
+
+  "qrFormStepCustomize": "Customize appearance",
+  "@qrFormStepCustomize": {
+    "description": "Step 2 title for QR form"
+  },
+
+  "qrFormStepPreviewSave": "Preview & save",
+  "@qrFormStepPreviewSave": {
+    "description": "Step 3 title for QR form"
+  },
+
+  "qrFormButtonContinue": "Continue",
+  "@qrFormButtonContinue": {
+    "description": "Continue button text in QR form"
+  },
+
+  "qrFormButtonPreview": "Preview",
+  "@qrFormButtonPreview": {
+    "description": "Preview button text in QR form"
+  },
+
+  "qrFormButtonSave": "Save QR Code",
+  "@qrFormButtonSave": {
+    "description": "Save button text in QR form"
   }
 }

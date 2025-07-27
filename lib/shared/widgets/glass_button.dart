@@ -47,10 +47,19 @@ class GlassButton extends StatelessWidget {
       Colors.grey[700]!.withValues(alpha: 0.9),
     ];
 
-    final effectiveGradientColors = isLoading ? loadingGradientColors : [
-      defaultGradientColors[0].withValues(alpha: 0.8),
-      defaultGradientColors[1].withValues(alpha: 0.9),
+    final disabledGradientColors = [
+      Colors.grey[800]!.withValues(alpha: 0.4),
+      Colors.grey[900]!.withValues(alpha: 0.5),
     ];
+
+    final effectiveGradientColors = isLoading 
+        ? loadingGradientColors 
+        : onPressed == null 
+            ? disabledGradientColors
+            : [
+                defaultGradientColors[0].withValues(alpha: 0.8),
+                defaultGradientColors[1].withValues(alpha: 0.9),
+              ];
 
     final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(16);
 
@@ -61,7 +70,7 @@ class GlassButton extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: effectiveBorderRadius,
         // Glow exterior que no afecta el tamaño del botón
-        boxShadow: isLoading ? [] : [
+        boxShadow: isLoading || onPressed == null ? [] : [
           // Glow principal - más sutil
           BoxShadow(
             color: defaultGradientColors[0].withValues(alpha: 0.3),
@@ -157,7 +166,7 @@ class GlassButton extends StatelessWidget {
                                 valueColor: AlwaysStoppedAnimation<Color>(textColor!),
                               ),
                             )
-                          : _buildButtonContent(),
+                          : _buildButtonContent(onPressed != null),
                     ),
                   ),
                 ),
@@ -169,14 +178,16 @@ class GlassButton extends StatelessWidget {
     );
   }
 
-  Widget _buildButtonContent() {
+  Widget _buildButtonContent(bool isEnabled) {
+    final effectiveTextColor = isEnabled ? textColor : Colors.grey[500];
+    
     if (icon == null) {
       return Text(
         text,
         style: TextStyle(
           fontSize: fontSize,
           fontWeight: fontWeight,
-          color: textColor,
+          color: effectiveTextColor,
         ),
       );
     }
@@ -184,7 +195,7 @@ class GlassButton extends StatelessWidget {
     final iconWidget = Icon(
       icon,
       size: iconSize,
-      color: textColor,
+      color: effectiveTextColor,
     );
 
     final textWidget = Text(
@@ -192,7 +203,7 @@ class GlassButton extends StatelessWidget {
       style: TextStyle(
         fontSize: fontSize,
         fontWeight: fontWeight,
-        color: textColor,
+        color: effectiveTextColor,
       ),
     );
 

@@ -468,4 +468,94 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get startScanning => 'Comenzar a escanear';
+
+  @override
+  String get createQRCode => 'Crear Código QR';
+
+  @override
+  String get chooseQRType => 'Elige el tipo de código QR que quieres crear';
+
+  @override
+  String get qrFormWebsiteUrl => 'URL del Sitio Web';
+
+  @override
+  String get qrFormWebsiteSubtitle => 'Crea un código QR que abra un sitio web';
+
+  @override
+  String get urlFieldLabel => 'URL del Sitio Web';
+
+  @override
+  String get urlFieldPlaceholder => 'https://ejemplo.com';
+
+  @override
+  String get continueButton => 'Continuar';
+
+  @override
+  String get urlValidationEmpty => 'Por favor ingresa una URL';
+
+  @override
+  String get urlValidationSpaces => 'La URL no puede contener espacios';
+
+  @override
+  String get urlValidationInvalid => 'Por favor ingresa una URL válida';
+
+  @override
+  String get urlValidationDomain => 'Por favor ingresa un dominio válido';
+
+  @override
+  String get customizeQR => 'Personaliza tu QR';
+
+  @override
+  String get customizeQRSubtitle => 'Haz único tu código QR';
+
+  @override
+  String get foregroundColor => 'Color Principal';
+
+  @override
+  String get backgroundColor => 'Color de Fondo';
+
+  @override
+  String get eyeColor => 'Color de Ojos';
+
+  @override
+  String get qrSize => 'Tamaño';
+
+  @override
+  String get templates => 'Plantillas';
+
+  @override
+  String get logo => 'Logo';
+
+  @override
+  String get addLogo => 'Agregar Logo';
+
+  @override
+  String get removeLogo => 'Quitar Logo';
+
+  @override
+  String get preview => 'Vista Previa';
+
+  @override
+  String get generateQR => 'Generar QR';
+
+  @override
+  String get qrFormCompleteFields => 'Completa todos los campos correctamente para continuar';
+
+  @override
+  String get qrFormStepEnterInfo => 'Ingresa información';
+
+  @override
+  String get qrFormStepCustomize => 'Personalizar apariencia';
+
+  @override
+  String get qrFormStepPreviewSave => 'Vista previa y guardar';
+
+  @override
+  String get qrFormButtonContinue => 'Continuar';
+
+  @override
+  String get qrFormButtonPreview => 'Vista Previa';
+
+  @override
+  String get qrFormButtonSave => 'Guardar Código QR';
 }

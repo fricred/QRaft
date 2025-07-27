@@ -468,4 +468,94 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get startScanning => 'Start Scanning';
+
+  @override
+  String get createQRCode => 'Create QR Code';
+
+  @override
+  String get chooseQRType => 'Choose the type of QR code you want to create';
+
+  @override
+  String get qrFormWebsiteUrl => 'Website URL';
+
+  @override
+  String get qrFormWebsiteSubtitle => 'Create a QR code that opens a website';
+
+  @override
+  String get urlFieldLabel => 'Website URL';
+
+  @override
+  String get urlFieldPlaceholder => 'https://example.com';
+
+  @override
+  String get continueButton => 'Continue';
+
+  @override
+  String get urlValidationEmpty => 'Please enter a URL';
+
+  @override
+  String get urlValidationSpaces => 'URL cannot contain spaces';
+
+  @override
+  String get urlValidationInvalid => 'Please enter a valid URL';
+
+  @override
+  String get urlValidationDomain => 'Please enter a valid domain';
+
+  @override
+  String get customizeQR => 'Customize Your QR';
+
+  @override
+  String get customizeQRSubtitle => 'Make your QR code unique';
+
+  @override
+  String get foregroundColor => 'Foreground Color';
+
+  @override
+  String get backgroundColor => 'Background Color';
+
+  @override
+  String get eyeColor => 'Eye Color';
+
+  @override
+  String get qrSize => 'Size';
+
+  @override
+  String get templates => 'Templates';
+
+  @override
+  String get logo => 'Logo';
+
+  @override
+  String get addLogo => 'Add Logo';
+
+  @override
+  String get removeLogo => 'Remove Logo';
+
+  @override
+  String get preview => 'Preview';
+
+  @override
+  String get generateQR => 'Generate QR';
+
+  @override
+  String get qrFormCompleteFields => 'Complete all fields correctly to continue';
+
+  @override
+  String get qrFormStepEnterInfo => 'Enter information';
+
+  @override
+  String get qrFormStepCustomize => 'Customize appearance';
+
+  @override
+  String get qrFormStepPreviewSave => 'Preview & save';
+
+  @override
+  String get qrFormButtonContinue => 'Continue';
+
+  @override
+  String get qrFormButtonPreview => 'Preview';
+
+  @override
+  String get qrFormButtonSave => 'Save QR Code';
 }

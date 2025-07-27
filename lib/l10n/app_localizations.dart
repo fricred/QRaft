@@ -964,6 +964,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start Scanning'**
   String get startScanning;
+
+  /// QR Generation screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Create QR Code'**
+  String get createQRCode;
+
+  /// QR Generation subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the type of QR code you want to create'**
+  String get chooseQRType;
+
+  /// Website URL form title
+  ///
+  /// In en, this message translates to:
+  /// **'Website URL'**
+  String get qrFormWebsiteUrl;
+
+  /// Website URL form subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Create a QR code that opens a website'**
+  String get qrFormWebsiteSubtitle;
+
+  /// URL field label in QR form
+  ///
+  /// In en, this message translates to:
+  /// **'Website URL'**
+  String get urlFieldLabel;
+
+  /// URL field placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'https://example.com'**
+  String get urlFieldPlaceholder;
+
+  /// Continue button text
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueButton;
+
+  /// URL validation error - empty field
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a URL'**
+  String get urlValidationEmpty;
+
+  /// URL validation error - contains spaces
+  ///
+  /// In en, this message translates to:
+  /// **'URL cannot contain spaces'**
+  String get urlValidationSpaces;
+
+  /// URL validation error - invalid format
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid URL'**
+  String get urlValidationInvalid;
+
+  /// URL validation error - invalid domain
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid domain'**
+  String get urlValidationDomain;
+
+  /// QR Customization screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Customize Your QR'**
+  String get customizeQR;
+
+  /// QR Customization subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Make your QR code unique'**
+  String get customizeQRSubtitle;
+
+  /// Foreground color section title
+  ///
+  /// In en, this message translates to:
+  /// **'Foreground Color'**
+  String get foregroundColor;
+
+  /// Background color section title
+  ///
+  /// In en, this message translates to:
+  /// **'Background Color'**
+  String get backgroundColor;
+
+  /// Eye color section title
+  ///
+  /// In en, this message translates to:
+  /// **'Eye Color'**
+  String get eyeColor;
+
+  /// QR size section title
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get qrSize;
+
+  /// Template selection title
+  ///
+  /// In en, this message translates to:
+  /// **'Templates'**
+  String get templates;
+
+  /// Logo section title
+  ///
+  /// In en, this message translates to:
+  /// **'Logo'**
+  String get logo;
+
+  /// Add logo button text
+  ///
+  /// In en, this message translates to:
+  /// **'Add Logo'**
+  String get addLogo;
+
+  /// Remove logo button text
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Logo'**
+  String get removeLogo;
+
+  /// Preview button text
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get preview;
+
+  /// Generate QR button text
+  ///
+  /// In en, this message translates to:
+  /// **'Generate QR'**
+  String get generateQR;
+
+  /// Message shown when form fields are incomplete
+  ///
+  /// In en, this message translates to:
+  /// **'Complete all fields correctly to continue'**
+  String get qrFormCompleteFields;
+
+  /// Step 1 title for QR form
+  ///
+  /// In en, this message translates to:
+  /// **'Enter information'**
+  String get qrFormStepEnterInfo;
+
+  /// Step 2 title for QR form
+  ///
+  /// In en, this message translates to:
+  /// **'Customize appearance'**
+  String get qrFormStepCustomize;
+
+  /// Step 3 title for QR form
+  ///
+  /// In en, this message translates to:
+  /// **'Preview & save'**
+  String get qrFormStepPreviewSave;
+
+  /// Continue button text in QR form
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get qrFormButtonContinue;
+
+  /// Preview button text in QR form
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get qrFormButtonPreview;
+
+  /// Save button text in QR form
+  ///
+  /// In en, this message translates to:
+  /// **'Save QR Code'**
+  String get qrFormButtonSave;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

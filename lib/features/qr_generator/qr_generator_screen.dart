@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../shared/widgets/glass_button.dart';
+import 'domain/entities/qr_type.dart';
+import 'presentation/pages/qr_form_screen.dart';
 
 class QRGeneratorScreen extends StatefulWidget {
   const QRGeneratorScreen({super.key});
@@ -52,62 +53,13 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
                   childAspectRatio: 0.9,
-                  children: [
-                    _buildQRTypeCard(
-                      title: 'Personal Info',
-                      subtitle: 'Contact details\nvCard format',
-                      icon: Icons.person_rounded,
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
-                      ),
-                      delay: 200,
-                    ),
-                    _buildQRTypeCard(
-                      title: 'Website URL',
-                      subtitle: 'Links to websites\nand web pages',
-                      icon: Icons.link_rounded,
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF1A73E8), Color(0xFF6366F1)],
-                      ),
-                      delay: 300,
-                    ),
-                    _buildQRTypeCard(
-                      title: 'WiFi Network',
-                      subtitle: 'Share WiFi\ncredentials easily',
-                      icon: Icons.wifi_rounded,
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF8B5CF6), Color(0xFF1A73E8)],
-                      ),
-                      delay: 400,
-                    ),
-                    _buildQRTypeCard(
-                      title: 'Text Message',
-                      subtitle: 'Plain text content\nfor any purpose',
-                      icon: Icons.text_fields_rounded,
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFEF4444), Color(0xFF8B5CF6)],
-                      ),
-                      delay: 500,
-                    ),
-                    _buildQRTypeCard(
-                      title: 'Email',
-                      subtitle: 'Send email with\npre-filled content',
-                      icon: Icons.email_rounded,
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFF59E0B), Color(0xFFEF4444)],
-                      ),
-                      delay: 600,
-                    ),
-                    _buildQRTypeCard(
-                      title: 'Location',
-                      subtitle: 'GPS coordinates\nand map points',
-                      icon: Icons.location_on_rounded,
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF10B981), Color(0xFF00FF88)],
-                      ),
-                      delay: 700,
-                    ),
-                  ],
+                  children: QRType.values.map((qrType) {
+                    final index = QRType.values.indexOf(qrType);
+                    return _buildQRTypeCard(
+                      qrType: qrType,
+                      delay: 200 + (index * 100),
+                    );
+                  }).toList(),
                 ),
               ),
               
@@ -183,10 +135,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
   }
 
   Widget _buildQRTypeCard({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Gradient gradient,
+    required QRType qrType,
     required int delay,
   }) {
     return Container(
@@ -210,8 +159,11 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () {
-            // Navigate to specific QR generator form
-            _showComingSoonDialog(context, title);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => QRFormScreen(qrType: qrType),
+              ),
+            );
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -222,25 +174,27 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
                   width: 52,
                   height: 52,
                   decoration: BoxDecoration(
-                    gradient: gradient,
+                    gradient: LinearGradient(
+                      colors: qrType.gradientColors.map((c) => Color(c)).toList(),
+                    ),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: gradient.colors.first.withValues(alpha: 0.3),
+                        color: Color(qrType.gradientColors.first).withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
                     ],
                   ),
                   child: Icon(
-                    icon,
+                    _getIconData(qrType.iconName),
                     color: Colors.white,
                     size: 28,
                   ),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  title,
+                  qrType.displayName,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -249,7 +203,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  subtitle,
+                  qrType.description,
                   style: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 13,
@@ -266,64 +220,23 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
       .slideY(begin: 0.3, duration: 600.ms, delay: delay.ms);
   }
 
-  void _showComingSoonDialog(BuildContext context, String qrType) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: const Color(0xFF2E2E2E),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(
-                    Icons.construction_rounded,
-                    color: Colors.white,
-                    size: 32,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Coming Soon!',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '$qrType QR generator is under development and will be available soon.',
-                  style: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 14,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                PrimaryGlassButton(
-                  text: 'Got it',
-                  icon: Icons.check_rounded,
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+  IconData _getIconData(String iconName) {
+    switch (iconName) {
+      case 'person_rounded':
+        return Icons.person_rounded;
+      case 'link_rounded':
+        return Icons.link_rounded;
+      case 'wifi_rounded':
+        return Icons.wifi_rounded;
+      case 'text_fields_rounded':
+        return Icons.text_fields_rounded;
+      case 'email_rounded':
+        return Icons.email_rounded;
+      case 'location_on_rounded':
+        return Icons.location_on_rounded;
+      default:
+        return Icons.qr_code_rounded;
+    }
   }
+
 }
