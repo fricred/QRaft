@@ -76,7 +76,7 @@ class _QRFormScreenState extends ConsumerState<QRFormScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.qrType.displayName,
+              widget.qrType.getDisplayName(context),
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -774,7 +774,7 @@ class _QRFormScreenState extends ConsumerState<QRFormScreen> {
       case QRType.wifi:
       case QRType.email:
       case QRType.location:
-        return 'Coming soon - ${widget.qrType.displayName}';
+        return 'Coming soon - ${widget.qrType.getDisplayName(context)}';
     }
   }
 

@@ -1,32 +1,54 @@
+import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
+
 enum QRType {
-  personalInfo('Personal Info', 'vcard'),
-  url('Website URL', 'url'),
-  wifi('WiFi Network', 'wifi'),
-  text('Text Message', 'text'),
-  email('Email', 'email'),
-  location('Location', 'geo');
+  personalInfo('personalInfo', 'vcard'),
+  url('websiteUrl', 'url'),
+  wifi('wifi', 'wifi'),
+  text('text', 'text'),
+  email('email', 'email'),
+  location('location', 'geo');
 
-  const QRType(this.displayName, this.identifier);
+  const QRType(this.translationKey, this.identifier);
 
-  final String displayName;
+  final String translationKey;
   final String identifier;
 }
 
 extension QRTypeExtension on QRType {
-  String get description {
+  String getDisplayName(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     switch (this) {
       case QRType.personalInfo:
-        return 'Contact details\nvCard format';
+        return l10n.qrTypePersonalInfo;
       case QRType.url:
-        return 'Links to websites\nand web pages';
+        return l10n.qrTypeWebsiteUrl;
       case QRType.wifi:
-        return 'Share WiFi\ncredentials easily';
+        return l10n.qrTypeWifi;
       case QRType.text:
-        return 'Plain text content\nfor any purpose';
+        return l10n.qrTypeText;
       case QRType.email:
-        return 'Send email with\npre-filled content';
+        return l10n.qrTypeEmail;
       case QRType.location:
-        return 'GPS coordinates\nand map points';
+        return l10n.qrTypeLocation;
+    }
+  }
+
+  String getDescription(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (this) {
+      case QRType.personalInfo:
+        return l10n.qrTypePersonalInfoDesc;
+      case QRType.url:
+        return l10n.qrTypeWebsiteUrlDesc;
+      case QRType.wifi:
+        return l10n.qrTypeWifiDesc;
+      case QRType.text:
+        return l10n.qrTypeTextDesc;
+      case QRType.email:
+        return l10n.qrTypeEmailDesc;
+      case QRType.location:
+        return l10n.qrTypeLocationDesc;
     }
   }
 

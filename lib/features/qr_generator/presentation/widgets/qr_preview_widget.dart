@@ -88,7 +88,7 @@ class QRPreviewWidget extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  qrType.displayName,
+                  qrType.getDisplayName(context),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,

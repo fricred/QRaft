@@ -969,5 +969,85 @@
   "qrFormButtonSave": "Save QR Code",
   "@qrFormButtonSave": {
     "description": "Save button text in QR form"
+  },
+
+  "generateQRTitle": "Generate QR",
+  "@generateQRTitle": {
+    "description": "QR Generator screen main title"
+  },
+
+  "generateQRSubtitle": "Create QR codes for various purposes",
+  "@generateQRSubtitle": {
+    "description": "QR Generator screen subtitle"
+  },
+
+  "templateLibrary": "Template Library",
+  "@templateLibrary": {
+    "description": "Template library section title"
+  },
+
+  "templateLibraryDescription": "Browse pre-designed QR templates",
+  "@templateLibraryDescription": {
+    "description": "Template library section description"
+  },
+
+  "qrTypePersonalInfo": "Personal Info",
+  "@qrTypePersonalInfo": {
+    "description": "Personal info QR type name"
+  },
+
+  "qrTypePersonalInfoDesc": "Contact details\nvCard format",
+  "@qrTypePersonalInfoDesc": {
+    "description": "Personal info QR type description"
+  },
+
+  "qrTypeWebsiteUrl": "Website URL",
+  "@qrTypeWebsiteUrl": {
+    "description": "Website URL QR type name"
+  },
+
+  "qrTypeWebsiteUrlDesc": "Links to websites\nand web pages",
+  "@qrTypeWebsiteUrlDesc": {
+    "description": "Website URL QR type description"
+  },
+
+  "qrTypeWifi": "WiFi Network",
+  "@qrTypeWifi": {
+    "description": "WiFi QR type name"
+  },
+
+  "qrTypeWifiDesc": "Share WiFi\ncredentials easily",
+  "@qrTypeWifiDesc": {
+    "description": "WiFi QR type description"
+  },
+
+  "qrTypeText": "Text Message",
+  "@qrTypeText": {
+    "description": "Text QR type name"
+  },
+
+  "qrTypeTextDesc": "Plain text content\nfor any purpose",
+  "@qrTypeTextDesc": {
+    "description": "Text QR type description"
+  },
+
+  "qrTypeEmail": "Email",
+  "@qrTypeEmail": {
+    "description": "Email QR type name"
+  },
+
+  "qrTypeEmailDesc": "Send email with\npre-filled content",
+  "@qrTypeEmailDesc": {
+    "description": "Email QR type description"
+  },
+
+  "qrTypeLocation": "Location",
+  "@qrTypeLocation": {
+    "description": "Location QR type name"
+  },
+
+  "qrTypeLocationDesc": "GPS coordinates\nand map points",
+  "@qrTypeLocationDesc": {
+    "description": "Location QR type description"
   }
 }

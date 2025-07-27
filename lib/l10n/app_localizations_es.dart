@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -19,19 +21,22 @@ class AppLocalizationsEs extends AppLocalizations {
   String get featureCreateTitle => 'Crea QR personalizados';
 
   @override
-  String get featureCreateDescription => 'Diseña y personaliza tus propios códigos QR para cualquier propósito.';
+  String get featureCreateDescription =>
+      'Diseña y personaliza tus propios códigos QR para cualquier propósito.';
 
   @override
   String get featureShareTitle => 'Comparte fácilmente';
 
   @override
-  String get featureShareDescription => 'Envía tus QR a tus contactos o publícalos en tus redes sociales.';
+  String get featureShareDescription =>
+      'Envía tus QR a tus contactos o publícalos en tus redes sociales.';
 
   @override
   String get featureEngraveTitle => 'Graba en materiales';
 
   @override
-  String get featureEngraveDescription => 'Obtén tus QR grabados en madera, metal y otros materiales de calidad.';
+  String get featureEngraveDescription =>
+      'Obtén tus QR grabados en madera, metal y otros materiales de calidad.';
 
   @override
   String get getStarted => 'Comenzar';
@@ -46,7 +51,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get welcomeBack => 'Bienvenido de Nuevo';
 
   @override
-  String get signInToContinue => 'Inicia sesión para continuar creando códigos QR increíbles';
+  String get signInToContinue =>
+      'Inicia sesión para continuar creando códigos QR increíbles';
 
   @override
   String get email => 'Correo Electrónico';
@@ -73,7 +79,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get createAccount => 'Crear Cuenta';
 
   @override
-  String get joinQRaft => 'Únete a QRaft y comienza a crear códigos QR increíbles';
+  String get joinQRaft =>
+      'Únete a QRaft y comienza a crear códigos QR increíbles';
 
   @override
   String get fullName => 'Nombre Completo';
@@ -91,7 +98,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get confirmPasswordHint => 'Confirma tu contraseña';
 
   @override
-  String get agreeToTerms => 'Acepto los Términos y Condiciones y la Política de Privacidad';
+  String get agreeToTerms =>
+      'Acepto los Términos y Condiciones y la Política de Privacidad';
 
   @override
   String get alreadyHaveAccountSignIn => '¿Ya tienes cuenta? Iniciar Sesión';
@@ -100,13 +108,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get pleaseEnterEmail => 'Por favor ingresa tu correo electrónico';
 
   @override
-  String get pleaseEnterValidEmail => 'Por favor ingresa un correo electrónico válido';
+  String get pleaseEnterValidEmail =>
+      'Por favor ingresa un correo electrónico válido';
 
   @override
   String get pleaseEnterPassword => 'Por favor ingresa tu contraseña';
 
   @override
-  String get passwordMinLength => 'La contraseña debe tener al menos 6 caracteres';
+  String get passwordMinLength =>
+      'La contraseña debe tener al menos 6 caracteres';
 
   @override
   String get pleaseEnterName => 'Por favor ingresa tu nombre';
@@ -115,16 +125,20 @@ class AppLocalizationsEs extends AppLocalizations {
   String get nameMinLength => 'El nombre debe tener al menos 2 caracteres';
 
   @override
-  String get passwordMinLengthSignUp => 'La contraseña debe tener al menos 8 caracteres';
+  String get passwordMinLengthSignUp =>
+      'La contraseña debe tener al menos 8 caracteres';
 
   @override
-  String get passwordMustContainUppercase => 'La contraseña debe contener al menos una letra mayúscula';
+  String get passwordMustContainUppercase =>
+      'La contraseña debe contener al menos una letra mayúscula';
 
   @override
-  String get passwordMustContainLowercase => 'La contraseña debe contener al menos una letra minúscula';
+  String get passwordMustContainLowercase =>
+      'La contraseña debe contener al menos una letra minúscula';
 
   @override
-  String get passwordMustContainNumber => 'La contraseña debe contener al menos un número';
+  String get passwordMustContainNumber =>
+      'La contraseña debe contener al menos un número';
 
   @override
   String get pleaseConfirmPassword => 'Por favor confirma tu contraseña';
@@ -133,7 +147,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get passwordsDoNotMatch => 'Las contraseñas no coinciden';
 
   @override
-  String get pleaseAgreeToTerms => 'Por favor acepta los Términos y Condiciones';
+  String get pleaseAgreeToTerms =>
+      'Por favor acepta los Términos y Condiciones';
 
   @override
   String loginAttempt(String email) {
@@ -146,10 +161,12 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get forgotPasswordComingSoon => 'La funcionalidad de recuperar contraseña estará disponible pronto';
+  String get forgotPasswordComingSoon =>
+      'La funcionalidad de recuperar contraseña estará disponible pronto';
 
   @override
-  String get loginSuccessful => '¡Inicio de sesión exitoso! Bienvenido de vuelta.';
+  String get loginSuccessful =>
+      '¡Inicio de sesión exitoso! Bienvenido de vuelta.';
 
   @override
   String get resetPassword => 'Restablecer Contraseña';
@@ -187,16 +204,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get changeProfilePhoto => 'Cambiar Foto de Perfil';
 
   @override
-  String get choosePhotoSource => 'Elige cómo quieres actualizar tu foto de perfil';
+  String get choosePhotoSource =>
+      'Elige cómo quieres actualizar tu foto de perfil';
 
   @override
   String get updatingProfilePhoto => 'Actualizando foto de perfil...';
 
   @override
-  String get profilePhotoUpdatedSuccess => '¡Foto de perfil actualizada con éxito!';
+  String get profilePhotoUpdatedSuccess =>
+      '¡Foto de perfil actualizada con éxito!';
 
   @override
-  String get profilePhotoUpdateFailed => 'Error al actualizar la foto de perfil. Inténtalo de nuevo.';
+  String get profilePhotoUpdateFailed =>
+      'Error al actualizar la foto de perfil. Inténtalo de nuevo.';
 
   @override
   String error(String error) {
@@ -304,7 +324,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get privacySecurity => 'Privacidad y Seguridad';
 
   @override
-  String get privacySecurityDescription => 'Administra tu configuración de privacidad';
+  String get privacySecurityDescription =>
+      'Administra tu configuración de privacidad';
 
   @override
   String get comingSoon => 'Próximamente';
@@ -365,7 +386,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get helpSupportDescription => 'Obtén ayuda y contacta al soporte';
 
   @override
-  String get signOutConfirm => '¿Estás seguro de que quieres cerrar sesión en tu cuenta?';
+  String get signOutConfirm =>
+      '¿Estás seguro de que quieres cerrar sesión en tu cuenta?';
 
   @override
   String get signingOut => 'Cerrando sesión...';
@@ -407,10 +429,12 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get cameraPermissionDenied => 'QRaft necesita acceso a tu cámara para tomar fotos para tu imagen de perfil. Permite el acceso a la cámara en la configuración de tu dispositivo.';
+  String get cameraPermissionDenied =>
+      'QRaft necesita acceso a tu cámara para tomar fotos para tu imagen de perfil. Permite el acceso a la cámara en la configuración de tu dispositivo.';
 
   @override
-  String get galleryPermissionDenied => 'QRaft necesita acceso a tu galería de fotos para seleccionar imágenes para tu imagen de perfil. Permite el acceso al almacenamiento en la configuración de tu dispositivo.';
+  String get galleryPermissionDenied =>
+      'QRaft necesita acceso a tu galería de fotos para seleccionar imágenes para tu imagen de perfil. Permite el acceso al almacenamiento en la configuración de tu dispositivo.';
 
   @override
   String get imageSelectionCancelled => 'Selección de imagen cancelada.';
@@ -434,7 +458,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get rotateRight => 'Rotar Derecha';
 
   @override
-  String get cropInstruction => 'Ajusta el área de recorte arrastrando las esquinas';
+  String get cropInstruction =>
+      'Ajusta el área de recorte arrastrando las esquinas';
 
   @override
   String get cropFailed => 'Error al recortar imagen. Inténtalo de nuevo.';
@@ -458,13 +483,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get clearAllHistory => 'Borrar todo el historial';
 
   @override
-  String get clearAllHistoryConfirm => '¿Estás seguro de que deseas borrar todo el historial?';
+  String get clearAllHistoryConfirm =>
+      '¿Estás seguro de que deseas borrar todo el historial?';
 
   @override
   String get noScansYet => 'Aún no hay escaneos';
 
   @override
-  String get startScanningToSeeHistory => 'Comienza a escanear para ver el historial';
+  String get startScanningToSeeHistory =>
+      'Comienza a escanear para ver el historial';
 
   @override
   String get startScanning => 'Comenzar a escanear';
@@ -539,7 +566,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get generateQR => 'Generar QR';
 
   @override
-  String get qrFormCompleteFields => 'Completa todos los campos correctamente para continuar';
+  String get qrFormCompleteFields =>
+      'Completa todos los campos correctamente para continuar';
 
   @override
   String get qrFormStepEnterInfo => 'Ingresa información';
@@ -558,4 +586,54 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get qrFormButtonSave => 'Guardar Código QR';
+
+  @override
+  String get generateQRTitle => 'Generar QR';
+
+  @override
+  String get generateQRSubtitle => 'Crea códigos QR para varios propósitos';
+
+  @override
+  String get templateLibrary => 'Biblioteca de Plantillas';
+
+  @override
+  String get templateLibraryDescription =>
+      'Explora plantillas de QR prediseñadas';
+
+  @override
+  String get qrTypePersonalInfo => 'Información Personal';
+
+  @override
+  String get qrTypePersonalInfoDesc => 'Detalles de contacto\nFormato vCard';
+
+  @override
+  String get qrTypeWebsiteUrl => 'URL del Sitio Web';
+
+  @override
+  String get qrTypeWebsiteUrlDesc => 'Enlaces a sitios web\ny páginas web';
+
+  @override
+  String get qrTypeWifi => 'Red WiFi';
+
+  @override
+  String get qrTypeWifiDesc => 'Comparte credenciales\nWiFi fácilmente';
+
+  @override
+  String get qrTypeText => 'Mensaje de Texto';
+
+  @override
+  String get qrTypeTextDesc =>
+      'Contenido de texto plano\npara cualquier propósito';
+
+  @override
+  String get qrTypeEmail => 'Correo Electrónico';
+
+  @override
+  String get qrTypeEmailDesc => 'Envía correo con\ncontenido pre-llenado';
+
+  @override
+  String get qrTypeLocation => 'Ubicación';
+
+  @override
+  String get qrTypeLocationDesc => 'Coordenadas GPS\ny puntos del mapa';
 }

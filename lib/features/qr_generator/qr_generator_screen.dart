@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../l10n/app_localizations.dart';
 import 'domain/entities/qr_type.dart';
 import 'presentation/pages/qr_form_screen.dart';
 
@@ -13,6 +14,8 @@ class QRGeneratorScreen extends StatefulWidget {
 class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
       body: SafeArea(
@@ -23,7 +26,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
             children: [
               // Header
               Text(
-                'Generate QR',
+                l10n.generateQRTitle,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -36,7 +39,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
               const SizedBox(height: 8),
               
               Text(
-                'Create QR codes for various purposes',
+                l10n.generateQRSubtitle,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.grey[400],
                   fontSize: 16,
@@ -48,18 +51,26 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
               
               // QR Type Selection Grid
               Expanded(
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.9,
-                  children: QRType.values.map((qrType) {
-                    final index = QRType.values.indexOf(qrType);
-                    return _buildQRTypeCard(
-                      qrType: qrType,
-                      delay: 200 + (index * 100),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final crossAxisCount = constraints.maxWidth > 600 ? 3 : 2;
+                    final aspectRatio = constraints.maxWidth > 600 ? 1.0 : 0.85;
+                    
+                    return GridView.count(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: aspectRatio,
+                      physics: const BouncingScrollPhysics(),
+                      children: QRType.values.map((qrType) {
+                        final index = QRType.values.indexOf(qrType);
+                        return _buildQRTypeCard(
+                          qrType: qrType,
+                          delay: 200 + (index * 100),
+                        );
+                      }).toList(),
                     );
-                  }).toList(),
+                  },
                 ),
               ),
               
@@ -100,15 +111,15 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Template Library',
-                            style: TextStyle(
+                            l10n.templateLibrary,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
-                            'Browse pre-designed QR templates',
+                            l10n.templateLibraryDescription,
                             style: TextStyle(
                               color: Colors.grey[400],
                               fontSize: 14,
@@ -166,48 +177,57 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
             );
           },
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 52,
-                  height: 52,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: qrType.gradientColors.map((c) => Color(c)).toList(),
                     ),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(14),
                     boxShadow: [
                       BoxShadow(
                         color: Color(qrType.gradientColors.first).withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
                       ),
                     ],
                   ),
                   child: Icon(
                     _getIconData(qrType.iconName),
                     color: Colors.white,
-                    size: 28,
+                    size: 24,
                   ),
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  qrType.displayName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(height: 12),
+                Flexible(
+                  child: Text(
+                    qrType.getDisplayName(context),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  qrType.description,
-                  style: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 13,
-                    height: 1.3,
+                const SizedBox(height: 4),
+                Flexible(
+                  child: Text(
+                    qrType.getDescription(context),
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 12,
+                      height: 1.2,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

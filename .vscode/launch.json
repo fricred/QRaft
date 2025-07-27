@@ -55,6 +55,47 @@
                 "chrome"
             ],
             "console": "debugConsole"
+        },
+        {
+            "name": "QRaft (Android Device)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--dart-define-from-file=env.json",
+                "-d",
+                "192.168.1.7:41281"
+            ],
+            "console": "debugConsole"
+        },
+        {
+            "name": "QRaft (Android Device - Verbose)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--dart-define-from-file=env.json",
+                "-d",
+                "192.168.1.7:41281",
+                "--verbose"
+            ],
+            "console": "debugConsole",
+            "flutterMode": "debug"
+        },
+        {
+            "name": "QRaft (Android Device - No DevTools)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--dart-define-from-file=env.json",
+                "-d",
+                "192.168.1.7:41281",
+                "--no-devtools",
+                "--disable-service-auth-codes"
+            ],
+            "console": "debugConsole",
+            "flutterMode": "debug"
         }
     ]
 }

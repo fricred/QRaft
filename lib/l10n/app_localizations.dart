@@ -62,7 +62,8 @@ import 'app_localizations_es.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale)
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -70,7 +71,8 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -82,7 +84,8 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
     delegate,
     GlobalMaterialLocalizations.delegate,
     GlobalCupertinoLocalizations.delegate,
@@ -1144,9 +1147,106 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save QR Code'**
   String get qrFormButtonSave;
+
+  /// QR Generator screen main title
+  ///
+  /// In en, this message translates to:
+  /// **'Generate QR'**
+  String get generateQRTitle;
+
+  /// QR Generator screen subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Create QR codes for various purposes'**
+  String get generateQRSubtitle;
+
+  /// Template library section title
+  ///
+  /// In en, this message translates to:
+  /// **'Template Library'**
+  String get templateLibrary;
+
+  /// Template library section description
+  ///
+  /// In en, this message translates to:
+  /// **'Browse pre-designed QR templates'**
+  String get templateLibraryDescription;
+
+  /// Personal info QR type name
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Info'**
+  String get qrTypePersonalInfo;
+
+  /// Personal info QR type description
+  ///
+  /// In en, this message translates to:
+  /// **'Contact details\nvCard format'**
+  String get qrTypePersonalInfoDesc;
+
+  /// Website URL QR type name
+  ///
+  /// In en, this message translates to:
+  /// **'Website URL'**
+  String get qrTypeWebsiteUrl;
+
+  /// Website URL QR type description
+  ///
+  /// In en, this message translates to:
+  /// **'Links to websites\nand web pages'**
+  String get qrTypeWebsiteUrlDesc;
+
+  /// WiFi QR type name
+  ///
+  /// In en, this message translates to:
+  /// **'WiFi Network'**
+  String get qrTypeWifi;
+
+  /// WiFi QR type description
+  ///
+  /// In en, this message translates to:
+  /// **'Share WiFi\ncredentials easily'**
+  String get qrTypeWifiDesc;
+
+  /// Text QR type name
+  ///
+  /// In en, this message translates to:
+  /// **'Text Message'**
+  String get qrTypeText;
+
+  /// Text QR type description
+  ///
+  /// In en, this message translates to:
+  /// **'Plain text content\nfor any purpose'**
+  String get qrTypeTextDesc;
+
+  /// Email QR type name
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get qrTypeEmail;
+
+  /// Email QR type description
+  ///
+  /// In en, this message translates to:
+  /// **'Send email with\npre-filled content'**
+  String get qrTypeEmailDesc;
+
+  /// Location QR type name
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get qrTypeLocation;
+
+  /// Location QR type description
+  ///
+  /// In en, this message translates to:
+  /// **'GPS coordinates\nand map points'**
+  String get qrTypeLocationDesc;
 }
 
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -1155,25 +1255,25 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en', 'es'].contains(locale.languageCode);
+  bool isSupported(Locale locale) =>
+      <String>['en', 'es'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
-
-
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en': return AppLocalizationsEn();
-    case 'es': return AppLocalizationsEs();
+    case 'en':
+      return AppLocalizationsEn();
+    case 'es':
+      return AppLocalizationsEs();
   }
 
   throw FlutterError(
-    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-    'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.'
-  );
+      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
 }

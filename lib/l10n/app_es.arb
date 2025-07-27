@@ -176,5 +176,21 @@
   "qrFormStepPreviewSave": "Vista previa y guardar",
   "qrFormButtonContinue": "Continuar",
   "qrFormButtonPreview": "Vista Previa",
-  "qrFormButtonSave": "Guardar Código QR"
+  "qrFormButtonSave": "Guardar Código QR",
+  "generateQRTitle": "Generar QR",
+  "generateQRSubtitle": "Crea códigos QR para varios propósitos",
+  "templateLibrary": "Biblioteca de Plantillas",
+  "templateLibraryDescription": "Explora plantillas de QR prediseñadas",
+  "qrTypePersonalInfo": "Información Personal",
+  "qrTypePersonalInfoDesc": "Detalles de contacto\nFormato vCard",
+  "qrTypeWebsiteUrl": "URL del Sitio Web",
+  "qrTypeWebsiteUrlDesc": "Enlaces a sitios web\ny páginas web",
+  "qrTypeWifi": "Red WiFi",
+  "qrTypeWifiDesc": "Comparte credenciales\nWiFi fácilmente",
+  "qrTypeText": "Mensaje de Texto",
+  "qrTypeTextDesc": "Contenido de texto plano\npara cualquier propósito",
+  "qrTypeEmail": "Correo Electrónico",
+  "qrTypeEmailDesc": "Envía correo con\ncontenido pre-llenado",
+  "qrTypeLocation": "Ubicación",
+  "qrTypeLocationDesc": "Coordenadas GPS\ny puntos del mapa"
 }
