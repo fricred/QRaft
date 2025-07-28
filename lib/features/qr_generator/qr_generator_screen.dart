@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/app_localizations.dart';
 import 'domain/entities/qr_type.dart';
 import 'presentation/pages/qr_form_screen.dart';
 
-class QRGeneratorScreen extends StatefulWidget {
+class QRGeneratorScreen extends ConsumerStatefulWidget {
   const QRGeneratorScreen({super.key});
 
   @override
-  State<QRGeneratorScreen> createState() => _QRGeneratorScreenState();
+  ConsumerState<QRGeneratorScreen> createState() => _QRGeneratorScreenState();
 }
 
-class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
+class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;

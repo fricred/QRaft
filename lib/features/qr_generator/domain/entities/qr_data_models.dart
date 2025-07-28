@@ -180,3 +180,107 @@ class LocationData extends QRDataModel {
   @override
   List<Object?> get props => [latitude, longitude, name];
 }
+
+/// Colombian Tax Information for Electronic Billing
+class ColombianTaxInfoData extends QRDataModel {
+  final String documentType;      // CC, NIT, TI, CE, PP
+  final String documentNumber;    // Document number
+  final String fullName;          // Full name or business name
+  final String businessName;      // Razón social (for companies)
+  final String address;           // Full address
+  final String city;              // City/Municipality
+  final String cityCode;          // DANE city code
+  final String department;        // Department/State
+  final String departmentCode;    // DANE department code
+  final String postalCode;        // ZIP code
+  final String phone;             // Phone number
+  final String email;             // Email for billing
+  final String taxRegime;         // Régimen tributario
+  final List<String> taxResponsibilities; // Responsabilidades fiscales
+  final String economicActivity;  // Actividad económica
+  final String verificationDigit; // Dígito de verificación (for NIT)
+
+  ColombianTaxInfoData({
+    required this.documentType,
+    required this.documentNumber,
+    required this.fullName,
+    this.businessName = '',
+    required this.address,
+    required this.city,
+    this.cityCode = '',
+    required this.department,
+    this.departmentCode = '',
+    this.postalCode = '',
+    required this.phone,
+    required this.email,
+    this.taxRegime = 'Común',
+    this.taxResponsibilities = const [],
+    this.economicActivity = '',
+    this.verificationDigit = '',
+  });
+
+  @override
+  String get qrData {
+    // Generate vCard format with Colombian tax extensions
+    final buffer = StringBuffer();
+    buffer.writeln('BEGIN:VCARD');
+    buffer.writeln('VERSION:3.0');
+    buffer.writeln('FN:$fullName');
+    if (businessName.isNotEmpty) {
+      buffer.writeln('ORG:$businessName');
+    }
+    buffer.writeln('TEL:$phone');
+    buffer.writeln('EMAIL:$email');
+    buffer.writeln('ADR:;;$address;$city;$department;$postalCode;Colombia');
+    
+    // Colombian tax-specific fields (custom extensions)
+    buffer.writeln('X-CO-DOC-TYPE:$documentType');
+    buffer.writeln('X-CO-DOC-NUMBER:$documentNumber');
+    if (verificationDigit.isNotEmpty) {
+      buffer.writeln('X-CO-VERIFICATION-DIGIT:$verificationDigit');
+    }
+    buffer.writeln('X-CO-TAX-REGIME:$taxRegime');
+    if (taxResponsibilities.isNotEmpty) {
+      buffer.writeln('X-CO-TAX-RESPONSIBILITIES:${taxResponsibilities.join(",")}');
+    }
+    if (economicActivity.isNotEmpty) {
+      buffer.writeln('X-CO-ECONOMIC-ACTIVITY:$economicActivity');
+    }
+    if (cityCode.isNotEmpty) {
+      buffer.writeln('X-CO-CITY-CODE:$cityCode');
+    }
+    if (departmentCode.isNotEmpty) {
+      buffer.writeln('X-CO-DEPARTMENT-CODE:$departmentCode');
+    }
+    
+    buffer.writeln('END:VCARD');
+    return buffer.toString();
+  }
+
+  @override
+  String get displayText {
+    final type = documentType == 'NIT' ? 'Empresa' : 'Persona';
+    final name = businessName.isNotEmpty ? businessName : fullName;
+    return '$type: $name ($documentType: $documentNumber)';
+  }
+
+  @override
+  List<Object?> get props => [
+        documentType,
+        documentNumber,
+        fullName,
+        businessName,
+        address,
+        city,
+        cityCode,
+        department,
+        departmentCode,
+        postalCode,
+        phone,
+        email,
+        taxRegime,
+        taxResponsibilities,
+        economicActivity,
+        verificationDigit,
+      ];
+}

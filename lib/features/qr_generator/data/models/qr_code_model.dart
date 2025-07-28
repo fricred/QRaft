@@ -49,7 +49,7 @@ class QRCodeModel extends QRCodeEntity {
       type: entity.type,
       data: entity.data,
       displayData: entity.displayData,
-      customization: entity.customization,
+      customization: QRCustomizationModel.fromEntity(entity.customization),
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
       userId: entity.userId,
@@ -61,20 +61,30 @@ class QRCustomizationModel extends QRCustomization {
   const QRCustomizationModel({
     super.foregroundColor,
     super.backgroundColor,
+    super.eyeColor,
     super.size,
     super.errorCorrectionLevel,
     super.logoPath,
     super.hasLogo,
+    super.eyeShape,
+    super.dataShape,
+    super.roundedCorners,
+    super.logoSize,
   });
 
   factory QRCustomizationModel.fromJson(Map<String, dynamic> json) {
     return QRCustomizationModel(
       foregroundColor: json['foreground_color'] as int? ?? 0xFF000000,
       backgroundColor: json['background_color'] as int? ?? 0xFFFFFFFF,
+      eyeColor: json['eye_color'] as int? ?? 0xFF000000,
       size: (json['size'] as num?)?.toDouble() ?? 200.0,
       errorCorrectionLevel: json['error_correction_level'] as int? ?? 1,
       logoPath: json['logo_path'] as String?,
       hasLogo: json['has_logo'] as bool? ?? false,
+      eyeShape: json['eye_shape'] as int? ?? 0,
+      dataShape: json['data_shape'] as int? ?? 0,
+      roundedCorners: json['rounded_corners'] as bool? ?? false,
+      logoSize: (json['logo_size'] as num?)?.toDouble() ?? 40.0,
     );
   }
 
@@ -82,10 +92,31 @@ class QRCustomizationModel extends QRCustomization {
     return {
       'foreground_color': foregroundColor,
       'background_color': backgroundColor,
+      'eye_color': eyeColor,
       'size': size,
       'error_correction_level': errorCorrectionLevel,
       'logo_path': logoPath,
       'has_logo': hasLogo,
+      'eye_shape': eyeShape,
+      'data_shape': dataShape,
+      'rounded_corners': roundedCorners,
+      'logo_size': logoSize,
     };
+  }
+  
+  factory QRCustomizationModel.fromEntity(QRCustomization entity) {
+    return QRCustomizationModel(
+      foregroundColor: entity.foregroundColor,
+      backgroundColor: entity.backgroundColor,
+      eyeColor: entity.eyeColor,
+      size: entity.size,
+      errorCorrectionLevel: entity.errorCorrectionLevel,
+      logoPath: entity.logoPath,
+      hasLogo: entity.hasLogo,
+      eyeShape: entity.eyeShape,
+      dataShape: entity.dataShape,
+      roundedCorners: entity.roundedCorners,
+      logoSize: entity.logoSize,
+    );
   }
 }

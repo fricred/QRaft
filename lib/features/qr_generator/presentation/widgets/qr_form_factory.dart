@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/qr_type.dart';
-import 'forms/personal_info_form.dart';
+import 'forms/colombian_tax_form.dart';
 import 'forms/url_form.dart';
 import 'forms/wifi_form.dart';
 import 'forms/text_form.dart';
@@ -11,7 +11,7 @@ class QRFormFactory {
   static Widget buildForm(QRType qrType, VoidCallback onContinue) {
     switch (qrType) {
       case QRType.personalInfo:
-        return PersonalInfoForm(onContinue: onContinue);
+        return ColombianTaxForm(onContinue: onContinue);
       case QRType.url:
         return URLForm(onContinue: onContinue);
       case QRType.wifi:

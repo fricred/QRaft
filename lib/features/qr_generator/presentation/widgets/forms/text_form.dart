@@ -11,22 +11,30 @@ class TextFormState {
   final String text;
   final String name;
   final bool isValid;
+  final String? textError;
+  final String? nameError;
 
   const TextFormState({
     this.text = '',
     this.name = '',
     this.isValid = false,
+    this.textError,
+    this.nameError,
   });
 
   TextFormState copyWith({
     String? text,
     String? name,
     bool? isValid,
+    String? textError,
+    String? nameError,
   }) {
     return TextFormState(
       text: text ?? this.text,
       name: name ?? this.name,
       isValid: isValid ?? this.isValid,
+      textError: textError,
+      nameError: nameError,
     );
   }
 
@@ -36,22 +44,60 @@ class TextFormState {
 class TextFormController extends StateNotifier<TextFormState> {
   TextFormController() : super(const TextFormState());
 
+  static const int maxTextLength = 1000; // QR code capacity limit
+  static const int maxNameLength = 50;
+
   void updateText(String text) {
+    final textError = _validateText(text);
     state = state.copyWith(
       text: text,
+      textError: textError,
       isValid: _validateForm(text, state.name),
     );
   }
 
   void updateName(String name) {
+    final nameError = _validateName(name);
     state = state.copyWith(
       name: name,
+      nameError: nameError,
       isValid: _validateForm(state.text, name),
     );
   }
 
+  String? _validateText(String text) {
+    if (text.isEmpty) {
+      return 'Please enter your text';
+    }
+    
+    if (text.length > maxTextLength) {
+      return 'Text is too long (max $maxTextLength characters)';
+    }
+    
+    return null;
+  }
+  
+  String? _validateName(String name) {
+    if (name.isEmpty) {
+      return 'Please enter a name for your QR code';
+    }
+    
+    if (name.length < 2) {
+      return 'Name must be at least 2 characters';
+    }
+    
+    if (name.length > maxNameLength) {
+      return 'Name is too long (max $maxNameLength characters)';
+    }
+    
+    return null;
+  }
+
   bool _validateForm(String text, String name) {
-    return text.isNotEmpty && name.isNotEmpty;
+    return text.isNotEmpty && 
+           name.isNotEmpty && 
+           _validateText(text) == null && 
+           _validateName(name) == null;
   }
 
   void reset() {
@@ -81,13 +127,37 @@ class _TextFormState extends ConsumerState<TextForm> {
   void initState() {
     super.initState();
     
-    _textController.addListener(() {
-      ref.read(textFormProvider.notifier).updateText(_textController.text);
+    // Initialize controllers with existing provider state
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final currentState = ref.read(textFormProvider);
+      
+      // Set initial values
+      _textController.text = currentState.text;
+      _nameController.text = currentState.name;
+      
+      // Trigger validation if we have existing values
+      if (currentState.text.isNotEmpty || currentState.name.isNotEmpty) {
+        ref.read(textFormProvider.notifier).updateText(currentState.text);
+        ref.read(textFormProvider.notifier).updateName(currentState.name);
+      }
+      
+      // Auto-focus the first field only if it's empty
+      if (currentState.text.isEmpty) {
+        _textFocusNode.requestFocus();
+      }
     });
     
-    _nameController.addListener(() {
-      ref.read(textFormProvider.notifier).updateName(_nameController.text);
-    });
+    // Add listeners
+    _textController.addListener(_onTextChanged);
+    _nameController.addListener(_onNameChanged);
+  }
+  
+  void _onTextChanged() {
+    ref.read(textFormProvider.notifier).updateText(_textController.text);
+  }
+  
+  void _onNameChanged() {
+    ref.read(textFormProvider.notifier).updateName(_nameController.text);
   }
 
   @override
@@ -142,6 +212,9 @@ class _TextFormState extends ConsumerState<TextForm> {
                     hint: 'Enter your message...',
                     icon: Icons.text_fields_rounded,
                     maxLines: 5,
+                    errorText: formState.textError,
+                    showCharacterCount: true,
+                    maxLength: TextFormController.maxTextLength,
                     delay: 200,
                   ),
                   
@@ -264,6 +337,9 @@ class _TextFormState extends ConsumerState<TextForm> {
     required String hint,
     required IconData icon,
     required int maxLines,
+    String? errorText,
+    bool showCharacterCount = false,
+    int? maxLength,
     required int delay,
   }) {
     return Column(
@@ -283,9 +359,11 @@ class _TextFormState extends ConsumerState<TextForm> {
             color: const Color(0xFF2E2E2E),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: focusNode.hasFocus 
+              color: errorText != null
                   ? const Color(0xFFEF4444)
-                  : Colors.white.withValues(alpha: 0.1),
+                  : focusNode.hasFocus 
+                      ? const Color(0xFF1A73E8)
+                      : Colors.white.withValues(alpha: 0.1),
               width: 1,
             ),
           ),
@@ -301,9 +379,11 @@ class _TextFormState extends ConsumerState<TextForm> {
                 padding: EdgeInsets.only(top: maxLines > 1 ? 12 : 0),
                 child: Icon(
                   icon,
-                  color: focusNode.hasFocus 
+                  color: errorText != null
                       ? const Color(0xFFEF4444)
-                      : Colors.grey[400],
+                      : focusNode.hasFocus 
+                          ? const Color(0xFF1A73E8)
+                          : Colors.grey[400],
                 ),
               ),
               border: InputBorder.none,
@@ -311,6 +391,44 @@ class _TextFormState extends ConsumerState<TextForm> {
             ),
           ),
         ),
+        if (errorText != null) ...[
+          const SizedBox(height: 6),
+          Text(
+            errorText,
+            style: const TextStyle(
+              color: Color(0xFFEF4444),
+              fontSize: 12,
+            ),
+          ),
+        ],
+        if (showCharacterCount && maxLength != null) ...[
+          const SizedBox(height: 6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Characters: ${controller.text.length}/$maxLength',
+                style: TextStyle(
+                  color: controller.text.length > maxLength 
+                      ? const Color(0xFFEF4444)
+                      : Colors.grey[500],
+                  fontSize: 11,
+                ),
+              ),
+              if (controller.text.length > maxLength * 0.8) ...[
+                Icon(
+                  controller.text.length > maxLength 
+                      ? Icons.error_outline
+                      : Icons.warning_amber_outlined,
+                  color: controller.text.length > maxLength 
+                      ? const Color(0xFFEF4444)
+                      : const Color(0xFFFF9800),
+                  size: 16,
+                ),
+              ],
+            ],
+          ),
+        ],
       ],
     ).animate()
       .fadeIn(duration: 600.ms, delay: delay.ms)

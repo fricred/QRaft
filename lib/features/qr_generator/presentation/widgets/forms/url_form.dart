@@ -168,20 +168,46 @@ class _URLFormState extends ConsumerState<URLForm> {
   final _nameController = TextEditingController();
   final _urlFocusNode = FocusNode();
   final _nameFocusNode = FocusNode();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
     
-    _urlController.addListener(() {
-      final l10n = AppLocalizations.of(context);
-      ref.read(urlFormProvider.notifier).updateURL(_urlController.text, l10n);
+    // Initialize controllers with existing provider state
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final currentState = ref.read(urlFormProvider);
+      
+      // Set initial values
+      _urlController.text = currentState.url;
+      _nameController.text = currentState.name;
+      
+      // Trigger validation if we have existing values
+      if (currentState.url.isNotEmpty || currentState.name.isNotEmpty) {
+        final l10n = AppLocalizations.of(context);
+        ref.read(urlFormProvider.notifier).updateURL(currentState.url, l10n);
+        ref.read(urlFormProvider.notifier).updateName(currentState.name, l10n);
+      }
+      
+      // Auto-focus the first field only if it's empty
+      if (currentState.url.isEmpty) {
+        _urlFocusNode.requestFocus();
+      }
     });
     
-    _nameController.addListener(() {
-      final l10n = AppLocalizations.of(context);
-      ref.read(urlFormProvider.notifier).updateName(_nameController.text, l10n);
-    });
+    // Add listeners
+    _urlController.addListener(_onUrlChanged);
+    _nameController.addListener(_onNameChanged);
+  }
+  
+  void _onUrlChanged() {
+    final l10n = AppLocalizations.of(context);
+    ref.read(urlFormProvider.notifier).updateURL(_urlController.text, l10n);
+  }
+  
+  void _onNameChanged() {
+    final l10n = AppLocalizations.of(context);
+    ref.read(urlFormProvider.notifier).updateName(_nameController.text, l10n);
   }
 
   @override
@@ -193,266 +219,289 @@ class _URLFormState extends ConsumerState<URLForm> {
     super.dispose();
   }
 
+  void _handleSubmit() {
+    final formState = ref.read(urlFormProvider);
+    if (formState.isValid) {
+      widget.onContinue();
+    }
+  }
+
+  void _moveToNextField() {
+    _nameFocusNode.requestFocus();
+  }
+
   @override
   Widget build(BuildContext context) {
     final formState = ref.watch(urlFormProvider);
     final l10n = AppLocalizations.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n?.qrFormWebsiteUrl ?? 'Website URL',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ).animate()
-            .fadeIn(duration: 600.ms)
-            .slideY(begin: -0.3, duration: 600.ms),
-          
-          const SizedBox(height: 8),
-          
-          Text(
-            'Enter the website URL you want to share',
-            style: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 16,
-            ),
-          ).animate()
-            .fadeIn(duration: 600.ms, delay: 100.ms),
-          
-          const SizedBox(height: 32),
-          
-          Expanded(
-            child: Column(
-              children: [
-                  _buildInputField(
-                    controller: _urlController,
-                    focusNode: _urlFocusNode,
-                    label: l10n?.urlFieldLabel ?? 'Website URL',
-                    hint: l10n?.urlFieldPlaceholder ?? 'example.com or https://example.com',
-                    helperText: 'Protocol (https://) will be added automatically',
-                    icon: Icons.link_rounded,
-                    keyboardType: TextInputType.url,
-                    errorText: formState.urlError,
-                    delay: 200,
+    return Form(
+      key: _formKey,
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            24, 
+            24, 
+            24, 
+            24 + MediaQuery.of(context).viewInsets.bottom
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n?.qrFormWebsiteUrl ?? 'Website URL',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ).animate()
+                .fadeIn(duration: 600.ms)
+                .slideY(begin: -0.3, duration: 600.ms),
+              
+              const SizedBox(height: 8),
+              
+              Text(
+                'Enter the website URL you want to share',
+                style: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: 16,
+                ),
+              ).animate()
+                .fadeIn(duration: 600.ms, delay: 100.ms),
+              
+              const SizedBox(height: 32),
+              
+              _buildInputField(
+                controller: _urlController,
+                focusNode: _urlFocusNode,
+                label: l10n?.urlFieldLabel ?? 'Website URL',
+                hint: l10n?.urlFieldPlaceholder ?? 'example.com or https://example.com',
+                helperText: 'Protocol (https://) will be added automatically',
+                icon: Icons.link_rounded,
+                keyboardType: TextInputType.url,
+                textInputAction: TextInputAction.next,
+                onSubmitted: (_) => _moveToNextField(),
+                errorText: formState.urlError,
+                delay: 200,
+              ),
+              
+              const SizedBox(height: 24),
+              
+              _buildInputField(
+                controller: _nameController,
+                focusNode: _nameFocusNode,
+                label: 'QR Code Name',
+                hint: 'My Website',
+                helperText: 'This name will help you identify your QR code',
+                icon: Icons.label_rounded,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) => _handleSubmit(),
+                errorText: formState.nameError,
+                delay: 300,
+              ),
+              
+              const SizedBox(height: 32),
+              
+              // Preview container
+              Container(
+                width: double.infinity,
+                constraints: const BoxConstraints(
+                  minHeight: 300,
+                  maxHeight: 400,
+                ),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2E2E2E),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    width: 1,
                   ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  _buildInputField(
-                    controller: _nameController,
-                    focusNode: _nameFocusNode,
-                    label: 'QR Code Name',
-                    hint: 'My Website',
-                    helperText: 'This name will help you identify your QR code',
-                    icon: Icons.label_rounded,
-                    keyboardType: TextInputType.text,
-                    errorText: formState.nameError,
-                    delay: 300,
-                  ),
-                  
-                const SizedBox(height: 32),
-                
-                // Preview container
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2E2E2E),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.1),
-                        width: 1,
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFF1A73E8), Color(0xFF6366F1)],
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(
-                                Icons.visibility_rounded,
-                                color: Colors.white,
-                                size: 20,
-                              ),
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF1A73E8), Color(0xFF6366F1)],
                             ),
-                            const SizedBox(width: 12),
-                            Text(
-                              l10n?.preview ?? 'Preview',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.visibility_rounded,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
-                        const SizedBox(height: 16),
-                        Expanded(
-                          child: SingleChildScrollView(
-                            physics: const BouncingScrollPhysics(),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                        if (formState.url.isNotEmpty) ...[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(
-                                formState.urlError == null ? Icons.check_circle : Icons.error,
-                                color: formState.urlError == null 
-                                    ? const Color(0xFF10B981) 
-                                    : const Color(0xFFEF4444),
-                                size: 16,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'URL: ${ref.read(urlFormProvider.notifier).getFormattedURL(formState.url)}',
-                                      style: TextStyle(
-                                        color: Colors.grey[300],
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    if (formState.urlError != null) ...[
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        formState.urlError!,
-                                        style: const TextStyle(
-                                          color: Color(0xFFEF4444),
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                        ],
-                        if (formState.name.isNotEmpty) ...[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(
-                                formState.nameError == null ? Icons.check_circle : Icons.error,
-                                color: formState.nameError == null 
-                                    ? const Color(0xFF10B981) 
-                                    : const Color(0xFFEF4444),
-                                size: 16,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Name: ${formState.name}',
-                                      style: TextStyle(
-                                        color: Colors.grey[300],
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    if (formState.nameError != null) ...[
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        formState.nameError!,
-                                        style: const TextStyle(
-                                          color: Color(0xFFEF4444),
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                        if (formState.url.isEmpty && formState.name.isEmpty) ...[
-                          Text(
-                            'Fill in the form to see preview',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                              fontSize: 14,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          const Divider(color: Colors.grey),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Valid URL examples:',
-                            style: TextStyle(
-                              color: Colors.grey[400],
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          ...[ 
-                            'google.com',
-                            'https://example.com',
-                            'docs.flutter.dev/guides',
-                            'github.com/user/repo',
-                          ].map((example) => Padding(
-                            padding: const EdgeInsets.only(bottom: 2),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.check_circle_outline,
-                                  color: Color(0xFF10B981),
-                                  size: 12,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  example,
-                                  style: TextStyle(
-                                    color: Colors.grey[500],
-                                    fontSize: 11,
-                                    fontFamily: 'monospace',
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )),
-                        ],
-                              ],
-                            ),
+                        const SizedBox(width: 12),
+                        Text(
+                          l10n?.preview ?? 'Preview',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
                     ),
-                  ).animate()
-                    .fadeIn(duration: 600.ms, delay: 400.ms)
-                    .slideY(begin: 0.3, duration: 600.ms, delay: 400.ms),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (formState.url.isNotEmpty) ...[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    formState.urlError == null ? Icons.check_circle : Icons.error,
+                                    color: formState.urlError == null 
+                                        ? const Color(0xFF10B981) 
+                                        : const Color(0xFFEF4444),
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'URL: ${ref.read(urlFormProvider.notifier).getFormattedURL(formState.url)}',
+                                          style: TextStyle(
+                                            color: Colors.grey[300],
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        if (formState.urlError != null) ...[
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            formState.urlError!,
+                                            style: const TextStyle(
+                                              color: Color(0xFFEF4444),
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                            ],
+                            if (formState.name.isNotEmpty) ...[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    formState.nameError == null ? Icons.check_circle : Icons.error,
+                                    color: formState.nameError == null 
+                                        ? const Color(0xFF10B981) 
+                                        : const Color(0xFFEF4444),
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Name: ${formState.name}',
+                                          style: TextStyle(
+                                            color: Colors.grey[300],
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        if (formState.nameError != null) ...[
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            formState.nameError!,
+                                            style: const TextStyle(
+                                              color: Color(0xFFEF4444),
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                            if (formState.url.isEmpty && formState.name.isEmpty) ...[
+                              Text(
+                                'Fill in the form to see preview',
+                                style: TextStyle(
+                                  color: Colors.grey[500],
+                                  fontSize: 14,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              const Divider(color: Colors.grey),
+                              const SizedBox(height: 12),
+                              Text(
+                                'Valid URL examples:',
+                                style: TextStyle(
+                                  color: Colors.grey[400],
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              ...[ 
+                                'google.com',
+                                'https://example.com',
+                                'docs.flutter.dev/guides',
+                                'github.com/user/repo',
+                              ].map((example) => Padding(
+                                padding: const EdgeInsets.only(bottom: 2),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.check_circle_outline,
+                                      color: Color(0xFF10B981),
+                                      size: 12,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      example,
+                                      style: TextStyle(
+                                        color: Colors.grey[500],
+                                        fontSize: 11,
+                                        fontFamily: 'monospace',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ).animate()
+                .fadeIn(duration: 600.ms, delay: 400.ms)
+                .slideY(begin: 0.3, duration: 600.ms, delay: 400.ms),
+              
+              const SizedBox(height: 24),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
-
 
   Widget _buildInputField({
     required TextEditingController controller,
@@ -461,6 +510,8 @@ class _URLFormState extends ConsumerState<URLForm> {
     required String hint,
     required IconData icon,
     required TextInputType keyboardType,
+    TextInputAction? textInputAction,
+    ValueChanged<String>? onSubmitted,
     String? errorText,
     String? helperText,
     required int delay,
@@ -494,6 +545,8 @@ class _URLFormState extends ConsumerState<URLForm> {
             controller: controller,
             focusNode: focusNode,
             keyboardType: keyboardType,
+            textInputAction: textInputAction,
+            onSubmitted: onSubmitted,
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               hintText: hint,
