@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:phone_form_field/phone_form_field.dart';
 import '../../../domain/entities/qr_data_models.dart';
 import '../../../../../l10n/app_localizations.dart';
 
@@ -550,29 +550,16 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
               ),
               // Phone input
               Expanded(
-                child: InternationalPhoneNumberInput(
-                  onInputChanged: (PhoneNumber number) {
-                    controller.updatePhone(number.phoneNumber ?? '');
+                child: PhoneFormField(
+                  onChanged: (PhoneNumber? number) {
+                    if (number != null) {
+                      controller.updatePhone(number.international);
+                    } else {
+                      controller.updatePhone('');
+                    }
                   },
-                  initialValue: PhoneNumber(isoCode: 'CO'), // Default to Colombia
-                  selectorConfig: SelectorConfig(
-                    selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                    useEmoji: true,
-                    setSelectorButtonAsPrefixIcon: false, // Disable to avoid double icons
-                    leadingPadding: 0,
-                    trailingSpace: false,
-                  ),
-                  ignoreBlank: false,
-                  autoValidateMode: AutovalidateMode.disabled,
-                  selectorTextStyle: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 16,
-                  ),
-                  textStyle: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                  inputDecoration: InputDecoration(
+                  initialValue: PhoneNumber.parse('+57'), // Default to Colombia
+                  decoration: InputDecoration(
                     hintText: AppLocalizations.of(context)?.phoneHint ?? '(555) 123-4567',
                     hintStyle: TextStyle(
                       color: Colors.grey[600],
@@ -581,31 +568,13 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.only(right: 16, top: 16, bottom: 16),
                   ),
-                  searchBoxDecoration: InputDecoration(
-                    hintText: AppLocalizations.of(context)?.searchCountry ?? 'Search country',
-                    hintStyle: TextStyle(color: Colors.grey[400]),
-                    fillColor: const Color(0xFF2E2E2E),
-                    filled: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.1),
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.1),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: Color(0xFF1A73E8),
-                      ),
-                    ),
+                  validator: null, // We handle validation in the controller
+                  autovalidateMode: AutovalidateMode.disabled,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
                   ),
-                  countrySelectorScrollControlled: false,
+                  countrySelectorNavigator: const CountrySelectorNavigator.bottomSheet(),
                 ),
               ),
             ],
