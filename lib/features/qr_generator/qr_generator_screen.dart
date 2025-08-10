@@ -6,6 +6,7 @@ import 'domain/entities/qr_type.dart';
 import 'presentation/pages/url_qr_screen.dart';
 import 'presentation/pages/text_qr_screen.dart';
 import 'presentation/pages/personal_info_qr_screen.dart';
+import 'presentation/pages/email_qr_screen.dart';
 import 'presentation/pages/coming_soon_qr_screen.dart';
 
 class QRGeneratorScreen extends ConsumerStatefulWidget {
@@ -185,8 +186,10 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
               case QRType.personalInfo:
                 targetScreen = const PersonalInfoQRScreen();
                 break;
-              case QRType.wifi:
               case QRType.email:
+                targetScreen = const EmailQRScreen();
+                break;
+              case QRType.wifi:
               case QRType.location:
                 targetScreen = ComingSoonQRScreen(qrType: qrType);
                 break;

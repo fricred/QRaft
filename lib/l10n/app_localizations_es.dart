@@ -734,4 +734,32 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get searchCountry => 'Buscar país';
+
+  @override
+  String get emailFormTitle => 'Correo';
+
+  @override
+  String get emailFormSubtitle =>
+      'Crear código QR para enviar correo pre-llenado';
+
+  @override
+  String get emailQrNameHint => 'QR de Correo';
+
+  @override
+  String get emailRecipientLabel => 'Dirección de Correo *';
+
+  @override
+  String get emailRecipientHint => 'destinatario@ejemplo.com';
+
+  @override
+  String get emailSubjectLabel => 'Asunto';
+
+  @override
+  String get emailSubjectHint => 'Asunto del correo...';
+
+  @override
+  String get emailBodyLabel => 'Mensaje';
+
+  @override
+  String get emailBodyHint => 'Escribe tu mensaje aquí...';
 }

@@ -223,5 +223,14 @@
   "note": "Nota",
   "noteHint": "Información adicional...",
   "requiredFieldsMessage": "Por favor completa todos los campos requeridos (*)",
-  "searchCountry": "Buscar país"
+  "searchCountry": "Buscar país",
+  "emailFormTitle": "Correo",
+  "emailFormSubtitle": "Crear código QR para enviar correo pre-llenado",
+  "emailQrNameHint": "QR de Correo",
+  "emailRecipientLabel": "Dirección de Correo *",
+  "emailRecipientHint": "destinatario@ejemplo.com",
+  "emailSubjectLabel": "Asunto",
+  "emailSubjectHint": "Asunto del correo...",
+  "emailBodyLabel": "Mensaje",
+  "emailBodyHint": "Escribe tu mensaje aquí..."
 }

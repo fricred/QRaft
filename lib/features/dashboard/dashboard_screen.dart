@@ -156,7 +156,7 @@ class DashboardScreen extends ConsumerWidget {
                       crossAxisCount: 2,
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
-                      childAspectRatio: 1.2,
+                      childAspectRatio: 1.35,
                       children: [
                         _buildActionCard(
                           title: 'Create QR',
@@ -484,6 +484,8 @@ class DashboardScreen extends ConsumerWidget {
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -492,6 +494,8 @@ class DashboardScreen extends ConsumerWidget {
                     color: Colors.white.withValues(alpha: 0.8),
                     fontSize: 12,
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

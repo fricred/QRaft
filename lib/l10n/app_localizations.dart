@@ -1429,6 +1429,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search country'**
   String get searchCountry;
+
+  /// Email form title
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailFormTitle;
+
+  /// Email form subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Create QR code for sending pre-filled email'**
+  String get emailFormSubtitle;
+
+  /// Email QR name field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Email QR'**
+  String get emailQrNameHint;
+
+  /// Email recipient field label
+  ///
+  /// In en, this message translates to:
+  /// **'Email Address *'**
+  String get emailRecipientLabel;
+
+  /// Email recipient field hint
+  ///
+  /// In en, this message translates to:
+  /// **'recipient@example.com'**
+  String get emailRecipientHint;
+
+  /// Email subject field label
+  ///
+  /// In en, this message translates to:
+  /// **'Subject'**
+  String get emailSubjectLabel;
+
+  /// Email subject field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Email subject...'**
+  String get emailSubjectHint;
+
+  /// Email body field label
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get emailBodyLabel;
+
+  /// Email body field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Type your message here...'**
+  String get emailBodyHint;
 }
 
 class _AppLocalizationsDelegate

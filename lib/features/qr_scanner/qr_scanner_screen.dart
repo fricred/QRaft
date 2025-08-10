@@ -28,26 +28,45 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
     _initializeController();
   }
 
-  void _initializeController() {
-    _controller = MobileScannerController(
-      formats: [BarcodeFormat.qrCode],
-      detectionSpeed: DetectionSpeed.noDuplicates,
-      detectionTimeoutMs: 1000,
-      autoStart: true, // Auto-start camera
-    );
-    
-    // Initialize controller and wait for it to be ready
-    _controller!.start().then((_) {
+  void _initializeController() async {
+    try {
+      // Check camera permissions first
+      final status = await Permission.camera.status;
+      if (!status.isGranted) {
+        final result = await Permission.camera.request();
+        if (!result.isGranted) {
+          if (mounted) {
+            ref.read(qrScannerProvider.notifier).logDetailedError('Camera Permission', 'Camera permission denied');
+          }
+          return;
+        }
+      }
+
+      _controller = MobileScannerController(
+        formats: [BarcodeFormat.qrCode],
+        detectionSpeed: DetectionSpeed.noDuplicates,
+        detectionTimeoutMs: 1000,
+        autoStart: false, // Don't auto-start, we'll start manually after initialization
+      );
+      
+      // Initialize controller and wait for it to be ready
+      await _controller!.start();
       if (mounted) {
         setState(() {
           _isControllerInitialized = true;
         });
-        // Auto-start scanning when camera is ready
-        ref.read(qrScannerProvider.notifier).startScanning();
       }
-    }).catchError((error) {
+    } catch (error) {
       debugPrint('Error initializing camera: $error');
-    });
+      if (mounted) {
+        String errorMessage = 'Camera initialization failed';
+        if (error.toString().contains('No camera found') || 
+            error.toString().contains('failed to open camera')) {
+          errorMessage = 'No camera available. Please use a physical device to scan QR codes.';
+        }
+        ref.read(qrScannerProvider.notifier).logDetailedError('Camera Initialization', errorMessage);
+      }
+    }
   }
 
   @override
@@ -190,6 +209,9 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
   }
 
   Widget _buildCameraPlaceholder() {
+    final errorMessage = ref.watch(scannerErrorProvider);
+    final hasError = errorMessage != null && errorMessage.isNotEmpty;
+    
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -208,18 +230,47 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF00FF88)),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Initializing Camera...',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+            if (hasError) ...[
+              Icon(
+                Icons.videocam_off_rounded,
+                color: Colors.grey[400],
+                size: 48,
               ),
-            ),
+              const SizedBox(height: 16),
+              Text(
+                'Camera Unavailable',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Text(
+                  errorMessage,
+                  style: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 14,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ] else ...[
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF00FF88)),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Initializing Camera...',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ],
         ),
       ),

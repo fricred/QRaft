@@ -78,5 +78,7 @@
 	<string>QRaft needs access to your camera to scan QR codes and take photos for your profile picture.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>QRaft needs access to your photo library to select images for your profile picture.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>QRaft needs access to your contacts to help you quickly create QR codes with contact email addresses.</string>
 </dict>
 </plist>

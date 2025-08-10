@@ -1210,5 +1210,50 @@
   "searchCountry": "Search country",
   "@searchCountry": {
     "description": "Hint text for country search in phone input"
+  },
+
+  "emailFormTitle": "Email",
+  "@emailFormTitle": {
+    "description": "Email form title"
+  },
+
+  "emailFormSubtitle": "Create QR code for sending pre-filled email",
+  "@emailFormSubtitle": {
+    "description": "Email form subtitle"
+  },
+
+  "emailQrNameHint": "Email QR",
+  "@emailQrNameHint": {
+    "description": "Email QR name field hint"
+  },
+
+  "emailRecipientLabel": "Email Address *",
+  "@emailRecipientLabel": {
+    "description": "Email recipient field label"
+  },
+
+  "emailRecipientHint": "recipient@example.com",
+  "@emailRecipientHint": {
+    "description": "Email recipient field hint"
+  },
+
+  "emailSubjectLabel": "Subject",
+  "@emailSubjectLabel": {
+    "description": "Email subject field label"
+  },
+
+  "emailSubjectHint": "Email subject...",
+  "@emailSubjectHint": {
+    "description": "Email subject field hint"
+  },
+
+  "emailBodyLabel": "Message",
+  "@emailBodyLabel": {
+    "description": "Email body field label"
+  },
+
+  "emailBodyHint": "Type your message here...",
+  "@emailBodyHint": {
+    "description": "Email body field hint"
   }
 }

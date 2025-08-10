@@ -13,6 +13,9 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     
+    <!-- Contacts permission for email QR generation -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    
     <!-- Internet permission for Supabase -->
     <uses-permission android:name="android.permission.INTERNET" />
     
