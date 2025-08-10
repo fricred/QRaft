@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/app_localizations.dart';
 import 'domain/entities/qr_type.dart';
 import 'presentation/pages/qr_form_screen.dart';
+import 'presentation/pages/url_qr_screen.dart';
+import 'presentation/pages/text_qr_screen.dart';
+import 'presentation/pages/coming_soon_qr_screen.dart';
 
 class QRGeneratorScreen extends ConsumerStatefulWidget {
   const QRGeneratorScreen({super.key});
@@ -171,9 +174,28 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () {
+            Widget targetScreen;
+            switch (qrType) {
+              case QRType.url:
+                targetScreen = const URLQRScreen();
+                break;
+              case QRType.text:
+                targetScreen = const TextQRScreen();
+                break;
+              case QRType.personalInfo:
+                // For personalInfo, keep the wizard for now
+                targetScreen = QRFormScreen(qrType: qrType);
+                break;
+              case QRType.wifi:
+              case QRType.email:
+              case QRType.location:
+                targetScreen = ComingSoonQRScreen(qrType: qrType);
+                break;
+            }
+            
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => QRFormScreen(qrType: qrType),
+                builder: (context) => targetScreen,
               ),
             );
           },

@@ -39,7 +39,7 @@ void main() {
       // Check if the display value is properly formatted
       expect(find.text('github.com/test'), findsOneWidget);
       
-      print('✅ URL scan result dialog displays correctly');
+      debugPrint('✅ URL scan result dialog displays correctly');
     });
 
     testWidgets('should display mock gallery URL correctly', (WidgetTester tester) async {
@@ -62,8 +62,8 @@ void main() {
       expect(find.text('Open'), findsOneWidget);
       expect(find.byIcon(Icons.open_in_new_rounded), findsOneWidget);
       
-      print('✅ Mock gallery URL scan result displays correctly');
-      print('   Mock URL: $mockUrl');
+      debugPrint('✅ Mock gallery URL scan result displays correctly');
+      debugPrint('   Mock URL: $mockUrl');
     });
 
     testWidgets('should handle various URL formats', (WidgetTester tester) async {
@@ -91,7 +91,7 @@ void main() {
         expect(find.text('Website URL'), findsOneWidget);
         expect(find.text('Open'), findsOneWidget);
         
-        print('✅ URL format handled: $testUrl');
+        debugPrint('✅ URL format handled: $testUrl');
         
         // Clear the widget tree for next iteration
         await tester.pumpWidget(const SizedBox.shrink());

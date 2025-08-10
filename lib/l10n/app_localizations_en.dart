@@ -627,4 +627,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qrTypeLocationDesc => 'GPS coordinates\nand map points';
+
+  @override
+  String get styleColors => 'Colors';
+
+  @override
+  String get backToQRTypes => 'Back to QR Types';
+
+  @override
+  String get plannedFeatures => 'Planned Features';
+
+  @override
+  String get expectedInNextUpdate => 'Expected in next major update';
+
+  @override
+  String qrCodeSizeLabel(int size) {
+    return 'QR Code Size: ${size}px';
+  }
+
+  @override
+  String get logoAdded => 'Logo Added';
+
+  @override
+  String get noLogo => 'No Logo';
+
+  @override
+  String get logoDescription => 'Add a logo to personalize your QR';
+
+  @override
+  String get logoAddedDescription => 'Tap to change or remove';
+
+  @override
+  String get changeLogo => 'Change';
+
+  @override
+  String get logoUpdateSuccess => 'Logo updated successfully!';
+
+  @override
+  String get viewFullSize => 'View Full Size';
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qraft/features/qr_scanner/models/scan_result.dart';
 
@@ -20,7 +21,7 @@ void main() {
       expect(uuidRegex.hasMatch(scanResult.id), isTrue, 
         reason: 'Generated ID should be a valid UUID v4: ${scanResult.id}');
       
-      print('✅ Generated valid UUID: ${scanResult.id}');
+      debugPrint('✅ Generated valid UUID: ${scanResult.id}');
     });
 
     test('should generate different UUIDs for each scan result', () {
@@ -33,8 +34,8 @@ void main() {
       
       // Assert
       expect(scanResult1.id, isNot(equals(scanResult2.id)));
-      print('✅ UUID 1: ${scanResult1.id}');
-      print('✅ UUID 2: ${scanResult2.id}');
+      debugPrint('✅ UUID 1: ${scanResult1.id}');
+      debugPrint('✅ UUID 2: ${scanResult2.id}');
     });
 
     test('should parse QR data correctly with UUID', () {
@@ -50,10 +51,10 @@ void main() {
       expect(scanResult.displayValue, equals('github.com/test'));
       expect(scanResult.scannedAt, isNotNull);
       
-      print('✅ Scan result with UUID ${scanResult.id}:');
-      print('   Raw: ${scanResult.rawValue}');
-      print('   Type: ${scanResult.type}');
-      print('   Display: ${scanResult.displayValue}');
+      debugPrint('✅ Scan result with UUID ${scanResult.id}:');
+      debugPrint('   Raw: ${scanResult.rawValue}');
+      debugPrint('   Type: ${scanResult.type}');
+      debugPrint('   Display: ${scanResult.displayValue}');
     });
   });
 }

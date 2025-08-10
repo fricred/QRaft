@@ -1049,5 +1049,71 @@
   "qrTypeLocationDesc": "GPS coordinates\nand map points",
   "@qrTypeLocationDesc": {
     "description": "Location QR type description"
+  },
+
+  "styleColors": "Colors",
+  "@styleColors": {
+    "description": "Style section colors title"
+  },
+
+  "backToQRTypes": "Back to QR Types",
+  "@backToQRTypes": {
+    "description": "Button text to go back to QR type selection"
+  },
+
+  "plannedFeatures": "Planned Features",
+  "@plannedFeatures": {
+    "description": "Title for planned features section"
+  },
+
+  "expectedInNextUpdate": "Expected in next major update",
+  "@expectedInNextUpdate": {
+    "description": "Text indicating feature will be available in next update"
+  },
+
+  "qrCodeSizeLabel": "QR Code Size: {size}px",
+  "@qrCodeSizeLabel": {
+    "description": "Label showing QR code size",
+    "placeholders": {
+      "size": {
+        "type": "int",
+        "example": "200"
+      }
+    }
+  },
+
+  "logoAdded": "Logo Added",
+  "@logoAdded": {
+    "description": "Text shown when logo is added"
+  },
+
+  "noLogo": "No Logo",
+  "@noLogo": {
+    "description": "Text shown when no logo is present"
+  },
+
+  "logoDescription": "Add a logo to personalize your QR",
+  "@logoDescription": {
+    "description": "Description for logo functionality"
+  },
+
+  "logoAddedDescription": "Tap to change or remove",
+  "@logoAddedDescription": {
+    "description": "Description when logo is already added"
+  },
+
+  "changeLogo": "Change",
+  "@changeLogo": {
+    "description": "Button text to change logo"
+  },
+
+  "logoUpdateSuccess": "Logo updated successfully!",
+  "@logoUpdateSuccess": {
+    "description": "Success message when logo is updated"
+  },
+
+  "viewFullSize": "View Full Size",
+  "@viewFullSize": {
+    "description": "Button text to view QR code at full size"
   }
 }

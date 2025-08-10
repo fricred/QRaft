@@ -5,7 +5,6 @@ import '../../../../shared/widgets/glass_button.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/qr_type.dart';
 import '../../domain/entities/qr_data_models.dart';
-import '../widgets/qr_form_factory.dart';
 import '../widgets/forms/url_form.dart';
 import '../widgets/forms/text_form.dart';
 import '../widgets/forms/colombian_tax_form.dart';
@@ -100,7 +99,7 @@ class _QRFormScreenState extends ConsumerState<QRFormScreen> {
           QRWizardStep(
             title: 'Info',
             icon: Icons.edit_rounded,
-            widget: QRFormFactory.buildForm(qrType, _nextPage),
+            widget: _buildFormForType(qrType),
             isRequired: true,
           ),
           QRWizardStep(
@@ -641,6 +640,7 @@ class _QRFormScreenState extends ConsumerState<QRFormScreen> {
               children: [
                 // Foreground Color Tab
                 ColorPickerWidget(
+                  key: ValueKey('foreground_${customizationState.customization.foregroundColor}'),
                   title: l10n?.foregroundColor ?? 'Foreground Color',
                   selectedColor: Color(customizationState.customization.foregroundColor),
                   onColorChanged: customizationController.updateForegroundColor,
@@ -648,6 +648,7 @@ class _QRFormScreenState extends ConsumerState<QRFormScreen> {
                 
                 // Background Color Tab
                 ColorPickerWidget(
+                  key: ValueKey('background_${customizationState.customization.backgroundColor}'),
                   title: l10n?.backgroundColor ?? 'Background Color',
                   selectedColor: Color(customizationState.customization.backgroundColor),
                   onColorChanged: customizationController.updateBackgroundColor,
@@ -655,6 +656,7 @@ class _QRFormScreenState extends ConsumerState<QRFormScreen> {
                 
                 // Eye Color Tab
                 ColorPickerWidget(
+                  key: ValueKey('eye_${customizationState.customization.eyeColor}'),
                   title: l10n?.eyeColor ?? 'Eye Color',
                   selectedColor: Color(customizationState.customization.eyeColor),
                   onColorChanged: customizationController.updateEyeColor,
@@ -684,6 +686,7 @@ class _QRFormScreenState extends ConsumerState<QRFormScreen> {
         ),
         const SizedBox(height: 12),
         Slider(
+          key: ValueKey('size_${customizationState.customization.size}'),
           value: customizationState.customization.size,
           min: 150.0,
           max: 300.0,
@@ -1147,6 +1150,89 @@ class _QRFormScreenState extends ConsumerState<QRFormScreen> {
       case QRType.location:
         return 'Coming Soon - ${widget.qrType.getDisplayName(context)}';
     }
+  }
+
+  Widget _buildFormForType(QRType qrType) {
+    switch (qrType) {
+      case QRType.url:
+        return URLForm(onContinue: _nextPage);
+      case QRType.text:
+        return TextForm(onContinue: _nextPage);
+      case QRType.personalInfo:
+        return ColombianTaxForm(onContinue: _nextPage);
+      case QRType.wifi:
+      case QRType.email:
+      case QRType.location:
+        return _buildComingSoonForm(qrType);
+    }
+  }
+
+  Widget _buildComingSoonForm(QRType qrType) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            qrType.getDisplayName(context),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2E2E2E),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.1),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: qrType.gradientColors.map((c) => Color(c)).toList(),
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Icon(
+                    Icons.construction_rounded,
+                    color: Colors.white,
+                    size: 40,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Coming Soon',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'This QR type is under development and will be available in a future update.',
+                  style: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 14,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

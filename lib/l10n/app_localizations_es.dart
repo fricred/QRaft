@@ -636,4 +636,43 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get qrTypeLocationDesc => 'Coordenadas GPS\ny puntos del mapa';
+
+  @override
+  String get styleColors => 'Colores';
+
+  @override
+  String get backToQRTypes => 'Volver a Tipos de QR';
+
+  @override
+  String get plannedFeatures => 'Características Planificadas';
+
+  @override
+  String get expectedInNextUpdate =>
+      'Esperado en la próxima actualización mayor';
+
+  @override
+  String qrCodeSizeLabel(int size) {
+    return 'Tamaño del Código QR: ${size}px';
+  }
+
+  @override
+  String get logoAdded => 'Logo Agregado';
+
+  @override
+  String get noLogo => 'Sin Logo';
+
+  @override
+  String get logoDescription => 'Agrega un logo para personalizar tu QR';
+
+  @override
+  String get logoAddedDescription => 'Toca para cambiar o quitar';
+
+  @override
+  String get changeLogo => 'Cambiar';
+
+  @override
+  String get logoUpdateSuccess => '¡Logo actualizado exitosamente!';
+
+  @override
+  String get viewFullSize => 'Ver Tamaño Real';
 }

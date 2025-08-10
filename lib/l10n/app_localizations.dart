@@ -1243,6 +1243,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'GPS coordinates\nand map points'**
   String get qrTypeLocationDesc;
+
+  /// Style section colors title
+  ///
+  /// In en, this message translates to:
+  /// **'Colors'**
+  String get styleColors;
+
+  /// Button text to go back to QR type selection
+  ///
+  /// In en, this message translates to:
+  /// **'Back to QR Types'**
+  String get backToQRTypes;
+
+  /// Title for planned features section
+  ///
+  /// In en, this message translates to:
+  /// **'Planned Features'**
+  String get plannedFeatures;
+
+  /// Text indicating feature will be available in next update
+  ///
+  /// In en, this message translates to:
+  /// **'Expected in next major update'**
+  String get expectedInNextUpdate;
+
+  /// Label showing QR code size
+  ///
+  /// In en, this message translates to:
+  /// **'QR Code Size: {size}px'**
+  String qrCodeSizeLabel(int size);
+
+  /// Text shown when logo is added
+  ///
+  /// In en, this message translates to:
+  /// **'Logo Added'**
+  String get logoAdded;
+
+  /// Text shown when no logo is present
+  ///
+  /// In en, this message translates to:
+  /// **'No Logo'**
+  String get noLogo;
+
+  /// Description for logo functionality
+  ///
+  /// In en, this message translates to:
+  /// **'Add a logo to personalize your QR'**
+  String get logoDescription;
+
+  /// Description when logo is already added
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change or remove'**
+  String get logoAddedDescription;
+
+  /// Button text to change logo
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get changeLogo;
+
+  /// Success message when logo is updated
+  ///
+  /// In en, this message translates to:
+  /// **'Logo updated successfully!'**
+  String get logoUpdateSuccess;
+
+  /// Button text to view QR code at full size
+  ///
+  /// In en, this message translates to:
+  /// **'View Full Size'**
+  String get viewFullSize;
 }
 
 class _AppLocalizationsDelegate

@@ -192,5 +192,17 @@
   "qrTypeEmail": "Correo Electrónico",
   "qrTypeEmailDesc": "Envía correo con\ncontenido pre-llenado",
   "qrTypeLocation": "Ubicación",
-  "qrTypeLocationDesc": "Coordenadas GPS\ny puntos del mapa"
+  "qrTypeLocationDesc": "Coordenadas GPS\ny puntos del mapa",
+  "styleColors": "Colores",
+  "backToQRTypes": "Volver a Tipos de QR",
+  "plannedFeatures": "Características Planificadas",
+  "expectedInNextUpdate": "Esperado en la próxima actualización mayor",
+  "qrCodeSizeLabel": "Tamaño del Código QR: {size}px",
+  "logoAdded": "Logo Agregado",
+  "noLogo": "Sin Logo",
+  "logoDescription": "Agrega un logo para personalizar tu QR",
+  "logoAddedDescription": "Toca para cambiar o quitar",
+  "changeLogo": "Cambiar",
+  "logoUpdateSuccess": "¡Logo actualizado exitosamente!",
+  "viewFullSize": "Ver Tamaño Real"
 }
