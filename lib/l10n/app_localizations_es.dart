@@ -675,4 +675,63 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get viewFullSize => 'Ver Tamaño Real';
+
+  @override
+  String get personalInfoFormTitle => 'Información Personal';
+
+  @override
+  String get personalInfoFormSubtitle =>
+      'Crea una vCard con tu información de contacto';
+
+  @override
+  String get qrCodeNameLabel => 'Nombre del Código QR *';
+
+  @override
+  String get qrCodeNameHint => 'Mi Tarjeta de Contacto';
+
+  @override
+  String get firstName => 'Nombre *';
+
+  @override
+  String get firstNameHint => 'Juan';
+
+  @override
+  String get lastName => 'Apellido *';
+
+  @override
+  String get lastNameHint => 'Pérez';
+
+  @override
+  String get organization => 'Organización';
+
+  @override
+  String get organizationHint => 'Corporación Acme';
+
+  @override
+  String get phoneHint => '(555) 123-4567';
+
+  @override
+  String get emailHint => 'juan@ejemplo.com';
+
+  @override
+  String get websiteHint => 'https://juanperez.com';
+
+  @override
+  String get address => 'Dirección';
+
+  @override
+  String get addressHint => 'Calle 123, Ciudad, Estado 12345';
+
+  @override
+  String get note => 'Nota';
+
+  @override
+  String get noteHint => 'Información adicional...';
+
+  @override
+  String get requiredFieldsMessage =>
+      'Por favor completa todos los campos requeridos (*)';
+
+  @override
+  String get searchCountry => 'Buscar país';
 }

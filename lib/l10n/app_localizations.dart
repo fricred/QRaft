@@ -1315,6 +1315,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View Full Size'**
   String get viewFullSize;
+
+  /// Personal info form title
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Information'**
+  String get personalInfoFormTitle;
+
+  /// Personal info form subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Create a vCard with your contact information'**
+  String get personalInfoFormSubtitle;
+
+  /// QR code name field label
+  ///
+  /// In en, this message translates to:
+  /// **'QR Code Name *'**
+  String get qrCodeNameLabel;
+
+  /// QR code name field hint
+  ///
+  /// In en, this message translates to:
+  /// **'My Contact Card'**
+  String get qrCodeNameHint;
+
+  /// First name field label
+  ///
+  /// In en, this message translates to:
+  /// **'First Name *'**
+  String get firstName;
+
+  /// First name field hint
+  ///
+  /// In en, this message translates to:
+  /// **'John'**
+  String get firstNameHint;
+
+  /// Last name field label
+  ///
+  /// In en, this message translates to:
+  /// **'Last Name *'**
+  String get lastName;
+
+  /// Last name field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Doe'**
+  String get lastNameHint;
+
+  /// Organization field label
+  ///
+  /// In en, this message translates to:
+  /// **'Organization'**
+  String get organization;
+
+  /// Organization field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Acme Corporation'**
+  String get organizationHint;
+
+  /// Phone field hint
+  ///
+  /// In en, this message translates to:
+  /// **'(555) 123-4567'**
+  String get phoneHint;
+
+  /// Email field hint
+  ///
+  /// In en, this message translates to:
+  /// **'john@example.com'**
+  String get emailHint;
+
+  /// Website field hint
+  ///
+  /// In en, this message translates to:
+  /// **'https://johndoe.com'**
+  String get websiteHint;
+
+  /// Address field label
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get address;
+
+  /// Address field hint
+  ///
+  /// In en, this message translates to:
+  /// **'123 Main St, City, State 12345'**
+  String get addressHint;
+
+  /// Note field label
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get note;
+
+  /// Note field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Additional information...'**
+  String get noteHint;
+
+  /// Message for required fields validation
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all required fields (*)'**
+  String get requiredFieldsMessage;
+
+  /// Hint text for country search in phone input
+  ///
+  /// In en, this message translates to:
+  /// **'Search country'**
+  String get searchCountry;
 }
 
 class _AppLocalizationsDelegate

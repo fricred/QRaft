@@ -665,4 +665,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewFullSize => 'View Full Size';
+
+  @override
+  String get personalInfoFormTitle => 'Personal Information';
+
+  @override
+  String get personalInfoFormSubtitle =>
+      'Create a vCard with your contact information';
+
+  @override
+  String get qrCodeNameLabel => 'QR Code Name *';
+
+  @override
+  String get qrCodeNameHint => 'My Contact Card';
+
+  @override
+  String get firstName => 'First Name *';
+
+  @override
+  String get firstNameHint => 'John';
+
+  @override
+  String get lastName => 'Last Name *';
+
+  @override
+  String get lastNameHint => 'Doe';
+
+  @override
+  String get organization => 'Organization';
+
+  @override
+  String get organizationHint => 'Acme Corporation';
+
+  @override
+  String get phoneHint => '(555) 123-4567';
+
+  @override
+  String get emailHint => 'john@example.com';
+
+  @override
+  String get websiteHint => 'https://johndoe.com';
+
+  @override
+  String get address => 'Address';
+
+  @override
+  String get addressHint => '123 Main St, City, State 12345';
+
+  @override
+  String get note => 'Note';
+
+  @override
+  String get noteHint => 'Additional information...';
+
+  @override
+  String get requiredFieldsMessage => 'Please fill in all required fields (*)';
+
+  @override
+  String get searchCountry => 'Search country';
 }

@@ -3,9 +3,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/app_localizations.dart';
 import 'domain/entities/qr_type.dart';
-import 'presentation/pages/qr_form_screen.dart';
 import 'presentation/pages/url_qr_screen.dart';
 import 'presentation/pages/text_qr_screen.dart';
+import 'presentation/pages/personal_info_qr_screen.dart';
 import 'presentation/pages/coming_soon_qr_screen.dart';
 
 class QRGeneratorScreen extends ConsumerStatefulWidget {
@@ -183,8 +183,7 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
                 targetScreen = const TextQRScreen();
                 break;
               case QRType.personalInfo:
-                // For personalInfo, keep the wizard for now
-                targetScreen = QRFormScreen(qrType: qrType);
+                targetScreen = const PersonalInfoQRScreen();
                 break;
               case QRType.wifi:
               case QRType.email:

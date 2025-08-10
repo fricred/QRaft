@@ -1115,5 +1115,100 @@
   "viewFullSize": "View Full Size",
   "@viewFullSize": {
     "description": "Button text to view QR code at full size"
+  },
+
+  "personalInfoFormTitle": "Personal Information",
+  "@personalInfoFormTitle": {
+    "description": "Personal info form title"
+  },
+
+  "personalInfoFormSubtitle": "Create a vCard with your contact information",
+  "@personalInfoFormSubtitle": {
+    "description": "Personal info form subtitle"  
+  },
+
+  "qrCodeNameLabel": "QR Code Name *",
+  "@qrCodeNameLabel": {
+    "description": "QR code name field label"
+  },
+
+  "qrCodeNameHint": "My Contact Card",
+  "@qrCodeNameHint": {
+    "description": "QR code name field hint"
+  },
+
+  "firstName": "First Name *",
+  "@firstName": {
+    "description": "First name field label"
+  },
+
+  "firstNameHint": "John",
+  "@firstNameHint": {
+    "description": "First name field hint"
+  },
+
+  "lastName": "Last Name *",
+  "@lastName": {
+    "description": "Last name field label"
+  },
+
+  "lastNameHint": "Doe",
+  "@lastNameHint": {
+    "description": "Last name field hint"
+  },
+
+  "organization": "Organization",
+  "@organization": {
+    "description": "Organization field label"
+  },
+
+  "organizationHint": "Acme Corporation",
+  "@organizationHint": {
+    "description": "Organization field hint"
+  },
+
+  "phoneHint": "(555) 123-4567",
+  "@phoneHint": {
+    "description": "Phone field hint"
+  },
+
+  "emailHint": "john@example.com",
+  "@emailHint": {
+    "description": "Email field hint"
+  },
+
+  "websiteHint": "https://johndoe.com",
+  "@websiteHint": {
+    "description": "Website field hint"
+  },
+
+  "address": "Address",
+  "@address": {
+    "description": "Address field label"
+  },
+
+  "addressHint": "123 Main St, City, State 12345",
+  "@addressHint": {
+    "description": "Address field hint"
+  },
+
+  "note": "Note",
+  "@note": {
+    "description": "Note field label"
+  },
+
+  "noteHint": "Additional information...",
+  "@noteHint": {
+    "description": "Note field hint"
+  },
+
+  "requiredFieldsMessage": "Please fill in all required fields (*)",
+  "@requiredFieldsMessage": {
+    "description": "Message for required fields validation"
+  },
+
+  "searchCountry": "Search country",
+  "@searchCountry": {
+    "description": "Hint text for country search in phone input"
   }
 }
