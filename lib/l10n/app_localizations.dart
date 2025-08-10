@@ -1483,6 +1483,384 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Type your message here...'**
   String get emailBodyHint;
+
+  /// WiFi form section title
+  ///
+  /// In en, this message translates to:
+  /// **'WiFi Network Details'**
+  String get wifiNetworkDetails;
+
+  /// WiFi form description text
+  ///
+  /// In en, this message translates to:
+  /// **'Enter WiFi network details to create a QR code for easy sharing'**
+  String get wifiFormDescription;
+
+  /// WiFi network name field label
+  ///
+  /// In en, this message translates to:
+  /// **'Network Name (SSID) *'**
+  String get networkNameLabel;
+
+  /// WiFi network name field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Enter WiFi network name'**
+  String get networkNameHint;
+
+  /// WiFi password field label
+  ///
+  /// In en, this message translates to:
+  /// **'Password *'**
+  String get wifiPasswordLabel;
+
+  /// WiFi password field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Enter WiFi password'**
+  String get wifiPasswordHint;
+
+  /// WiFi security type section title
+  ///
+  /// In en, this message translates to:
+  /// **'Security Type'**
+  String get securityType;
+
+  /// WPA security type option
+  ///
+  /// In en, this message translates to:
+  /// **'WPA/WPA2 (Recommended)'**
+  String get securityWpaRecommended;
+
+  /// WEP security type option
+  ///
+  /// In en, this message translates to:
+  /// **'WEP (Legacy)'**
+  String get securityWepLegacy;
+
+  /// Open network security type option
+  ///
+  /// In en, this message translates to:
+  /// **'Open Network (No Password)'**
+  String get securityOpenNetwork;
+
+  /// Hidden network toggle label
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden Network'**
+  String get hiddenNetwork;
+
+  /// Hidden network toggle description
+  ///
+  /// In en, this message translates to:
+  /// **'Network name is not broadcasted publicly'**
+  String get hiddenNetworkDescription;
+
+  /// Network name validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Network name is required'**
+  String get networkNameRequired;
+
+  /// Network name length validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Network name must be 32 characters or less'**
+  String get networkNameTooLong;
+
+  /// Password validation error for secured networks
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required for secured networks'**
+  String get passwordRequiredForSecuredNetworks;
+
+  /// Password length validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be 63 characters or less'**
+  String get passwordTooLong;
+
+  /// QR code size slider title
+  ///
+  /// In en, this message translates to:
+  /// **'QR Code Size'**
+  String get qrCodeSizeTitle;
+
+  /// Small size label
+  ///
+  /// In en, this message translates to:
+  /// **'Small'**
+  String get sizeSmall;
+
+  /// Medium size label
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get sizeMedium;
+
+  /// Large size label
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get sizeLarge;
+
+  /// Title when logo is added
+  ///
+  /// In en, this message translates to:
+  /// **'Logo Added'**
+  String get logoAddedTitle;
+
+  /// Title when no logo is present
+  ///
+  /// In en, this message translates to:
+  /// **'No Logo'**
+  String get noLogoTitle;
+
+  /// Description for added logo
+  ///
+  /// In en, this message translates to:
+  /// **'Your logo will appear in the center of the QR code'**
+  String get logoWillAppearInCenter;
+
+  /// Description to encourage logo addition
+  ///
+  /// In en, this message translates to:
+  /// **'Add a logo to personalize your QR code'**
+  String get addLogoToPersonalize;
+
+  /// Remove button text
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// Change button text
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get change;
+
+  /// Preview placeholder text when form is incomplete
+  ///
+  /// In en, this message translates to:
+  /// **'Complete form\nto see preview'**
+  String get completeFormToSeePreview;
+
+  /// Success message when logo is updated
+  ///
+  /// In en, this message translates to:
+  /// **'Logo updated successfully!'**
+  String get logoUpdatedSuccessfully;
+
+  /// Error message when image picker fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to pick image: {error}'**
+  String failedToPickImage(String error);
+
+  /// Location form section title
+  ///
+  /// In en, this message translates to:
+  /// **'Location Details'**
+  String get locationFormTitle;
+
+  /// Location form description text
+  ///
+  /// In en, this message translates to:
+  /// **'Share your location or any GPS coordinates with a QR code'**
+  String get locationFormDescription;
+
+  /// Location name field label
+  ///
+  /// In en, this message translates to:
+  /// **'Location Name'**
+  String get locationNameLabel;
+
+  /// Location name field hint
+  ///
+  /// In en, this message translates to:
+  /// **'My Location'**
+  String get locationNameHint;
+
+  /// Location name validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Location name is required'**
+  String get locationNameRequired;
+
+  /// Location name minimum length validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Location name must be at least 2 characters'**
+  String get locationNameTooShort;
+
+  /// Latitude field label
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude *'**
+  String get latitudeLabel;
+
+  /// Latitude field hint
+  ///
+  /// In en, this message translates to:
+  /// **'40.7128'**
+  String get latitudeHint;
+
+  /// Longitude field label
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude *'**
+  String get longitudeLabel;
+
+  /// Longitude field hint
+  ///
+  /// In en, this message translates to:
+  /// **'-74.0060'**
+  String get longitudeHint;
+
+  /// Button text to use current location
+  ///
+  /// In en, this message translates to:
+  /// **'Use Current Location'**
+  String get useCurrentLocation;
+
+  /// Button text to pick location from map
+  ///
+  /// In en, this message translates to:
+  /// **'Pick from Map'**
+  String get pickFromMap;
+
+  /// Location options section title
+  ///
+  /// In en, this message translates to:
+  /// **'Location Options'**
+  String get locationOptions;
+
+  /// Manual entry option title
+  ///
+  /// In en, this message translates to:
+  /// **'Manual Entry'**
+  String get manualEntry;
+
+  /// Manual entry option description
+  ///
+  /// In en, this message translates to:
+  /// **'Enter coordinates manually'**
+  String get manualEntryDesc;
+
+  /// Current location option description
+  ///
+  /// In en, this message translates to:
+  /// **'Use device GPS location'**
+  String get currentLocationDesc;
+
+  /// Map location option description
+  ///
+  /// In en, this message translates to:
+  /// **'Select point on interactive map'**
+  String get mapLocationDesc;
+
+  /// Latitude validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude is required'**
+  String get latitudeRequired;
+
+  /// Longitude validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude is required'**
+  String get longitudeRequired;
+
+  /// Latitude validation error for invalid range
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid latitude (-90 to 90)'**
+  String get latitudeInvalid;
+
+  /// Longitude validation error for invalid range
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid longitude (-180 to 180)'**
+  String get longitudeInvalid;
+
+  /// Error message when location permission is needed
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is required to use current location'**
+  String get locationPermissionRequired;
+
+  /// Error message when location services are disabled
+  ///
+  /// In en, this message translates to:
+  /// **'Location services are disabled. Please enable them in settings'**
+  String get locationServiceDisabled;
+
+  /// Loading message while getting current location
+  ///
+  /// In en, this message translates to:
+  /// **'Getting your location...'**
+  String get gettingCurrentLocation;
+
+  /// Success message when location is obtained
+  ///
+  /// In en, this message translates to:
+  /// **'Location obtained successfully!'**
+  String get locationObtained;
+
+  /// Error message when getting location fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get current location: {error}'**
+  String failedToGetLocation(String error);
+
+  /// Map picker screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Select Location on Map'**
+  String get selectLocationOnMap;
+
+  /// Map picker instruction
+  ///
+  /// In en, this message translates to:
+  /// **'Tap on the map to select a location'**
+  String get tapMapToSelectLocation;
+
+  /// Button text to confirm selected location
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Location'**
+  String get confirmLocation;
+
+  /// Label for selected location info
+  ///
+  /// In en, this message translates to:
+  /// **'Selected Location'**
+  String get selectedLocation;
+
+  /// Success message when current location is found
+  ///
+  /// In en, this message translates to:
+  /// **'Current location found'**
+  String get currentLocationFound;
+
+  /// Message when using default location
+  ///
+  /// In en, this message translates to:
+  /// **'Using default location - tap to select'**
+  String get usingDefaultLocation;
+
+  /// Button text to use current location as selected
+  ///
+  /// In en, this message translates to:
+  /// **'Use Current Location'**
+  String get useCurrent;
+
+  /// Error message when map fails to load
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load map. Please check your internet connection'**
+  String get mapLoadingError;
 }
 
 class _AppLocalizationsDelegate

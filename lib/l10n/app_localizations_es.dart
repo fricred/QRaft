@@ -762,4 +762,214 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get emailBodyHint => 'Escribe tu mensaje aquí...';
+
+  @override
+  String get wifiNetworkDetails => 'Detalles de la Red WiFi';
+
+  @override
+  String get wifiFormDescription =>
+      'Ingresa los detalles de la red WiFi para crear un código QR y compartirlo fácilmente';
+
+  @override
+  String get networkNameLabel => 'Nombre de Red (SSID) *';
+
+  @override
+  String get networkNameHint => 'Ingresa el nombre de la red WiFi';
+
+  @override
+  String get wifiPasswordLabel => 'Contraseña *';
+
+  @override
+  String get wifiPasswordHint => 'Ingresa la contraseña WiFi';
+
+  @override
+  String get securityType => 'Tipo de Seguridad';
+
+  @override
+  String get securityWpaRecommended => 'WPA/WPA2 (Recomendado)';
+
+  @override
+  String get securityWepLegacy => 'WEP (Legado)';
+
+  @override
+  String get securityOpenNetwork => 'Red Abierta (Sin Contraseña)';
+
+  @override
+  String get hiddenNetwork => 'Red Oculta';
+
+  @override
+  String get hiddenNetworkDescription =>
+      'El nombre de la red no se transmite públicamente';
+
+  @override
+  String get networkNameRequired => 'El nombre de la red es requerido';
+
+  @override
+  String get networkNameTooLong =>
+      'El nombre de la red debe tener 32 caracteres o menos';
+
+  @override
+  String get passwordRequiredForSecuredNetworks =>
+      'La contraseña es requerida para redes seguras';
+
+  @override
+  String get passwordTooLong =>
+      'La contraseña debe tener 63 caracteres o menos';
+
+  @override
+  String get qrCodeSizeTitle => 'Tamaño del Código QR';
+
+  @override
+  String get sizeSmall => 'Pequeño';
+
+  @override
+  String get sizeMedium => 'Mediano';
+
+  @override
+  String get sizeLarge => 'Grande';
+
+  @override
+  String get logoAddedTitle => 'Logo Agregado';
+
+  @override
+  String get noLogoTitle => 'Sin Logo';
+
+  @override
+  String get logoWillAppearInCenter =>
+      'Tu logo aparecerá en el centro del código QR';
+
+  @override
+  String get addLogoToPersonalize =>
+      'Agrega un logo para personalizar tu código QR';
+
+  @override
+  String get remove => 'Quitar';
+
+  @override
+  String get change => 'Cambiar';
+
+  @override
+  String get completeFormToSeePreview =>
+      'Completa el formulario\npara ver la vista previa';
+
+  @override
+  String get logoUpdatedSuccessfully => '¡Logo actualizado exitosamente!';
+
+  @override
+  String failedToPickImage(String error) {
+    return 'Error al seleccionar imagen: $error';
+  }
+
+  @override
+  String get locationFormTitle => 'Detalles de Ubicación';
+
+  @override
+  String get locationFormDescription =>
+      'Comparte tu ubicación o cualquier coordenada GPS con un código QR';
+
+  @override
+  String get locationNameLabel => 'Nombre de Ubicación';
+
+  @override
+  String get locationNameHint => 'Mi Ubicación';
+
+  @override
+  String get locationNameRequired => 'El nombre de ubicación es requerido';
+
+  @override
+  String get locationNameTooShort =>
+      'El nombre de ubicación debe tener al menos 2 caracteres';
+
+  @override
+  String get latitudeLabel => 'Latitud *';
+
+  @override
+  String get latitudeHint => '40.7128';
+
+  @override
+  String get longitudeLabel => 'Longitud *';
+
+  @override
+  String get longitudeHint => '-74.0060';
+
+  @override
+  String get useCurrentLocation => 'Usar Ubicación Actual';
+
+  @override
+  String get pickFromMap => 'Seleccionar del Mapa';
+
+  @override
+  String get locationOptions => 'Opciones de Ubicación';
+
+  @override
+  String get manualEntry => 'Entrada Manual';
+
+  @override
+  String get manualEntryDesc => 'Introducir coordenadas manualmente';
+
+  @override
+  String get currentLocationDesc => 'Usar ubicación GPS del dispositivo';
+
+  @override
+  String get mapLocationDesc => 'Seleccionar punto en mapa interactivo';
+
+  @override
+  String get latitudeRequired => 'La latitud es requerida';
+
+  @override
+  String get longitudeRequired => 'La longitud es requerida';
+
+  @override
+  String get latitudeInvalid =>
+      'Por favor ingresa una latitud válida (-90 a 90)';
+
+  @override
+  String get longitudeInvalid =>
+      'Por favor ingresa una longitud válida (-180 a 180)';
+
+  @override
+  String get locationPermissionRequired =>
+      'Se requiere permiso de ubicación para usar la ubicación actual';
+
+  @override
+  String get locationServiceDisabled =>
+      'Los servicios de ubicación están deshabilitados. Por favor habilitarlos en configuración';
+
+  @override
+  String get gettingCurrentLocation => 'Obteniendo tu ubicación...';
+
+  @override
+  String get locationObtained => '¡Ubicación obtenida exitosamente!';
+
+  @override
+  String failedToGetLocation(String error) {
+    return 'Error al obtener ubicación actual: $error';
+  }
+
+  @override
+  String get selectLocationOnMap => 'Seleccionar Ubicación en el Mapa';
+
+  @override
+  String get tapMapToSelectLocation =>
+      'Toca en el mapa para seleccionar una ubicación';
+
+  @override
+  String get confirmLocation => 'Confirmar Ubicación';
+
+  @override
+  String get selectedLocation => 'Ubicación Seleccionada';
+
+  @override
+  String get currentLocationFound => 'Ubicación actual encontrada';
+
+  @override
+  String get usingDefaultLocation =>
+      'Usando ubicación predeterminada - toca para seleccionar';
+
+  @override
+  String get useCurrent => 'Usar Ubicación Actual';
+
+  @override
+  String get mapLoadingError =>
+      'Error al cargar el mapa. Por favor verifica tu conexión a internet';
 }

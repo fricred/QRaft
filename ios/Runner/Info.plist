@@ -80,5 +80,7 @@
 	<string>QRaft needs access to your photo library to select images for your profile picture.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>QRaft needs access to your contacts to help you quickly create QR codes with contact email addresses.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>QRaft needs access to your location to create location-based QR codes with your current GPS coordinates.</string>
 </dict>
 </plist>

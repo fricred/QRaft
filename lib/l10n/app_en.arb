@@ -1255,5 +1255,337 @@
   "emailBodyHint": "Type your message here...",
   "@emailBodyHint": {
     "description": "Email body field hint"
+  },
+
+  "wifiNetworkDetails": "WiFi Network Details",
+  "@wifiNetworkDetails": {
+    "description": "WiFi form section title"
+  },
+
+  "wifiFormDescription": "Enter WiFi network details to create a QR code for easy sharing",
+  "@wifiFormDescription": {
+    "description": "WiFi form description text"
+  },
+
+  "networkNameLabel": "Network Name (SSID) *",
+  "@networkNameLabel": {
+    "description": "WiFi network name field label"
+  },
+
+  "networkNameHint": "Enter WiFi network name",
+  "@networkNameHint": {
+    "description": "WiFi network name field hint"
+  },
+
+  "wifiPasswordLabel": "Password *",
+  "@wifiPasswordLabel": {
+    "description": "WiFi password field label"
+  },
+
+  "wifiPasswordHint": "Enter WiFi password",
+  "@wifiPasswordHint": {
+    "description": "WiFi password field hint"
+  },
+
+  "securityType": "Security Type",
+  "@securityType": {
+    "description": "WiFi security type section title"
+  },
+
+  "securityWpaRecommended": "WPA/WPA2 (Recommended)",
+  "@securityWpaRecommended": {
+    "description": "WPA security type option"
+  },
+
+  "securityWepLegacy": "WEP (Legacy)",
+  "@securityWepLegacy": {
+    "description": "WEP security type option"
+  },
+
+  "securityOpenNetwork": "Open Network (No Password)",
+  "@securityOpenNetwork": {
+    "description": "Open network security type option"
+  },
+
+  "hiddenNetwork": "Hidden Network",
+  "@hiddenNetwork": {
+    "description": "Hidden network toggle label"
+  },
+
+  "hiddenNetworkDescription": "Network name is not broadcasted publicly",
+  "@hiddenNetworkDescription": {
+    "description": "Hidden network toggle description"
+  },
+
+  "networkNameRequired": "Network name is required",
+  "@networkNameRequired": {
+    "description": "Network name validation error"
+  },
+
+  "networkNameTooLong": "Network name must be 32 characters or less",
+  "@networkNameTooLong": {
+    "description": "Network name length validation error"
+  },
+
+  "passwordRequiredForSecuredNetworks": "Password is required for secured networks",
+  "@passwordRequiredForSecuredNetworks": {
+    "description": "Password validation error for secured networks"
+  },
+
+  "passwordTooLong": "Password must be 63 characters or less",
+  "@passwordTooLong": {
+    "description": "Password length validation error"
+  },
+
+  "qrCodeSizeTitle": "QR Code Size",
+  "@qrCodeSizeTitle": {
+    "description": "QR code size slider title"
+  },
+
+  "sizeSmall": "Small",
+  "@sizeSmall": {
+    "description": "Small size label"
+  },
+
+  "sizeMedium": "Medium",
+  "@sizeMedium": {
+    "description": "Medium size label"
+  },
+
+  "sizeLarge": "Large",
+  "@sizeLarge": {
+    "description": "Large size label"
+  },
+
+  "logoAddedTitle": "Logo Added",
+  "@logoAddedTitle": {
+    "description": "Title when logo is added"
+  },
+
+  "noLogoTitle": "No Logo",
+  "@noLogoTitle": {
+    "description": "Title when no logo is present"
+  },
+
+  "logoWillAppearInCenter": "Your logo will appear in the center of the QR code",
+  "@logoWillAppearInCenter": {
+    "description": "Description for added logo"
+  },
+
+  "addLogoToPersonalize": "Add a logo to personalize your QR code",
+  "@addLogoToPersonalize": {
+    "description": "Description to encourage logo addition"
+  },
+
+  "remove": "Remove",
+  "@remove": {
+    "description": "Remove button text"
+  },
+
+  "change": "Change",
+  "@change": {
+    "description": "Change button text"
+  },
+
+  "completeFormToSeePreview": "Complete form\nto see preview",
+  "@completeFormToSeePreview": {
+    "description": "Preview placeholder text when form is incomplete"
+  },
+
+  "logoUpdatedSuccessfully": "Logo updated successfully!",
+  "@logoUpdatedSuccessfully": {
+    "description": "Success message when logo is updated"
+  },
+
+  "failedToPickImage": "Failed to pick image: {error}",
+  "@failedToPickImage": {
+    "description": "Error message when image picker fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Permission denied"
+      }
+    }
+  },
+
+  "locationFormTitle": "Location Details",
+  "@locationFormTitle": {
+    "description": "Location form section title"
+  },
+
+  "locationFormDescription": "Share your location or any GPS coordinates with a QR code",
+  "@locationFormDescription": {
+    "description": "Location form description text"
+  },
+
+  "locationNameLabel": "Location Name",
+  "@locationNameLabel": {
+    "description": "Location name field label"
+  },
+
+  "locationNameHint": "My Location",
+  "@locationNameHint": {
+    "description": "Location name field hint"
+  },
+
+  "locationNameRequired": "Location name is required",
+  "@locationNameRequired": {
+    "description": "Location name validation error"
+  },
+
+  "locationNameTooShort": "Location name must be at least 2 characters",
+  "@locationNameTooShort": {
+    "description": "Location name minimum length validation error"
+  },
+
+  "latitudeLabel": "Latitude *",
+  "@latitudeLabel": {
+    "description": "Latitude field label"
+  },
+
+  "latitudeHint": "40.7128",
+  "@latitudeHint": {
+    "description": "Latitude field hint"
+  },
+
+  "longitudeLabel": "Longitude *",
+  "@longitudeLabel": {
+    "description": "Longitude field label"
+  },
+
+  "longitudeHint": "-74.0060",
+  "@longitudeHint": {
+    "description": "Longitude field hint"
+  },
+
+  "useCurrentLocation": "Use Current Location",
+  "@useCurrentLocation": {
+    "description": "Button text to use current location"
+  },
+
+  "pickFromMap": "Pick from Map",
+  "@pickFromMap": {
+    "description": "Button text to pick location from map"
+  },
+
+  "locationOptions": "Location Options",
+  "@locationOptions": {
+    "description": "Location options section title"
+  },
+
+  "manualEntry": "Manual Entry",
+  "@manualEntry": {
+    "description": "Manual entry option title"
+  },
+
+  "manualEntryDesc": "Enter coordinates manually",
+  "@manualEntryDesc": {
+    "description": "Manual entry option description"
+  },
+
+  "currentLocationDesc": "Use device GPS location",
+  "@currentLocationDesc": {
+    "description": "Current location option description"
+  },
+
+  "mapLocationDesc": "Select point on interactive map",
+  "@mapLocationDesc": {
+    "description": "Map location option description"
+  },
+
+  "latitudeRequired": "Latitude is required",
+  "@latitudeRequired": {
+    "description": "Latitude validation error"
+  },
+
+  "longitudeRequired": "Longitude is required",
+  "@longitudeRequired": {
+    "description": "Longitude validation error"
+  },
+
+  "latitudeInvalid": "Please enter a valid latitude (-90 to 90)",
+  "@latitudeInvalid": {
+    "description": "Latitude validation error for invalid range"
+  },
+
+  "longitudeInvalid": "Please enter a valid longitude (-180 to 180)",
+  "@longitudeInvalid": {
+    "description": "Longitude validation error for invalid range"
+  },
+
+  "locationPermissionRequired": "Location permission is required to use current location",
+  "@locationPermissionRequired": {
+    "description": "Error message when location permission is needed"
+  },
+
+  "locationServiceDisabled": "Location services are disabled. Please enable them in settings",
+  "@locationServiceDisabled": {
+    "description": "Error message when location services are disabled"
+  },
+
+  "gettingCurrentLocation": "Getting current location...",
+  "@gettingCurrentLocation": {
+    "description": "Loading message while getting current location"
+  },
+
+  "locationObtained": "Location obtained successfully!",
+  "@locationObtained": {
+    "description": "Success message when location is obtained"
+  },
+
+  "failedToGetLocation": "Failed to get current location: {error}",
+  "@failedToGetLocation": {
+    "description": "Error message when getting location fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Permission denied"
+      }
+    }
+  },
+
+  "selectLocationOnMap": "Select Location on Map",
+  "@selectLocationOnMap": {
+    "description": "Map picker screen title"
+  },
+
+  "tapMapToSelectLocation": "Tap on the map to select a location",
+  "@tapMapToSelectLocation": {
+    "description": "Map picker instruction"
+  },
+
+  "confirmLocation": "Confirm Location",
+  "@confirmLocation": {
+    "description": "Button text to confirm selected location"
+  },
+
+  "selectedLocation": "Selected Location",
+  "@selectedLocation": {
+    "description": "Label for selected location info"
+  },
+  
+  "gettingCurrentLocation": "Getting your location...",
+  "@gettingCurrentLocation": {
+    "description": "Loading message while getting current location"
+  },
+  
+  "currentLocationFound": "Current location found",
+  "@currentLocationFound": {
+    "description": "Success message when current location is found"
+  },
+  
+  "usingDefaultLocation": "Using default location - tap to select",
+  "@usingDefaultLocation": {
+    "description": "Message when using default location"
+  },
+  
+  "useCurrent": "Use Current Location",
+  "@useCurrent": {
+    "description": "Button text to use current location as selected"
+  },
+
+  "mapLoadingError": "Failed to load map. Please check your internet connection",
+  "@mapLoadingError": {
+    "description": "Error message when map fails to load"
   }
 }

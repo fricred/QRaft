@@ -80,6 +80,11 @@ dependencies:
   
   # Contact Picker with full access including emails
   flutter_contacts: ^1.1.9
+  
+  # Location functionality
+  geolocator: ^10.1.0
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.1
 
 dev_dependencies:
   flutter_test:
