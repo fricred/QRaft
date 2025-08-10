@@ -7,4 +7,6 @@ abstract class QRRepository {
   Future<QRCodeEntity> updateQRCode(QRCodeEntity qrCode);
   Future<void> deleteQRCode(String id);
   Future<List<QRCodeEntity>> getQRCodesByType(String userId, String type);
+  Future<QRCodeEntity> toggleFavorite(String qrCodeId, bool isFavorite);
+  Future<List<QRCodeEntity>> getFavoriteQRCodes(String userId);
 }

@@ -53,7 +53,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
                       ),
                       // Cart button
                       IconButton(
-                        onPressed: () => _showComingSoonDialog('Shopping Cart'),
+                        onPressed: () => _showCartDialog(),
                         icon: const Icon(
                           Icons.shopping_cart_rounded,
                           color: Colors.white,
@@ -256,7 +256,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () => _showComingSoonDialog('Product Details'),
+          onTap: () => _showProductDetails(product),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -411,7 +411,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
     ];
   }
 
-  void _showComingSoonDialog(String feature) {
+  void _showCartDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -430,19 +430,19 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
                   height: 64,
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFFEF4444), Color(0xFF8B5CF6)],
+                      colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Icon(
-                    Icons.shopping_bag_rounded,
+                    Icons.shopping_cart_rounded,
                     color: Colors.white,
                     size: 32,
                   ),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Coming Soon!',
+                  'Shopping Cart',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -451,17 +451,46 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '$feature functionality is under development and will be available soon.',
+                  'Your cart is empty',
                   style: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 14,
                   ),
                   textAlign: TextAlign.center,
                 ),
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1A1A1A),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.1),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.shopping_cart_outlined,
+                        color: Colors.grey[400],
+                        size: 48,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Add products to see them here',
+                        style: TextStyle(
+                          color: Colors.grey[400],
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 24),
                 PrimaryGlassButton(
-                  text: 'Got it',
-                  icon: Icons.check_rounded,
+                  text: 'Continue Shopping',
+                  icon: Icons.shopping_bag_rounded,
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
@@ -469,6 +498,194 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
           ),
         );
       },
+    );
+  }
+
+  void _showProductDetails(Map<String, dynamic> product) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: const Color(0xFF2E2E2E),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Product image
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    gradient: product['gradient'] as LinearGradient,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(
+                    product['icon'] as IconData,
+                    color: Colors.white,
+                    size: 40,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  product['name'] as String,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  product['material'] as String,
+                  style: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1A1A1A),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Features:',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(Icons.check_circle, color: const Color(0xFF00FF88), size: 16),
+                          const SizedBox(width: 8),
+                          Text('Precision laser engraving', style: TextStyle(color: Colors.grey[300], fontSize: 12)),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.check_circle, color: const Color(0xFF00FF88), size: 16),
+                          const SizedBox(width: 8),
+                          Text('High-quality ${product['material']}', style: TextStyle(color: Colors.grey[300], fontSize: 12)),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.check_circle, color: const Color(0xFF00FF88), size: 16),
+                          const SizedBox(width: 8),
+                          Text('Custom QR code design', style: TextStyle(color: Colors.grey[300], fontSize: 12)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Price: ${product['price']}',
+                      style: TextStyle(
+                        color: const Color(0xFF00FF88),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'In Stock',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SecondaryGlassButton(
+                        text: 'Close',
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: PrimaryGlassButton(
+                        text: 'Add to Cart',
+                        icon: Icons.add_shopping_cart_rounded,
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _addToCart(product);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _addToCart(Map<String, dynamic> product) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                gradient: product['gradient'] as LinearGradient,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                product['icon'] as IconData,
+                color: Colors.white,
+                size: 16,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text('${product['name']} added to cart!'),
+            ),
+          ],
+        ),
+        backgroundColor: const Color(0xFF2E2E2E),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        action: SnackBarAction(
+          label: 'View Cart',
+          textColor: const Color(0xFF00FF88),
+          onPressed: () => _showCartDialog(),
+        ),
+      ),
     );
   }
 }

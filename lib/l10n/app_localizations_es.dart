@@ -972,4 +972,136 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get mapLoadingError =>
       'Error al cargar el mapa. Por favor verifica tu conexión a internet';
+
+  @override
+  String get qrLibrary => 'Biblioteca QR';
+
+  @override
+  String get manageQRCodes => 'Gestiona tus códigos QR';
+
+  @override
+  String get myQRs => 'Mis QRs';
+
+  @override
+  String get favorites => 'Favoritos';
+
+  @override
+  String get recent => 'Recientes';
+
+  @override
+  String get totalQRs => 'Total QRs';
+
+  @override
+  String get thisMonth => 'Este Mes';
+
+  @override
+  String get noQRCodesYet => 'Aún No Hay Códigos QR';
+
+  @override
+  String get createFirstQRCode => 'Crea tu primer código QR para verlo aquí';
+
+  @override
+  String get noFavoritesYet => 'Aún No Hay Favoritos';
+
+  @override
+  String get starFavoriteQRCodes =>
+      'Marca con estrella tus códigos QR favoritos para verlos aquí';
+
+  @override
+  String get noRecentQRs => 'No Hay QRs Recientes';
+
+  @override
+  String get recentQRCodesAppearHere =>
+      'Tus códigos QR creados recientemente aparecerán aquí';
+
+  @override
+  String get searchQRCodes => 'Buscar Códigos QR';
+
+  @override
+  String get searchByNameTypeContent =>
+      'Buscar por nombre, tipo o contenido...';
+
+  @override
+  String get search => 'Buscar';
+
+  @override
+  String get searchFunctionalityComingSoon =>
+      'La funcionalidad de búsqueda se implementará pronto';
+
+  @override
+  String get edit => 'Editar';
+
+  @override
+  String get delete => 'Eliminar';
+
+  @override
+  String get share => 'Compartir';
+
+  @override
+  String get deleteQRCode => 'Eliminar Código QR';
+
+  @override
+  String deleteQRConfirmation(String name) {
+    return '¿Estás seguro de que quieres eliminar \"$name\"? Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String addedToFavorites(String name) {
+    return '¡\"$name\" agregado a favoritos!';
+  }
+
+  @override
+  String removedFromFavorites(String name) {
+    return '\"$name\" eliminado de favoritos';
+  }
+
+  @override
+  String failedToUpdateFavorite(String error) {
+    return 'Error al actualizar favorito: $error';
+  }
+
+  @override
+  String sharingQRCode(String name) {
+    return 'Compartiendo código QR \"$name\"...';
+  }
+
+  @override
+  String editFunctionalityComingSoon(String name) {
+    return '¡La funcionalidad de edición para \"$name\" llegará pronto!';
+  }
+
+  @override
+  String deletedSuccessfully(String name) {
+    return '\"$name\" eliminado exitosamente';
+  }
+
+  @override
+  String failedToDeleteQRCode(String error) {
+    return 'Error al eliminar código QR: $error';
+  }
+
+  @override
+  String get shareFunctionalityComingSoon =>
+      'La funcionalidad de compartir se implementará pronto';
+
+  @override
+  String get justNow => 'Ahora mismo';
+
+  @override
+  String minutesAgo(int minutes) {
+    return 'hace ${minutes}m';
+  }
+
+  @override
+  String hoursAgo(int hours) {
+    return 'hace ${hours}h';
+  }
+
+  @override
+  String daysAgoShort(int days) {
+    return 'hace ${days}d';
+  }
+
+  @override
+  String get type => 'Tipo';
 }

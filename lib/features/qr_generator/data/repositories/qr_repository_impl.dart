@@ -90,4 +90,27 @@ class QRRepositoryImpl implements QRRepository {
       return cachedQRCodes.where((qr) => qr.type.identifier == type).toList();
     }
   }
+
+  @override
+  Future<QRCodeEntity> toggleFavorite(String qrCodeId, bool isFavorite) async {
+    try {
+      final updatedQRCode = await remoteDataSource.toggleFavorite(qrCodeId, isFavorite);
+      await localDataSource.cacheQRCode(updatedQRCode);
+      return updatedQRCode;
+    } catch (e) {
+      throw Exception('Failed to toggle favorite: $e');
+    }
+  }
+
+  @override
+  Future<List<QRCodeEntity>> getFavoriteQRCodes(String userId) async {
+    try {
+      final favoriteQRCodes = await remoteDataSource.getFavoriteQRCodes(userId);
+      await localDataSource.cacheMultipleQRCodes(favoriteQRCodes);
+      return favoriteQRCodes;
+    } catch (e) {
+      final cachedQRCodes = await localDataSource.getCachedQRCodes(userId);
+      return cachedQRCodes.where((qr) => qr.isFavorite).toList();
+    }
+  }
 }

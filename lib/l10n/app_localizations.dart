@@ -1861,6 +1861,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to load map. Please check your internet connection'**
   String get mapLoadingError;
+
+  /// QR Library screen title
+  ///
+  /// In en, this message translates to:
+  /// **'QR Library'**
+  String get qrLibrary;
+
+  /// QR Library subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your QR codes'**
+  String get manageQRCodes;
+
+  /// My QRs tab title
+  ///
+  /// In en, this message translates to:
+  /// **'My QRs'**
+  String get myQRs;
+
+  /// Favorites tab title
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favorites;
+
+  /// Recent tab title
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get recent;
+
+  /// Total QR codes statistic label
+  ///
+  /// In en, this message translates to:
+  /// **'Total QRs'**
+  String get totalQRs;
+
+  /// This month statistic label
+  ///
+  /// In en, this message translates to:
+  /// **'This Month'**
+  String get thisMonth;
+
+  /// Empty state title when no QR codes exist
+  ///
+  /// In en, this message translates to:
+  /// **'No QR Codes Yet'**
+  String get noQRCodesYet;
+
+  /// Empty state subtitle when no QR codes exist
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first QR code to see it here'**
+  String get createFirstQRCode;
+
+  /// Empty state title when no favorite QR codes exist
+  ///
+  /// In en, this message translates to:
+  /// **'No Favorites Yet'**
+  String get noFavoritesYet;
+
+  /// Empty state subtitle for favorites tab
+  ///
+  /// In en, this message translates to:
+  /// **'Star your favorite QR codes to see them here'**
+  String get starFavoriteQRCodes;
+
+  /// Empty state title when no recent QR codes exist
+  ///
+  /// In en, this message translates to:
+  /// **'No Recent QRs'**
+  String get noRecentQRs;
+
+  /// Empty state subtitle for recent tab
+  ///
+  /// In en, this message translates to:
+  /// **'Your recently created QR codes will appear here'**
+  String get recentQRCodesAppearHere;
+
+  /// Search dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Search QR Codes'**
+  String get searchQRCodes;
+
+  /// Search input placeholder text
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name, type, or content...'**
+  String get searchByNameTypeContent;
+
+  /// Search button text
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// Search not implemented message
+  ///
+  /// In en, this message translates to:
+  /// **'Search functionality will be implemented soon'**
+  String get searchFunctionalityComingSoon;
+
+  /// Edit action text
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// Delete action text
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// Share action text
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// Delete confirmation dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Delete QR Code'**
+  String get deleteQRCode;
+
+  /// Delete confirmation dialog message
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{name}\"? This action cannot be undone.'**
+  String deleteQRConfirmation(String name);
+
+  /// Success message when QR added to favorites
+  ///
+  /// In en, this message translates to:
+  /// **'Added \"{name}\" to favorites!'**
+  String addedToFavorites(String name);
+
+  /// Success message when QR removed from favorites
+  ///
+  /// In en, this message translates to:
+  /// **'Removed \"{name}\" from favorites'**
+  String removedFromFavorites(String name);
+
+  /// Error message when favorite update fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update favorite: {error}'**
+  String failedToUpdateFavorite(String error);
+
+  /// Message when sharing QR code
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing \"{name}\" QR code...'**
+  String sharingQRCode(String name);
+
+  /// Message when edit is not yet implemented
+  ///
+  /// In en, this message translates to:
+  /// **'Edit functionality for \"{name}\" coming soon!'**
+  String editFunctionalityComingSoon(String name);
+
+  /// Success message when QR deleted
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" deleted successfully'**
+  String deletedSuccessfully(String name);
+
+  /// Error message when QR deletion fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete QR code: {error}'**
+  String failedToDeleteQRCode(String error);
+
+  /// Share not implemented message
+  ///
+  /// In en, this message translates to:
+  /// **'Share functionality will be implemented soon'**
+  String get shareFunctionalityComingSoon;
+
+  /// Time format for very recent items
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNow;
+
+  /// Time format for minutes ago
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m ago'**
+  String minutesAgo(int minutes);
+
+  /// Time format for hours ago
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h ago'**
+  String hoursAgo(int hours);
+
+  /// Time format for days ago (short version)
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d ago'**
+  String daysAgoShort(int days);
+
+  /// Label for QR code type
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get type;
 }
 
 class _AppLocalizationsDelegate

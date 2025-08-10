@@ -11,6 +11,7 @@ class QRCodeEntity extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String userId;
+  final bool isFavorite;
 
   const QRCodeEntity({
     required this.id,
@@ -22,6 +23,7 @@ class QRCodeEntity extends Equatable {
     required this.createdAt,
     required this.updatedAt,
     required this.userId,
+    this.isFavorite = false,
   });
 
   QRCodeEntity copyWith({
@@ -34,6 +36,7 @@ class QRCodeEntity extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? userId,
+    bool? isFavorite,
   }) {
     return QRCodeEntity(
       id: id ?? this.id,
@@ -45,6 +48,7 @@ class QRCodeEntity extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       userId: userId ?? this.userId,
+      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 
@@ -59,6 +63,7 @@ class QRCodeEntity extends Equatable {
         createdAt,
         updatedAt,
         userId,
+        isFavorite,
       ];
 }
 

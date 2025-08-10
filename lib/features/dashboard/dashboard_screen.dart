@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../auth/data/providers/supabase_auth_provider.dart';
 import '../profile/presentation/pages/profile_screen.dart';
+import '../main/main_scaffold.dart';
+import 'providers/dashboard_providers.dart';
 import '../../shared/widgets/qraft_logo.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -21,7 +23,7 @@ class DashboardScreen extends ConsumerWidget {
           ...List.generate(6, (index) => _buildBackgroundParticle(index)),
           
           SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,20 +116,58 @@ class DashboardScreen extends ConsumerWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: _buildStatsCard(
-                          title: 'QR Codes',
-                          value: '12',
-                          icon: Icons.qr_code_rounded,
-                          color: const Color(0xFF00FF88),
+                        child: Consumer(
+                          builder: (context, ref, child) {
+                            final qrCodesCount = ref.watch(qrCodesCountProvider);
+                            return qrCodesCount.when(
+                              data: (count) => _buildStatsCard(
+                                title: 'QR Codes',
+                                value: '$count',
+                                icon: Icons.qr_code_rounded,
+                                color: const Color(0xFF00FF88),
+                              ),
+                              loading: () => _buildStatsCard(
+                                title: 'QR Codes',
+                                value: '...',
+                                icon: Icons.qr_code_rounded,
+                                color: const Color(0xFF00FF88),
+                              ),
+                              error: (_, __) => _buildStatsCard(
+                                title: 'QR Codes',
+                                value: '0',
+                                icon: Icons.qr_code_rounded,
+                                color: const Color(0xFF00FF88),
+                              ),
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: _buildStatsCard(
-                          title: 'Scans',
-                          value: '47',
-                          icon: Icons.qr_code_scanner_rounded,
-                          color: const Color(0xFF1A73E8),
+                        child: Consumer(
+                          builder: (context, ref, child) {
+                            final scanHistoryCount = ref.watch(scanHistoryCountProvider);
+                            return scanHistoryCount.when(
+                              data: (count) => _buildStatsCard(
+                                title: 'Scans',
+                                value: '$count',
+                                icon: Icons.qr_code_scanner_rounded,
+                                color: const Color(0xFF1A73E8),
+                              ),
+                              loading: () => _buildStatsCard(
+                                title: 'Scans',
+                                value: '...',
+                                icon: Icons.qr_code_scanner_rounded,
+                                color: const Color(0xFF1A73E8),
+                              ),
+                              error: (_, __) => _buildStatsCard(
+                                title: 'Scans',
+                                value: '0',
+                                icon: Icons.qr_code_scanner_rounded,
+                                color: const Color(0xFF1A73E8),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ],
@@ -135,7 +175,67 @@ class DashboardScreen extends ConsumerWidget {
                     .fadeIn(duration: 800.ms, delay: 200.ms)
                     .slideY(begin: 0.3, duration: 800.ms, delay: 200.ms),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
+                  
+                  // Recent QR Codes Section
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final recentQRCodes = ref.watch(recentQRCodesProvider);
+                      return recentQRCodes.when(
+                        data: (qrCodes) {
+                          if (qrCodes.isEmpty) {
+                            return const SizedBox.shrink(); // Don't show section if empty
+                          }
+                          
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Recent QR Codes',
+                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => _navigateToTab(ref, 3),
+                                    child: Text(
+                                      'View All',
+                                      style: TextStyle(
+                                        color: const Color(0xFF00FF88),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                height: 90, // Reduced height to prevent overflow
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: qrCodes.length > 5 ? 5 : qrCodes.length,
+                                  itemBuilder: (context, index) {
+                                    return _buildRecentQRCard(qrCodes[index], index, ref);
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          );
+                        },
+                        loading: () => const SizedBox.shrink(),
+                        error: (_, __) => const SizedBox.shrink(),
+                      );
+                    },
+                  ).animate()
+                    .fadeIn(duration: 800.ms, delay: 300.ms)
+                    .slideY(begin: 0.3, duration: 800.ms, delay: 300.ms),
                   
                   // Quick Actions
                   Text(
@@ -151,12 +251,13 @@ class DashboardScreen extends ConsumerWidget {
                   const SizedBox(height: 12),
                   
                   // Action Cards Grid
-                  Expanded(
+                  SizedBox(
+                    height: 300, // Increased height for 2 rows of cards
                     child: GridView.count(
                       crossAxisCount: 2,
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
-                      childAspectRatio: 1.35,
+                      childAspectRatio: 1.25, // Reduced ratio to make cards taller
                       children: [
                         _buildActionCard(
                           title: 'Create QR',
@@ -166,6 +267,7 @@ class DashboardScreen extends ConsumerWidget {
                             colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
                           ),
                           delay: 500,
+                          onTap: () => _navigateToTab(ref, 1),
                         ),
                         _buildActionCard(
                           title: 'Scan QR',
@@ -175,6 +277,7 @@ class DashboardScreen extends ConsumerWidget {
                             colors: [Color(0xFF1A73E8), Color(0xFF6366F1)],
                           ),
                           delay: 600,
+                          onTap: () => _navigateToTab(ref, 2),
                         ),
                         _buildActionCard(
                           title: 'My Library',
@@ -184,6 +287,7 @@ class DashboardScreen extends ConsumerWidget {
                             colors: [Color(0xFF8B5CF6), Color(0xFF1A73E8)],
                           ),
                           delay: 700,
+                          onTap: () => _navigateToTab(ref, 3),
                         ),
                         _buildActionCard(
                           title: 'Marketplace',
@@ -193,10 +297,14 @@ class DashboardScreen extends ConsumerWidget {
                             colors: [Color(0xFFEF4444), Color(0xFF8B5CF6)],
                           ),
                           delay: 800,
+                          onTap: () => _navigateToTab(ref, 4),
                         ),
                       ],
                     ),
                   ),
+                  
+                  // Bottom padding for safe scrolling
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
@@ -204,6 +312,10 @@ class DashboardScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  void _navigateToTab(WidgetRef ref, int tabIndex) {
+    ref.read(navigationIndexProvider.notifier).state = tabIndex;
   }
 
   void _showQuickActionsMenu(BuildContext context, WidgetRef ref) {
@@ -440,6 +552,7 @@ class DashboardScreen extends ConsumerWidget {
     required IconData icon,
     required Gradient gradient,
     required int delay,
+    VoidCallback? onTap,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -457,9 +570,9 @@ class DashboardScreen extends ConsumerWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          onTap: () {},
+          onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16), // Reduced padding from 20 to 16
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -545,5 +658,100 @@ class DashboardScreen extends ConsumerWidget {
           delay: delay,
         ),
     );
+  }
+
+  Widget _buildRecentQRCard(Map<String, dynamic> qrData, int index, WidgetRef ref) {
+    final qrType = qrData['qr_type'] ?? 'text';
+    final title = qrData['title'] ?? 'QR Code';
+    final iconData = _getQRTypeIcon(qrType);
+    final color = _getQRTypeColor(qrType);
+    
+    return Container(
+      width: 70, // Reduced width to fit better
+      height: 90, // Match container height
+      margin: EdgeInsets.only(right: index < 4 ? 12 : 0),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2E2E2E),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.1),
+          width: 1,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => _navigateToTab(ref, 3), // Navigate to QR Library
+          child: Padding(
+            padding: const EdgeInsets.all(8), // Reduced padding
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 32, // Smaller icon container
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1A1A1A),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: color.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Icon(
+                    iconData,
+                    color: color,
+                    size: 16, // Smaller icon
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Flexible(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10, // Smaller text
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ).animate()
+      .fadeIn(duration: 600.ms, delay: (400 + index * 100).ms)
+      .slideX(begin: 0.3, duration: 600.ms, delay: (400 + index * 100).ms);
+  }
+
+  IconData _getQRTypeIcon(String qrType) {
+    switch (qrType.toLowerCase()) {
+      case 'url': return Icons.link_rounded;
+      case 'wifi': return Icons.wifi_rounded;
+      case 'email': return Icons.email_rounded;
+      case 'phone': return Icons.phone_rounded;
+      case 'sms': return Icons.sms_rounded;
+      case 'vcard': return Icons.person_rounded;
+      case 'location': return Icons.location_on_rounded;
+      case 'text': default: return Icons.text_fields_rounded;
+    }
+  }
+
+  Color _getQRTypeColor(String qrType) {
+    switch (qrType.toLowerCase()) {
+      case 'url': return const Color(0xFF1A73E8);
+      case 'wifi': return const Color(0xFF8B5CF6);
+      case 'email': return const Color(0xFFF59E0B);
+      case 'phone': return const Color(0xFF10B981);
+      case 'sms': return const Color(0xFFEF4444);
+      case 'vcard': return const Color(0xFF00FF88);
+      case 'location': return const Color(0xFF10B981);
+      case 'text': default: return const Color(0xFF6366F1);
+    }
   }
 }

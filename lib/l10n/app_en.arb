@@ -1587,5 +1587,246 @@
   "mapLoadingError": "Failed to load map. Please check your internet connection",
   "@mapLoadingError": {
     "description": "Error message when map fails to load"
+  },
+
+  "qrLibrary": "QR Library",
+  "@qrLibrary": {
+    "description": "QR Library screen title"
+  },
+
+  "manageQRCodes": "Manage your QR codes",
+  "@manageQRCodes": {
+    "description": "QR Library subtitle"
+  },
+
+  "myQRs": "My QRs",
+  "@myQRs": {
+    "description": "My QRs tab title"
+  },
+
+  "favorites": "Favorites",
+  "@favorites": {
+    "description": "Favorites tab title"
+  },
+
+  "recent": "Recent",
+  "@recent": {
+    "description": "Recent tab title"
+  },
+
+  "totalQRs": "Total QRs",
+  "@totalQRs": {
+    "description": "Total QR codes statistic label"
+  },
+
+  "thisMonth": "This Month",
+  "@thisMonth": {
+    "description": "This month statistic label"
+  },
+
+  "noQRCodesYet": "No QR Codes Yet",
+  "@noQRCodesYet": {
+    "description": "Empty state title when no QR codes exist"
+  },
+
+  "createFirstQRCode": "Create your first QR code to see it here",
+  "@createFirstQRCode": {
+    "description": "Empty state subtitle when no QR codes exist"
+  },
+
+  "noFavoritesYet": "No Favorites Yet",
+  "@noFavoritesYet": {
+    "description": "Empty state title when no favorite QR codes exist"
+  },
+
+  "starFavoriteQRCodes": "Star your favorite QR codes to see them here",
+  "@starFavoriteQRCodes": {
+    "description": "Empty state subtitle for favorites tab"
+  },
+
+  "noRecentQRs": "No Recent QRs",
+  "@noRecentQRs": {
+    "description": "Empty state title when no recent QR codes exist"
+  },
+
+  "recentQRCodesAppearHere": "Your recently created QR codes will appear here",
+  "@recentQRCodesAppearHere": {
+    "description": "Empty state subtitle for recent tab"
+  },
+
+  "searchQRCodes": "Search QR Codes",
+  "@searchQRCodes": {
+    "description": "Search dialog title"
+  },
+
+  "searchByNameTypeContent": "Search by name, type, or content...",
+  "@searchByNameTypeContent": {
+    "description": "Search input placeholder text"
+  },
+
+  "search": "Search",
+  "@search": {
+    "description": "Search button text"
+  },
+
+  "searchFunctionalityComingSoon": "Search functionality will be implemented soon",
+  "@searchFunctionalityComingSoon": {
+    "description": "Search not implemented message"
+  },
+
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit action text"
+  },
+
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete action text"
+  },
+
+  "share": "Share",
+  "@share": {
+    "description": "Share action text"
+  },
+
+  "deleteQRCode": "Delete QR Code",
+  "@deleteQRCode": {
+    "description": "Delete confirmation dialog title"
+  },
+
+  "deleteQRConfirmation": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+  "@deleteQRConfirmation": {
+    "description": "Delete confirmation dialog message",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "My QR Code"
+      }
+    }
+  },
+
+  "addedToFavorites": "Added \"{name}\" to favorites!",
+  "@addedToFavorites": {
+    "description": "Success message when QR added to favorites",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "My QR Code"
+      }
+    }
+  },
+
+  "removedFromFavorites": "Removed \"{name}\" from favorites",
+  "@removedFromFavorites": {
+    "description": "Success message when QR removed from favorites",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "My QR Code"
+      }
+    }
+  },
+
+  "failedToUpdateFavorite": "Failed to update favorite: {error}",
+  "@failedToUpdateFavorite": {
+    "description": "Error message when favorite update fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network error"
+      }
+    }
+  },
+
+  "sharingQRCode": "Sharing \"{name}\" QR code...",
+  "@sharingQRCode": {
+    "description": "Message when sharing QR code",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "My QR Code"
+      }
+    }
+  },
+
+  "editFunctionalityComingSoon": "Edit functionality for \"{name}\" coming soon!",
+  "@editFunctionalityComingSoon": {
+    "description": "Message when edit is not yet implemented",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "My QR Code"
+      }
+    }
+  },
+
+  "deletedSuccessfully": "\"{name}\" deleted successfully",
+  "@deletedSuccessfully": {
+    "description": "Success message when QR deleted",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "My QR Code"
+      }
+    }
+  },
+
+  "failedToDeleteQRCode": "Failed to delete QR code: {error}",
+  "@failedToDeleteQRCode": {
+    "description": "Error message when QR deletion fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network error"
+      }
+    }
+  },
+
+  "shareFunctionalityComingSoon": "Share functionality will be implemented soon",
+  "@shareFunctionalityComingSoon": {
+    "description": "Share not implemented message"
+  },
+
+  "justNow": "Just now",
+  "@justNow": {
+    "description": "Time format for very recent items"
+  },
+
+  "minutesAgo": "{minutes}m ago",
+  "@minutesAgo": {
+    "description": "Time format for minutes ago",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+
+  "hoursAgo": "{hours}h ago",
+  "@hoursAgo": {
+    "description": "Time format for hours ago",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+
+  "daysAgoShort": "{days}d ago",
+  "@daysAgoShort": {
+    "description": "Time format for days ago (short version)",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+
+  "type": "Type",
+  "@type": {
+    "description": "Label for QR code type"
   }
 }

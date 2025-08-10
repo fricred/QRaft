@@ -12,6 +12,7 @@ class QRCodeModel extends QRCodeEntity {
     required super.createdAt,
     required super.updatedAt,
     required super.userId,
+    super.isFavorite = false,
   });
 
   factory QRCodeModel.fromJson(Map<String, dynamic> json) {
@@ -25,6 +26,7 @@ class QRCodeModel extends QRCodeEntity {
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       userId: json['user_id'] as String,
+      isFavorite: json['is_favorite'] as bool? ?? false,
     );
   }
 
@@ -39,6 +41,7 @@ class QRCodeModel extends QRCodeEntity {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'user_id': userId,
+      'is_favorite': isFavorite,
     };
   }
 
@@ -53,6 +56,7 @@ class QRCodeModel extends QRCodeEntity {
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
       userId: entity.userId,
+      isFavorite: entity.isFavorite,
     );
   }
 }

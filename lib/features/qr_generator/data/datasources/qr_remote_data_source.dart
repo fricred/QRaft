@@ -7,4 +7,6 @@ abstract class QRRemoteDataSource {
   Future<QRCodeModel> updateQRCode(QRCodeModel qrCode);
   Future<void> deleteQRCode(String id);
   Future<List<QRCodeModel>> getQRCodesByType(String userId, String type);
+  Future<QRCodeModel> toggleFavorite(String qrCodeId, bool isFavorite);
+  Future<List<QRCodeModel>> getFavoriteQRCodes(String userId);
 }

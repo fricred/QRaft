@@ -952,4 +952,135 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mapLoadingError =>
       'Failed to load map. Please check your internet connection';
+
+  @override
+  String get qrLibrary => 'QR Library';
+
+  @override
+  String get manageQRCodes => 'Manage your QR codes';
+
+  @override
+  String get myQRs => 'My QRs';
+
+  @override
+  String get favorites => 'Favorites';
+
+  @override
+  String get recent => 'Recent';
+
+  @override
+  String get totalQRs => 'Total QRs';
+
+  @override
+  String get thisMonth => 'This Month';
+
+  @override
+  String get noQRCodesYet => 'No QR Codes Yet';
+
+  @override
+  String get createFirstQRCode => 'Create your first QR code to see it here';
+
+  @override
+  String get noFavoritesYet => 'No Favorites Yet';
+
+  @override
+  String get starFavoriteQRCodes =>
+      'Star your favorite QR codes to see them here';
+
+  @override
+  String get noRecentQRs => 'No Recent QRs';
+
+  @override
+  String get recentQRCodesAppearHere =>
+      'Your recently created QR codes will appear here';
+
+  @override
+  String get searchQRCodes => 'Search QR Codes';
+
+  @override
+  String get searchByNameTypeContent => 'Search by name, type, or content...';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get searchFunctionalityComingSoon =>
+      'Search functionality will be implemented soon';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get deleteQRCode => 'Delete QR Code';
+
+  @override
+  String deleteQRConfirmation(String name) {
+    return 'Are you sure you want to delete \"$name\"? This action cannot be undone.';
+  }
+
+  @override
+  String addedToFavorites(String name) {
+    return 'Added \"$name\" to favorites!';
+  }
+
+  @override
+  String removedFromFavorites(String name) {
+    return 'Removed \"$name\" from favorites';
+  }
+
+  @override
+  String failedToUpdateFavorite(String error) {
+    return 'Failed to update favorite: $error';
+  }
+
+  @override
+  String sharingQRCode(String name) {
+    return 'Sharing \"$name\" QR code...';
+  }
+
+  @override
+  String editFunctionalityComingSoon(String name) {
+    return 'Edit functionality for \"$name\" coming soon!';
+  }
+
+  @override
+  String deletedSuccessfully(String name) {
+    return '\"$name\" deleted successfully';
+  }
+
+  @override
+  String failedToDeleteQRCode(String error) {
+    return 'Failed to delete QR code: $error';
+  }
+
+  @override
+  String get shareFunctionalityComingSoon =>
+      'Share functionality will be implemented soon';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String minutesAgo(int minutes) {
+    return '${minutes}m ago';
+  }
+
+  @override
+  String hoursAgo(int hours) {
+    return '${hours}h ago';
+  }
+
+  @override
+  String daysAgoShort(int days) {
+    return '${days}d ago';
+  }
+
+  @override
+  String get type => 'Type';
 }

@@ -102,4 +102,41 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
       throw Exception('Failed to fetch QR codes by type: $e');
     }
   }
+
+  @override
+  Future<QRCodeModel> toggleFavorite(String qrCodeId, bool isFavorite) async {
+    try {
+      final response = await client
+          .from('qr_codes')
+          .update({
+            'is_favorite': isFavorite,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', qrCodeId)
+          .select()
+          .single();
+
+      return QRCodeModel.fromJson(response);
+    } catch (e) {
+      throw Exception('Failed to toggle favorite status: $e');
+    }
+  }
+
+  @override
+  Future<List<QRCodeModel>> getFavoriteQRCodes(String userId) async {
+    try {
+      final response = await client
+          .from('qr_codes')
+          .select()
+          .eq('user_id', userId)
+          .eq('is_favorite', true)
+          .order('updated_at', ascending: false);
+
+      return (response as List)
+          .map((json) => QRCodeModel.fromJson(json))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to fetch favorite QR codes: $e');
+    }
+  }
 }
