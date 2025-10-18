@@ -42,6 +42,9 @@ class QRLibraryController extends StateNotifier<QRLibraryState> {
 
   // Load user's QR codes
   Future<void> loadUserQRCodes(String userId) async {
+    // Don't reload if we're already loading
+    if (state.isLoading) return;
+    
     state = state.copyWith(isLoading: true, error: null);
     
     try {
@@ -149,7 +152,20 @@ class QRLibraryController extends StateNotifier<QRLibraryState> {
       // Find the QR code in current state
       final qrCodeIndex = state.qrCodes.indexWhere((qr) => qr.id == qrCodeId);
       if (qrCodeIndex == -1) {
-        throw Exception('QR code not found');
+        // If not found in current state, try to fetch the QR code directly
+        final qrCode = await repository.getQRCodeById(qrCodeId);
+        if (qrCode == null) {
+          throw Exception('QR code not found in database');
+        }
+        
+        // Update database with toggled favorite status
+        final newFavoriteStatus = !qrCode.isFavorite;
+        final updatedQRCode = await repository.toggleFavorite(qrCodeId, newFavoriteStatus);
+        
+        // Add the updated QR code to our state if it wasn't there
+        final updatedQRCodes = List<QRCodeEntity>.from(state.qrCodes)..add(updatedQRCode);
+        state = state.copyWith(qrCodes: updatedQRCodes);
+        return;
       }
       
       final currentQRCode = state.qrCodes[qrCodeIndex];
@@ -163,7 +179,7 @@ class QRLibraryController extends StateNotifier<QRLibraryState> {
       // Update in database
       await repository.toggleFavorite(qrCodeId, newFavoriteStatus);
     } catch (e) {
-      // Revert on error
+      // Revert on error by reloading data
       state = state.copyWith(error: e.toString());
       rethrow;
     }

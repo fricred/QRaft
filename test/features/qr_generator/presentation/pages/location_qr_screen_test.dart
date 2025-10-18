@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:latlong2/latlong.dart';
-
 import 'package:qraft/features/qr_generator/presentation/pages/location_qr_screen.dart';
-import 'package:qraft/features/qr_generator/presentation/controllers/qr_customization_controller.dart';
 import 'package:qraft/features/qr_generator/presentation/providers/qr_providers.dart';
+import 'package:qraft/features/qr_generator/domain/entities/qr_code_entity.dart';
+import 'package:qraft/features/qr_generator/domain/entities/qr_type.dart';
 import 'package:qraft/features/qr_generator/domain/use_cases/generate_qr_use_case.dart';
 import 'package:qraft/features/auth/data/providers/supabase_auth_provider.dart';
 import 'package:qraft/shared/widgets/glass_button.dart';
@@ -30,16 +27,14 @@ void main() {
       mockAuthProvider = MockSupabaseAuthProvider();
       
       // Setup default mock behavior
-      when(() => mockAuthProvider.currentUser).thenReturn(
-        MockUser(id: 'test-user-id', email: 'test@example.com'),
-      );
+      when(() => mockAuthProvider.currentUser).thenReturn(null);
       when(() => mockGenerateQRUseCase.execute(
         name: any(named: 'name'),
         type: any(named: 'type'),
         data: any(named: 'data'),
         userId: any(named: 'userId'),
         customization: any(named: 'customization'),
-      )).thenAnswer((_) async => MockQRCodeEntity());
+      )).thenAnswer((_) async => createMockQRCodeEntity());
       
       // Reset mock services
       MockGeolocator.reset();
@@ -50,7 +45,7 @@ void main() {
       return ProviderScope(
         overrides: [
           generateQRUseCaseProvider.overrideWithValue(mockGenerateQRUseCase),
-          supabaseAuthProvider.overrideWithValue(mockAuthProvider),
+          supabaseAuthProvider.overrideWith((ref) => mockAuthProvider),
           ...?overrides,
         ],
         child: MaterialApp(
@@ -582,7 +577,7 @@ void main() {
           customization: any(named: 'customization'),
         )).thenAnswer((_) async {
           await Future.delayed(const Duration(milliseconds: 100));
-          return MockQRCodeEntity();
+          return createMockQRCodeEntity();
         });
 
         await tester.pumpWidget(createTestWidget());
@@ -795,7 +790,17 @@ class MockUser {
   MockUser({required this.id, required this.email});
 }
 
-class MockQRCodeEntity {
-  final String id = 'test-qr-id';
-  final String name = 'Test QR';
+QRCodeEntity createMockQRCodeEntity() {
+  return QRCodeEntity(
+    id: 'test-qr-id',
+    name: 'Test QR',
+    type: QRType.location,
+    data: 'test-data',
+    displayData: 'test-display-data',
+    customization: const QRCustomization(),
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+    userId: 'test-user-id',
+    isFavorite: false,
+  );
 }

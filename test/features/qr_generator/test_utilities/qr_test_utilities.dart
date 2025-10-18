@@ -313,6 +313,9 @@ class QRTestHelpers {
 
 /// Common test data for validation testing
 class QRTestData {
+    // Private constructor since this is a utility class
+    QRTestData._();
+    
     // Email test data
     static const validEmails = [
       'test@example.com',
@@ -369,11 +372,13 @@ class QRTestData {
       '',
       'A', // too short
     ];
-  }
 }
 
 // Custom matchers for QR-specific testing
 class QRMatchers {
+  // Private constructor since this is a utility class
+  QRMatchers._();
+  
   /// Matcher for verifying QR data format
   static Matcher isValidQRData() => _IsValidQRDataMatcher();
   
@@ -439,6 +444,9 @@ class _IsLocationQRFormatMatcher extends Matcher {
 
 // Test Configuration
 class QRTestConfig {
+  // Private constructor since this is a utility class
+  QRTestConfig._();
+  
   static const Duration defaultTimeout = Duration(seconds: 5);
   static const Duration longTimeout = Duration(seconds: 10);
   static const Duration animationTimeout = Duration(milliseconds: 500);

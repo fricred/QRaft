@@ -6,6 +6,7 @@ import '../main/main_scaffold.dart';
 import 'presentation/providers/qr_library_providers.dart';
 import '../qr_generator/domain/entities/qr_code_entity.dart';
 import 'presentation/pages/qr_code_details_screen.dart';
+import '../auth/data/providers/supabase_auth_provider.dart';
 import '../../l10n/app_localizations.dart';
 
 class QRLibraryScreen extends ConsumerStatefulWidget {
@@ -436,177 +437,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
     );
   }
 
-  Widget _buildQRCard(int index) {
-    final qrTypes = [
-      {'title': 'Personal Info', 'icon': Icons.person_rounded, 'color': Color(0xFF00FF88)},
-      {'title': 'Website URL', 'icon': Icons.link_rounded, 'color': Color(0xFF1A73E8)},
-      {'title': 'WiFi Network', 'icon': Icons.wifi_rounded, 'color': Color(0xFF8B5CF6)},
-      {'title': 'Text Message', 'icon': Icons.text_fields_rounded, 'color': Color(0xFFEF4444)},
-      {'title': 'Email Contact', 'icon': Icons.email_rounded, 'color': Color(0xFFF59E0B)},
-      {'title': 'Location', 'icon': Icons.location_on_rounded, 'color': Color(0xFF10B981)},
-    ];
-    
-    final qr = qrTypes[index % qrTypes.length];
-    
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF2E2E2E),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
-          width: 1,
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => _showQRDetails({
-            'title': qr['title'] as String,
-            'qr_type': qr['title'].toString().toLowerCase().replaceAll(' ', ''),
-            'content': 'Demo QR code content',
-            'created_at': DateTime.now().subtract(Duration(days: 2)).toIso8601String(),
-          }),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // QR Code placeholder
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1A1A1A),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: (qr['color'] as Color).withValues(alpha: 0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Icon(
-                    qr['icon'] as IconData,
-                    color: qr['color'] as Color,
-                    size: 32,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  qr['title'] as String,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '2 days ago',
-                  style: TextStyle(
-                    color: Colors.grey[500],
-                    fontSize: 11,
-                  ),
-                ),
-                const Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(
-                      Icons.favorite_border_rounded,
-                      color: Colors.grey[400],
-                      size: 18,
-                    ),
-                    Icon(
-                      Icons.share_rounded,
-                      color: Colors.grey[400],
-                      size: 18,
-                    ),
-                    Icon(
-                      Icons.more_vert_rounded,
-                      color: Colors.grey[400],
-                      size: 18,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
-  Widget _buildRecentQRCard(int index, AppLocalizations l10n) {
-    final qrTypes = [
-      {'title': 'Personal vCard', 'subtitle': 'Contact information', 'icon': Icons.person_rounded},
-      {'title': 'Company Website', 'subtitle': 'https://example.com', 'icon': Icons.link_rounded},
-      {'title': 'WiFi Password', 'subtitle': 'Home network', 'icon': Icons.wifi_rounded},
-      {'title': 'Business Email', 'subtitle': 'contact@example.com', 'icon': Icons.email_rounded},
-      {'title': 'Event Location', 'subtitle': 'Conference center', 'icon': Icons.location_on_rounded},
-    ];
-    
-    final qr = qrTypes[index % qrTypes.length];
-    
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2E2E2E),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: const Color(0xFF1A1A1A),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              qr['icon'] as IconData,
-              color: const Color(0xFF00FF88),
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  qr['title'] as String,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  qr['subtitle'] as String,
-                  style: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            _formatTimeAgo(DateTime.now().subtract(Duration(hours: index + 1)), l10n),
-            style: TextStyle(
-              color: Colors.grey[500],
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   void _showSearchDialog() {
     final l10n = AppLocalizations.of(context)!;
@@ -805,99 +636,6 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
     );
   }
 
-  Widget _buildRealQRCard(Map<String, dynamic> qrData, AppLocalizations l10n) {
-    final qrType = qrData['qr_type'] ?? 'text';
-    final title = qrData['title'] ?? 'QR Code';
-    final createdAt = DateTime.tryParse(qrData['created_at'] ?? '') ?? DateTime.now();
-    final timeAgo = _formatTimeAgo(createdAt, l10n);
-    
-    final iconData = _getQRTypeIcon(qrType);
-    final color = _getQRTypeColor(qrType);
-    
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF2E2E2E),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
-          width: 1,
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => _showQRDetails(qrData),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // QR Code placeholder
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1A1A1A),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: color.withValues(alpha: 0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Icon(
-                    iconData,
-                    color: color,
-                    size: 32,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  timeAgo,
-                  style: TextStyle(
-                    color: Colors.grey[500],
-                    fontSize: 11,
-                  ),
-                ),
-                const Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(
-                      Icons.favorite_border_rounded,
-                      color: Colors.grey[400],
-                      size: 18,
-                    ),
-                    Icon(
-                      Icons.share_rounded,
-                      color: Colors.grey[400],
-                      size: 18,
-                    ),
-                    Icon(
-                      Icons.more_vert_rounded,
-                      color: Colors.grey[400],
-                      size: 18,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   IconData _getQRTypeIcon(String qrType) {
     switch (qrType.toLowerCase()) {
@@ -1249,10 +987,17 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
   void _toggleFavorite(QRCodeEntity qrEntity) async {
     final l10n = AppLocalizations.of(context)!;
     try {
+      // First, ensure the controller has the latest data
+      final user = ref.read(authStateProvider);
+      if (user != null) {
+        // Load user QR codes to ensure controller state is synced
+        await ref.read(qrLibraryControllerProvider.notifier).loadUserQRCodes(user.id);
+      }
+      
       // Toggle favorite using the controller
       await ref.read(qrLibraryControllerProvider.notifier).toggleFavorite(qrEntity.id);
       
-      // Refresh the user QR codes list
+      // Refresh the user QR codes provider to get updated data
       ref.invalidate(userQRCodesProvider);
       
       // Show success feedback
@@ -1266,8 +1011,8 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
                 : l10n.removedFromFavorites(qrEntity.name),
             ),
             backgroundColor: isFavorite 
-              ? const Color(0xFFEF4444) 
-              : const Color(0xFF00FF88),
+              ? const Color(0xFF00FF88)
+              : const Color(0xFFEF4444),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -1278,13 +1023,27 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
     } catch (e) {
       // Show error feedback
       if (mounted) {
+        String errorMessage;
+        if (e.toString().contains('not found')) {
+          errorMessage = l10n.error('QR code not found. It may have been deleted.');
+          // Refresh the list to remove stale QR codes
+          ref.invalidate(userQRCodesProvider);
+        } else {
+          errorMessage = l10n.failedToUpdateFavorite(qrEntity.name);
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n.failedToUpdateFavorite(e.toString())),
+            content: Text(errorMessage),
             backgroundColor: const Color(0xFFEF4444),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
+            ),
+            action: SnackBarAction(
+              label: l10n.retry,
+              textColor: Colors.white,
+              onPressed: () => _toggleFavorite(qrEntity),
             ),
           ),
         );
@@ -1457,103 +1216,4 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
     }
   }
 
-  void _showQRDetails(Map<String, dynamic> qrData) {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: const Color(0xFF2E2E2E),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Icon(
-                    _getQRTypeIcon(qrData['qr_type'] ?? 'text'),
-                    color: Colors.white,
-                    size: 32,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  qrData['title'] ?? 'QR Code',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '${l10n.type}: ${(qrData['qr_type'] ?? 'text').toUpperCase()}',
-                  style: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 14,
-                  ),
-                ),
-                if (qrData['content'] != null) ...[
-                  const SizedBox(height: 16),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1A1A1A),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      qrData['content'],
-                      style: TextStyle(color: Colors.white, fontSize: 12),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SecondaryGlassButton(
-                        text: l10n.close,
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: PrimaryGlassButton(
-                        text: l10n.share,
-                        icon: Icons.share_rounded,
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          // TODO: Implement share functionality
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(l10n.shareFunctionalityComingSoon),
-                              backgroundColor: const Color(0xFF2E2E2E),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 }

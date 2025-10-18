@@ -106,6 +106,12 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
   @override
   Future<QRCodeModel> toggleFavorite(String qrCodeId, bool isFavorite) async {
     try {
+      // First check if the QR code exists
+      final existingQR = await getQRCodeById(qrCodeId);
+      if (existingQR == null) {
+        throw Exception('QR code with ID $qrCodeId not found in database');
+      }
+      
       final response = await client
           .from('qr_codes')
           .update({
@@ -118,6 +124,9 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
 
       return QRCodeModel.fromJson(response);
     } catch (e) {
+      if (e.toString().contains('not found')) {
+        throw Exception('QR code not found in database. It may have been deleted.');
+      }
       throw Exception('Failed to toggle favorite status: $e');
     }
   }
