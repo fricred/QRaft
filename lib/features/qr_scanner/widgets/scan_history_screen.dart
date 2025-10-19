@@ -1,3 +1,4 @@
+import 'dart:math' show log;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -139,10 +140,11 @@ class ScanHistoryScreen extends ConsumerWidget {
       itemCount: scanHistory.length,
       itemBuilder: (context, index) {
         final scanResult = scanHistory[index];
+        final delay = (50 + (30.0 * log(index + 2))).toInt();
         return _buildHistoryItem(context, ref, scanResult, index)
-            .animate(delay: (index * 50).ms)
-            .fadeIn(duration: 400.ms)
-            .slideX(begin: 0.2, end: 0, duration: 400.ms);
+            .animate(delay: delay.ms)
+            .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+            .slideX(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart);
       },
     );
   }
@@ -152,6 +154,7 @@ class ScanHistoryScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // Icon/Illustration - Standardized animation
           Container(
             width: 120,
             height: 120,
@@ -174,11 +177,12 @@ class ScanHistoryScreen extends ConsumerWidget {
               size: 60,
             ),
           ).animate()
-            .scale(begin: const Offset(0.8, 0.8), duration: 800.ms, curve: Curves.elasticOut)
-            .fadeIn(duration: 400.ms),
-          
+            .scale(begin: const Offset(0.8, 0.8), duration: 500.ms, curve: Curves.easeOutBack)
+            .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic),
+
           const SizedBox(height: 32),
-          
+
+          // Title - Standardized animation (200ms delay after icon)
           Text(
             l10n.noScansYet,
             style: const TextStyle(
@@ -186,12 +190,13 @@ class ScanHistoryScreen extends ConsumerWidget {
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
-          ).animate(delay: 200.ms)
-            .fadeIn(duration: 600.ms)
-            .slideY(begin: 0.3, end: 0, duration: 600.ms),
-          
+          ).animate()
+            .fadeIn(duration: 400.ms, delay: 200.ms, curve: Curves.easeOutCubic)
+            .slideY(begin: 0.15, duration: 400.ms, delay: 200.ms, curve: Curves.easeOutQuart),
+
           const SizedBox(height: 12),
-          
+
+          // Subtitle - Standardized animation (300ms delay)
           Text(
             l10n.startScanningToSeeHistory,
             style: TextStyle(
@@ -199,19 +204,20 @@ class ScanHistoryScreen extends ConsumerWidget {
               fontSize: 16,
             ),
             textAlign: TextAlign.center,
-          ).animate(delay: 400.ms)
-            .fadeIn(duration: 600.ms)
-            .slideY(begin: 0.3, end: 0, duration: 600.ms),
-          
+          ).animate()
+            .fadeIn(duration: 300.ms, delay: 300.ms, curve: Curves.easeOutCubic)
+            .slideY(begin: 0.1, duration: 300.ms, delay: 300.ms, curve: Curves.easeOutQuart),
+
           const SizedBox(height: 32),
-          
+
+          // Action Button - Standardized animation (400ms delay)
           PrimaryGlassButton(
             text: l10n.startScanning,
             icon: Icons.qr_code_scanner_rounded,
             onPressed: () => Navigator.pop(context),
-          ).animate(delay: 600.ms)
-            .fadeIn(duration: 600.ms)
-            .slideY(begin: 0.3, end: 0, duration: 600.ms),
+          ).animate()
+            .fadeIn(duration: 300.ms, delay: 400.ms, curve: Curves.easeOutCubic)
+            .scale(begin: const Offset(0.8, 0.8), duration: 300.ms, delay: 400.ms, curve: Curves.easeOutBack),
         ],
       ),
     );

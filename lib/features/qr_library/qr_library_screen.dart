@@ -1,3 +1,4 @@
+import 'dart:math' show log;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -99,8 +100,8 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
                   ),
                 ],
               ).animate()
-                .fadeIn(duration: 800.ms)
-                .slideY(begin: -0.3, duration: 800.ms),
+                .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                .slideY(begin: -0.15, duration: 300.ms, curve: Curves.easeOutQuart),
             ),
             
             // Content
@@ -131,14 +132,14 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
           size: 28,
         ),
       ).animate()
-        .fadeIn(duration: 800.ms, delay: 600.ms)
-        .scale(begin: const Offset(0.8, 0.8), duration: 600.ms, delay: 600.ms),
+        .fadeIn(duration: 400.ms, delay: 200.ms, curve: Curves.easeOutCubic)
+        .scale(begin: const Offset(0.7, 0.7), duration: 400.ms, delay: 200.ms, curve: Curves.easeOutBack),
     );
   }
 
   Widget _buildTabButton(String text, int index) {
     final isSelected = _selectedTab == index;
-    
+
     return Expanded(
       child: GestureDetector(
         onTap: () {
@@ -151,16 +152,28 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
             curve: Curves.easeInOut,
           );
         },
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOutCubic,
           height: double.infinity,
           decoration: BoxDecoration(
-            gradient: isSelected 
+            gradient: isSelected
                 ? const LinearGradient(
                     colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
                   )
                 : null,
             borderRadius: BorderRadius.circular(10),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: const Color(0xFF00FF88).withValues(alpha: 0.4),
+                      blurRadius: 12,
+                      spreadRadius: 0,
+                    ),
+                  ]
+                : null,
           ),
+          transform: Matrix4.identity()..scale(isSelected ? 1.0 : 0.98),
           child: Center(
             child: Text(
               text,
@@ -199,8 +212,8 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
               ),
             ],
           ).animate()
-            .fadeIn(duration: 800.ms, delay: 200.ms)
-            .slideY(begin: 0.3, duration: 800.ms, delay: 200.ms),
+            .fadeIn(duration: 300.ms, delay: 100.ms, curve: Curves.easeOutCubic)
+            .slideY(begin: 0.15, duration: 300.ms, delay: 100.ms, curve: Curves.easeOutQuart),
           
           const SizedBox(height: 24),
           
@@ -225,9 +238,24 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
                       ),
                       itemCount: qrCodes.length,
                       itemBuilder: (context, index) {
+                        final delay = (100 + (40.0 * log(index + 2))).toInt();
                         return _buildEntityQRCard(qrCodes[index], l10n).animate()
-                          .fadeIn(duration: 600.ms, delay: (300 + index * 100).ms)
-                          .slideY(begin: 0.3, duration: 600.ms, delay: (300 + index * 100).ms);
+                          .fadeIn(
+                            duration: 300.ms,
+                            delay: delay.ms,
+                            curve: Curves.easeOutCubic,
+                          )
+                          .slideY(
+                            begin: 0.15,
+                            duration: 300.ms,
+                            delay: delay.ms,
+                            curve: Curves.easeOutQuart,
+                          )
+                          .scale(
+                            begin: const Offset(0.95, 0.95),
+                            duration: 300.ms,
+                            delay: delay.ms,
+                          );
                       },
                     );
                   },
@@ -240,9 +268,19 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
                     ),
                     itemCount: 6, // Placeholder count
                     itemBuilder: (context, index) {
+                      final delay = (100 + (40.0 * log(index + 2))).toInt();
                       return _buildQRCardSkeleton().animate()
-                        .fadeIn(duration: 600.ms, delay: (300 + index * 100).ms)
-                        .slideY(begin: 0.3, duration: 600.ms, delay: (300 + index * 100).ms);
+                        .fadeIn(
+                          duration: 300.ms,
+                          delay: delay.ms,
+                          curve: Curves.easeOutCubic,
+                        )
+                        .slideY(
+                          begin: 0.15,
+                          duration: 300.ms,
+                          delay: delay.ms,
+                          curve: Curves.easeOutQuart,
+                        );
                     },
                   ),
                   error: (error, _) => _buildEmptyQRLibrary(l10n),
@@ -259,12 +297,13 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
     return Consumer(
       builder: (context, ref, child) {
         final favoriteQRs = ref.watch(favoriteQRCodesProvider);
-        
+
         if (favoriteQRs.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Icon/Illustration - Standardized animation
                 Container(
                   width: 80,
                   height: 80,
@@ -279,17 +318,27 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
                     color: Colors.white,
                     size: 40,
                   ),
-                ),
+                ).animate()
+                  .scale(begin: const Offset(0.8, 0.8), duration: 500.ms, curve: Curves.easeOutBack)
+                  .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic),
+
                 const SizedBox(height: 24),
+
+                // Title - Standardized animation (200ms delay)
                 Text(
                   l10n.noFavoritesYet,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
-                ),
+                ).animate()
+                  .fadeIn(duration: 400.ms, delay: 200.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: 0.15, duration: 400.ms, delay: 200.ms, curve: Curves.easeOutQuart),
+
                 const SizedBox(height: 8),
+
+                // Subtitle - Standardized animation (300ms delay)
                 Text(
                   l10n.starFavoriteQRCodes,
                   style: TextStyle(
@@ -297,14 +346,14 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
                     fontSize: 14,
                   ),
                   textAlign: TextAlign.center,
-                ),
+                ).animate()
+                  .fadeIn(duration: 300.ms, delay: 300.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: 0.1, duration: 300.ms, delay: 300.ms, curve: Curves.easeOutQuart),
               ],
-            ).animate()
-              .fadeIn(duration: 800.ms)
-              .scale(begin: const Offset(0.9, 0.9), duration: 600.ms),
+            ),
           );
         }
-        
+
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: GridView.builder(
@@ -316,9 +365,24 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
             ),
             itemCount: favoriteQRs.length,
             itemBuilder: (context, index) {
+              final delay = (100 + (40.0 * log(index + 2))).toInt();
               return _buildEntityQRCard(favoriteQRs[index], l10n).animate()
-                .fadeIn(duration: 600.ms, delay: (index * 100).ms)
-                .slideY(begin: 0.3, duration: 600.ms, delay: (index * 100).ms);
+                .fadeIn(
+                  duration: 300.ms,
+                  delay: delay.ms,
+                  curve: Curves.easeOutCubic,
+                )
+                .slideY(
+                  begin: 0.15,
+                  duration: 300.ms,
+                  delay: delay.ms,
+                  curve: Curves.easeOutQuart,
+                )
+                .scale(
+                  begin: const Offset(0.95, 0.95),
+                  duration: 300.ms,
+                  delay: delay.ms,
+                );
             },
           ),
         );
@@ -330,12 +394,13 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
     return Consumer(
       builder: (context, ref, child) {
         final recentQRs = ref.watch(recentQRCodesProvider);
-        
+
         if (recentQRs.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Icon/Illustration - Standardized animation
                 Container(
                   width: 80,
                   height: 80,
@@ -350,17 +415,27 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
                     color: Colors.white,
                     size: 40,
                   ),
-                ),
+                ).animate()
+                  .scale(begin: const Offset(0.8, 0.8), duration: 500.ms, curve: Curves.easeOutBack)
+                  .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic),
+
                 const SizedBox(height: 24),
+
+                // Title - Standardized animation (200ms delay)
                 Text(
                   l10n.noRecentQRs,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
-                ),
+                ).animate()
+                  .fadeIn(duration: 400.ms, delay: 200.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: 0.15, duration: 400.ms, delay: 200.ms, curve: Curves.easeOutQuart),
+
                 const SizedBox(height: 8),
+
+                // Subtitle - Standardized animation (300ms delay)
                 Text(
                   l10n.recentQRCodesAppearHere,
                   style: TextStyle(
@@ -368,22 +443,32 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
                     fontSize: 14,
                   ),
                   textAlign: TextAlign.center,
-                ),
+                ).animate()
+                  .fadeIn(duration: 300.ms, delay: 300.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: 0.1, duration: 300.ms, delay: 300.ms, curve: Curves.easeOutQuart),
               ],
-            ).animate()
-              .fadeIn(duration: 800.ms)
-              .scale(begin: const Offset(0.9, 0.9), duration: 600.ms),
+            ),
           );
         }
-        
+
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: ListView.builder(
             itemCount: recentQRs.length,
             itemBuilder: (context, index) {
+              final delay = (100 + (40.0 * log(index + 2))).toInt();
               return _buildRecentEntityQRCard(recentQRs[index], l10n).animate()
-                .fadeIn(duration: 600.ms, delay: (index * 100).ms)
-                .slideX(begin: 0.3, duration: 600.ms, delay: (index * 100).ms);
+                .fadeIn(
+                  duration: 300.ms,
+                  delay: delay.ms,
+                  curve: Curves.easeOutCubic,
+                )
+                .slideX(
+                  begin: 0.15,
+                  duration: 300.ms,
+                  delay: delay.ms,
+                  curve: Curves.easeOutQuart,
+                );
             },
           ),
         );
@@ -544,6 +629,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // Icon/Illustration - Standardized animation
           Container(
             width: 80,
             height: 80,
@@ -558,17 +644,27 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
               color: Colors.white,
               size: 40,
             ),
-          ),
+          ).animate()
+            .scale(begin: const Offset(0.8, 0.8), duration: 500.ms, curve: Curves.easeOutBack)
+            .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic),
+
           const SizedBox(height: 24),
+
+          // Title - Standardized animation (200ms delay)
           Text(
             l10n.noQRCodesYet,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
-          ),
+          ).animate()
+            .fadeIn(duration: 400.ms, delay: 200.ms, curve: Curves.easeOutCubic)
+            .slideY(begin: 0.15, duration: 400.ms, delay: 200.ms, curve: Curves.easeOutQuart),
+
           const SizedBox(height: 8),
+
+          // Subtitle - Standardized animation (300ms delay)
           Text(
             l10n.createFirstQRCode,
             style: TextStyle(
@@ -576,17 +672,22 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
               fontSize: 14,
             ),
             textAlign: TextAlign.center,
-          ),
+          ).animate()
+            .fadeIn(duration: 300.ms, delay: 300.ms, curve: Curves.easeOutCubic)
+            .slideY(begin: 0.1, duration: 300.ms, delay: 300.ms, curve: Curves.easeOutQuart),
+
           const SizedBox(height: 24),
+
+          // Action Button - Standardized animation (400ms delay)
           PrimaryGlassButton(
             text: l10n.createQRCode,
             icon: Icons.add_rounded,
             onPressed: () => ref.read(navigationIndexProvider.notifier).state = 1,
-          ),
+          ).animate()
+            .fadeIn(duration: 300.ms, delay: 400.ms, curve: Curves.easeOutCubic)
+            .scale(begin: const Offset(0.8, 0.8), duration: 300.ms, delay: 400.ms, curve: Curves.easeOutBack),
         ],
-      ).animate()
-        .fadeIn(duration: 800.ms)
-        .scale(begin: const Offset(0.9, 0.9), duration: 600.ms),
+      ),
     );
   }
 

@@ -84,8 +84,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               minimumSize: const Size(40, 40),
                             ),
                           ).animate()
-                            .fadeIn(duration: 600.ms)
-                            .slideX(begin: -0.3, duration: 600.ms),
+                            .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                            .slideX(begin: -0.15, duration: 300.ms, curve: Curves.easeOutQuart),
                         ],
                       ),
                       
@@ -145,8 +145,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ],
                       ).animate()
-                        .fadeIn(duration: 800.ms, delay: 200.ms)
-                        .slideY(begin: 0.3, duration: 800.ms, delay: 200.ms),
+                        .fadeIn(duration: 300.ms, delay: 100.ms, curve: Curves.easeOutCubic)
+                        .slideY(begin: 0.15, duration: 300.ms, delay: 100.ms, curve: Curves.easeOutQuart),
                     ],
                   ),
                 ),
@@ -272,8 +272,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ],
                             ),
                           ).animate()
-                            .fadeIn(duration: 800.ms, delay: 400.ms)
-                            .slideY(begin: 0.3, duration: 800.ms, delay: 400.ms),
+                            .fadeIn(duration: 400.ms, delay: 200.ms, curve: Curves.easeOutCubic)
+                            .slideY(begin: 0.15, duration: 400.ms, delay: 200.ms, curve: Curves.easeOutQuart),
                           
                           const SizedBox(height: 24),
                           
@@ -291,7 +291,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                             ),
                           ).animate()
-                            .fadeIn(duration: 600.ms, delay: 600.ms),
+                            .fadeIn(duration: 300.ms, delay: 300.ms, curve: Curves.easeOutCubic),
                           
                           const SizedBox(height: 20),
                         ],
@@ -405,12 +405,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ],
         ),
       ).animate(onPlay: (controller) => controller.repeat(reverse: true))
-        .fadeIn(duration: 2500.ms, delay: delay)
+        .fadeIn(duration: 1500.ms, delay: delay, curve: Curves.easeInOutCubic)
         .scale(
           begin: const Offset(0.5, 0.5),
           end: const Offset(1.2, 1.2),
-          duration: 3500.ms,
+          duration: 2000.ms,
           delay: delay,
+          curve: Curves.easeInOutCubic,
         ),
     );
   }

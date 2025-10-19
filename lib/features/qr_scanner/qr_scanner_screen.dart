@@ -166,8 +166,8 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
           ),
         ],
       ).animate()
-        .fadeIn(duration: 800.ms)
-        .slideY(begin: -0.3, duration: 800.ms),
+        .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+        .slideY(begin: -0.15, duration: 300.ms, curve: Curves.easeOutQuart),
     );
   }
 
@@ -204,8 +204,8 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
         ),
       ),
     ).animate()
-      .fadeIn(duration: 1000.ms, delay: 200.ms)
-      .scale(begin: const Offset(0.9, 0.9), duration: 800.ms, delay: 200.ms);
+      .fadeIn(duration: 400.ms, delay: 100.ms, curve: Curves.easeOutCubic)
+      .scale(begin: const Offset(0.9, 0.9), duration: 400.ms, delay: 100.ms, curve: Curves.easeOutBack);
   }
 
   Widget _buildCameraPlaceholder() {
@@ -319,8 +319,8 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
                     .moveY(
                       begin: -125,
                       end: 125,
-                      duration: 2000.ms,
-                      curve: Curves.easeInOut,
+                      duration: 1200.ms,
+                      curve: Curves.easeInOutCubic,
                     ),
               ],
             ),
@@ -378,7 +378,8 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
                     height: 48,
                     onPressed: () => _scanFromGallery(),
                   ).animate()
-                    .fadeIn(duration: 600.ms, delay: 500.ms),
+                    .fadeIn(duration: 300.ms, delay: 250.ms, curve: Curves.easeOutCubic)
+                    .scale(begin: const Offset(0.95, 0.95), duration: 300.ms, delay: 250.ms),
                 ),
                 
                 const SizedBox(width: 12),
@@ -391,7 +392,8 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
                     height: 48,
                     onPressed: () => _navigateToHistory(),
                   ).animate()
-                    .fadeIn(duration: 600.ms, delay: 600.ms),
+                    .fadeIn(duration: 300.ms, delay: 300.ms, curve: Curves.easeOutCubic)
+                    .scale(begin: const Offset(0.95, 0.95), duration: 300.ms, delay: 300.ms),
                 ),
               ],
             ),
@@ -440,8 +442,8 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
         ),
       ),
     ).animate()
-      .fadeIn(duration: 800.ms, delay: 400.ms)
-      .scale(begin: const Offset(0.8, 0.8), duration: 600.ms, delay: 400.ms);
+      .fadeIn(duration: 300.ms, delay: 200.ms, curve: Curves.easeOutCubic)
+      .scale(begin: const Offset(0.8, 0.8), duration: 300.ms, delay: 200.ms, curve: Curves.easeOutBack);
   }
 
   Widget _buildGridLine(int index) {

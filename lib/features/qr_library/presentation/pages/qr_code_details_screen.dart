@@ -1,3 +1,4 @@
+import 'dart:math' show log;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -75,8 +76,8 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                 ],
               ),
             ).animate()
-              .fadeIn(duration: 800.ms)
-              .slideY(begin: -0.3, duration: 800.ms),
+              .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+              .slideY(begin: -0.15, duration: 300.ms, curve: Curves.easeOutQuart),
             
             // QR Code display and details
             Expanded(
@@ -141,42 +142,40 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                         ],
                       ),
                     ).animate()
-                      .fadeIn(duration: 800.ms, delay: 200.ms)
-                      .slideY(begin: 0.3, duration: 800.ms, delay: 200.ms),
+                      .fadeIn(duration: 300.ms, delay: 100.ms, curve: Curves.easeOutCubic)
+                      .slideY(begin: 0.15, duration: 300.ms, delay: 100.ms, curve: Curves.easeOutQuart)
+                      .scale(begin: const Offset(0.95, 0.95), duration: 300.ms, delay: 100.ms),
                     
                     const SizedBox(height: 24),
-                    
-                    // QR Content section
+
+                    // QR Content section - Exponential delay pattern
                     _buildInfoSection(
                       'QR Content',
                       widget.qrEntity.displayData,
                       Icons.text_fields_rounded,
                       canCopy: true,
-                    ).animate()
-                      .fadeIn(duration: 800.ms, delay: 300.ms)
-                      .slideX(begin: -0.3, duration: 800.ms, delay: 300.ms),
-                    
+                      index: 0,
+                    ),
+
                     const SizedBox(height: 16),
-                    
+
                     // Created date section
                     _buildInfoSection(
                       'Created',
                       _formatDateTime(widget.qrEntity.createdAt),
                       Icons.calendar_today_rounded,
-                    ).animate()
-                      .fadeIn(duration: 800.ms, delay: 400.ms)
-                      .slideX(begin: 0.3, duration: 800.ms, delay: 400.ms),
-                    
+                      index: 1,
+                    ),
+
                     const SizedBox(height: 16),
-                    
+
                     // Last updated section
                     _buildInfoSection(
                       'Last Updated',
                       _formatDateTime(widget.qrEntity.updatedAt),
                       Icons.update_rounded,
-                    ).animate()
-                      .fadeIn(duration: 800.ms, delay: 500.ms)
-                      .slideX(begin: -0.3, duration: 800.ms, delay: 500.ms),
+                      index: 2,
+                    ),
                     
                     const SizedBox(height: 32),
                   ],
@@ -239,15 +238,27 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                 ],
               ),
             ).animate()
-              .fadeIn(duration: 800.ms, delay: 600.ms)
-              .slideY(begin: 0.3, duration: 800.ms, delay: 600.ms),
+              .fadeIn(duration: 300.ms, delay: 300.ms, curve: Curves.easeOutCubic)
+              .slideY(begin: 0.15, duration: 300.ms, delay: 300.ms, curve: Curves.easeOutQuart),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInfoSection(String title, String content, IconData icon, {bool canCopy = false}) {
+  Widget _buildInfoSection(
+    String title,
+    String content,
+    IconData icon,
+    {bool canCopy = false, required int index}
+  ) {
+    // Exponential delay pattern with variation
+    final delay = (100 + (40.0 * log(index + 2))).toInt();
+    // Vary the timing slightly for polish: 280ms, 295ms, 310ms...
+    final duration = 280 + (index * 15);
+    // Alternate slide directions for visual interest
+    final slideDirection = index.isEven ? -0.15 : 0.15;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -304,7 +315,10 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
           ),
         ],
       ),
-    );
+    ).animate()
+      .fadeIn(duration: duration.ms, delay: delay.ms, curve: Curves.easeOutCubic)
+      .slideX(begin: slideDirection, duration: duration.ms, delay: delay.ms, curve: Curves.easeOutQuart)
+      .scale(begin: const Offset(0.98, 0.98), duration: duration.ms, delay: delay.ms);
   }
 
   void _handleShare() {

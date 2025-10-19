@@ -55,8 +55,8 @@ class _SplashScreenState extends State<SplashScreen>
     _pulseController.repeat(reverse: true);
     _rotationController.repeat();
 
-    // Complete initialization after 8 seconds to enjoy all the animations
-    Future.delayed(const Duration(seconds: 8), () {
+    // Complete initialization after 2.5 seconds (optimized)
+    Future.delayed(const Duration(milliseconds: 2500), () {
       widget.onInitializationComplete();
     });
   }
@@ -121,8 +121,8 @@ class _SplashScreenState extends State<SplashScreen>
                     );
                   },
                 ).animate()
-                  .scale(begin: const Offset(0.0, 0.0), end: const Offset(1.0, 1.0), duration: 1500.ms, curve: Curves.elasticOut)
-                  .fadeIn(duration: 800.ms),
+                  .scale(begin: const Offset(0.0, 0.0), end: const Offset(1.0, 1.0), duration: 500.ms, curve: Curves.easeOutBack)
+                  .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic),
                 
                 const SizedBox(height: 32),
                 
@@ -135,8 +135,8 @@ class _SplashScreenState extends State<SplashScreen>
                     fontSize: 48,
                   ),
                 ).animate()
-                  .fadeIn(duration: 1000.ms, delay: 800.ms)
-                  .slideY(begin: 0.3, duration: 1000.ms, delay: 800.ms, curve: Curves.easeOut),
+                  .fadeIn(duration: 400.ms, delay: 200.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: 0.15, duration: 400.ms, delay: 200.ms, curve: Curves.easeOutQuart),
                 
                 const SizedBox(height: 8),
                 
@@ -148,8 +148,8 @@ class _SplashScreenState extends State<SplashScreen>
                     fontSize: 16,
                   ),
                 ).animate()
-                  .fadeIn(duration: 800.ms, delay: 1800.ms)
-                  .slideY(begin: 0.2, duration: 800.ms, delay: 1800.ms, curve: Curves.easeOut),
+                  .fadeIn(duration: 400.ms, delay: 500.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: 0.15, duration: 400.ms, delay: 500.ms, curve: Curves.easeOutQuart),
                 
                 const SizedBox(height: 48),
                 
@@ -173,13 +173,13 @@ class _SplashScreenState extends State<SplashScreen>
                       ).animate(onPlay: (controller) => controller.repeat())
                         .scaleX(
                           begin: 0,
-                          duration: 3000.ms,
-                          curve: Curves.easeInOut,
+                          duration: 1800.ms,
+                          curve: Curves.easeInOutCubic,
                         ),
                     ],
                   ),
                 ).animate()
-                  .fadeIn(duration: 600.ms, delay: 2600.ms),
+                  .fadeIn(duration: 300.ms, delay: 800.ms, curve: Curves.easeOutCubic),
                 
                 const SizedBox(height: 16),
                 
@@ -191,8 +191,8 @@ class _SplashScreenState extends State<SplashScreen>
                     fontWeight: FontWeight.w500,
                   ),
                 ).animate()
-                  .fadeIn(duration: 600.ms, delay: 3200.ms)
-                  .shimmer(duration: 2000.ms, delay: 3800.ms),
+                  .fadeIn(duration: 300.ms, delay: 1000.ms, curve: Curves.easeOutCubic)
+                  .shimmer(duration: 1500.ms, delay: 1200.ms),
               ],
             ),
           ),

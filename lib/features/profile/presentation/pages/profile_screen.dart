@@ -103,16 +103,17 @@ class ProfileScreen extends ConsumerWidget {
               // Profile header
               ProfileHeader(profile: profileState.profile)
                   .animate()
-                  .fadeIn(duration: 600.ms)
-                  .slideY(begin: -0.1, end: 0, duration: 600.ms),
+                  .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: -0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart),
 
               const SizedBox(height: 24),
 
               // Profile stats
               ProfileStatsSection(profile: profileState.profile)
-                  .animate(delay: 200.ms)
-                  .fadeIn(duration: 600.ms)
-                  .slideY(begin: 0.1, end: 0, duration: 600.ms),
+                  .animate(delay: 100.ms)
+                  .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart)
+                  .scale(begin: const Offset(0.95, 0.95), duration: 300.ms),
 
               const SizedBox(height: 24),
 
@@ -145,17 +146,19 @@ class ProfileScreen extends ConsumerWidget {
                   }
                 },
               )
-                  .animate(delay: 400.ms)
-                  .fadeIn(duration: 600.ms)
-                  .slideY(begin: 0.1, end: 0, duration: 600.ms),
+                  .animate(delay: 200.ms)
+                  .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart)
+                  .scale(begin: const Offset(0.95, 0.95), duration: 300.ms),
 
               const SizedBox(height: 24),
 
               // Profile actions
               ProfileActionsSection()
-                  .animate(delay: 600.ms)
-                  .fadeIn(duration: 600.ms)
-                  .slideY(begin: 0.1, end: 0, duration: 600.ms),
+                  .animate(delay: 300.ms)
+                  .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart)
+                  .scale(begin: const Offset(0.95, 0.95), duration: 300.ms),
 
               const SizedBox(height: 32),
 
@@ -168,9 +171,9 @@ class ProfileScreen extends ConsumerWidget {
                 width: double.infinity,
                 gradientColors: [Colors.red[400]!, Colors.red[600]!],
               )
-                  .animate(delay: 800.ms)
-                  .fadeIn(duration: 600.ms)
-                  .slideY(begin: 0.1, end: 0, duration: 600.ms),
+                  .animate(delay: 400.ms)
+                  .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart),
 
               const SizedBox(height: 32),
             ],

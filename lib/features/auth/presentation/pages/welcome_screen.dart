@@ -34,22 +34,22 @@ class WelcomeScreen extends StatelessWidget {
               
               // Logo and Title Section
               _buildHeaderSection(context, l10n).animate()
-                .fadeIn(duration: 800.ms)
-                .slideY(begin: 0.3, duration: 800.ms),
+                .fadeIn(duration: 400.ms, curve: Curves.easeOutCubic)
+                .slideY(begin: 0.15, duration: 400.ms, curve: Curves.easeOutQuart),
               
               const SizedBox(height: 60),
               
               // Features Section - Vertical Layout
               _buildFeaturesSection(context, l10n).animate()
-                .fadeIn(duration: 800.ms, delay: 400.ms)
-                .slideY(begin: 0.2, duration: 800.ms, delay: 400.ms),
+                .fadeIn(duration: 300.ms, delay: 200.ms, curve: Curves.easeOutCubic)
+                .slideY(begin: 0.15, duration: 300.ms, delay: 200.ms, curve: Curves.easeOutQuart),
               
               const SizedBox(height: 60),
               
               // Action Buttons
               _buildActionButtons(context, l10n).animate()
-                .fadeIn(duration: 600.ms, delay: 800.ms)
-                .slideY(begin: 0.2, duration: 600.ms, delay: 800.ms),
+                .fadeIn(duration: 300.ms, delay: 400.ms, curve: Curves.easeOutCubic)
+                .slideY(begin: 0.15, duration: 300.ms, delay: 400.ms, curve: Curves.easeOutQuart),
               
                 const SizedBox(height: 40),
               ],
@@ -340,12 +340,13 @@ class WelcomeScreen extends StatelessWidget {
           ],
         ),
       ).animate(onPlay: (controller) => controller.repeat(reverse: true))
-        .fadeIn(duration: 2500.ms, delay: delay)
+        .fadeIn(duration: 1500.ms, delay: delay, curve: Curves.easeInOutCubic)
         .scale(
           begin: const Offset(0.3, 0.3),
           end: const Offset(1.5, 1.5),
-          duration: 3500.ms,
+          duration: 2000.ms,
           delay: delay,
+          curve: Curves.easeInOutCubic,
         )
         .then() // Chain another animation
         .moveY(

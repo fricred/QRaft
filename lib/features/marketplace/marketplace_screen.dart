@@ -1,3 +1,4 @@
+import 'dart:math' show log;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../shared/widgets/glass_button.dart';
@@ -121,8 +122,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
                       ],
                     ),
                   ).animate()
-                    .fadeIn(duration: 800.ms, delay: 200.ms)
-                    .slideX(begin: 0.3, duration: 800.ms, delay: 200.ms),
+                    .fadeIn(duration: 400.ms, delay: 100.ms, curve: Curves.easeOutCubic)
+                    .slideX(begin: 0.15, duration: 400.ms, delay: 100.ms, curve: Curves.easeOutQuart),
                   
                   const SizedBox(height: 24),
                   
@@ -148,8 +149,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
                   ),
                 ],
               ).animate()
-                .fadeIn(duration: 800.ms)
-                .slideY(begin: -0.3, duration: 800.ms),
+                .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                .slideY(begin: 0.15, duration: 300.ms, curve: Curves.easeOutQuart),
             ),
             
             // Products grid
@@ -227,9 +228,11 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
         ),
         itemCount: products.length,
         itemBuilder: (context, index) {
+          final delay = (100 + (40.0 * log(index + 2))).toInt();
           return _buildProductCard(products[index], index).animate()
-            .fadeIn(duration: 600.ms, delay: (index * 100).ms)
-            .slideY(begin: 0.3, duration: 600.ms, delay: (index * 100).ms);
+            .fadeIn(duration: 300.ms, delay: delay.ms, curve: Curves.easeOutCubic)
+            .slideY(begin: 0.15, duration: 300.ms, delay: delay.ms, curve: Curves.easeOutQuart)
+            .scale(begin: const Offset(0.95, 0.95), duration: 300.ms, delay: delay.ms);
         },
       ),
     );

@@ -92,8 +92,8 @@ class HomeScreen extends ConsumerWidget {
                       ),
                     ],
                   ).animate()
-                    .fadeIn(duration: 800.ms)
-                    .slideY(begin: -0.3, duration: 800.ms),
+                    .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                    .slideY(begin: -0.15, duration: 300.ms, curve: Curves.easeOutQuart),
                   
                   const SizedBox(height: 60),
                   
@@ -221,8 +221,9 @@ class HomeScreen extends ConsumerWidget {
                       ],
                     ),
                   ).animate()
-                    .fadeIn(duration: 800.ms, delay: 400.ms)
-                    .slideY(begin: 0.3, duration: 800.ms, delay: 400.ms),
+                    .fadeIn(duration: 300.ms, delay: 100.ms, curve: Curves.easeOutCubic)
+                    .slideY(begin: 0.15, duration: 300.ms, delay: 100.ms, curve: Curves.easeOutQuart)
+                    .scale(begin: const Offset(0.95, 0.95), duration: 300.ms, delay: 100.ms),
                   
                   const Spacer(),
                   
@@ -257,7 +258,7 @@ class HomeScreen extends ConsumerWidget {
                       ],
                     ),
                   ).animate()
-                    .fadeIn(duration: 600.ms, delay: 800.ms),
+                    .fadeIn(duration: 300.ms, delay: 200.ms, curve: Curves.easeOutCubic),
                 ],
               ),
             ),
@@ -299,12 +300,13 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
       ).animate(onPlay: (controller) => controller.repeat(reverse: true))
-        .fadeIn(duration: 2500.ms, delay: delay)
+        .fadeIn(duration: 1500.ms, delay: delay, curve: Curves.easeInOutCubic)
         .scale(
           begin: const Offset(0.5, 0.5),
           end: const Offset(1.2, 1.2),
-          duration: 3500.ms,
+          duration: 2000.ms,
           delay: delay,
+          curve: Curves.easeInOutCubic,
         ),
     );
   }

@@ -1,3 +1,4 @@
+import 'dart:math' show log;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -107,8 +108,8 @@ class DashboardScreen extends ConsumerWidget {
                       ),
                     ],
                   ).animate()
-                    .fadeIn(duration: 800.ms)
-                    .slideY(begin: -0.3, duration: 800.ms),
+                    .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                    .slideY(begin: -0.15, duration: 300.ms, curve: Curves.easeOutQuart),
                   
                   const SizedBox(height: 24),
                   
@@ -172,8 +173,8 @@ class DashboardScreen extends ConsumerWidget {
                       ),
                     ],
                   ).animate()
-                    .fadeIn(duration: 800.ms, delay: 200.ms)
-                    .slideY(begin: 0.3, duration: 800.ms, delay: 200.ms),
+                    .fadeIn(duration: 300.ms, delay: 100.ms, curve: Curves.easeOutCubic)
+                    .slideY(begin: 0.15, duration: 300.ms, delay: 100.ms, curve: Curves.easeOutQuart),
                   
                   const SizedBox(height: 24),
                   
@@ -234,8 +235,8 @@ class DashboardScreen extends ConsumerWidget {
                       );
                     },
                   ).animate()
-                    .fadeIn(duration: 800.ms, delay: 300.ms)
-                    .slideY(begin: 0.3, duration: 800.ms, delay: 300.ms),
+                    .fadeIn(duration: 300.ms, delay: 200.ms, curve: Curves.easeOutCubic)
+                    .slideY(begin: 0.15, duration: 300.ms, delay: 200.ms, curve: Curves.easeOutQuart),
                   
                   // Quick Actions
                   Text(
@@ -246,7 +247,7 @@ class DashboardScreen extends ConsumerWidget {
                       fontSize: 18,
                     ),
                   ).animate()
-                    .fadeIn(duration: 600.ms, delay: 400.ms),
+                    .fadeIn(duration: 300.ms, delay: 250.ms, curve: Curves.easeOutCubic),
                   
                   const SizedBox(height: 12),
                   
@@ -266,7 +267,7 @@ class DashboardScreen extends ConsumerWidget {
                           gradient: const LinearGradient(
                             colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
                           ),
-                          delay: 500,
+                          index: 0,
                           onTap: () => _navigateToTab(ref, 1),
                         ),
                         _buildActionCard(
@@ -276,7 +277,7 @@ class DashboardScreen extends ConsumerWidget {
                           gradient: const LinearGradient(
                             colors: [Color(0xFF1A73E8), Color(0xFF6366F1)],
                           ),
-                          delay: 600,
+                          index: 1,
                           onTap: () => _navigateToTab(ref, 2),
                         ),
                         _buildActionCard(
@@ -286,7 +287,7 @@ class DashboardScreen extends ConsumerWidget {
                           gradient: const LinearGradient(
                             colors: [Color(0xFF8B5CF6), Color(0xFF1A73E8)],
                           ),
-                          delay: 700,
+                          index: 2,
                           onTap: () => _navigateToTab(ref, 3),
                         ),
                         _buildActionCard(
@@ -296,7 +297,7 @@ class DashboardScreen extends ConsumerWidget {
                           gradient: const LinearGradient(
                             colors: [Color(0xFFEF4444), Color(0xFF8B5CF6)],
                           ),
-                          delay: 800,
+                          index: 3,
                           onTap: () => _navigateToTab(ref, 4),
                         ),
                       ],
@@ -551,9 +552,10 @@ class DashboardScreen extends ConsumerWidget {
     required String subtitle,
     required IconData icon,
     required Gradient gradient,
-    required int delay,
+    required int index,
     VoidCallback? onTap,
   }) {
+    final delay = (100 + (40.0 * log(index + 2))).toInt();
     return Container(
       decoration: BoxDecoration(
         gradient: gradient,
@@ -616,8 +618,9 @@ class DashboardScreen extends ConsumerWidget {
         ),
       ),
     ).animate()
-      .fadeIn(duration: 600.ms, delay: delay.ms)
-      .slideY(begin: 0.3, duration: 600.ms, delay: delay.ms);
+      .fadeIn(duration: 300.ms, delay: delay.ms, curve: Curves.easeOutCubic)
+      .slideY(begin: 0.15, duration: 300.ms, delay: delay.ms, curve: Curves.easeOutQuart)
+      .scale(begin: const Offset(0.95, 0.95), duration: 300.ms, delay: delay.ms);
   }
 
   Widget _buildBackgroundParticle(int index) {
@@ -665,7 +668,8 @@ class DashboardScreen extends ConsumerWidget {
     final title = qrData['title'] ?? 'QR Code';
     final iconData = _getQRTypeIcon(qrType);
     final color = _getQRTypeColor(qrType);
-    
+    final delay = (100 + (40.0 * log(index + 2))).toInt();
+
     return Container(
       width: 70, // Reduced width to fit better
       height: 90, // Match container height
@@ -725,8 +729,9 @@ class DashboardScreen extends ConsumerWidget {
         ),
       ),
     ).animate()
-      .fadeIn(duration: 600.ms, delay: (400 + index * 100).ms)
-      .slideX(begin: 0.3, duration: 600.ms, delay: (400 + index * 100).ms);
+      .fadeIn(duration: 300.ms, delay: delay.ms, curve: Curves.easeOutCubic)
+      .slideX(begin: 0.15, duration: 300.ms, delay: delay.ms, curve: Curves.easeOutQuart)
+      .scale(begin: const Offset(0.95, 0.95), duration: 300.ms, delay: delay.ms);
   }
 
   IconData _getQRTypeIcon(String qrType) {

@@ -1,3 +1,4 @@
+import 'dart:math' show log;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,8 +40,8 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
                   fontSize: 28,
                 ),
               ).animate()
-                .fadeIn(duration: 800.ms)
-                .slideY(begin: -0.3, duration: 800.ms),
+                .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                .slideY(begin: -0.15, duration: 300.ms, curve: Curves.easeOutQuart),
               
               const SizedBox(height: 8),
               
@@ -51,7 +52,7 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
                   fontSize: 16,
                 ),
               ).animate()
-                .fadeIn(duration: 800.ms, delay: 100.ms),
+                .fadeIn(duration: 300.ms, delay: 50.ms, curve: Curves.easeOutCubic),
               
               const SizedBox(height: 32),
               
@@ -70,9 +71,10 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
                       physics: const BouncingScrollPhysics(),
                       children: QRType.values.map((qrType) {
                         final index = QRType.values.indexOf(qrType);
+                        final delay = (100 + (40.0 * log(index + 2))).toInt();
                         return _buildQRTypeCard(
                           qrType: qrType,
-                          delay: 200 + (index * 100),
+                          delay: delay,
                         );
                       }).toList(),
                     );
@@ -142,8 +144,8 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
                   ],
                 ),
               ).animate()
-                .fadeIn(duration: 800.ms, delay: 800.ms)
-                .slideY(begin: 0.3, duration: 800.ms, delay: 800.ms),
+                .fadeIn(duration: 300.ms, delay: 400.ms, curve: Curves.easeOutCubic)
+                .slideY(begin: 0.15, duration: 300.ms, delay: 400.ms, curve: Curves.easeOutQuart),
             ],
           ),
         ),
@@ -264,8 +266,9 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
         ),
       ),
     ).animate()
-      .fadeIn(duration: 600.ms, delay: delay.ms)
-      .slideY(begin: 0.3, duration: 600.ms, delay: delay.ms);
+      .fadeIn(duration: 300.ms, delay: delay.ms, curve: Curves.easeOutCubic)
+      .slideY(begin: 0.15, duration: 300.ms, delay: delay.ms, curve: Curves.easeOutQuart)
+      .scale(begin: const Offset(0.95, 0.95), duration: 300.ms, delay: delay.ms);
   }
 
   IconData _getIconData(String iconName) {
