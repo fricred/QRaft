@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../domain/entities/qr_type.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/glass_button.dart';
 
 class ComingSoonQRScreen extends StatelessWidget {
   final QRType qrType;
@@ -180,31 +181,11 @@ class ComingSoonQRScreen extends StatelessWidget {
               const SizedBox(height: 40),
               
               // Back button
-              SizedBox(
+              SecondaryGlassButton(
+                text: AppLocalizations.of(context)?.backToQRTypes ?? 'Back to QR Types',
+                onPressed: () => Navigator.of(context).pop(),
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2E2E2E),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.1),
-                        width: 1,
-                      ),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    AppLocalizations.of(context)?.backToQRTypes ?? 'Back to QR Types',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+                height: 56,
               ).animate()
                 .fadeIn(duration: 800.ms, delay: 800.ms)
                 .slideY(begin: 0.3, duration: 800.ms, delay: 800.ms),

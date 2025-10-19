@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qraft/l10n/app_localizations.dart';
 import '../../domain/entities/user_profile_entity.dart';
+import '../../../../shared/widgets/glass_button.dart';
 
 class InlineEditableProfileInfo extends ConsumerStatefulWidget {
   final UserProfileEntity? profile;
@@ -291,29 +292,21 @@ class _InlineEditableProfileInfoState extends ConsumerState<InlineEditableProfil
                         ),
                       ),
                       const SizedBox(width: 8),
-                      ElevatedButton.icon(
+                      GlassButton(
+                        text: _isUpdating ? AppLocalizations.of(context)!.saving : AppLocalizations.of(context)!.save,
                         onPressed: _isUpdating ? null : () => _saveField(fieldKey, controller.text.trim()),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00FF88),
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          minimumSize: const Size(0, 32),
-                        ),
-                        icon: _isUpdating 
-                            ? SizedBox(
-                                width: 14,
-                                height: 14,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-                                ),
-                              )
-                            : Icon(Icons.check, size: 14),
-                        label: Text(
-                          _isUpdating ? AppLocalizations.of(context)!.saving : AppLocalizations.of(context)!.save,
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-                        ),
+                        isLoading: _isUpdating,
+                        icon: Icons.check,
+                        iconSize: 14,
+                        height: 32,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        textColor: Colors.black,
+                        borderRadius: BorderRadius.circular(8),
+                        gradientColors: const [
+                          Color(0xFF00FF88),
+                          Color(0xFF00CC6A),
+                        ],
                       ),
                     ],
                   ),
