@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../qr_generator/domain/entities/qr_code_entity.dart';
+import '../../../qr_generator/presentation/pages/url_qr_screen.dart';
+import '../../../qr_generator/presentation/pages/text_qr_screen.dart';
 import '../widgets/qr_code_display_widget.dart';
 import '../providers/qr_library_providers.dart';
 
@@ -350,13 +352,90 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
   }
 
   void _handleEdit() {
-    // TODO: Navigate to QR generator with editing mode
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Edit functionality will be implemented soon'),
-        backgroundColor: Color(0xFF2E2E2E),
-      ),
-    );
+    // Navigate to the appropriate QR screen based on type
+    Widget screen;
+
+    switch (widget.qrEntity.type.identifier) {
+      case 'url':
+        screen = URLQRScreen(editingQRCode: widget.qrEntity);
+        break;
+      case 'text':
+        screen = TextQRScreen(editingQRCode: widget.qrEntity);
+        break;
+      case 'vcard':
+        // Import PersonalInfoQRScreen when available
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Editing vCard QR codes is coming soon'),
+            backgroundColor: Colors.grey[600],
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+        return;
+      case 'wifi':
+        // Import WiFiQRScreen when available
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Editing WiFi QR codes is coming soon'),
+            backgroundColor: Colors.grey[600],
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+        return;
+      case 'email':
+        // Import EmailQRScreen when available
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Editing Email QR codes is coming soon'),
+            backgroundColor: Colors.grey[600],
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+        return;
+      case 'location':
+        // Import LocationQRScreen when available
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Editing Location QR codes is coming soon'),
+            backgroundColor: Colors.grey[600],
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+        return;
+      default:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Editing ${widget.qrEntity.type.identifier} QR codes is not supported yet'),
+            backgroundColor: const Color(0xFFEF4444),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+        return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => screen),
+    ).then((updatedQR) {
+      // Pop back to library when returning from edit
+      if (mounted && updatedQR != null) {
+        Navigator.of(context).pop(updatedQR);
+      }
+    });
   }
 
   void _handleDelete() {

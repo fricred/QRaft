@@ -7,8 +7,10 @@ import 'package:latlong2/latlong.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/qr_type.dart';
+import '../../domain/entities/qr_code_entity.dart';
 import '../../domain/entities/qr_data_models.dart';
 import '../controllers/qr_customization_controller.dart';
+import '../controllers/qr_generator_controller.dart';
 import '../providers/qr_providers.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -161,6 +163,26 @@ class LocationFormController extends StateNotifier<LocationFormState> {
   void reset() {
     state = const LocationFormState();
   }
+
+  /// Load form data from an existing QR code entity (for edit mode)
+  void loadFromEntity(LocationData locationData, String qrName, [AppLocalizations? l10n]) {
+    state = LocationFormState(
+      name: qrName,
+      latitude: locationData.latitude.toString(),
+      longitude: locationData.longitude.toString(),
+      nameError: null,
+      latitudeError: null,
+      longitudeError: null,
+      isLoadingLocation: false,
+    );
+
+    // Trigger validation if l10n available
+    if (l10n != null) {
+      updateName(qrName, l10n);
+      updateLatitude(locationData.latitude.toString(), l10n);
+      updateLongitude(locationData.longitude.toString(), l10n);
+    }
+  }
 }
 
 /// Location Form Provider
@@ -169,7 +191,12 @@ final locationFormProvider = StateNotifierProvider<LocationFormController, Locat
 });
 
 class LocationQRScreen extends ConsumerStatefulWidget {
-  const LocationQRScreen({super.key});
+  final QRCodeEntity? editingQRCode;
+
+  const LocationQRScreen({
+    super.key,
+    this.editingQRCode,
+  });
 
   @override
   ConsumerState<LocationQRScreen> createState() => _LocationQRScreenState();
@@ -187,11 +214,73 @@ class _LocationQRScreenState extends ConsumerState<LocationQRScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    
+
+    // Initialize form and customization state
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(locationFormProvider.notifier).reset();
-      ref.read(qrCustomizationControllerProvider.notifier).reset();
+      final qrToEdit = widget.editingQRCode;
+
+      if (qrToEdit != null) {
+        // EDIT MODE: Pre-fill form and customization
+        final l10n = AppLocalizations.of(context);
+
+        // Parse location data from QR code
+        final locationData = _parseLocationData(qrToEdit.data);
+        ref.read(locationFormProvider.notifier).loadFromEntity(locationData, qrToEdit.name, l10n);
+        ref.read(qrCustomizationControllerProvider.notifier).loadFromEntity(qrToEdit);
+
+        // Pre-fill text controllers
+        _nameController.text = qrToEdit.name;
+        _latitudeController.text = locationData.latitude.toString();
+        _longitudeController.text = locationData.longitude.toString();
+      } else {
+        // CREATE MODE: Reset providers
+        ref.read(locationFormProvider.notifier).reset();
+        ref.read(qrCustomizationControllerProvider.notifier).reset();
+      }
     });
+  }
+
+  /// Parse location data from QR code string
+  /// Format: geo:latitude,longitude?q=latitude,longitude(name)
+  LocationData _parseLocationData(String geoString) {
+    double latitude = 0.0;
+    double longitude = 0.0;
+    String? name;
+
+    try {
+      // Remove geo: prefix
+      final data = geoString.replaceAll('geo:', '');
+
+      // Split by ? to separate coordinates from query
+      final parts = data.split('?');
+
+      // Parse coordinates
+      if (parts.isNotEmpty) {
+        final coords = parts[0].split(',');
+        if (coords.length >= 2) {
+          latitude = double.tryParse(coords[0]) ?? 0.0;
+          longitude = double.tryParse(coords[1]) ?? 0.0;
+        }
+      }
+
+      // Parse name from query parameter if exists
+      if (parts.length > 1) {
+        final query = parts[1];
+        if (query.contains('(') && query.contains(')')) {
+          final start = query.indexOf('(');
+          final end = query.indexOf(')');
+          name = Uri.decodeComponent(query.substring(start + 1, end));
+        }
+      }
+    } catch (e) {
+      debugPrint('Error parsing location data: $e');
+    }
+
+    return LocationData(
+      latitude: latitude,
+      longitude: longitude,
+      name: name,
+    );
   }
 
   @override
@@ -217,7 +306,9 @@ class _LocationQRScreenState extends ConsumerState<LocationQRScreen>
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          AppLocalizations.of(context)?.qrTypeLocation ?? 'Location QR',
+          widget.editingQRCode != null
+            ? 'Edit QR Code'
+            : (AppLocalizations.of(context)?.qrTypeLocation ?? 'Location QR'),
           style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -268,8 +359,10 @@ class _LocationQRScreenState extends ConsumerState<LocationQRScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 PrimaryGlassButton(
-                  text: AppLocalizations.of(context)?.qrFormButtonSave ?? 'Save QR Code',
-                  icon: Icons.save_rounded,
+                  text: widget.editingQRCode != null
+                    ? 'Save Changes'
+                    : (AppLocalizations.of(context)?.qrFormButtonSave ?? 'Save QR Code'),
+                  icon: widget.editingQRCode != null ? Icons.check_rounded : Icons.save_rounded,
                   isLoading: _isSaving,
                   onPressed: locationState.isValid ? _saveQRCode : null,
                   width: double.infinity,
@@ -1170,51 +1263,84 @@ class _LocationQRScreenState extends ConsumerState<LocationQRScreen>
 
   void _saveQRCode() async {
     if (_isSaving) return;
-    
+
     setState(() {
       _isSaving = true;
     });
-    
+
     try {
       final authProvider = ref.read(supabaseAuthProvider);
       if (authProvider.currentUser == null) {
         throw Exception('User not authenticated');
       }
-      
+
       final locationState = ref.read(locationFormProvider);
       if (!locationState.isValid) {
         throw Exception('Invalid form data');
       }
-      
+
       final customizationState = ref.read(qrCustomizationControllerProvider);
-      
-      final generateQRUseCase = ref.read(generateQRUseCaseProvider);
-      final savedQRCode = await generateQRUseCase.execute(
-        name: locationState.name.isEmpty ? 'Location QR' : locationState.name,
-        type: QRType.location,
-        data: locationState.locationData,
-        userId: authProvider.currentUser!.id,
-        customization: customizationState.customization,
-      );
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.check_circle, color: Colors.white),
-                const SizedBox(width: 8),
-                Text('Location QR code "${locationState.name.isEmpty ? 'Location QR' : locationState.name}" saved successfully!'),
-              ],
-            ),
-            backgroundColor: const Color(0xFF00FF88),
-            duration: const Duration(seconds: 3),
-          ),
+
+      if (widget.editingQRCode != null) {
+        // EDIT MODE: Update existing QR code
+        final controller = ref.read(qrGeneratorControllerProvider.notifier);
+        final updatedQR = widget.editingQRCode!.copyWith(
+          name: locationState.name.isEmpty ? 'Location QR' : locationState.name,
+          data: locationState.locationData.qrData,
+          displayData: locationState.locationData.displayText,
+          customization: customizationState.customization,
+          updatedAt: DateTime.now(),
         );
-        
-        Navigator.of(context).pop(savedQRCode);
+
+        await controller.updateQRCode(updatedQR);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text('Location QR code "${locationState.name.isEmpty ? 'Location QR' : locationState.name}" updated successfully!'),
+                ],
+              ),
+              backgroundColor: const Color(0xFF00FF88),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+
+          Navigator.of(context).pop(updatedQR);
+        }
+      } else {
+        // CREATE MODE: Generate new QR code
+        final generateQRUseCase = ref.read(generateQRUseCaseProvider);
+        final savedQRCode = await generateQRUseCase.execute(
+          name: locationState.name.isEmpty ? 'Location QR' : locationState.name,
+          type: QRType.location,
+          data: locationState.locationData,
+          userId: authProvider.currentUser!.id,
+          customization: customizationState.customization,
+        );
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text('Location QR code "${locationState.name.isEmpty ? 'Location QR' : locationState.name}" saved successfully!'),
+                ],
+              ),
+              backgroundColor: const Color(0xFF00FF88),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+
+          Navigator.of(context).pop(savedQRCode);
+        }
       }
-      
+
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

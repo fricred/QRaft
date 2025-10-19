@@ -4,8 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/qr_type.dart';
+import '../../domain/entities/qr_code_entity.dart';
+import '../../domain/entities/qr_data_models.dart';
 import '../widgets/forms/personal_info_form.dart';
 import '../controllers/qr_customization_controller.dart';
+import '../controllers/qr_generator_controller.dart';
 import '../providers/qr_providers.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -13,7 +16,12 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class PersonalInfoQRScreen extends ConsumerStatefulWidget {
-  const PersonalInfoQRScreen({super.key});
+  final QRCodeEntity? editingQRCode;
+
+  const PersonalInfoQRScreen({
+    super.key,
+    this.editingQRCode,
+  });
 
   @override
   ConsumerState<PersonalInfoQRScreen> createState() => _PersonalInfoQRScreenState();
@@ -28,12 +36,81 @@ class _PersonalInfoQRScreenState extends ConsumerState<PersonalInfoQRScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    
-    // Reset providers when entering
+
+    // Initialize form and customization state
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(personalInfoFormProvider.notifier).reset();
-      ref.read(qrCustomizationControllerProvider.notifier).reset();
+      final qrToEdit = widget.editingQRCode;
+
+      if (qrToEdit != null) {
+        // EDIT MODE: Pre-fill form and customization
+        final l10n = AppLocalizations.of(context);
+
+        // Parse vCard data from QR code
+        final personalInfoData = _parseVCardData(qrToEdit.data);
+        ref.read(personalInfoFormProvider.notifier).loadFromEntity(personalInfoData, qrToEdit.name, l10n);
+        ref.read(qrCustomizationControllerProvider.notifier).loadFromEntity(qrToEdit);
+      } else {
+        // CREATE MODE: Reset providers
+        ref.read(personalInfoFormProvider.notifier).reset();
+        ref.read(qrCustomizationControllerProvider.notifier).reset();
+      }
     });
+  }
+
+  /// Parse vCard data from QR code string
+  PersonalInfoData _parseVCardData(String vCardString) {
+    final lines = vCardString.split('\n');
+    String firstName = '';
+    String lastName = '';
+    String organization = '';
+    String jobTitle = '';
+    String phone = '';
+    String email = '';
+    String website = '';
+    String address = '';
+    String note = '';
+
+    for (var line in lines) {
+      line = line.trim();
+      if (line.startsWith('FN:')) {
+        final fullName = line.substring(3).trim();
+        final parts = fullName.split(' ');
+        if (parts.isNotEmpty) firstName = parts.first;
+        if (parts.length > 1) lastName = parts.sublist(1).join(' ');
+      } else if (line.startsWith('N:')) {
+        final parts = line.substring(2).split(';');
+        if (parts.length >= 2) {
+          lastName = parts[0];
+          firstName = parts[1];
+        }
+      } else if (line.startsWith('ORG:')) {
+        organization = line.substring(4).trim();
+      } else if (line.startsWith('TITLE:')) {
+        jobTitle = line.substring(6).trim();
+      } else if (line.startsWith('TEL:')) {
+        phone = line.substring(4).trim();
+      } else if (line.startsWith('EMAIL:')) {
+        email = line.substring(6).trim();
+      } else if (line.startsWith('URL:')) {
+        website = line.substring(4).trim();
+      } else if (line.startsWith('ADR:')) {
+        address = line.substring(4).replaceAll(';;', '').replaceAll(';;;;', '').trim();
+      } else if (line.startsWith('NOTE:')) {
+        note = line.substring(5).trim();
+      }
+    }
+
+    return PersonalInfoData(
+      firstName: firstName,
+      lastName: lastName,
+      organization: organization,
+      jobTitle: jobTitle,
+      phone: phone,
+      email: email,
+      website: website,
+      address: address,
+      note: note,
+    );
   }
 
   @override
@@ -56,7 +133,9 @@ class _PersonalInfoQRScreenState extends ConsumerState<PersonalInfoQRScreen>
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          AppLocalizations.of(context)?.qrTypePersonalInfo ?? 'Personal Information QR',
+          widget.editingQRCode != null
+            ? 'Edit QR Code'
+            : (AppLocalizations.of(context)?.qrTypePersonalInfo ?? 'Personal Information QR'),
           style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -112,8 +191,10 @@ class _PersonalInfoQRScreenState extends ConsumerState<PersonalInfoQRScreen>
               children: [
                 // Save button
                 PrimaryGlassButton(
-                  text: AppLocalizations.of(context)?.qrFormButtonSave ?? 'Save QR Code',
-                  icon: Icons.save_rounded,
+                  text: widget.editingQRCode != null
+                    ? 'Save Changes'
+                    : (AppLocalizations.of(context)?.qrFormButtonSave ?? 'Save QR Code'),
+                  icon: widget.editingQRCode != null ? Icons.check_rounded : Icons.save_rounded,
                   isLoading: _isSaving,
                   onPressed: personalInfoState.isValid ? _saveQRCode : null,
                   width: double.infinity,
@@ -779,51 +860,84 @@ class _PersonalInfoQRScreenState extends ConsumerState<PersonalInfoQRScreen>
 
   void _saveQRCode() async {
     if (_isSaving) return;
-    
+
     setState(() {
       _isSaving = true;
     });
-    
+
     try {
       final authProvider = ref.read(supabaseAuthProvider);
       if (authProvider.currentUser == null) {
         throw Exception('User not authenticated');
       }
-      
+
       final personalInfoState = ref.read(personalInfoFormProvider);
       if (!personalInfoState.isValid) {
         throw Exception('Invalid form data');
       }
-      
+
       final customizationState = ref.read(qrCustomizationControllerProvider);
-      
-      final generateQRUseCase = ref.read(generateQRUseCaseProvider);
-      final savedQRCode = await generateQRUseCase.execute(
-        name: personalInfoState.name,
-        type: QRType.personalInfo,
-        data: personalInfoState.personalInfoData,
-        userId: authProvider.currentUser!.id,
-        customization: customizationState.customization,
-      );
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.check_circle, color: Colors.white),
-                const SizedBox(width: 8),
-                Text('QR code "${personalInfoState.name}" saved successfully!'),
-              ],
-            ),
-            backgroundColor: const Color(0xFF00FF88),
-            duration: const Duration(seconds: 3),
-          ),
+
+      if (widget.editingQRCode != null) {
+        // EDIT MODE: Update existing QR code
+        final controller = ref.read(qrGeneratorControllerProvider.notifier);
+        final updatedQR = widget.editingQRCode!.copyWith(
+          name: personalInfoState.name,
+          data: personalInfoState.personalInfoData.qrData,
+          displayData: personalInfoState.personalInfoData.displayText,
+          customization: customizationState.customization,
+          updatedAt: DateTime.now(),
         );
-        
-        Navigator.of(context).pop(savedQRCode);
+
+        await controller.updateQRCode(updatedQR);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text('QR code "${personalInfoState.name}" updated successfully!'),
+                ],
+              ),
+              backgroundColor: const Color(0xFF00FF88),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+
+          Navigator.of(context).pop(updatedQR);
+        }
+      } else {
+        // CREATE MODE: Generate new QR code
+        final generateQRUseCase = ref.read(generateQRUseCaseProvider);
+        final savedQRCode = await generateQRUseCase.execute(
+          name: personalInfoState.name,
+          type: QRType.personalInfo,
+          data: personalInfoState.personalInfoData,
+          userId: authProvider.currentUser!.id,
+          customization: customizationState.customization,
+        );
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text('QR code "${personalInfoState.name}" saved successfully!'),
+                ],
+              ),
+              backgroundColor: const Color(0xFF00FF88),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+
+          Navigator.of(context).pop(savedQRCode);
+        }
       }
-      
+
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

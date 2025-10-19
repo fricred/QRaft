@@ -148,6 +148,14 @@ class QRCustomizationController extends StateNotifier<QRCustomizationState> {
   void reset() {
     state = const QRCustomizationState();
   }
+
+  /// Load customization from an existing QR code entity (for edit mode)
+  void loadFromEntity(QRCodeEntity qrEntity) {
+    state = QRCustomizationState(
+      customization: qrEntity.customization,
+      isPreviewMode: false,
+    );
+  }
 }
 
 enum QRTemplate {

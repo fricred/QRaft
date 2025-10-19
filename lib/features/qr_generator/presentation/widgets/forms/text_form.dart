@@ -103,6 +103,21 @@ class TextFormController extends StateNotifier<TextFormState> {
   void reset() {
     state = const TextFormState();
   }
+
+  /// Load form data from an existing QR code entity (for edit mode)
+  void loadFromEntity(TextData textData, String qrName) {
+    state = TextFormState(
+      text: textData.text,
+      name: qrName,
+      isValid: true, // Pre-existing data is already valid
+      textError: null,
+      nameError: null,
+    );
+
+    // Trigger validation
+    updateText(textData.text);
+    updateName(qrName);
+  }
 }
 
 class TextForm extends ConsumerStatefulWidget {

@@ -149,6 +149,23 @@ class URLFormController extends StateNotifier<URLFormState> {
   void reset() {
     state = const URLFormState();
   }
+
+  /// Load form data from an existing QR code entity (for edit mode)
+  void loadFromEntity(URLData urlData, String qrName, [AppLocalizations? l10n]) {
+    state = URLFormState(
+      url: urlData.url,
+      name: qrName,
+      isValid: true, // Pre-existing data is already valid
+      urlError: null,
+      nameError: null,
+    );
+
+    // Trigger validation if l10n available
+    if (l10n != null) {
+      updateURL(urlData.url, l10n);
+      updateName(qrName, l10n);
+    }
+  }
 }
 
 class URLForm extends ConsumerStatefulWidget {

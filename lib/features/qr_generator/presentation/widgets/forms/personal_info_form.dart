@@ -226,6 +226,33 @@ class PersonalInfoFormController extends StateNotifier<PersonalInfoFormState> {
   void reset() {
     state = const PersonalInfoFormState();
   }
+
+  /// Load form data from an existing QR code entity (for edit mode)
+  void loadFromEntity(PersonalInfoData data, String qrName, [AppLocalizations? l10n]) {
+    state = PersonalInfoFormState(
+      firstName: data.firstName,
+      lastName: data.lastName,
+      organization: data.organization,
+      jobTitle: data.jobTitle,
+      phone: data.phone,
+      email: data.email,
+      website: data.website,
+      address: data.address,
+      note: data.note,
+      name: qrName,
+      isValid: true, // Pre-existing data is already valid
+      firstNameError: null,
+      lastNameError: null,
+      emailError: null,
+      phoneError: null,
+      nameError: null,
+    );
+
+    // Trigger validation if l10n available
+    if (l10n != null) {
+      _validateForm();
+    }
+  }
 }
 
 class PersonalInfoForm extends ConsumerStatefulWidget {
@@ -251,6 +278,27 @@ class _PersonalInfoFormState extends ConsumerState<PersonalInfoForm> {
   final _addressController = TextEditingController();
   final _noteController = TextEditingController();
   final _nameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize controllers with existing provider state (for edit mode)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final currentState = ref.read(personalInfoFormProvider);
+
+      // Set initial values
+      _firstNameController.text = currentState.firstName;
+      _lastNameController.text = currentState.lastName;
+      _organizationController.text = currentState.organization;
+      _jobTitleController.text = currentState.jobTitle;
+      _emailController.text = currentState.email;
+      _websiteController.text = currentState.website;
+      _addressController.text = currentState.address;
+      _noteController.text = currentState.note;
+      _nameController.text = currentState.name;
+    });
+  }
 
   @override
   void dispose() {

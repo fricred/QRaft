@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/qr_type.dart';
+import '../../domain/entities/qr_code_entity.dart';
 import '../../domain/entities/qr_data_models.dart';
 import '../controllers/qr_customization_controller.dart';
+import '../controllers/qr_generator_controller.dart';
 import '../providers/qr_providers.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -106,6 +108,24 @@ class WiFiFormController extends StateNotifier<WiFiFormState> {
   void reset() {
     state = const WiFiFormState();
   }
+
+  /// Load form data from an existing QR code entity (for edit mode)
+  void loadFromEntity(WiFiData wifiData, String qrName, [AppLocalizations? l10n]) {
+    state = WiFiFormState(
+      networkName: wifiData.networkName,
+      password: wifiData.password,
+      security: wifiData.security,
+      hidden: wifiData.hidden,
+      networkNameError: null,
+      passwordError: null,
+    );
+
+    // Trigger validation if l10n available
+    if (l10n != null) {
+      updateNetworkName(wifiData.networkName, l10n);
+      updatePassword(wifiData.password, l10n);
+    }
+  }
 }
 
 /// WiFi Form Provider
@@ -114,7 +134,12 @@ final wifiFormProvider = StateNotifierProvider<WiFiFormController, WiFiFormState
 });
 
 class WiFiQRScreen extends ConsumerStatefulWidget {
-  const WiFiQRScreen({super.key});
+  final QRCodeEntity? editingQRCode;
+
+  const WiFiQRScreen({
+    super.key,
+    this.editingQRCode,
+  });
 
   @override
   ConsumerState<WiFiQRScreen> createState() => _WiFiQRScreenState();
@@ -132,11 +157,66 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    
+
+    // Initialize form and customization state
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(wifiFormProvider.notifier).reset();
-      ref.read(qrCustomizationControllerProvider.notifier).reset();
+      final qrToEdit = widget.editingQRCode;
+
+      if (qrToEdit != null) {
+        // EDIT MODE: Pre-fill form and customization
+        final l10n = AppLocalizations.of(context);
+
+        // Parse WiFi data from QR code
+        final wifiData = _parseWiFiData(qrToEdit.data);
+        ref.read(wifiFormProvider.notifier).loadFromEntity(wifiData, qrToEdit.name, l10n);
+        ref.read(qrCustomizationControllerProvider.notifier).loadFromEntity(qrToEdit);
+
+        // Pre-fill text controllers
+        _networkController.text = wifiData.networkName;
+        _passwordController.text = wifiData.password;
+      } else {
+        // CREATE MODE: Reset providers
+        ref.read(wifiFormProvider.notifier).reset();
+        ref.read(qrCustomizationControllerProvider.notifier).reset();
+      }
     });
+  }
+
+  /// Parse WiFi data from QR code string
+  /// Format: WIFI:T:WPA;S:networkname;P:password;H:false;;
+  WiFiData _parseWiFiData(String wifiString) {
+    String networkName = '';
+    String password = '';
+    String security = 'WPA';
+    bool hidden = false;
+
+    try {
+      // Remove WIFI: prefix and trailing ;;
+      final data = wifiString.replaceAll('WIFI:', '').replaceAll(';;', '');
+      final parts = data.split(';');
+
+      for (var part in parts) {
+        if (part.startsWith('T:')) {
+          security = part.substring(2);
+        } else if (part.startsWith('S:')) {
+          networkName = part.substring(2);
+        } else if (part.startsWith('P:')) {
+          password = part.substring(2);
+        } else if (part.startsWith('H:')) {
+          hidden = part.substring(2).toLowerCase() == 'true';
+        }
+      }
+    } catch (e) {
+      // If parsing fails, return empty data
+      debugPrint('Error parsing WiFi data: $e');
+    }
+
+    return WiFiData(
+      networkName: networkName,
+      password: password,
+      security: security,
+      hidden: hidden,
+    );
   }
 
   @override
@@ -161,7 +241,9 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          AppLocalizations.of(context)?.qrTypeWifi ?? 'WiFi QR',
+          widget.editingQRCode != null
+            ? 'Edit QR Code'
+            : (AppLocalizations.of(context)?.qrTypeWifi ?? 'WiFi QR'),
           style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -212,8 +294,10 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 PrimaryGlassButton(
-                  text: AppLocalizations.of(context)?.qrFormButtonSave ?? 'Save QR Code',
-                  icon: Icons.save_rounded,
+                  text: widget.editingQRCode != null
+                    ? 'Save Changes'
+                    : (AppLocalizations.of(context)?.qrFormButtonSave ?? 'Save QR Code'),
+                  icon: widget.editingQRCode != null ? Icons.check_rounded : Icons.save_rounded,
                   isLoading: _isSaving,
                   onPressed: wifiState.isValid ? _saveQRCode : null,
                   width: double.infinity,
@@ -1158,51 +1242,84 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
 
   void _saveQRCode() async {
     if (_isSaving) return;
-    
+
     setState(() {
       _isSaving = true;
     });
-    
+
     try {
       final authProvider = ref.read(supabaseAuthProvider);
       if (authProvider.currentUser == null) {
         throw Exception('User not authenticated');
       }
-      
+
       final wifiState = ref.read(wifiFormProvider);
       if (!wifiState.isValid) {
         throw Exception('Invalid form data');
       }
-      
+
       final customizationState = ref.read(qrCustomizationControllerProvider);
-      
-      final generateQRUseCase = ref.read(generateQRUseCaseProvider);
-      final savedQRCode = await generateQRUseCase.execute(
-        name: 'WiFi: ${wifiState.networkName}',
-        type: QRType.wifi,
-        data: wifiState.wifiData,
-        userId: authProvider.currentUser!.id,
-        customization: customizationState.customization,
-      );
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.check_circle, color: Colors.white),
-                const SizedBox(width: 8),
-                Text('WiFi QR code "${wifiState.networkName}" saved successfully!'),
-              ],
-            ),
-            backgroundColor: const Color(0xFF00FF88),
-            duration: const Duration(seconds: 3),
-          ),
+
+      if (widget.editingQRCode != null) {
+        // EDIT MODE: Update existing QR code
+        final controller = ref.read(qrGeneratorControllerProvider.notifier);
+        final updatedQR = widget.editingQRCode!.copyWith(
+          name: 'WiFi: ${wifiState.networkName}',
+          data: wifiState.wifiData.qrData,
+          displayData: wifiState.wifiData.displayText,
+          customization: customizationState.customization,
+          updatedAt: DateTime.now(),
         );
-        
-        Navigator.of(context).pop(savedQRCode);
+
+        await controller.updateQRCode(updatedQR);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text('WiFi QR code "${wifiState.networkName}" updated successfully!'),
+                ],
+              ),
+              backgroundColor: const Color(0xFF00FF88),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+
+          Navigator.of(context).pop(updatedQR);
+        }
+      } else {
+        // CREATE MODE: Generate new QR code
+        final generateQRUseCase = ref.read(generateQRUseCaseProvider);
+        final savedQRCode = await generateQRUseCase.execute(
+          name: 'WiFi: ${wifiState.networkName}',
+          type: QRType.wifi,
+          data: wifiState.wifiData,
+          userId: authProvider.currentUser!.id,
+          customization: customizationState.customization,
+        );
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text('WiFi QR code "${wifiState.networkName}" saved successfully!'),
+                ],
+              ),
+              backgroundColor: const Color(0xFF00FF88),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+
+          Navigator.of(context).pop(savedQRCode);
+        }
       }
-      
+
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

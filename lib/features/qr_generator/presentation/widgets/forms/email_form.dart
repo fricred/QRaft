@@ -173,6 +173,24 @@ class EmailFormController extends StateNotifier<EmailFormState> {
   void reset() {
     state = const EmailFormState();
   }
+
+  /// Load form data from an existing QR code entity (for edit mode)
+  void loadFromEntity(EmailData emailData, String qrName, [AppLocalizations? l10n]) {
+    state = EmailFormState(
+      email: emailData.email,
+      subject: emailData.subject,
+      body: emailData.body,
+      name: qrName,
+      isValid: true, // Pre-existing data is already valid
+      emailError: null,
+      nameError: null,
+    );
+
+    // Trigger validation if l10n available
+    if (l10n != null) {
+      _validateForm();
+    }
+  }
 }
 
 class EmailForm extends ConsumerStatefulWidget {
@@ -193,6 +211,22 @@ class _EmailFormState extends ConsumerState<EmailForm> {
   final _subjectController = TextEditingController();
   final _bodyController = TextEditingController();
   final _nameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize controllers with existing provider state (for edit mode)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final currentState = ref.read(emailFormProvider);
+
+      // Set initial values
+      _emailController.text = currentState.email;
+      _subjectController.text = currentState.subject;
+      _bodyController.text = currentState.body;
+      _nameController.text = currentState.name;
+    });
+  }
 
   @override
   void dispose() {

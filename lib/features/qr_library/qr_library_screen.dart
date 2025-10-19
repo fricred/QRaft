@@ -6,6 +6,12 @@ import '../../shared/widgets/glass_button.dart';
 import '../main/main_scaffold.dart';
 import 'presentation/providers/qr_library_providers.dart';
 import '../qr_generator/domain/entities/qr_code_entity.dart';
+import '../qr_generator/presentation/pages/url_qr_screen.dart';
+import '../qr_generator/presentation/pages/text_qr_screen.dart';
+import '../qr_generator/presentation/pages/personal_info_qr_screen.dart';
+import '../qr_generator/presentation/pages/wifi_qr_screen.dart';
+import '../qr_generator/presentation/pages/email_qr_screen.dart';
+import '../qr_generator/presentation/pages/location_qr_screen.dart';
 import 'presentation/pages/qr_code_details_screen.dart';
 import '../auth/data/providers/supabase_auth_provider.dart';
 import '../../l10n/app_localizations.dart';
@@ -1185,15 +1191,99 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
   }
 
   void _editQRCode(QRCodeEntity qrEntity) {
-    final l10n = AppLocalizations.of(context)!;
-    // TODO: Navigate to QR generator with pre-filled data for editing
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.editFunctionalityComingSoon(qrEntity.name)),
-        backgroundColor: const Color(0xFF2E2E2E),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+    // Import these screens at the top of the file
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => _getEditScreenForQRType(qrEntity),
+      ),
+    ).then((updatedQR) {
+      // Refresh the list when returning
+      if (updatedQR != null && mounted) {
+        ref.invalidate(userQRCodesProvider);
+      }
+    });
+  }
+
+  Widget _getEditScreenForQRType(QRCodeEntity qrEntity) {
+    switch (qrEntity.type.identifier) {
+      case 'url':
+        return URLQRScreen(editingQRCode: qrEntity);
+      case 'text':
+        return TextQRScreen(editingQRCode: qrEntity);
+      case 'vcard':
+        return PersonalInfoQRScreen(editingQRCode: qrEntity);
+      case 'wifi':
+        return WiFiQRScreen(editingQRCode: qrEntity);
+      case 'email':
+        return EmailQRScreen(editingQRCode: qrEntity);
+      case 'geo':  // ← Location QR identifier is 'geo', not 'location'
+        return LocationQRScreen(editingQRCode: qrEntity);
+      default:
+        return _showComingSoonMessage(qrEntity.type.identifier);
+    }
+  }
+
+  Widget _showComingSoonMessage(String typeName) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text(
+          'Edit QR Code',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      backgroundColor: const Color(0xFF1A1A1A),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2E2E2E),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Icon(
+                Icons.construction_rounded,
+                color: Color(0xFF00FF88),
+                size: 40,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Edit $typeName QR Codes',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Coming soon! Currently only URL and Text QR codes can be edited.',
+              style: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 14,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            SecondaryGlassButton(
+              text: 'Back',
+              onPressed: () => Navigator.of(context).pop(),
+              width: 120,
+            ),
+          ],
         ),
       ),
     );
