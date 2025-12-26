@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../shared/widgets/glass_button.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../qr_generator/domain/entities/qr_code_entity.dart';
 import '../../../qr_generator/presentation/pages/url_qr_screen.dart';
 import '../../../qr_generator/presentation/pages/text_qr_screen.dart';
@@ -27,6 +28,8 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
       body: SafeArea(
@@ -55,7 +58,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'QR Code Details',
+                          l10n.qrCodeDetails,
                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -152,7 +155,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
 
                     // QR Content section - Exponential delay pattern
                     _buildInfoSection(
-                      'QR Content',
+                      l10n.qrContent,
                       widget.qrEntity.displayData,
                       Icons.text_fields_rounded,
                       canCopy: true,
@@ -163,8 +166,8 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
 
                     // Created date section
                     _buildInfoSection(
-                      'Created',
-                      _formatDateTime(widget.qrEntity.createdAt),
+                      l10n.createdLabel,
+                      _formatDateTime(widget.qrEntity.createdAt, l10n),
                       Icons.calendar_today_rounded,
                       index: 1,
                     ),
@@ -173,8 +176,8 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
 
                     // Last updated section
                     _buildInfoSection(
-                      'Last Updated',
-                      _formatDateTime(widget.qrEntity.updatedAt),
+                      l10n.lastUpdatedLabel,
+                      _formatDateTime(widget.qrEntity.updatedAt, l10n),
                       Icons.update_rounded,
                       index: 2,
                     ),
@@ -195,7 +198,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                     children: [
                       Expanded(
                         child: SecondaryGlassButton(
-                          text: 'Share',
+                          text: l10n.share,
                           icon: Icons.share_rounded,
                           onPressed: _handleShare,
                         ),
@@ -203,7 +206,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                       const SizedBox(width: 16),
                       Expanded(
                         child: PrimaryGlassButton(
-                          text: 'Copy Data',
+                          text: l10n.copyData,
                           icon: Icons.copy_rounded,
                           onPressed: _handleCopyData,
                         ),
@@ -211,13 +214,13 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  
+
                   // Secondary actions row
                   Row(
                     children: [
                       Expanded(
                         child: SecondaryGlassButton(
-                          text: 'Edit',
+                          text: l10n.edit,
                           icon: Icons.edit_rounded,
                           onPressed: _handleEdit,
                         ),
@@ -225,7 +228,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                       const SizedBox(width: 16),
                       Expanded(
                         child: GlassButton(
-                          text: _isDeleting ? 'Deleting...' : 'Delete',
+                          text: _isDeleting ? l10n.deletingBtn : l10n.delete,
                           icon: _isDeleting ? null : Icons.delete_rounded,
                           onPressed: _isDeleting ? null : _handleDelete,
                           gradientColors: const [
@@ -324,11 +327,12 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
   }
 
   void _handleShare() {
+    final l10n = AppLocalizations.of(context)!;
     // TODO: Implement share functionality
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Share functionality will be implemented soon'),
-        backgroundColor: Color(0xFF2E2E2E),
+      SnackBar(
+        content: Text(l10n.shareFunctionalityComingSoon),
+        backgroundColor: const Color(0xFF2E2E2E),
       ),
     );
   }
@@ -338,10 +342,11 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
   }
 
   void _copyToClipboard(String text) {
+    final l10n = AppLocalizations.of(context)!;
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('Copied to clipboard'),
+        content: Text(l10n.copiedToClipboard),
         backgroundColor: const Color(0xFF00FF88),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
@@ -352,6 +357,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
   }
 
   void _handleEdit() {
+    final l10n = AppLocalizations.of(context)!;
     // Navigate to the appropriate QR screen based on type
     Widget screen;
 
@@ -366,7 +372,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
         // Import PersonalInfoQRScreen when available
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Editing vCard QR codes is coming soon'),
+            content: Text(l10n.editVCardComingSoon),
             backgroundColor: Colors.grey[600],
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -379,7 +385,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
         // Import WiFiQRScreen when available
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Editing WiFi QR codes is coming soon'),
+            content: Text(l10n.editWifiComingSoon),
             backgroundColor: Colors.grey[600],
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -392,7 +398,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
         // Import EmailQRScreen when available
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Editing Email QR codes is coming soon'),
+            content: Text(l10n.editEmailComingSoon),
             backgroundColor: Colors.grey[600],
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -405,7 +411,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
         // Import LocationQRScreen when available
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Editing Location QR codes is coming soon'),
+            content: Text(l10n.editLocationComingSoon),
             backgroundColor: Colors.grey[600],
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -417,7 +423,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
       default:
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Editing ${widget.qrEntity.type.identifier} QR codes is not supported yet'),
+            content: Text(l10n.editTypeNotSupported(widget.qrEntity.type.identifier)),
             backgroundColor: const Color(0xFFEF4444),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -439,6 +445,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
   }
 
   void _handleDelete() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -468,9 +475,9 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Delete QR Code',
-                  style: TextStyle(
+                Text(
+                  l10n.deleteQRCode,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -478,7 +485,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Are you sure you want to delete "${widget.qrEntity.name}"? This action cannot be undone.',
+                  l10n.deleteQRConfirmation(widget.qrEntity.name),
                   style: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 14,
@@ -490,14 +497,14 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                   children: [
                     Expanded(
                       child: SecondaryGlassButton(
-                        text: 'Cancel',
+                        text: l10n.cancel,
                         onPressed: () => Navigator.of(dialogContext).pop(),
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: GlassButton(
-                        text: 'Delete',
+                        text: l10n.delete,
                         icon: Icons.delete_rounded,
                         onPressed: () async {
                           Navigator.of(dialogContext).pop();
@@ -520,17 +527,18 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
   }
 
   Future<void> _confirmDelete() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _isDeleting = true;
     });
 
     try {
       await ref.read(qrLibraryControllerProvider.notifier).deleteQRCode(widget.qrEntity.id);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('QR code deleted successfully'),
+            content: Text(l10n.qrDeletedSuccess),
             backgroundColor: const Color(0xFF00FF88),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -544,7 +552,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to delete QR code: $e'),
+            content: Text(l10n.failedToDeleteQR(e.toString())),
             backgroundColor: const Color(0xFFEF4444),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -562,16 +570,16 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
     }
   }
 
-  String _formatDateTime(DateTime dateTime) {
+  String _formatDateTime(DateTime dateTime, AppLocalizations l10n) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inDays == 0) {
-      return 'Today at ${_formatTime(dateTime)}';
+      return l10n.todayAt(_formatTime(dateTime));
     } else if (difference.inDays == 1) {
-      return 'Yesterday at ${_formatTime(dateTime)}';
+      return l10n.yesterdayAt(_formatTime(dateTime));
     } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
+      return l10n.daysAgoFormat(difference.inDays);
     } else {
       return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
     }

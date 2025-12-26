@@ -366,7 +366,7 @@ class ProfileHeader extends ConsumerWidget {
                   const Icon(Icons.error, color: Colors.red),
                   const SizedBox(width: 8),
                   Text(
-                    'Error',
+                    l10n.errorTitle,
                     style: const TextStyle(color: Colors.white),
                   ),
                 ],
@@ -449,7 +449,7 @@ class ProfileHeader extends ConsumerWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              '$title ${l10n.notifications}',
+              l10n.permissionDeniedTitle(title),
               style: const TextStyle(color: Colors.white),
             ),
           ],
@@ -477,7 +477,7 @@ class ProfileHeader extends ConsumerWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Abre Configuración > ${l10n.privacy} > $title para habilitar el acceso.',
+                        l10n.openSettingsMessage(l10n.privacy, title),
                         style: const TextStyle(color: Colors.orange, fontSize: 12),
                       ),
                     ),

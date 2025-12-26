@@ -76,7 +76,7 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
         ),
         title: Text(
           widget.editingQRCode != null
-            ? 'Edit QR Code'
+            ? (AppLocalizations.of(context)?.editQRCode ?? 'Edit QR Code')
             : (AppLocalizations.of(context)?.qrTypeWebsiteUrl ?? 'Website URL QR'),
           style: const TextStyle(
             color: Colors.white,
@@ -134,7 +134,7 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
                 // Save button
                 PrimaryGlassButton(
                   text: widget.editingQRCode != null
-                    ? 'Save Changes'
+                    ? (AppLocalizations.of(context)?.saveChanges ?? 'Save Changes')
                     : (AppLocalizations.of(context)?.qrFormButtonSave ?? 'Save QR Code'),
                   icon: widget.editingQRCode != null ? Icons.check_rounded : Icons.save_rounded,
                   isLoading: _isSaving,
@@ -282,7 +282,7 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
                               size: 18,
                             ),
                             const SizedBox(height: 2),
-                            Text('Colors', style: TextStyle(fontSize: 10)),
+                            Text(AppLocalizations.of(context)?.styleColors ?? 'Colors', style: TextStyle(fontSize: 10)),
                           ],
                         ),
                       ),
@@ -295,7 +295,7 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
                               size: 18,
                             ),
                             const SizedBox(height: 2),
-                            Text('Size', style: TextStyle(fontSize: 10)),
+                            Text(AppLocalizations.of(context)?.qrSize ?? 'Size', style: TextStyle(fontSize: 10)),
                           ],
                         ),
                       ),
@@ -308,7 +308,7 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
                               size: 18,
                             ),
                             const SizedBox(height: 2),
-                            Text('Logo', style: TextStyle(fontSize: 10)),
+                            Text(AppLocalizations.of(context)?.logo ?? 'Logo', style: TextStyle(fontSize: 10)),
                           ],
                         ),
                       ),
@@ -365,7 +365,7 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Complete form\nto see preview',
+              AppLocalizations.of(context)?.completeFormToSeePreview ?? 'Complete form\nto see preview',
               style: TextStyle(
                 color: Colors.grey[400],
                 fontSize: 12,
@@ -439,7 +439,7 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'QR Code Size',
+            AppLocalizations.of(context)?.qrCodeSizeTitle ?? 'QR Code Size',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -469,41 +469,11 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '150px',
-                style: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: 12,
-                ),
-              ),
-              Text(
-                'Small',
-                style: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: 12,
-                ),
-              ),
-              Text(
-                'Medium',
-                style: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: 12,
-                ),
-              ),
-              Text(
-                'Large',
-                style: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: 12,
-                ),
-              ),
-              Text(
-                '500px',
-                style: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: 12,
-                ),
-              ),
+              Text('150px', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+              Text(AppLocalizations.of(context)?.sizeSmall ?? 'Small', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+              Text(AppLocalizations.of(context)?.sizeMedium ?? 'Medium', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+              Text(AppLocalizations.of(context)?.sizeLarge ?? 'Large', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+              Text('500px', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
             ],
           ),
         ],
@@ -552,36 +522,38 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
           const SizedBox(height: 20),
           
           Text(
-            state.customization.hasLogo ? 'Logo Added' : 'No Logo',
+            state.customization.hasLogo
+                ? (AppLocalizations.of(context)?.logoAddedTitle ?? 'Logo Added')
+                : (AppLocalizations.of(context)?.noLogoTitle ?? 'No Logo'),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
-          
+
           const SizedBox(height: 8),
-          
+
           Text(
-            state.customization.hasLogo 
-                ? 'Your logo will appear in the center of the QR code'
-                : 'Add a logo to personalize your QR code',
+            state.customization.hasLogo
+                ? (AppLocalizations.of(context)?.logoWillAppearInCenter ?? 'Your logo will appear in the center of the QR code')
+                : (AppLocalizations.of(context)?.addLogoToPersonalize ?? 'Add a logo to personalize your QR code'),
             style: TextStyle(
               color: Colors.grey[400],
               fontSize: 14,
             ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 30),
-          
+
           // Logo actions
           if (state.customization.hasLogo) ...[
             Row(
               children: [
                 Expanded(
                   child: SecondaryGlassButton(
-                    text: 'Remove',
+                    text: AppLocalizations.of(context)?.remove ?? 'Remove',
                     icon: Icons.delete_outline,
                     onPressed: controller.removeLogo,
                   ),
@@ -589,7 +561,7 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
                 const SizedBox(width: 12),
                 Expanded(
                   child: SecondaryGlassButton(
-                    text: 'Change',
+                    text: AppLocalizations.of(context)?.change ?? 'Change',
                     icon: Icons.swap_horizontal_circle,
                     onPressed: () => _handleAddLogo(controller),
                   ),
@@ -794,12 +766,12 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
 
       if (image != null) {
         controller.updateLogo(image.path, 40.0);
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Logo updated successfully!'),
-              backgroundColor: Color(0xFF00FF88),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)?.logoUpdatedSuccessfully ?? 'Logo updated successfully!'),
+              backgroundColor: const Color(0xFF00FF88),
             ),
           );
         }
@@ -808,7 +780,7 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to pick image: ${e.toString()}'),
+            content: Text(AppLocalizations.of(context)?.failedToPickImage(e.toString()) ?? 'Failed to pick image: ${e.toString()}'),
             backgroundColor: const Color(0xFFEF4444),
           ),
         );
@@ -850,13 +822,14 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
         await controller.updateQRCode(updatedQR);
 
         if (mounted) {
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Row(
                 children: [
                   const Icon(Icons.check_circle, color: Colors.white),
                   const SizedBox(width: 8),
-                  Text('QR code "${urlState.name}" updated successfully!'),
+                  Text(l10n?.qrUpdatedSuccess(urlState.name) ?? 'QR code "${urlState.name}" updated successfully!'),
                 ],
               ),
               backgroundColor: const Color(0xFF00FF88),
@@ -878,13 +851,14 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
         );
 
         if (mounted) {
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Row(
                 children: [
                   const Icon(Icons.check_circle, color: Colors.white),
                   const SizedBox(width: 8),
-                  Text('QR code "${urlState.name}" saved successfully!'),
+                  Text(l10n?.qrSavedSuccess(urlState.name) ?? 'QR code "${urlState.name}" saved successfully!'),
                 ],
               ),
               backgroundColor: const Color(0xFF00FF88),
@@ -897,13 +871,14 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
               children: [
                 const Icon(Icons.error, color: Colors.white),
                 const SizedBox(width: 8),
-                Expanded(child: Text('Failed to save QR code: ${e.toString()}')),
+                Expanded(child: Text(l10n?.failedToSaveQR(e.toString()) ?? 'Failed to save QR code: ${e.toString()}')),
               ],
             ),
             backgroundColor: const Color(0xFFEF4444),

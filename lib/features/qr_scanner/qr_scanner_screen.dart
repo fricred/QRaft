@@ -58,12 +58,14 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
     } catch (error) {
       debugPrint('Error setting up camera controller: $error');
       if (mounted) {
-        String errorMessage = 'Camera initialization failed';
+        // Use generic error messages here since we don't have context yet
+        // These will be shown through the provider's error state
+        String errorKey = 'cameraInitFailed';
         if (error.toString().contains('No camera found') ||
             error.toString().contains('failed to open camera')) {
-          errorMessage = 'No camera available. Please use a physical device to scan QR codes.';
+          errorKey = 'noCameraAvailable';
         }
-        ref.read(qrScannerProvider.notifier).logDetailedError('Camera Initialization', errorMessage);
+        ref.read(qrScannerProvider.notifier).logDetailedError('Camera Initialization', errorKey);
       }
     }
   }
@@ -195,15 +197,15 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
                 },
                 errorBuilder: (context, error) {
                   // Handle camera errors (e.g., simulator has no camera)
-                  String errorMessage = 'Camera error';
+                  String errorKey = 'cameraError';
                   if (error.errorCode == MobileScannerErrorCode.permissionDenied) {
-                    errorMessage = 'Camera permission denied. Please enable in Settings.';
+                    errorKey = 'cameraPermissionDenied';
                   } else if (error.errorCode == MobileScannerErrorCode.unsupported) {
-                    errorMessage = 'No camera available. Please use a physical device.';
+                    errorKey = 'noCameraAvailable';
                   } else {
-                    errorMessage = error.errorDetails?.message ?? 'Camera initialization failed';
+                    errorKey = error.errorDetails?.message ?? 'cameraInitFailed';
                   }
-                  return _buildCameraErrorWidget(errorMessage);
+                  return _buildCameraErrorWidget(errorKey);
                 },
               )
             else
@@ -249,7 +251,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Camera Unavailable',
+                AppLocalizations.of(context)!.cameraUnavailable,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -260,7 +262,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32),
                 child: Text(
-                  errorMessage,
+                  _getLocalizedError(context, errorMessage),
                   style: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 14,
@@ -274,7 +276,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Initializing Camera...',
+                AppLocalizations.of(context)!.initializingCamera,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -289,6 +291,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
   }
 
   Widget _buildCameraErrorWidget(String errorMessage) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -313,8 +316,8 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
               size: 48,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Camera Unavailable',
+            Text(
+              l10n.cameraUnavailable,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -325,7 +328,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Text(
-                errorMessage,
+                _getLocalizedError(context, errorMessage),
                 style: TextStyle(
                   color: Colors.grey[400],
                   fontSize: 14,
@@ -404,7 +407,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
                 ),
               ),
               child: Text(
-                'Tap the scan button to start detecting QR codes',
+                AppLocalizations.of(context)!.tapToScan,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,
@@ -435,7 +438,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
                 // Gallery button
                 Expanded(
                   child: SecondaryGlassButton(
-                    text: "Gallery",
+                    text: l10n.gallery,
                     icon: Icons.photo_library_rounded,
                     height: 48,
                     onPressed: () => _scanFromGallery(),
@@ -595,9 +598,9 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
         backgroundColor: Colors.red[700],
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        action: isPermissionError 
+        action: isPermissionError
           ? SnackBarAction(
-              label: 'Settings',
+              label: AppLocalizations.of(context)!.openSettings,
               textColor: Colors.white,
               onPressed: () {
                 ref.read(qrScannerProvider.notifier).clearError();
@@ -605,7 +608,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
               },
             )
           : SnackBarAction(
-              label: 'Dismiss',
+              label: AppLocalizations.of(context)!.dismissButton,
               textColor: Colors.white,
               onPressed: () {
                 ref.read(qrScannerProvider.notifier).clearError();
@@ -636,5 +639,22 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
   void _scanFromGallery() {
     ref.read(qrScannerProvider.notifier).scanFromGallery();
     HapticFeedback.lightImpact();
+  }
+
+  String _getLocalizedError(BuildContext context, String? errorKey) {
+    if (errorKey == null || errorKey.isEmpty) return '';
+    final l10n = AppLocalizations.of(context)!;
+    switch (errorKey) {
+      case 'cameraInitFailed':
+        return l10n.cameraInitFailed;
+      case 'noCameraAvailable':
+        return l10n.noCameraAvailable;
+      case 'cameraPermissionDenied':
+        return l10n.cameraPermissionDeniedMessage;
+      case 'cameraError':
+        return l10n.cameraError;
+      default:
+        return errorKey; // Fall back to the original message if not a key
+    }
   }
 }

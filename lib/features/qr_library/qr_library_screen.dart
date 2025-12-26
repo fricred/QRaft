@@ -601,7 +601,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Search QR Codes',
+                  l10n.searchQRCodes,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -612,7 +612,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
                 TextField(
                   style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'Search by name, type, or content...',
+                    hintText: l10n.searchPlaceholder,
                     hintStyle: TextStyle(color: Colors.grey[400]),
                     filled: true,
                     fillColor: const Color(0xFF1A1A1A),
@@ -627,7 +627,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
                     // TODO: Implement search functionality
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Search functionality will be implemented soon'),
+                        content: Text(l10n.searchComingSoon),
                         backgroundColor: const Color(0xFF2E2E2E),
                       ),
                     );
@@ -652,7 +652,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
                           // TODO: Implement search functionality
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Search functionality will be implemented soon'),
+                              content: Text(l10n.searchComingSoon),
                               backgroundColor: const Color(0xFF2E2E2E),
                             ),
                           );
@@ -1306,6 +1306,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
   }
 
   Widget _showComingSoonMessage(String typeName) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -1314,9 +1315,9 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
           icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Edit QR Code',
-          style: TextStyle(
+        title: Text(
+          l10n.editQRCode,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -1343,7 +1344,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
             ),
             const SizedBox(height: 24),
             Text(
-              'Edit $typeName QR Codes',
+              l10n.editTypeName(typeName),
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -1352,7 +1353,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
             ),
             const SizedBox(height: 8),
             Text(
-              'Coming soon! Currently only URL and Text QR codes can be edited.',
+              l10n.editNotSupported,
               style: TextStyle(
                 color: Colors.grey[400],
                 fontSize: 14,
@@ -1361,7 +1362,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
             ),
             const SizedBox(height: 32),
             SecondaryGlassButton(
-              text: 'Back',
+              text: l10n.backButton,
               onPressed: () => Navigator.of(context).pop(),
               width: 120,
             ),

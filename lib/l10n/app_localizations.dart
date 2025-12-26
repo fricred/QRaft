@@ -176,6 +176,12 @@ abstract class AppLocalizations {
   /// **'Welcome Back'**
   String get welcomeBack;
 
+  /// Welcome message with user name in dashboard
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back, {name}'**
+  String welcomeBackUser(String name);
+
   /// Login screen subtitle
   ///
   /// In en, this message translates to:
@@ -739,6 +745,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notifications'**
   String get notifications;
+
+  /// Title for permission denied dialog with permission type
+  ///
+  /// In en, this message translates to:
+  /// **'{permissionType} Permission'**
+  String permissionDeniedTitle(String permissionType);
 
   /// Push notifications setting description
   ///
@@ -2161,6 +2173,720 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your job title'**
   String get enterJobTitle;
+
+  /// No description provided for @dashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get dashboardTitle;
+
+  /// No description provided for @scanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanner'**
+  String get scanner;
+
+  /// No description provided for @libraryNav.
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get libraryNav;
+
+  /// No description provided for @marketplaceNav.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketplace'**
+  String get marketplaceNav;
+
+  /// No description provided for @recentQRCodes.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent QR Codes'**
+  String get recentQRCodes;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View All'**
+  String get viewAll;
+
+  /// No description provided for @createQR.
+  ///
+  /// In en, this message translates to:
+  /// **'Create QR'**
+  String get createQR;
+
+  /// No description provided for @createQRDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate new QR code'**
+  String get createQRDescription;
+
+  /// No description provided for @scanQRAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR'**
+  String get scanQRAction;
+
+  /// No description provided for @scanQRDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Open camera scanner'**
+  String get scanQRDescription;
+
+  /// No description provided for @myLibraryAction.
+  ///
+  /// In en, this message translates to:
+  /// **'My Library'**
+  String get myLibraryAction;
+
+  /// No description provided for @myLibraryDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'View saved QR codes'**
+  String get myLibraryDescription;
+
+  /// No description provided for @marketplaceAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketplace'**
+  String get marketplaceAction;
+
+  /// No description provided for @marketplaceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Order laser engraving'**
+  String get marketplaceDescription;
+
+  /// No description provided for @viewProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'View Profile'**
+  String get viewProfile;
+
+  /// No description provided for @cameraUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera Unavailable'**
+  String get cameraUnavailable;
+
+  /// No description provided for @initializingCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Initializing Camera...'**
+  String get initializingCamera;
+
+  /// No description provided for @tapToScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the scan button to start detecting QR codes'**
+  String get tapToScan;
+
+  /// No description provided for @cameraInitFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera initialization failed'**
+  String get cameraInitFailed;
+
+  /// No description provided for @noCameraAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No camera available. Please use a physical device to scan QR codes.'**
+  String get noCameraAvailable;
+
+  /// No description provided for @cameraPermissionDeniedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera permission denied. Please enable in Settings.'**
+  String get cameraPermissionDeniedMessage;
+
+  /// No description provided for @cameraError.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera error'**
+  String get cameraError;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get openSettings;
+
+  /// No description provided for @dismissButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismissButton;
+
+  /// No description provided for @failedToOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to open app settings: {error}'**
+  String failedToOpenSettings(String error);
+
+  /// No description provided for @editQRCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit QR Code'**
+  String get editQRCode;
+
+  /// No description provided for @formTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Form'**
+  String get formTab;
+
+  /// No description provided for @styleTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Style'**
+  String get styleTab;
+
+  /// No description provided for @saveChangesBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChangesBtn;
+
+  /// No description provided for @customizeYourQR.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize your QR'**
+  String get customizeYourQR;
+
+  /// No description provided for @qrColorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'QR Color'**
+  String get qrColorLabel;
+
+  /// No description provided for @backgroundLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Background'**
+  String get backgroundLabel;
+
+  /// No description provided for @eyeColorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Eye Color'**
+  String get eyeColorLabel;
+
+  /// No description provided for @sizeSmallPx.
+  ///
+  /// In en, this message translates to:
+  /// **'150px'**
+  String get sizeSmallPx;
+
+  /// No description provided for @sizeLargePx.
+  ///
+  /// In en, this message translates to:
+  /// **'500px'**
+  String get sizeLargePx;
+
+  /// No description provided for @qrSavedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'QR code \"{name}\" saved successfully!'**
+  String qrSavedSuccess(String name);
+
+  /// No description provided for @qrUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'QR code \"{name}\" updated successfully!'**
+  String qrUpdatedSuccess(String name);
+
+  /// No description provided for @failedToSaveQR.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save QR code: {error}'**
+  String failedToSaveQR(String error);
+
+  /// No description provided for @wifiQrUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'WiFi QR code \"{name}\" updated successfully!'**
+  String wifiQrUpdatedSuccess(String name);
+
+  /// No description provided for @wifiQrSavedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'WiFi QR code \"{name}\" saved successfully!'**
+  String wifiQrSavedSuccess(String name);
+
+  /// No description provided for @wifiQrPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'WiFi: {name}'**
+  String wifiQrPrefix(String name);
+
+  /// No description provided for @colorsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Colors'**
+  String get colorsSection;
+
+  /// No description provided for @sizeSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get sizeSection;
+
+  /// No description provided for @logoSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Logo'**
+  String get logoSection;
+
+  /// No description provided for @textMessageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Text Message'**
+  String get textMessageTitle;
+
+  /// No description provided for @textFormDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter any text you want to share via QR code'**
+  String get textFormDescription;
+
+  /// No description provided for @textContentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Text Content'**
+  String get textContentLabel;
+
+  /// No description provided for @textContentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your message...'**
+  String get textContentHint;
+
+  /// No description provided for @textInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Text Information'**
+  String get textInformation;
+
+  /// No description provided for @charactersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Characters: {count}'**
+  String charactersCount(int count);
+
+  /// No description provided for @charStatusEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty'**
+  String get charStatusEmpty;
+
+  /// No description provided for @charStatusOptimal.
+  ///
+  /// In en, this message translates to:
+  /// **'Optimal'**
+  String get charStatusOptimal;
+
+  /// No description provided for @charStatusGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get charStatusGood;
+
+  /// No description provided for @charStatusLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get charStatusLarge;
+
+  /// No description provided for @pleaseEnterText.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your text'**
+  String get pleaseEnterText;
+
+  /// No description provided for @textTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Text is too long (max {max} characters)'**
+  String textTooLong(int max);
+
+  /// No description provided for @qrNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a name for your QR code'**
+  String get qrNameRequired;
+
+  /// No description provided for @qrNameTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be at least 2 characters'**
+  String get qrNameTooShort;
+
+  /// No description provided for @qrNameTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is too long (max {max} characters)'**
+  String qrNameTooLong(int max);
+
+  /// No description provided for @qrCodeNameFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'QR Code Name'**
+  String get qrCodeNameFieldLabel;
+
+  /// No description provided for @myTextMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'My Text Message'**
+  String get myTextMessage;
+
+  /// No description provided for @previewText.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview: {text}'**
+  String previewText(String text);
+
+  /// No description provided for @emailAddressRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address is required'**
+  String get emailAddressRequired;
+
+  /// No description provided for @invalidEmailFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address'**
+  String get invalidEmailFormat;
+
+  /// No description provided for @contactsPermissionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts permission is required to import email addresses'**
+  String get contactsPermissionRequired;
+
+  /// No description provided for @noContactsWithEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts with email addresses found'**
+  String get noContactsWithEmail;
+
+  /// No description provided for @contactImportedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact email imported successfully!'**
+  String get contactImportedSuccess;
+
+  /// No description provided for @failedToImportContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to import contact'**
+  String get failedToImportContact;
+
+  /// No description provided for @contactsPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts permission denied. Please enable it in device settings.'**
+  String get contactsPermissionDenied;
+
+  /// No description provided for @contactsNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact access is not available on this device.'**
+  String get contactsNotAvailable;
+
+  /// No description provided for @selectContactEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Contact Email'**
+  String get selectContactEmail;
+
+  /// No description provided for @unknownContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Contact'**
+  String get unknownContact;
+
+  /// No description provided for @enterWebsiteURL.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the website URL you want to share'**
+  String get enterWebsiteURL;
+
+  /// No description provided for @protocolAutoAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Protocol (https://) will be added automatically'**
+  String get protocolAutoAdded;
+
+  /// No description provided for @myWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'My Website'**
+  String get myWebsite;
+
+  /// No description provided for @qrNameHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'This name will help you identify your QR code'**
+  String get qrNameHelp;
+
+  /// No description provided for @fillFormToPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill in the form to see preview'**
+  String get fillFormToPreview;
+
+  /// No description provided for @validURLExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid URL examples:'**
+  String get validURLExamples;
+
+  /// No description provided for @pleaseEnterYourName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your name'**
+  String get pleaseEnterYourName;
+
+  /// No description provided for @nameTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is too long'**
+  String get nameTooLong;
+
+  /// No description provided for @locationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get locationTitle;
+
+  /// No description provided for @shareGPSCoordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'Share GPS coordinates and map points'**
+  String get shareGPSCoordinates;
+
+  /// No description provided for @comingSoonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon!'**
+  String get comingSoonTitle;
+
+  /// No description provided for @locationQrComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Location QR generator is under development and will be available soon.'**
+  String get locationQrComingSoon;
+
+  /// No description provided for @wifiQrComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'WiFi QR generator is under development and will be available soon.'**
+  String get wifiQrComingSoon;
+
+  /// No description provided for @firstNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'First name is required'**
+  String get firstNameRequired;
+
+  /// No description provided for @lastNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name is required'**
+  String get lastNameRequired;
+
+  /// No description provided for @invalidPhoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid phone number'**
+  String get invalidPhoneNumber;
+
+  /// No description provided for @softwareDeveloperHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Software Developer'**
+  String get softwareDeveloperHint;
+
+  /// No description provided for @searchQRCodesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search QR Codes'**
+  String get searchQRCodesTitle;
+
+  /// No description provided for @searchPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name, type, or content...'**
+  String get searchPlaceholder;
+
+  /// No description provided for @searchComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Search functionality will be implemented soon'**
+  String get searchComingSoon;
+
+  /// No description provided for @editQRCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit QR Code'**
+  String get editQRCodeTitle;
+
+  /// No description provided for @editTypeName.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit {type} QR Codes'**
+  String editTypeName(String type);
+
+  /// No description provided for @editNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon! Currently only URL and Text QR codes can be edited.'**
+  String get editNotSupported;
+
+  /// No description provided for @backButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get backButton;
+
+  /// No description provided for @qrCodeDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'QR Code Details'**
+  String get qrCodeDetails;
+
+  /// No description provided for @qrContent.
+  ///
+  /// In en, this message translates to:
+  /// **'QR Content'**
+  String get qrContent;
+
+  /// No description provided for @createdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get createdLabel;
+
+  /// No description provided for @lastUpdatedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Updated'**
+  String get lastUpdatedLabel;
+
+  /// No description provided for @copyData.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Data'**
+  String get copyData;
+
+  /// No description provided for @deletingBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting...'**
+  String get deletingBtn;
+
+  /// No description provided for @copiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get copiedToClipboard;
+
+  /// No description provided for @editVCardComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing vCard QR codes is coming soon'**
+  String get editVCardComingSoon;
+
+  /// No description provided for @editWifiComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing WiFi QR codes is coming soon'**
+  String get editWifiComingSoon;
+
+  /// No description provided for @editEmailComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing Email QR codes is coming soon'**
+  String get editEmailComingSoon;
+
+  /// No description provided for @editLocationComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing Location QR codes is coming soon'**
+  String get editLocationComingSoon;
+
+  /// No description provided for @editTypeNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing {type} QR codes is not supported yet'**
+  String editTypeNotSupported(String type);
+
+  /// No description provided for @qrDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'QR code deleted successfully'**
+  String get qrDeletedSuccess;
+
+  /// No description provided for @failedToDeleteQR.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete QR code: {error}'**
+  String failedToDeleteQR(String error);
+
+  /// No description provided for @todayAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Today at {time}'**
+  String todayAt(String time);
+
+  /// No description provided for @yesterdayAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday at {time}'**
+  String yesterdayAt(String time);
+
+  /// No description provided for @daysAgoFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days ago'**
+  String daysAgoFormat(int days);
+
+  /// No description provided for @downloadQRData.
+  ///
+  /// In en, this message translates to:
+  /// **'Download your QR codes and data'**
+  String get downloadQRData;
+
+  /// No description provided for @backupToCloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup your data to cloud'**
+  String get backupToCloud;
+
+  /// No description provided for @managePrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your privacy settings'**
+  String get managePrivacy;
+
+  /// No description provided for @savingBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get savingBtn;
+
+  /// No description provided for @errorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get errorTitle;
+
+  /// No description provided for @openSettingsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings > {section} > {title} to enable access.'**
+  String openSettingsMessage(String section, String title);
 }
 
 class _AppLocalizationsDelegate

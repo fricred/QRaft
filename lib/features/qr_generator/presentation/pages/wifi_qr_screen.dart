@@ -242,7 +242,7 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
         ),
         title: Text(
           widget.editingQRCode != null
-            ? 'Edit QR Code'
+            ? (AppLocalizations.of(context)?.editQRCode ?? 'Edit QR Code')
             : (AppLocalizations.of(context)?.qrTypeWifi ?? 'WiFi QR'),
           style: const TextStyle(
             color: Colors.white,
@@ -295,7 +295,7 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
               children: [
                 PrimaryGlassButton(
                   text: widget.editingQRCode != null
-                    ? 'Save Changes'
+                    ? (AppLocalizations.of(context)?.saveChanges ?? 'Save Changes')
                     : (AppLocalizations.of(context)?.qrFormButtonSave ?? 'Save QR Code'),
                   icon: widget.editingQRCode != null ? Icons.check_rounded : Icons.save_rounded,
                   isLoading: _isSaving,
@@ -1274,13 +1274,14 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
         await controller.updateQRCode(updatedQR);
 
         if (mounted) {
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Row(
                 children: [
                   const Icon(Icons.check_circle, color: Colors.white),
                   const SizedBox(width: 8),
-                  Text('WiFi QR code "${wifiState.networkName}" updated successfully!'),
+                  Text(l10n?.qrUpdatedSuccess(wifiState.networkName) ?? 'WiFi QR code "${wifiState.networkName}" updated successfully!'),
                 ],
               ),
               backgroundColor: const Color(0xFF00FF88),
@@ -1302,13 +1303,14 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
         );
 
         if (mounted) {
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Row(
                 children: [
                   const Icon(Icons.check_circle, color: Colors.white),
                   const SizedBox(width: 8),
-                  Text('WiFi QR code "${wifiState.networkName}" saved successfully!'),
+                  Text(l10n?.qrSavedSuccess(wifiState.networkName) ?? 'WiFi QR code "${wifiState.networkName}" saved successfully!'),
                 ],
               ),
               backgroundColor: const Color(0xFF00FF88),
@@ -1322,13 +1324,14 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
 
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
               children: [
                 const Icon(Icons.error, color: Colors.white),
                 const SizedBox(width: 8),
-                Expanded(child: Text('Failed to save QR code: ${e.toString()}')),
+                Expanded(child: Text(l10n?.failedToSaveQR(e.toString()) ?? 'Failed to save QR code: ${e.toString()}')),
               ],
             ),
             backgroundColor: const Color(0xFFEF4444),

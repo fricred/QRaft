@@ -51,6 +51,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeBack => 'Welcome Back';
 
   @override
+  String welcomeBackUser(String name) {
+    return 'Welcome back, $name';
+  }
+
+  @override
   String get signInToContinue =>
       'Sign in to continue creating amazing QR codes';
 
@@ -363,6 +368,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifications => 'Notifications';
+
+  @override
+  String permissionDeniedTitle(String permissionType) {
+    return '$permissionType Permission';
+  }
 
   @override
   String get pushNotifications => 'Push notifications';
@@ -1129,4 +1139,409 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterJobTitle => 'Your job title';
+
+  @override
+  String get dashboardTitle => 'Dashboard';
+
+  @override
+  String get scanner => 'Scanner';
+
+  @override
+  String get libraryNav => 'Library';
+
+  @override
+  String get marketplaceNav => 'Marketplace';
+
+  @override
+  String get recentQRCodes => 'Recent QR Codes';
+
+  @override
+  String get viewAll => 'View All';
+
+  @override
+  String get createQR => 'Create QR';
+
+  @override
+  String get createQRDescription => 'Generate new QR code';
+
+  @override
+  String get scanQRAction => 'Scan QR';
+
+  @override
+  String get scanQRDescription => 'Open camera scanner';
+
+  @override
+  String get myLibraryAction => 'My Library';
+
+  @override
+  String get myLibraryDescription => 'View saved QR codes';
+
+  @override
+  String get marketplaceAction => 'Marketplace';
+
+  @override
+  String get marketplaceDescription => 'Order laser engraving';
+
+  @override
+  String get viewProfile => 'View Profile';
+
+  @override
+  String get cameraUnavailable => 'Camera Unavailable';
+
+  @override
+  String get initializingCamera => 'Initializing Camera...';
+
+  @override
+  String get tapToScan => 'Tap the scan button to start detecting QR codes';
+
+  @override
+  String get cameraInitFailed => 'Camera initialization failed';
+
+  @override
+  String get noCameraAvailable =>
+      'No camera available. Please use a physical device to scan QR codes.';
+
+  @override
+  String get cameraPermissionDeniedMessage =>
+      'Camera permission denied. Please enable in Settings.';
+
+  @override
+  String get cameraError => 'Camera error';
+
+  @override
+  String get openSettings => 'Settings';
+
+  @override
+  String get dismissButton => 'Dismiss';
+
+  @override
+  String failedToOpenSettings(String error) {
+    return 'Failed to open app settings: $error';
+  }
+
+  @override
+  String get editQRCode => 'Edit QR Code';
+
+  @override
+  String get formTab => 'Form';
+
+  @override
+  String get styleTab => 'Style';
+
+  @override
+  String get saveChangesBtn => 'Save Changes';
+
+  @override
+  String get customizeYourQR => 'Customize your QR';
+
+  @override
+  String get qrColorLabel => 'QR Color';
+
+  @override
+  String get backgroundLabel => 'Background';
+
+  @override
+  String get eyeColorLabel => 'Eye Color';
+
+  @override
+  String get sizeSmallPx => '150px';
+
+  @override
+  String get sizeLargePx => '500px';
+
+  @override
+  String qrSavedSuccess(String name) {
+    return 'QR code \"$name\" saved successfully!';
+  }
+
+  @override
+  String qrUpdatedSuccess(String name) {
+    return 'QR code \"$name\" updated successfully!';
+  }
+
+  @override
+  String failedToSaveQR(String error) {
+    return 'Failed to save QR code: $error';
+  }
+
+  @override
+  String wifiQrUpdatedSuccess(String name) {
+    return 'WiFi QR code \"$name\" updated successfully!';
+  }
+
+  @override
+  String wifiQrSavedSuccess(String name) {
+    return 'WiFi QR code \"$name\" saved successfully!';
+  }
+
+  @override
+  String wifiQrPrefix(String name) {
+    return 'WiFi: $name';
+  }
+
+  @override
+  String get colorsSection => 'Colors';
+
+  @override
+  String get sizeSection => 'Size';
+
+  @override
+  String get logoSection => 'Logo';
+
+  @override
+  String get textMessageTitle => 'Text Message';
+
+  @override
+  String get textFormDescription =>
+      'Enter any text you want to share via QR code';
+
+  @override
+  String get textContentLabel => 'Text Content';
+
+  @override
+  String get textContentHint => 'Enter your message...';
+
+  @override
+  String get textInformation => 'Text Information';
+
+  @override
+  String charactersCount(int count) {
+    return 'Characters: $count';
+  }
+
+  @override
+  String get charStatusEmpty => 'Empty';
+
+  @override
+  String get charStatusOptimal => 'Optimal';
+
+  @override
+  String get charStatusGood => 'Good';
+
+  @override
+  String get charStatusLarge => 'Large';
+
+  @override
+  String get pleaseEnterText => 'Please enter your text';
+
+  @override
+  String textTooLong(int max) {
+    return 'Text is too long (max $max characters)';
+  }
+
+  @override
+  String get qrNameRequired => 'Please enter a name for your QR code';
+
+  @override
+  String get qrNameTooShort => 'Name must be at least 2 characters';
+
+  @override
+  String qrNameTooLong(int max) {
+    return 'Name is too long (max $max characters)';
+  }
+
+  @override
+  String get qrCodeNameFieldLabel => 'QR Code Name';
+
+  @override
+  String get myTextMessage => 'My Text Message';
+
+  @override
+  String previewText(String text) {
+    return 'Preview: $text';
+  }
+
+  @override
+  String get emailAddressRequired => 'Email address is required';
+
+  @override
+  String get invalidEmailFormat => 'Please enter a valid email address';
+
+  @override
+  String get contactsPermissionRequired =>
+      'Contacts permission is required to import email addresses';
+
+  @override
+  String get noContactsWithEmail => 'No contacts with email addresses found';
+
+  @override
+  String get contactImportedSuccess => 'Contact email imported successfully!';
+
+  @override
+  String get failedToImportContact => 'Failed to import contact';
+
+  @override
+  String get contactsPermissionDenied =>
+      'Contacts permission denied. Please enable it in device settings.';
+
+  @override
+  String get contactsNotAvailable =>
+      'Contact access is not available on this device.';
+
+  @override
+  String get selectContactEmail => 'Select Contact Email';
+
+  @override
+  String get unknownContact => 'Unknown Contact';
+
+  @override
+  String get enterWebsiteURL => 'Enter the website URL you want to share';
+
+  @override
+  String get protocolAutoAdded =>
+      'Protocol (https://) will be added automatically';
+
+  @override
+  String get myWebsite => 'My Website';
+
+  @override
+  String get qrNameHelp => 'This name will help you identify your QR code';
+
+  @override
+  String get fillFormToPreview => 'Fill in the form to see preview';
+
+  @override
+  String get validURLExamples => 'Valid URL examples:';
+
+  @override
+  String get pleaseEnterYourName => 'Please enter your name';
+
+  @override
+  String get nameTooLong => 'Name is too long';
+
+  @override
+  String get locationTitle => 'Location';
+
+  @override
+  String get shareGPSCoordinates => 'Share GPS coordinates and map points';
+
+  @override
+  String get comingSoonTitle => 'Coming Soon!';
+
+  @override
+  String get locationQrComingSoon =>
+      'Location QR generator is under development and will be available soon.';
+
+  @override
+  String get wifiQrComingSoon =>
+      'WiFi QR generator is under development and will be available soon.';
+
+  @override
+  String get firstNameRequired => 'First name is required';
+
+  @override
+  String get lastNameRequired => 'Last name is required';
+
+  @override
+  String get invalidPhoneNumber => 'Please enter a valid phone number';
+
+  @override
+  String get softwareDeveloperHint => 'Software Developer';
+
+  @override
+  String get searchQRCodesTitle => 'Search QR Codes';
+
+  @override
+  String get searchPlaceholder => 'Search by name, type, or content...';
+
+  @override
+  String get searchComingSoon =>
+      'Search functionality will be implemented soon';
+
+  @override
+  String get editQRCodeTitle => 'Edit QR Code';
+
+  @override
+  String editTypeName(String type) {
+    return 'Edit $type QR Codes';
+  }
+
+  @override
+  String get editNotSupported =>
+      'Coming soon! Currently only URL and Text QR codes can be edited.';
+
+  @override
+  String get backButton => 'Back';
+
+  @override
+  String get qrCodeDetails => 'QR Code Details';
+
+  @override
+  String get qrContent => 'QR Content';
+
+  @override
+  String get createdLabel => 'Created';
+
+  @override
+  String get lastUpdatedLabel => 'Last Updated';
+
+  @override
+  String get copyData => 'Copy Data';
+
+  @override
+  String get deletingBtn => 'Deleting...';
+
+  @override
+  String get copiedToClipboard => 'Copied to clipboard';
+
+  @override
+  String get editVCardComingSoon => 'Editing vCard QR codes is coming soon';
+
+  @override
+  String get editWifiComingSoon => 'Editing WiFi QR codes is coming soon';
+
+  @override
+  String get editEmailComingSoon => 'Editing Email QR codes is coming soon';
+
+  @override
+  String get editLocationComingSoon =>
+      'Editing Location QR codes is coming soon';
+
+  @override
+  String editTypeNotSupported(String type) {
+    return 'Editing $type QR codes is not supported yet';
+  }
+
+  @override
+  String get qrDeletedSuccess => 'QR code deleted successfully';
+
+  @override
+  String failedToDeleteQR(String error) {
+    return 'Failed to delete QR code: $error';
+  }
+
+  @override
+  String todayAt(String time) {
+    return 'Today at $time';
+  }
+
+  @override
+  String yesterdayAt(String time) {
+    return 'Yesterday at $time';
+  }
+
+  @override
+  String daysAgoFormat(int days) {
+    return '$days days ago';
+  }
+
+  @override
+  String get downloadQRData => 'Download your QR codes and data';
+
+  @override
+  String get backupToCloud => 'Backup your data to cloud';
+
+  @override
+  String get managePrivacy => 'Manage your privacy settings';
+
+  @override
+  String get savingBtn => 'Saving...';
+
+  @override
+  String get errorTitle => 'Error';
+
+  @override
+  String openSettingsMessage(String section, String title) {
+    return 'Open Settings > $section > $title to enable access.';
+  }
 }

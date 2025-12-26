@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../l10n/app_localizations.dart';
 
 class MainNavigation extends StatefulWidget {
   final int currentIndex;
@@ -35,6 +36,7 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       height: 80,
       clipBehavior: Clip.none,
@@ -59,26 +61,26 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
                 _buildNavItem(
                   index: 0,
                   icon: Icons.dashboard_rounded,
-                  label: 'Dashboard',
+                  label: l10n.dashboardTitle,
                   isCenter: false,
                 ),
                 _buildNavItem(
                   index: 2,
                   icon: Icons.qr_code_scanner_rounded,
-                  label: 'Scanner',
+                  label: l10n.scanner,
                   isCenter: false,
                 ),
                 const SizedBox(width: 60), // Space for center button
                 _buildNavItem(
                   index: 3,
                   icon: Icons.library_books_rounded,
-                  label: 'Library',
+                  label: l10n.libraryNav,
                   isCenter: false,
                 ),
                 _buildNavItem(
                   index: 4,
                   icon: Icons.shopping_bag_rounded,
-                  label: 'Marketplace',
+                  label: l10n.marketplaceNav,
                   isCenter: false,
                 ),
               ],

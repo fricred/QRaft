@@ -8,15 +8,17 @@ import '../profile/presentation/pages/profile_screen.dart';
 import '../main/main_scaffold.dart';
 import 'providers/dashboard_providers.dart';
 import '../../shared/widgets/qraft_logo.dart';
+import '../../l10n/app_localizations.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final authProvider = ref.watch(supabaseAuthProvider);
     final currentUser = authProvider.currentUser;
-    
+
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
       body: Stack(
@@ -62,7 +64,7 @@ class DashboardScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Dashboard',
+                              l10n.dashboardTitle,
                               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -71,7 +73,7 @@ class DashboardScreen extends ConsumerWidget {
                             ),
                             if (currentUser?.userMetadata?['display_name'] != null)
                               Text(
-                                'Welcome back, ${currentUser!.userMetadata!['display_name']}',
+                                l10n.welcomeBackUser(currentUser!.userMetadata!['display_name']),
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Colors.grey[400],
                                   fontSize: 14,
@@ -92,7 +94,7 @@ class DashboardScreen extends ConsumerWidget {
                           );
                         },
                         onLongPress: () {
-                          _showQuickActionsMenu(context, ref);
+                          _showQuickActionsMenu(context, ref, l10n);
                         },
                         child: Container(
                           padding: const EdgeInsets.all(12),
@@ -123,19 +125,19 @@ class DashboardScreen extends ConsumerWidget {
                             final qrCodesCount = ref.watch(qrCodesCountProvider);
                             return qrCodesCount.when(
                               data: (count) => _buildStatsCard(
-                                title: 'QR Codes',
+                                title: l10n.qrCodes,
                                 value: '$count',
                                 icon: Icons.qr_code_rounded,
                                 color: const Color(0xFF00FF88),
                               ),
                               loading: () => _buildStatsCard(
-                                title: 'QR Codes',
+                                title: l10n.qrCodes,
                                 value: '...',
                                 icon: Icons.qr_code_rounded,
                                 color: const Color(0xFF00FF88),
                               ),
                               error: (_, __) => _buildStatsCard(
-                                title: 'QR Codes',
+                                title: l10n.qrCodes,
                                 value: '0',
                                 icon: Icons.qr_code_rounded,
                                 color: const Color(0xFF00FF88),
@@ -151,19 +153,19 @@ class DashboardScreen extends ConsumerWidget {
                             final scanHistoryCount = ref.watch(scanHistoryCountProvider);
                             return scanHistoryCount.when(
                               data: (count) => _buildStatsCard(
-                                title: 'Scans',
+                                title: l10n.scans,
                                 value: '$count',
                                 icon: Icons.qr_code_scanner_rounded,
                                 color: const Color(0xFF1A73E8),
                               ),
                               loading: () => _buildStatsCard(
-                                title: 'Scans',
+                                title: l10n.scans,
                                 value: '...',
                                 icon: Icons.qr_code_scanner_rounded,
                                 color: const Color(0xFF1A73E8),
                               ),
                               error: (_, __) => _buildStatsCard(
-                                title: 'Scans',
+                                title: l10n.scans,
                                 value: '0',
                                 icon: Icons.qr_code_scanner_rounded,
                                 color: const Color(0xFF1A73E8),
@@ -196,7 +198,7 @@ class DashboardScreen extends ConsumerWidget {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Recent QR Codes',
+                                    l10n.recentQRCodes,
                                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -206,7 +208,7 @@ class DashboardScreen extends ConsumerWidget {
                                   TextButton(
                                     onPressed: () => _navigateToTab(ref, 3),
                                     child: Text(
-                                      'View All',
+                                      l10n.viewAll,
                                       style: TextStyle(
                                         color: const Color(0xFF00FF88),
                                         fontSize: 14,
@@ -241,7 +243,7 @@ class DashboardScreen extends ConsumerWidget {
                   
                   // Quick Actions
                   Text(
-                    'Quick Actions',
+                    l10n.quickActions,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -262,8 +264,8 @@ class DashboardScreen extends ConsumerWidget {
                     childAspectRatio: 1.25,
                     children: [
                         _buildActionCard(
-                          title: 'Create QR',
-                          subtitle: 'Generate new QR code',
+                          title: l10n.createQR,
+                          subtitle: l10n.createQRDescription,
                           icon: Icons.add_rounded,
                           gradient: const LinearGradient(
                             colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
@@ -272,8 +274,8 @@ class DashboardScreen extends ConsumerWidget {
                           onTap: () => _navigateToTab(ref, 1),
                         ),
                         _buildActionCard(
-                          title: 'Scan QR',
-                          subtitle: 'Open camera scanner',
+                          title: l10n.scanQRAction,
+                          subtitle: l10n.scanQRDescription,
                           icon: Icons.camera_alt_rounded,
                           gradient: const LinearGradient(
                             colors: [Color(0xFF1A73E8), Color(0xFF6366F1)],
@@ -282,8 +284,8 @@ class DashboardScreen extends ConsumerWidget {
                           onTap: () => _navigateToTab(ref, 2),
                         ),
                         _buildActionCard(
-                          title: 'My Library',
-                          subtitle: 'View saved QR codes',
+                          title: l10n.myLibraryAction,
+                          subtitle: l10n.myLibraryDescription,
                           icon: Icons.library_books_rounded,
                           gradient: const LinearGradient(
                             colors: [Color(0xFF8B5CF6), Color(0xFF1A73E8)],
@@ -292,8 +294,8 @@ class DashboardScreen extends ConsumerWidget {
                           onTap: () => _navigateToTab(ref, 3),
                         ),
                         _buildActionCard(
-                          title: 'Marketplace',
-                          subtitle: 'Order laser engraving',
+                          title: l10n.marketplaceAction,
+                          subtitle: l10n.marketplaceDescription,
                           icon: Icons.shopping_bag_rounded,
                           gradient: const LinearGradient(
                             colors: [Color(0xFFEF4444), Color(0xFF8B5CF6)],
@@ -319,7 +321,7 @@ class DashboardScreen extends ConsumerWidget {
     ref.read(navigationIndexProvider.notifier).state = tabIndex;
   }
 
-  void _showQuickActionsMenu(BuildContext context, WidgetRef ref) {
+  void _showQuickActionsMenu(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xFF2E2E2E),
@@ -341,7 +343,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Quick Actions',
+              l10n.quickActions,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -352,7 +354,7 @@ class DashboardScreen extends ConsumerWidget {
             ListTile(
               leading: Icon(Icons.person_rounded, color: const Color(0xFF00FF88)),
               title: Text(
-                'View Profile',
+                l10n.viewProfile,
                 style: TextStyle(color: Colors.white),
               ),
               onTap: () {
@@ -368,7 +370,7 @@ class DashboardScreen extends ConsumerWidget {
             ListTile(
               leading: Icon(Icons.settings_rounded, color: Colors.grey[400]),
               title: Text(
-                'Settings',
+                l10n.settings,
                 style: TextStyle(color: Colors.white),
               ),
               onTap: () {
@@ -385,12 +387,12 @@ class DashboardScreen extends ConsumerWidget {
             ListTile(
               leading: Icon(Icons.exit_to_app_rounded, color: Colors.red[400]),
               title: Text(
-                'Sign Out',
+                l10n.signOut,
                 style: TextStyle(color: Colors.red[400]),
               ),
               onTap: () {
                 Navigator.pop(context);
-                _showQuickSignOutDialog(context, ref);
+                _showQuickSignOutDialog(context, ref, l10n);
               },
             ),
             const SizedBox(height: 16),
@@ -400,7 +402,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _showQuickSignOutDialog(BuildContext context, WidgetRef ref) async {
+  Future<void> _showQuickSignOutDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -414,20 +416,20 @@ class DashboardScreen extends ConsumerWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              'Sign Out',
+              l10n.signOut,
               style: TextStyle(color: Colors.white),
             ),
           ],
         ),
         content: Text(
-          'Are you sure you want to sign out?',
+          l10n.signOutConfirm,
           style: TextStyle(color: Colors.grey[300]),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel',
+              l10n.cancel,
               style: TextStyle(color: Colors.grey[400]),
             ),
           ),
@@ -437,7 +439,7 @@ class DashboardScreen extends ConsumerWidget {
               return TextButton(
                 onPressed: authProvider.isLoading ? null : () async {
                   Navigator.pop(context);
-                  
+
                   // Show loading snackbar
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -452,7 +454,7 @@ class DashboardScreen extends ConsumerWidget {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          Text('Signing out...'),
+                          Text(l10n.signingOut),
                         ],
                       ),
                       backgroundColor: const Color(0xFF2E2E2E),
@@ -461,14 +463,14 @@ class DashboardScreen extends ConsumerWidget {
                       duration: Duration(seconds: 2),
                     ),
                   );
-                  
+
                   try {
                     await authProvider.signOut();
                   } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Failed to sign out. Please try again.'),
+                          content: Text(l10n.signOutFailed),
                           backgroundColor: Colors.red[700],
                           behavior: SnackBarBehavior.floating,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -478,7 +480,7 @@ class DashboardScreen extends ConsumerWidget {
                   }
                 },
                 child: Text(
-                  'Sign Out',
+                  l10n.signOut,
                   style: TextStyle(color: Colors.red[400]),
                 ),
               );

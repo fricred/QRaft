@@ -64,7 +64,14 @@
   "@welcomeBack": {
     "description": "Login screen title"
   },
-  
+  "welcomeBackUser": "Welcome back, {name}",
+  "@welcomeBackUser": {
+    "description": "Welcome message with user name in dashboard",
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
   "signInToContinue": "Sign in to continue creating amazing QR codes",
   "@signInToContinue": {
     "description": "Login screen subtitle"
@@ -611,6 +618,14 @@
   "notifications": "Notifications",
   "@notifications": {
     "description": "Notifications setting label"
+  },
+
+  "permissionDeniedTitle": "{permissionType} Permission",
+  "@permissionDeniedTitle": {
+    "description": "Title for permission denied dialog with permission type",
+    "placeholders": {
+      "permissionType": {"type": "String"}
+    }
   },
 
   "pushNotifications": "Push notifications",
@@ -1898,5 +1913,229 @@
   "enterJobTitle": "Your job title",
   "@enterJobTitle": {
     "description": "Hint text for job title field"
+  },
+
+  "dashboardTitle": "Dashboard",
+  "scanner": "Scanner",
+  "libraryNav": "Library",
+  "marketplaceNav": "Marketplace",
+
+  "recentQRCodes": "Recent QR Codes",
+  "viewAll": "View All",
+  "createQR": "Create QR",
+  "createQRDescription": "Generate new QR code",
+  "scanQRAction": "Scan QR",
+  "scanQRDescription": "Open camera scanner",
+  "myLibraryAction": "My Library",
+  "myLibraryDescription": "View saved QR codes",
+  "marketplaceAction": "Marketplace",
+  "marketplaceDescription": "Order laser engraving",
+  "viewProfile": "View Profile",
+
+  "cameraUnavailable": "Camera Unavailable",
+  "initializingCamera": "Initializing Camera...",
+  "tapToScan": "Tap the scan button to start detecting QR codes",
+  "cameraInitFailed": "Camera initialization failed",
+  "noCameraAvailable": "No camera available. Please use a physical device to scan QR codes.",
+  "cameraPermissionDeniedMessage": "Camera permission denied. Please enable in Settings.",
+  "cameraError": "Camera error",
+  "openSettings": "Settings",
+  "dismissButton": "Dismiss",
+  "failedToOpenSettings": "Failed to open app settings: {error}",
+  "@failedToOpenSettings": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+
+  "editQRCode": "Edit QR Code",
+  "formTab": "Form",
+  "styleTab": "Style",
+  "saveChangesBtn": "Save Changes",
+  "customizeYourQR": "Customize your QR",
+  "qrColorLabel": "QR Color",
+  "backgroundLabel": "Background",
+  "eyeColorLabel": "Eye Color",
+  "sizeSmallPx": "150px",
+  "sizeLargePx": "500px",
+  "qrSavedSuccess": "QR code \"{name}\" saved successfully!",
+  "@qrSavedSuccess": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "qrUpdatedSuccess": "QR code \"{name}\" updated successfully!",
+  "@qrUpdatedSuccess": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "failedToSaveQR": "Failed to save QR code: {error}",
+  "@failedToSaveQR": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "wifiQrUpdatedSuccess": "WiFi QR code \"{name}\" updated successfully!",
+  "@wifiQrUpdatedSuccess": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "wifiQrSavedSuccess": "WiFi QR code \"{name}\" saved successfully!",
+  "@wifiQrSavedSuccess": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "wifiQrPrefix": "WiFi: {name}",
+  "@wifiQrPrefix": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "colorsSection": "Colors",
+  "sizeSection": "Size",
+  "logoSection": "Logo",
+
+  "textMessageTitle": "Text Message",
+  "textFormDescription": "Enter any text you want to share via QR code",
+  "textContentLabel": "Text Content",
+  "textContentHint": "Enter your message...",
+  "textInformation": "Text Information",
+  "charactersCount": "Characters: {count}",
+  "@charactersCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "charStatusEmpty": "Empty",
+  "charStatusOptimal": "Optimal",
+  "charStatusGood": "Good",
+  "charStatusLarge": "Large",
+  "pleaseEnterText": "Please enter your text",
+  "textTooLong": "Text is too long (max {max} characters)",
+  "@textTooLong": {
+    "placeholders": {
+      "max": {"type": "int"}
+    }
+  },
+  "qrNameRequired": "Please enter a name for your QR code",
+  "qrNameTooShort": "Name must be at least 2 characters",
+  "qrNameTooLong": "Name is too long (max {max} characters)",
+  "@qrNameTooLong": {
+    "placeholders": {
+      "max": {"type": "int"}
+    }
+  },
+  "qrCodeNameFieldLabel": "QR Code Name",
+  "myTextMessage": "My Text Message",
+  "previewText": "Preview: {text}",
+  "@previewText": {
+    "placeholders": {
+      "text": {"type": "String"}
+    }
+  },
+
+  "emailAddressRequired": "Email address is required",
+  "invalidEmailFormat": "Please enter a valid email address",
+  "contactsPermissionRequired": "Contacts permission is required to import email addresses",
+  "noContactsWithEmail": "No contacts with email addresses found",
+  "contactImportedSuccess": "Contact email imported successfully!",
+  "failedToImportContact": "Failed to import contact",
+  "contactsPermissionDenied": "Contacts permission denied. Please enable it in device settings.",
+  "contactsNotAvailable": "Contact access is not available on this device.",
+  "selectContactEmail": "Select Contact Email",
+  "unknownContact": "Unknown Contact",
+
+  "enterWebsiteURL": "Enter the website URL you want to share",
+  "protocolAutoAdded": "Protocol (https://) will be added automatically",
+  "myWebsite": "My Website",
+  "qrNameHelp": "This name will help you identify your QR code",
+  "fillFormToPreview": "Fill in the form to see preview",
+  "validURLExamples": "Valid URL examples:",
+  "pleaseEnterYourName": "Please enter your name",
+  "nameTooLong": "Name is too long",
+
+  "locationTitle": "Location",
+  "shareGPSCoordinates": "Share GPS coordinates and map points",
+  "comingSoonTitle": "Coming Soon!",
+  "locationQrComingSoon": "Location QR generator is under development and will be available soon.",
+  "wifiQrComingSoon": "WiFi QR generator is under development and will be available soon.",
+
+  "firstNameRequired": "First name is required",
+  "lastNameRequired": "Last name is required",
+  "invalidPhoneNumber": "Please enter a valid phone number",
+  "softwareDeveloperHint": "Software Developer",
+
+  "searchQRCodesTitle": "Search QR Codes",
+  "searchPlaceholder": "Search by name, type, or content...",
+  "searchComingSoon": "Search functionality will be implemented soon",
+  "editQRCodeTitle": "Edit QR Code",
+  "editTypeName": "Edit {type} QR Codes",
+  "@editTypeName": {
+    "placeholders": {
+      "type": {"type": "String"}
+    }
+  },
+  "editNotSupported": "Coming soon! Currently only URL and Text QR codes can be edited.",
+  "backButton": "Back",
+
+  "qrCodeDetails": "QR Code Details",
+  "qrContent": "QR Content",
+  "createdLabel": "Created",
+  "lastUpdatedLabel": "Last Updated",
+  "copyData": "Copy Data",
+  "deletingBtn": "Deleting...",
+  "copiedToClipboard": "Copied to clipboard",
+  "editVCardComingSoon": "Editing vCard QR codes is coming soon",
+  "editWifiComingSoon": "Editing WiFi QR codes is coming soon",
+  "editEmailComingSoon": "Editing Email QR codes is coming soon",
+  "editLocationComingSoon": "Editing Location QR codes is coming soon",
+  "editTypeNotSupported": "Editing {type} QR codes is not supported yet",
+  "@editTypeNotSupported": {
+    "placeholders": {
+      "type": {"type": "String"}
+    }
+  },
+  "qrDeletedSuccess": "QR code deleted successfully",
+  "failedToDeleteQR": "Failed to delete QR code: {error}",
+  "@failedToDeleteQR": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "todayAt": "Today at {time}",
+  "@todayAt": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "yesterdayAt": "Yesterday at {time}",
+  "@yesterdayAt": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "daysAgoFormat": "{days} days ago",
+  "@daysAgoFormat": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+
+  "downloadQRData": "Download your QR codes and data",
+  "backupToCloud": "Backup your data to cloud",
+  "managePrivacy": "Manage your privacy settings",
+
+  "savingBtn": "Saving...",
+  "errorTitle": "Error",
+  "openSettingsMessage": "Open Settings > {section} > {title} to enable access.",
+  "@openSettingsMessage": {
+    "placeholders": {
+      "section": {"type": "String"},
+      "title": {"type": "String"}
+    }
   }
 }

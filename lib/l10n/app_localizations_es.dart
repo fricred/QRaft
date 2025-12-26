@@ -51,6 +51,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get welcomeBack => 'Bienvenido de Nuevo';
 
   @override
+  String welcomeBackUser(String name) {
+    return 'Bienvenido de nuevo, $name';
+  }
+
+  @override
   String get signInToContinue =>
       'Inicia sesión para continuar creando códigos QR increíbles';
 
@@ -369,6 +374,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get notifications => 'Notificaciones';
+
+  @override
+  String permissionDeniedTitle(String permissionType) {
+    return 'Permiso de $permissionType';
+  }
 
   @override
   String get pushNotifications => 'Notificaciones push';
@@ -1150,4 +1160,419 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get enterJobTitle => 'Tu puesto de trabajo';
+
+  @override
+  String get dashboardTitle => 'Inicio';
+
+  @override
+  String get scanner => 'Escáner';
+
+  @override
+  String get libraryNav => 'Biblioteca';
+
+  @override
+  String get marketplaceNav => 'Tienda';
+
+  @override
+  String get recentQRCodes => 'QR Recientes';
+
+  @override
+  String get viewAll => 'Ver Todo';
+
+  @override
+  String get createQR => 'Crear QR';
+
+  @override
+  String get createQRDescription => 'Generar nuevo código QR';
+
+  @override
+  String get scanQRAction => 'Escanear QR';
+
+  @override
+  String get scanQRDescription => 'Abrir escáner de cámara';
+
+  @override
+  String get myLibraryAction => 'Mi Biblioteca';
+
+  @override
+  String get myLibraryDescription => 'Ver códigos QR guardados';
+
+  @override
+  String get marketplaceAction => 'Tienda';
+
+  @override
+  String get marketplaceDescription => 'Ordenar grabado láser';
+
+  @override
+  String get viewProfile => 'Ver Perfil';
+
+  @override
+  String get cameraUnavailable => 'Cámara No Disponible';
+
+  @override
+  String get initializingCamera => 'Inicializando Cámara...';
+
+  @override
+  String get tapToScan => 'Toca el botón de escanear para detectar códigos QR';
+
+  @override
+  String get cameraInitFailed => 'Error al inicializar la cámara';
+
+  @override
+  String get noCameraAvailable =>
+      'No hay cámara disponible. Por favor usa un dispositivo físico para escanear códigos QR.';
+
+  @override
+  String get cameraPermissionDeniedMessage =>
+      'Permiso de cámara denegado. Por favor habilítalo en Configuración.';
+
+  @override
+  String get cameraError => 'Error de cámara';
+
+  @override
+  String get openSettings => 'Configuración';
+
+  @override
+  String get dismissButton => 'Cerrar';
+
+  @override
+  String failedToOpenSettings(String error) {
+    return 'Error al abrir configuración: $error';
+  }
+
+  @override
+  String get editQRCode => 'Editar Código QR';
+
+  @override
+  String get formTab => 'Formulario';
+
+  @override
+  String get styleTab => 'Estilo';
+
+  @override
+  String get saveChangesBtn => 'Guardar Cambios';
+
+  @override
+  String get customizeYourQR => 'Personaliza tu QR';
+
+  @override
+  String get qrColorLabel => 'Color del QR';
+
+  @override
+  String get backgroundLabel => 'Fondo';
+
+  @override
+  String get eyeColorLabel => 'Color de Ojos';
+
+  @override
+  String get sizeSmallPx => '150px';
+
+  @override
+  String get sizeLargePx => '500px';
+
+  @override
+  String qrSavedSuccess(String name) {
+    return '¡Código QR \"$name\" guardado exitosamente!';
+  }
+
+  @override
+  String qrUpdatedSuccess(String name) {
+    return '¡Código QR \"$name\" actualizado exitosamente!';
+  }
+
+  @override
+  String failedToSaveQR(String error) {
+    return 'Error al guardar código QR: $error';
+  }
+
+  @override
+  String wifiQrUpdatedSuccess(String name) {
+    return '¡Código QR WiFi \"$name\" actualizado exitosamente!';
+  }
+
+  @override
+  String wifiQrSavedSuccess(String name) {
+    return '¡Código QR WiFi \"$name\" guardado exitosamente!';
+  }
+
+  @override
+  String wifiQrPrefix(String name) {
+    return 'WiFi: $name';
+  }
+
+  @override
+  String get colorsSection => 'Colores';
+
+  @override
+  String get sizeSection => 'Tamaño';
+
+  @override
+  String get logoSection => 'Logo';
+
+  @override
+  String get textMessageTitle => 'Mensaje de Texto';
+
+  @override
+  String get textFormDescription =>
+      'Ingresa cualquier texto que quieras compartir vía código QR';
+
+  @override
+  String get textContentLabel => 'Contenido de Texto';
+
+  @override
+  String get textContentHint => 'Escribe tu mensaje...';
+
+  @override
+  String get textInformation => 'Información del Texto';
+
+  @override
+  String charactersCount(int count) {
+    return 'Caracteres: $count';
+  }
+
+  @override
+  String get charStatusEmpty => 'Vacío';
+
+  @override
+  String get charStatusOptimal => 'Óptimo';
+
+  @override
+  String get charStatusGood => 'Bueno';
+
+  @override
+  String get charStatusLarge => 'Grande';
+
+  @override
+  String get pleaseEnterText => 'Por favor ingresa tu texto';
+
+  @override
+  String textTooLong(int max) {
+    return 'El texto es muy largo (máximo $max caracteres)';
+  }
+
+  @override
+  String get qrNameRequired => 'Por favor ingresa un nombre para tu código QR';
+
+  @override
+  String get qrNameTooShort => 'El nombre debe tener al menos 2 caracteres';
+
+  @override
+  String qrNameTooLong(int max) {
+    return 'El nombre es muy largo (máximo $max caracteres)';
+  }
+
+  @override
+  String get qrCodeNameFieldLabel => 'Nombre del Código QR';
+
+  @override
+  String get myTextMessage => 'Mi Mensaje de Texto';
+
+  @override
+  String previewText(String text) {
+    return 'Vista previa: $text';
+  }
+
+  @override
+  String get emailAddressRequired => 'La dirección de correo es requerida';
+
+  @override
+  String get invalidEmailFormat =>
+      'Por favor ingresa una dirección de correo válida';
+
+  @override
+  String get contactsPermissionRequired =>
+      'Se requiere permiso de contactos para importar direcciones de correo';
+
+  @override
+  String get noContactsWithEmail =>
+      'No se encontraron contactos con direcciones de correo';
+
+  @override
+  String get contactImportedSuccess =>
+      '¡Correo del contacto importado exitosamente!';
+
+  @override
+  String get failedToImportContact => 'Error al importar contacto';
+
+  @override
+  String get contactsPermissionDenied =>
+      'Permiso de contactos denegado. Por favor habilítalo en la configuración del dispositivo.';
+
+  @override
+  String get contactsNotAvailable =>
+      'El acceso a contactos no está disponible en este dispositivo.';
+
+  @override
+  String get selectContactEmail => 'Seleccionar Correo de Contacto';
+
+  @override
+  String get unknownContact => 'Contacto Desconocido';
+
+  @override
+  String get enterWebsiteURL =>
+      'Ingresa la URL del sitio web que quieres compartir';
+
+  @override
+  String get protocolAutoAdded =>
+      'El protocolo (https://) se agregará automáticamente';
+
+  @override
+  String get myWebsite => 'Mi Sitio Web';
+
+  @override
+  String get qrNameHelp => 'Este nombre te ayudará a identificar tu código QR';
+
+  @override
+  String get fillFormToPreview =>
+      'Completa el formulario para ver la vista previa';
+
+  @override
+  String get validURLExamples => 'Ejemplos de URLs válidas:';
+
+  @override
+  String get pleaseEnterYourName => 'Por favor ingresa tu nombre';
+
+  @override
+  String get nameTooLong => 'El nombre es muy largo';
+
+  @override
+  String get locationTitle => 'Ubicación';
+
+  @override
+  String get shareGPSCoordinates =>
+      'Comparte coordenadas GPS y puntos del mapa';
+
+  @override
+  String get comingSoonTitle => '¡Próximamente!';
+
+  @override
+  String get locationQrComingSoon =>
+      'El generador de QR de ubicación está en desarrollo y estará disponible pronto.';
+
+  @override
+  String get wifiQrComingSoon =>
+      'El generador de QR WiFi está en desarrollo y estará disponible pronto.';
+
+  @override
+  String get firstNameRequired => 'El nombre es requerido';
+
+  @override
+  String get lastNameRequired => 'El apellido es requerido';
+
+  @override
+  String get invalidPhoneNumber =>
+      'Por favor ingresa un número de teléfono válido';
+
+  @override
+  String get softwareDeveloperHint => 'Desarrollador de Software';
+
+  @override
+  String get searchQRCodesTitle => 'Buscar Códigos QR';
+
+  @override
+  String get searchPlaceholder => 'Buscar por nombre, tipo o contenido...';
+
+  @override
+  String get searchComingSoon =>
+      'La funcionalidad de búsqueda se implementará pronto';
+
+  @override
+  String get editQRCodeTitle => 'Editar Código QR';
+
+  @override
+  String editTypeName(String type) {
+    return 'Editar Códigos QR de $type';
+  }
+
+  @override
+  String get editNotSupported =>
+      '¡Próximamente! Actualmente solo se pueden editar códigos QR de URL y Texto.';
+
+  @override
+  String get backButton => 'Atrás';
+
+  @override
+  String get qrCodeDetails => 'Detalles del Código QR';
+
+  @override
+  String get qrContent => 'Contenido del QR';
+
+  @override
+  String get createdLabel => 'Creado';
+
+  @override
+  String get lastUpdatedLabel => 'Última Actualización';
+
+  @override
+  String get copyData => 'Copiar Datos';
+
+  @override
+  String get deletingBtn => 'Eliminando...';
+
+  @override
+  String get copiedToClipboard => 'Copiado al portapapeles';
+
+  @override
+  String get editVCardComingSoon =>
+      'La edición de códigos QR vCard estará disponible pronto';
+
+  @override
+  String get editWifiComingSoon =>
+      'La edición de códigos QR WiFi estará disponible pronto';
+
+  @override
+  String get editEmailComingSoon =>
+      'La edición de códigos QR de correo estará disponible pronto';
+
+  @override
+  String get editLocationComingSoon =>
+      'La edición de códigos QR de ubicación estará disponible pronto';
+
+  @override
+  String editTypeNotSupported(String type) {
+    return 'La edición de códigos QR de $type aún no está soportada';
+  }
+
+  @override
+  String get qrDeletedSuccess => 'Código QR eliminado exitosamente';
+
+  @override
+  String failedToDeleteQR(String error) {
+    return 'Error al eliminar código QR: $error';
+  }
+
+  @override
+  String todayAt(String time) {
+    return 'Hoy a las $time';
+  }
+
+  @override
+  String yesterdayAt(String time) {
+    return 'Ayer a las $time';
+  }
+
+  @override
+  String daysAgoFormat(int days) {
+    return 'Hace $days días';
+  }
+
+  @override
+  String get downloadQRData => 'Descarga tus códigos QR y datos';
+
+  @override
+  String get backupToCloud => 'Respalda tus datos en la nube';
+
+  @override
+  String get managePrivacy => 'Administra tu configuración de privacidad';
+
+  @override
+  String get savingBtn => 'Guardando...';
+
+  @override
+  String get errorTitle => 'Error';
+
+  @override
+  String openSettingsMessage(String section, String title) {
+    return 'Abre Configuración > $section > $title para habilitar el acceso.';
+  }
 }

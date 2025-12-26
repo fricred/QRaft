@@ -1,12 +1,14 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class ProfileActionsSection extends ConsumerWidget {
   const ProfileActionsSection({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
@@ -43,8 +45,8 @@ class ProfileActionsSection extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Quick Actions',
-            style: TextStyle(
+            l10n.quickActions,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -58,7 +60,7 @@ class ProfileActionsSection extends ConsumerWidget {
               Expanded(
                 child: _buildActionButton(
                   icon: Icons.qr_code_rounded,
-                  label: 'My QR Codes',
+                  label: l10n.myQRCodes,
                   color: const Color(0xFF1A73E8),
                   onTap: () => _navigateToQRLibrary(context),
                 ),
@@ -67,7 +69,7 @@ class ProfileActionsSection extends ConsumerWidget {
               Expanded(
                 child: _buildActionButton(
                   icon: Icons.history_rounded,
-                  label: 'Scan History',
+                  label: l10n.scanHistory,
                   color: const Color(0xFF00FF88),
                   onTap: () => _navigateToScanHistory(context),
                 ),
@@ -82,7 +84,7 @@ class ProfileActionsSection extends ConsumerWidget {
               Expanded(
                 child: _buildActionButton(
                   icon: Icons.shopping_bag_rounded,
-                  label: 'My Orders',
+                  label: l10n.myOrders,
                   color: const Color(0xFFFF6B6B),
                   onTap: () => _navigateToOrders(context),
                 ),
@@ -91,7 +93,7 @@ class ProfileActionsSection extends ConsumerWidget {
               Expanded(
                 child: _buildActionButton(
                   icon: Icons.share_rounded,
-                  label: 'Share Profile',
+                  label: l10n.shareProfile,
                   color: const Color(0xFF9C27B0),
                   onTap: () => _shareProfile(context),
                 ),
@@ -104,27 +106,27 @@ class ProfileActionsSection extends ConsumerWidget {
           // Additional actions
           _buildActionListItem(
             icon: Icons.download_rounded,
-            title: 'Export Data',
-            subtitle: 'Download your QR codes and data',
-            onTap: () => _exportData(context),
+            title: l10n.exportData,
+            subtitle: l10n.exportDataDescription,
+            onTap: () => _exportData(context, l10n),
           ),
 
           const SizedBox(height: 8),
 
           _buildActionListItem(
             icon: Icons.backup_rounded,
-            title: 'Backup & Sync',
-            subtitle: 'Backup your data to cloud',
-            onTap: () => _backupData(context),
+            title: l10n.backupSync,
+            subtitle: l10n.backupSyncDescription,
+            onTap: () => _backupData(context, l10n),
           ),
 
           const SizedBox(height: 8),
 
           _buildActionListItem(
             icon: Icons.security_rounded,
-            title: 'Privacy & Security',
-            subtitle: 'Manage your privacy settings',
-            onTap: () => _navigateToPrivacySettings(context),
+            title: l10n.privacySecurity,
+            subtitle: l10n.privacySecurityDescription,
+            onTap: () => _navigateToPrivacySettings(context, l10n),
           ),
         ],
       ),
@@ -266,44 +268,44 @@ class ProfileActionsSection extends ConsumerWidget {
     debugPrint('Share Profile');
   }
 
-  void _exportData(BuildContext context) {
+  void _exportData(BuildContext context, AppLocalizations l10n) {
     // TODO: Implement data export
     debugPrint('Export Data');
-    _showComingSoonDialog(context, 'Export Data');
+    _showComingSoonDialog(context, l10n, l10n.exportData);
   }
 
-  void _backupData(BuildContext context) {
+  void _backupData(BuildContext context, AppLocalizations l10n) {
     // TODO: Implement data backup
     debugPrint('Backup Data');
-    _showComingSoonDialog(context, 'Backup & Sync');
+    _showComingSoonDialog(context, l10n, l10n.backupSync);
   }
 
-  void _navigateToPrivacySettings(BuildContext context) {
+  void _navigateToPrivacySettings(BuildContext context, AppLocalizations l10n) {
     // TODO: Navigate to Privacy Settings
     debugPrint('Navigate to Privacy Settings');
-    _showComingSoonDialog(context, 'Privacy & Security');
+    _showComingSoonDialog(context, l10n, l10n.privacySecurity);
   }
 
-  void _showComingSoonDialog(BuildContext context, String feature) {
+  void _showComingSoonDialog(BuildContext context, AppLocalizations l10n, String feature) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF2E2E2E),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Coming Soon',
-          style: TextStyle(color: Colors.white),
+          l10n.comingSoon,
+          style: const TextStyle(color: Colors.white),
         ),
         content: Text(
-          '$feature will be available in a future update.',
+          l10n.featureComingSoon(feature),
           style: TextStyle(color: Colors.grey[300]),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'OK',
-              style: TextStyle(color: const Color(0xFF00FF88)),
+              l10n.ok,
+              style: const TextStyle(color: Color(0xFF00FF88)),
             ),
           ),
         ],
