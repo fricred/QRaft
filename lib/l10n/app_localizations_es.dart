@@ -936,7 +936,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Los servicios de ubicación están deshabilitados. Por favor habilitarlos en configuración';
 
   @override
-  String get gettingCurrentLocation => 'Obteniendo tu ubicación...';
+  String get gettingCurrentLocation => 'Obteniendo ubicación actual...';
 
   @override
   String get locationObtained => '¡Ubicación obtenida exitosamente!';
@@ -1104,4 +1104,50 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get type => 'Tipo';
+
+  @override
+  String get editProfile => 'Editar Perfil';
+
+  @override
+  String get saveChanges => 'Guardar Cambios';
+
+  @override
+  String get discardChanges => '¿Descartar cambios?';
+
+  @override
+  String get discardChangesMessage =>
+      'Tienes cambios sin guardar. ¿Estás seguro de que quieres descartarlos?';
+
+  @override
+  String get keepEditing => 'Seguir Editando';
+
+  @override
+  String get discard => 'Descartar';
+
+  @override
+  String get personalDetails => 'DATOS PERSONALES';
+
+  @override
+  String get workAndSocial => 'TRABAJO Y REDES';
+
+  @override
+  String get profileUpdatedSuccess => 'Perfil actualizado exitosamente';
+
+  @override
+  String get enterDisplayName => 'Ingresa tu nombre';
+
+  @override
+  String get enterPhoneNumber => '+1 234 567 8900';
+
+  @override
+  String get enterBio => 'Cuéntanos sobre ti...';
+
+  @override
+  String get enterLocation => 'Ciudad, País';
+
+  @override
+  String get enterCompany => 'Nombre de tu empresa';
+
+  @override
+  String get enterJobTitle => 'Tu puesto de trabajo';
 }

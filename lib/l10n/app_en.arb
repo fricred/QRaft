@@ -1563,12 +1563,7 @@
   "@selectedLocation": {
     "description": "Label for selected location info"
   },
-  
-  "gettingCurrentLocation": "Getting your location...",
-  "@gettingCurrentLocation": {
-    "description": "Loading message while getting current location"
-  },
-  
+
   "currentLocationFound": "Current location found",
   "@currentLocationFound": {
     "description": "Success message when current location is found"
@@ -1828,5 +1823,80 @@
   "type": "Type",
   "@type": {
     "description": "Label for QR code type"
+  },
+
+  "editProfile": "Edit Profile",
+  "@editProfile": {
+    "description": "Edit profile button and modal title"
+  },
+
+  "saveChanges": "Save Changes",
+  "@saveChanges": {
+    "description": "Save changes button text"
+  },
+
+  "discardChanges": "Discard changes?",
+  "@discardChanges": {
+    "description": "Discard changes dialog title"
+  },
+
+  "discardChangesMessage": "You have unsaved changes. Are you sure you want to discard them?",
+  "@discardChangesMessage": {
+    "description": "Discard changes dialog message"
+  },
+
+  "keepEditing": "Keep Editing",
+  "@keepEditing": {
+    "description": "Keep editing button in discard dialog"
+  },
+
+  "discard": "Discard",
+  "@discard": {
+    "description": "Discard button in discard dialog"
+  },
+
+  "personalDetails": "PERSONAL DETAILS",
+  "@personalDetails": {
+    "description": "Personal details section title in edit profile"
+  },
+
+  "workAndSocial": "WORK & SOCIAL",
+  "@workAndSocial": {
+    "description": "Work and social section title in edit profile"
+  },
+
+  "profileUpdatedSuccess": "Profile updated successfully",
+  "@profileUpdatedSuccess": {
+    "description": "Success message when profile is updated"
+  },
+
+  "enterDisplayName": "Enter your name",
+  "@enterDisplayName": {
+    "description": "Hint text for display name field"
+  },
+
+  "enterPhoneNumber": "+1 234 567 8900",
+  "@enterPhoneNumber": {
+    "description": "Hint text for phone number field"
+  },
+
+  "enterBio": "Tell us about yourself...",
+  "@enterBio": {
+    "description": "Hint text for bio field"
+  },
+
+  "enterLocation": "City, Country",
+  "@enterLocation": {
+    "description": "Hint text for location field"
+  },
+
+  "enterCompany": "Your company name",
+  "@enterCompany": {
+    "description": "Hint text for company field"
+  },
+
+  "enterJobTitle": "Your job title",
+  "@enterJobTitle": {
+    "description": "Hint text for job title field"
   }
 }

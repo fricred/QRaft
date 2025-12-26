@@ -918,7 +918,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Location services are disabled. Please enable them in settings';
 
   @override
-  String get gettingCurrentLocation => 'Getting your location...';
+  String get gettingCurrentLocation => 'Getting current location...';
 
   @override
   String get locationObtained => 'Location obtained successfully!';
@@ -1083,4 +1083,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get type => 'Type';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get discardChanges => 'Discard changes?';
+
+  @override
+  String get discardChangesMessage =>
+      'You have unsaved changes. Are you sure you want to discard them?';
+
+  @override
+  String get keepEditing => 'Keep Editing';
+
+  @override
+  String get discard => 'Discard';
+
+  @override
+  String get personalDetails => 'PERSONAL DETAILS';
+
+  @override
+  String get workAndSocial => 'WORK & SOCIAL';
+
+  @override
+  String get profileUpdatedSuccess => 'Profile updated successfully';
+
+  @override
+  String get enterDisplayName => 'Enter your name';
+
+  @override
+  String get enterPhoneNumber => '+1 234 567 8900';
+
+  @override
+  String get enterBio => 'Tell us about yourself...';
+
+  @override
+  String get enterLocation => 'City, Country';
+
+  @override
+  String get enterCompany => 'Your company name';
+
+  @override
+  String get enterJobTitle => 'Your job title';
 }

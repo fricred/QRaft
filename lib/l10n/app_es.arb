@@ -294,7 +294,6 @@
   "tapMapToSelectLocation": "Toca en el mapa para seleccionar una ubicación",
   "confirmLocation": "Confirmar Ubicación",
   "selectedLocation": "Ubicación Seleccionada",
-  "gettingCurrentLocation": "Obteniendo tu ubicación...",
   "currentLocationFound": "Ubicación actual encontrada",
   "usingDefaultLocation": "Usando ubicación predeterminada - toca para seleccionar",
   "useCurrent": "Usar Ubicación Actual",
@@ -334,5 +333,21 @@
   "minutesAgo": "hace {minutes}m",
   "hoursAgo": "hace {hours}h",
   "daysAgoShort": "hace {days}d",
-  "type": "Tipo"
+  "type": "Tipo",
+
+  "editProfile": "Editar Perfil",
+  "saveChanges": "Guardar Cambios",
+  "discardChanges": "¿Descartar cambios?",
+  "discardChangesMessage": "Tienes cambios sin guardar. ¿Estás seguro de que quieres descartarlos?",
+  "keepEditing": "Seguir Editando",
+  "discard": "Descartar",
+  "personalDetails": "DATOS PERSONALES",
+  "workAndSocial": "TRABAJO Y REDES",
+  "profileUpdatedSuccess": "Perfil actualizado exitosamente",
+  "enterDisplayName": "Ingresa tu nombre",
+  "enterPhoneNumber": "+1 234 567 8900",
+  "enterBio": "Cuéntanos sobre ti...",
+  "enterLocation": "Ciudad, País",
+  "enterCompany": "Nombre de tu empresa",
+  "enterJobTitle": "Tu puesto de trabajo"
 }

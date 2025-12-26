@@ -1799,7 +1799,7 @@ abstract class AppLocalizations {
   /// Loading message while getting current location
   ///
   /// In en, this message translates to:
-  /// **'Getting your location...'**
+  /// **'Getting current location...'**
   String get gettingCurrentLocation;
 
   /// Success message when location is obtained
@@ -2071,6 +2071,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Type'**
   String get type;
+
+  /// Edit profile button and modal title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
+
+  /// Save changes button text
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// Discard changes dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get discardChanges;
+
+  /// Discard changes dialog message
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes. Are you sure you want to discard them?'**
+  String get discardChangesMessage;
+
+  /// Keep editing button in discard dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Editing'**
+  String get keepEditing;
+
+  /// Discard button in discard dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discard;
+
+  /// Personal details section title in edit profile
+  ///
+  /// In en, this message translates to:
+  /// **'PERSONAL DETAILS'**
+  String get personalDetails;
+
+  /// Work and social section title in edit profile
+  ///
+  /// In en, this message translates to:
+  /// **'WORK & SOCIAL'**
+  String get workAndSocial;
+
+  /// Success message when profile is updated
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profileUpdatedSuccess;
+
+  /// Hint text for display name field
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your name'**
+  String get enterDisplayName;
+
+  /// Hint text for phone number field
+  ///
+  /// In en, this message translates to:
+  /// **'+1 234 567 8900'**
+  String get enterPhoneNumber;
+
+  /// Hint text for bio field
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us about yourself...'**
+  String get enterBio;
+
+  /// Hint text for location field
+  ///
+  /// In en, this message translates to:
+  /// **'City, Country'**
+  String get enterLocation;
+
+  /// Hint text for company field
+  ///
+  /// In en, this message translates to:
+  /// **'Your company name'**
+  String get enterCompany;
+
+  /// Hint text for job title field
+  ///
+  /// In en, this message translates to:
+  /// **'Your job title'**
+  String get enterJobTitle;
 }
 
 class _AppLocalizationsDelegate

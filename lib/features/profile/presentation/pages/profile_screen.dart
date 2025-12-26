@@ -6,7 +6,7 @@ import '../../../../shared/widgets/glass_button.dart';
 import '../../../../shared/widgets/language_selector.dart';
 import '../controllers/profile_controller.dart';
 import '../widgets/profile_header.dart';
-import '../widgets/inline_editable_profile_info.dart';
+import '../widgets/inline_editable_profile_info.dart' show ProfileInfoSection;
 import '../widgets/profile_stats_section.dart';
 import '../widgets/profile_actions_section.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
@@ -117,34 +117,9 @@ class ProfileScreen extends ConsumerWidget {
 
               const SizedBox(height: 24),
 
-              // Profile info with inline editing
-              InlineEditableProfileInfo(
+              // Profile info with edit button (opens modal for editing)
+              ProfileInfoSection(
                 profile: profileState.profile,
-                onFieldSave: (field, value) async {
-                  switch (field) {
-                    case 'display_name':
-                      await ref.read(profileControllerProvider.notifier).updateProfile(displayName: value);
-                      break;
-                    case 'phone_number':
-                      await ref.read(profileControllerProvider.notifier).updateProfile(phoneNumber: value);
-                      break;
-                    case 'bio':
-                      await ref.read(profileControllerProvider.notifier).updateProfile(bio: value);
-                      break;
-                    case 'location':
-                      await ref.read(profileControllerProvider.notifier).updateProfile(location: value);
-                      break;
-                    case 'website':
-                      await ref.read(profileControllerProvider.notifier).updateProfile(website: value);
-                      break;
-                    case 'company':
-                      await ref.read(profileControllerProvider.notifier).updateProfile(company: value);
-                      break;
-                    case 'job_title':
-                      await ref.read(profileControllerProvider.notifier).updateProfile(jobTitle: value);
-                      break;
-                  }
-                },
               )
                   .animate(delay: 200.ms)
                   .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
