@@ -72,17 +72,17 @@ extension QRTypeExtension on QRType {
   List<int> get gradientColors {
     switch (this) {
       case QRType.personalInfo:
-        return [0xFF00FF88, 0xFF1A73E8];
+        return [0xFF00FF88, 0xFF10B981];  // Neon Green gradient
       case QRType.url:
-        return [0xFF1A73E8, 0xFF6366F1];
+        return [0xFF3B82F6, 0xFF60A5FA];  // Bright Blue gradient
       case QRType.wifi:
-        return [0xFF8B5CF6, 0xFF1A73E8];
+        return [0xFF8B5CF6, 0xFFA78BFA];  // Purple gradient
       case QRType.text:
-        return [0xFFEF4444, 0xFF8B5CF6];
+        return [0xFF94A3B8, 0xFFCBD5E1];  // Slate gradient
       case QRType.email:
-        return [0xFFF59E0B, 0xFFEF4444];
+        return [0xFFF59E0B, 0xFFFBBF24];  // Amber gradient
       case QRType.location:
-        return [0xFF10B981, 0xFF00FF88];
+        return [0xFFF97316, 0xFFFB923C];  // Orange gradient
     }
   }
 }

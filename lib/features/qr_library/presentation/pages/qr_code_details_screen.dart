@@ -595,17 +595,19 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
 
   Color _getQRTypeColor(String qrType) {
     switch (qrType.toLowerCase()) {
-      case 'url': return const Color(0xFF1A73E8);
-      case 'wifi': return const Color(0xFF8B5CF6);
-      case 'email': return const Color(0xFFF59E0B);
-      case 'phone': return const Color(0xFF10B981);
-      case 'sms': return const Color(0xFFEF4444);
+      case 'url': return const Color(0xFF3B82F6);      // Bright Blue
+      case 'wifi': return const Color(0xFF8B5CF6);     // Purple
+      case 'email': return const Color(0xFFF59E0B);    // Amber
+      case 'phone': return const Color(0xFF22D3EE);    // Cyan
+      case 'sms': return const Color(0xFFEC4899);      // Pink
       case 'vcard':
       case 'personal_info':
-        return const Color(0xFF00FF88);
-      case 'location': return const Color(0xFF10B981);
-      case 'text': 
-      default: return const Color(0xFF6366F1);
+        return const Color(0xFF00FF88);                // Neon Green
+      case 'location':
+      case 'geo':
+        return const Color(0xFFF97316);                // Orange
+      case 'text':
+      default: return const Color(0xFF94A3B8);         // Slate
     }
   }
 }
