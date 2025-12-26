@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -186,25 +187,40 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         children: [
                           const SizedBox(height: 20),
                           
-                          // Form container
+                          // Form container with glassmorphism
                           Container(
-                            padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF2E2E2E),
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.1),
-                                width: 1,
-                              ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.2),
-                                  blurRadius: 16,
-                                  offset: const Offset(0, 8),
+                                  color: const Color(0xFF00FF88).withValues(alpha: 0.1),
+                                  blurRadius: 20,
+                                  spreadRadius: 0,
                                 ),
                               ],
                             ),
-                            child: Column(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                child: Container(
+                                  padding: const EdgeInsets.all(24),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        const Color(0xFF2E2E2E).withValues(alpha: 0.7),
+                                        const Color(0xFF1A1A1A).withValues(alpha: 0.8),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: Colors.white.withValues(alpha: 0.12),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Column(
                               children: [
                                 // Name field
                                 _buildTextField(
@@ -376,7 +392,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                 ),
                               ],
                             ),
-                          ).animate()
+                          ),
+                        ),
+                      ),
+                    ).animate()
                             .fadeIn(duration: 400.ms, delay: 200.ms, curve: Curves.easeOutCubic)
                             .slideY(begin: 0.15, duration: 400.ms, delay: 200.ms, curve: Curves.easeOutQuart),
                           

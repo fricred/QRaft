@@ -1,4 +1,5 @@
 import 'dart:math' show log;
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../shared/widgets/glass_button.dart';
@@ -241,100 +242,118 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
   Widget _buildProductCard(Map<String, dynamic> product, int index) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF2E2E2E),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
-          width: 1,
-        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF00FF88).withValues(alpha: 0.1),
+            blurRadius: 12,
+            spreadRadius: 0,
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => _showProductDetails(product),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Product image placeholder
-                Container(
-                  width: double.infinity,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    gradient: product['gradient'] as LinearGradient,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    product['icon'] as IconData,
-                    color: Colors.white,
-                    size: 48,
-                  ),
-                ),
-                
-                const SizedBox(height: 12),
-                
-                // Product title
-                Text(
-                  product['name'] as String,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                
-                const SizedBox(height: 4),
-                
-                // Material
-                Text(
-                  product['material'] as String,
-                  style: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 14,
-                  ),
-                ),
-                
-                const Spacer(),
-                
-                // Price and add button
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      product['price'] as String,
-                      style: const TextStyle(
-                        color: Color(0xFF00FF88),
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color(0xFF2E2E2E).withValues(alpha: 0.8),
+                  const Color(0xFF1A1A1A).withValues(alpha: 0.9),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.12),
+                width: 1,
+              ),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () => _showProductDetails(product),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Product image placeholder
+                      Container(
+                        width: double.infinity,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          gradient: product['gradient'] as LinearGradient,
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        borderRadius: BorderRadius.circular(8),
+                        child: Icon(
+                          product['icon'] as IconData,
+                          color: Colors.white,
+                          size: 48,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.add_rounded,
-                        color: Colors.white,
-                        size: 20,
+
+                      const SizedBox(height: 12),
+
+                      // Product title
+                      Text(
+                        product['name'] as String,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+
+                      const SizedBox(height: 4),
+
+                      // Material
+                      Text(
+                        product['material'] as String,
+                        style: TextStyle(
+                          color: Colors.grey[400],
+                          fontSize: 14,
+                        ),
+                      ),
+
+                      const Spacer(),
+
+                      // Price and add button
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            product['price'] as String,
+                            style: const TextStyle(
+                              color: Color(0xFF00FF88),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.add_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ],
+              ),
             ),
           ),
         ),
