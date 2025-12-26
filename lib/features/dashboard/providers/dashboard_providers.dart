@@ -1,12 +1,19 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/supabase_service.dart';
 import '../../auth/data/providers/supabase_auth_provider.dart';
+import '../../qr_generator/domain/entities/qr_code_entity.dart';
+import '../../qr_library/presentation/providers/qr_library_providers.dart';
+
+// Re-export shared QR providers for convenience
+export '../../qr_library/presentation/providers/qr_library_providers.dart'
+    show userQRCodesProvider, recentQRCodesLimitedProvider;
 
 /// Dashboard statistics data model
 class DashboardStats {
   final int qrCodesCount;
   final int scanHistoryCount;
-  final List<Map<String, dynamic>> recentQRCodes;
+  final List<QRCodeEntity> recentQRCodes;
   final List<Map<String, dynamic>> recentScans;
 
   const DashboardStats({
@@ -19,7 +26,7 @@ class DashboardStats {
   DashboardStats copyWith({
     int? qrCodesCount,
     int? scanHistoryCount,
-    List<Map<String, dynamic>>? recentQRCodes,
+    List<QRCodeEntity>? recentQRCodes,
     List<Map<String, dynamic>>? recentScans,
   }) {
     return DashboardStats(
@@ -31,21 +38,15 @@ class DashboardStats {
   }
 }
 
-/// Provider for QR codes count for current user
-final qrCodesCountProvider = FutureProvider<int>((ref) async {
-  final authState = ref.watch(authStateProvider);
-  
-  if (authState == null) {
-    return 0;
-  }
+/// Provider for QR codes count for current user (uses shared userQRCodesProvider)
+final qrCodesCountProvider = Provider<int>((ref) {
+  final qrCodesAsync = ref.watch(userQRCodesProvider);
 
-  try {
-    final qrCodes = await SupabaseService.getCurrentUserQRCodes();
-    return qrCodes.length;
-  } catch (e) {
-    // If there's an error (like table doesn't exist), return 0
-    return 0;
-  }
+  return qrCodesAsync.when(
+    data: (qrCodes) => qrCodes.length,
+    loading: () => 0,
+    error: (error, stack) => 0,
+  );
 });
 
 /// Provider for scan history count for current user
@@ -60,25 +61,14 @@ final scanHistoryCountProvider = FutureProvider<int>((ref) async {
     final scanHistory = await SupabaseService.getCurrentUserScanHistory();
     return scanHistory.length;
   } catch (e) {
-    // If there's an error (like table doesn't exist), return 0
+    debugPrint('Error fetching scan history count: $e');
     return 0;
   }
 });
 
-/// Provider for recent QR codes (last 5) for current user
-final recentQRCodesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final authState = ref.watch(authStateProvider);
-  
-  if (authState == null) {
-    return [];
-  }
-
-  try {
-    final qrCodes = await SupabaseService.getCurrentUserQRCodes();
-    return qrCodes.take(5).toList(); // Get last 5 QR codes
-  } catch (e) {
-    return [];
-  }
+/// Dashboard-specific: get last 5 QR codes (uses shared recentQRCodesLimitedProvider)
+final dashboardRecentQRCodesProvider = Provider<List<QRCodeEntity>>((ref) {
+  return ref.watch(recentQRCodesLimitedProvider(5));
 });
 
 /// Provider for recent scans (last 5) for current user
@@ -93,54 +83,37 @@ final recentScansProvider = FutureProvider<List<Map<String, dynamic>>>((ref) asy
     final scanHistory = await SupabaseService.getCurrentUserScanHistory();
     return scanHistory.take(5).toList(); // Get last 5 scans
   } catch (e) {
+    debugPrint('Error fetching recent scans: $e');
     return [];
   }
 });
 
-/// Comprehensive dashboard statistics provider
-final dashboardStatsProvider = FutureProvider<DashboardStats>((ref) async {
-  final authState = ref.watch(authStateProvider);
-  
-  if (authState == null) {
-    return const DashboardStats(
-      qrCodesCount: 0,
-      scanHistoryCount: 0,
-      recentQRCodes: [],
-      recentScans: [],
-    );
-  }
+/// Comprehensive dashboard statistics provider (uses shared userQRCodesProvider)
+final dashboardStatsProvider = Provider<DashboardStats>((ref) {
+  final recentQRCodes = ref.watch(dashboardRecentQRCodesProvider);
+  final qrCodesCount = ref.watch(qrCodesCountProvider);
+  final scanHistoryCountAsync = ref.watch(scanHistoryCountProvider);
+  final recentScansAsync = ref.watch(recentScansProvider);
 
-  try {
-    // Fetch all dashboard data concurrently
-    final results = await Future.wait([
-      SupabaseService.getCurrentUserQRCodes(),
-      SupabaseService.getCurrentUserScanHistory(),
-    ]);
+  final scanHistoryCount = scanHistoryCountAsync.when(
+    data: (count) => count,
+    loading: () => 0,
+    error: (_, __) => 0,
+  );
 
-    final qrCodes = List<Map<String, dynamic>>.from(results[0]);
-    final scanHistory = List<Map<String, dynamic>>.from(results[1]);
+  final recentScans = recentScansAsync.when(
+    data: (scans) => scans,
+    loading: () => <Map<String, dynamic>>[],
+    error: (_, __) => <Map<String, dynamic>>[],
+  );
 
-    return DashboardStats(
-      qrCodesCount: qrCodes.length,
-      scanHistoryCount: scanHistory.length,
-      recentQRCodes: qrCodes.take(5).toList(),
-      recentScans: scanHistory.take(5).toList(),
-    );
-  } catch (e) {
-    // If there's an error, return empty stats
-    return const DashboardStats(
-      qrCodesCount: 0,
-      scanHistoryCount: 0,
-      recentQRCodes: [],
-      recentScans: [],
-    );
-  }
+  return DashboardStats(
+    qrCodesCount: qrCodesCount,
+    scanHistoryCount: scanHistoryCount,
+    recentQRCodes: recentQRCodes,
+    recentScans: recentScans,
+  );
 });
 
 /// Provider to refresh dashboard data
 final dashboardRefreshProvider = StateProvider<DateTime>((ref) => DateTime.now());
-
-/// Auto-refresh dashboard data every 30 seconds when app is active
-final autoRefreshDashboardProvider = StreamProvider<DateTime>((ref) {
-  return Stream.periodic(const Duration(seconds: 30), (count) => DateTime.now());
-});

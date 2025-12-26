@@ -76,19 +76,24 @@ final favoriteQRCodesProvider = Provider<List<QRCodeEntity>>((ref) {
   );
 });
 
-// Recent QR Codes Provider (last 10 QR codes)
-final recentQRCodesProvider = Provider<List<QRCodeEntity>>((ref) {
+// Recent QR Codes Provider - Parameterized (specify count)
+final recentQRCodesLimitedProvider = Provider.family<List<QRCodeEntity>, int>((ref, count) {
   final qrCodesAsync = ref.watch(userQRCodesProvider);
-  
+
   return qrCodesAsync.when(
     data: (qrCodes) {
       final sortedByDate = List<QRCodeEntity>.from(qrCodes)
         ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      return sortedByDate.take(10).toList();
+      return sortedByDate.take(count).toList();
     },
     loading: () => <QRCodeEntity>[],
     error: (error, stack) => <QRCodeEntity>[],
   );
+});
+
+// Recent QR Codes Provider (last 10 QR codes) - convenience alias
+final recentQRCodesProvider = Provider<List<QRCodeEntity>>((ref) {
+  return ref.watch(recentQRCodesLimitedProvider(10));
 });
 
 // Search QR Codes Provider

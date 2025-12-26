@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../auth/data/providers/supabase_auth_provider.dart';
 import '../profile/presentation/pages/profile_screen.dart';
 import '../main/main_scaffold.dart';
+import '../qr_generator/domain/entities/qr_code_entity.dart';
 import 'providers/dashboard_providers.dart';
 import '../../shared/widgets/qraft_logo.dart';
 import '../../l10n/app_localizations.dart';
@@ -123,25 +124,11 @@ class DashboardScreen extends ConsumerWidget {
                         child: Consumer(
                           builder: (context, ref, child) {
                             final qrCodesCount = ref.watch(qrCodesCountProvider);
-                            return qrCodesCount.when(
-                              data: (count) => _buildStatsCard(
-                                title: l10n.qrCodes,
-                                value: '$count',
-                                icon: Icons.qr_code_rounded,
-                                color: const Color(0xFF00FF88),
-                              ),
-                              loading: () => _buildStatsCard(
-                                title: l10n.qrCodes,
-                                value: '...',
-                                icon: Icons.qr_code_rounded,
-                                color: const Color(0xFF00FF88),
-                              ),
-                              error: (_, __) => _buildStatsCard(
-                                title: l10n.qrCodes,
-                                value: '0',
-                                icon: Icons.qr_code_rounded,
-                                color: const Color(0xFF00FF88),
-                              ),
+                            return _buildStatsCard(
+                              title: l10n.qrCodes,
+                              value: '$qrCodesCount',
+                              icon: Icons.qr_code_rounded,
+                              color: const Color(0xFF00FF88),
                             );
                           },
                         ),
@@ -184,57 +171,52 @@ class DashboardScreen extends ConsumerWidget {
                   // Recent QR Codes Section
                   Consumer(
                     builder: (context, ref, child) {
-                      final recentQRCodes = ref.watch(recentQRCodesProvider);
-                      return recentQRCodes.when(
-                        data: (qrCodes) {
-                          if (qrCodes.isEmpty) {
-                            return const SizedBox.shrink(); // Don't show section if empty
-                          }
-                          
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                      final qrCodes = ref.watch(dashboardRecentQRCodesProvider);
+
+                      if (qrCodes.isEmpty) {
+                        return const SizedBox.shrink(); // Don't show section if empty
+                      }
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    l10n.recentQRCodes,
-                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () => _navigateToTab(ref, 3),
-                                    child: Text(
-                                      l10n.viewAll,
-                                      style: TextStyle(
-                                        color: const Color(0xFF00FF88),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              SizedBox(
-                                height: 90, // Reduced height to prevent overflow
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: qrCodes.length > 5 ? 5 : qrCodes.length,
-                                  itemBuilder: (context, index) {
-                                    return _buildRecentQRCard(qrCodes[index], index, ref);
-                                  },
+                              Text(
+                                l10n.recentQRCodes,
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
                                 ),
                               ),
-                              const SizedBox(height: 20),
+                              TextButton(
+                                onPressed: () => _navigateToTab(ref, 3),
+                                child: Text(
+                                  l10n.viewAll,
+                                  style: TextStyle(
+                                    color: const Color(0xFF00FF88),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
                             ],
-                          );
-                        },
-                        loading: () => const SizedBox.shrink(),
-                        error: (_, __) => const SizedBox.shrink(),
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            height: 90, // Reduced height to prevent overflow
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: qrCodes.length,
+                              itemBuilder: (context, index) {
+                                return _buildRecentQRCard(qrCodes[index], index, ref);
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
                       );
                     },
                   ).animate()
@@ -707,9 +689,9 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildRecentQRCard(Map<String, dynamic> qrData, int index, WidgetRef ref) {
-    final qrType = qrData['qr_type'] ?? 'text';
-    final title = qrData['title'] ?? 'QR Code';
+  Widget _buildRecentQRCard(QRCodeEntity qrEntity, int index, WidgetRef ref) {
+    final qrType = qrEntity.type.identifier;
+    final title = qrEntity.name;
     final iconData = _getQRTypeIcon(qrType);
     final color = _getQRTypeColor(qrType);
     final delay = (100 + (40.0 * log(index + 2))).toInt();
