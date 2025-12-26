@@ -193,7 +193,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
                   ]
                 : null,
           ),
-          transform: Matrix4.identity()..scale(isSelected ? 1.0 : 0.98),
+          transform: Matrix4.diagonal3Values(isSelected ? 1.0 : 0.98, isSelected ? 1.0 : 0.98, 1.0),
           child: Center(
             child: Text(
               text,

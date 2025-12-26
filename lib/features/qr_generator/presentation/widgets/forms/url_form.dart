@@ -109,6 +109,7 @@ class URLFormController extends StateNotifier<URLFormState> {
     }
 
     // Check for common domain patterns
+    // ignore: deprecated_member_use
     final domainRegex = RegExp(r'^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.([a-zA-Z]{2,}|[a-zA-Z]{2,}\.[a-zA-Z]{2,})$');
     if (!domainRegex.hasMatch(uri.host)) {
       return l10n.urlValidationDomain;

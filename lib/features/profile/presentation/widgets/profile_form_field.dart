@@ -242,6 +242,7 @@ class ProfileValidators {
       return null; // Optional field
     }
     // Basic phone validation - allows +, digits, spaces, dashes, parentheses
+    // ignore: deprecated_member_use
     final phoneRegex = RegExp(r'^[\+]?[(]?[0-9]{1,4}[)]?[-\s\./0-9]*$');
     if (!phoneRegex.hasMatch(value.trim())) {
       return 'Please enter a valid phone number';
@@ -254,6 +255,7 @@ class ProfileValidators {
       return null; // Optional field
     }
     // Basic URL validation
+    // ignore: deprecated_member_use
     final urlRegex = RegExp(
       r'^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$',
       caseSensitive: false,

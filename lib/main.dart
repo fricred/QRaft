@@ -352,6 +352,7 @@ class _SupabaseForgotPasswordDialogState extends State<SupabaseForgotPasswordDia
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
                     }
+                    // ignore: deprecated_member_use
                     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
                       return 'Please enter a valid email';
                     }

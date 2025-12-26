@@ -17,6 +17,7 @@ void main() {
       expect(scanResult.id.contains('-'), isTrue); // UUIDs contain hyphens
       
       // Verify UUID format: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+      // ignore: deprecated_member_use
       final uuidRegex = RegExp(r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$');
       expect(uuidRegex.hasMatch(scanResult.id), isTrue, 
         reason: 'Generated ID should be a valid UUID v4: ${scanResult.id}');

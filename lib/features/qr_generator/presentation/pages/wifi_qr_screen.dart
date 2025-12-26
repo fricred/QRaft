@@ -863,7 +863,7 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
           Switch(
             value: isHidden,
             onChanged: controller.updateHidden,
-            activeThumbColor: const Color(0xFF1A73E8),
+            activeTrackColor: const Color(0xFF1A73E8),
           ),
         ],
       ),

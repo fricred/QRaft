@@ -153,6 +153,7 @@ class ScanResult extends Equatable {
     }
     
     // Phone detection
+    // ignore: deprecated_member_use
     if (value.startsWith('tel:') || RegExp(r'^\+?[\d\s\-\(\)]+$').hasMatch(rawValue)) {
       return QRCodeType.phone;
     }

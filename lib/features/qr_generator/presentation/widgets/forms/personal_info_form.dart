@@ -215,11 +215,13 @@ class PersonalInfoFormController extends StateNotifier<PersonalInfoFormState> {
   }
 
   bool _isValidEmail(String email) {
+    // ignore: deprecated_member_use
     return RegExp(r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+').hasMatch(email);
   }
 
   bool _isValidPhone(String phone) {
     // Allow various phone formats
+    // ignore: deprecated_member_use
     return RegExp(r'^[\+]?[0-9\-\s\(\)]{10,}$').hasMatch(phone);
   }
 

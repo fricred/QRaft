@@ -113,6 +113,7 @@ class EmailFormController extends StateNotifier<EmailFormState> {
   }
 
   bool _isValidEmail(String email) {
+    // ignore: deprecated_member_use
     return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email);
   }
 

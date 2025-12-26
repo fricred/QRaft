@@ -188,6 +188,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                         if (value == null || value.isEmpty) {
                           return l10n.pleaseEnterEmail;
                         }
+                        // ignore: deprecated_member_use
                         final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
                         if (!emailRegex.hasMatch(value)) {
                           return l10n.pleaseEnterValidEmail;

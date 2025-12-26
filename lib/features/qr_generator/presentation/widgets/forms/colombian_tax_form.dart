@@ -513,6 +513,7 @@ class ColombianTaxFormController extends StateNotifier<ColombianTaxFormState> {
       }
     }
     
+    // ignore: deprecated_member_use
     if (!RegExp(r'^\d+$').hasMatch(number)) {
       return 'Solo se permiten números';
     }
@@ -525,6 +526,7 @@ class ColombianTaxFormController extends StateNotifier<ColombianTaxFormState> {
       return 'Dígito de verificación requerido para NIT';
     }
     
+    // ignore: deprecated_member_use
     if (digit.isNotEmpty && !RegExp(r'^[0-9K]$').hasMatch(digit)) {
       return 'Debe ser un dígito (0-9) o K';
     }
@@ -563,6 +565,7 @@ class ColombianTaxFormController extends StateNotifier<ColombianTaxFormState> {
 
   String? _validatePhone(String phone) {
     if (phone.isEmpty) return 'Teléfono requerido';
+    // ignore: deprecated_member_use
     if (!RegExp(r'^\+?[0-9\s\-\(\)]{7,15}$').hasMatch(phone)) {
       return 'Formato de teléfono inválido';
     }
@@ -571,6 +574,7 @@ class ColombianTaxFormController extends StateNotifier<ColombianTaxFormState> {
 
   String? _validateEmail(String email) {
     if (email.isEmpty) return 'Email requerido';
+    // ignore: deprecated_member_use
     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(email)) {
       return 'Email inválido';
     }

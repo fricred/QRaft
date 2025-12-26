@@ -260,6 +260,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                     if (value == null || value.isEmpty) {
                                       return l10n.pleaseEnterEmail;
                                     }
+                                    // ignore: deprecated_member_use
                                     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
                                     if (!emailRegex.hasMatch(value)) {
                                       return l10n.pleaseEnterValidEmail;
@@ -300,12 +301,15 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                     if (value.length < 8) {
                                       return l10n.passwordMinLengthSignUp;
                                     }
+                                    // ignore: deprecated_member_use
                                     if (!value.contains(RegExp(r'[A-Z]'))) {
                                       return l10n.passwordMustContainUppercase;
                                     }
+                                    // ignore: deprecated_member_use
                                     if (!value.contains(RegExp(r'[a-z]'))) {
                                       return l10n.passwordMustContainLowercase;
                                     }
+                                    // ignore: deprecated_member_use
                                     if (!value.contains(RegExp(r'[0-9]'))) {
                                       return l10n.passwordMustContainNumber;
                                     }

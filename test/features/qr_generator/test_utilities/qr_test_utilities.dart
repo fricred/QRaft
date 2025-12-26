@@ -407,6 +407,7 @@ class _IsEmailQRFormatMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map<dynamic, dynamic> matchState) {
     if (item is! String) return false;
+    // ignore: deprecated_member_use
     final emailPattern = RegExp(r'^mailto:[^@]+@[^@]+\.[a-zA-Z]{2,}');
     return emailPattern.hasMatch(item);
   }
@@ -420,6 +421,7 @@ class _IsWiFiQRFormatMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map<dynamic, dynamic> matchState) {
     if (item is! String) return false;
+    // ignore: deprecated_member_use
     final wifiPattern = RegExp(r'^WIFI:T:[^;]*;S:[^;]*;P:[^;]*;H:[^;]*;;$');
     return wifiPattern.hasMatch(item);
   }
@@ -433,6 +435,7 @@ class _IsLocationQRFormatMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map<dynamic, dynamic> matchState) {
     if (item is! String) return false;
+    // ignore: deprecated_member_use
     final locationPattern = RegExp(r'^geo:-?\d+\.?\d*,-?\d+\.?\d*');
     return locationPattern.hasMatch(item);
   }
