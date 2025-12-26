@@ -25,10 +25,10 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeController();
+    _checkPermissionsAndSetupController();
   }
 
-  void _initializeController() async {
+  void _checkPermissionsAndSetupController() async {
     try {
       // Check camera permissions first
       final status = await Permission.camera.status;
@@ -42,25 +42,24 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
         }
       }
 
+      // Create controller with autoStart: true - it will start when MobileScanner widget is built
       _controller = MobileScannerController(
         formats: [BarcodeFormat.qrCode],
         detectionSpeed: DetectionSpeed.noDuplicates,
         detectionTimeoutMs: 1000,
-        autoStart: false, // Don't auto-start, we'll start manually after initialization
+        autoStart: true, // Auto-start when attached to MobileScanner widget
       );
-      
-      // Initialize controller and wait for it to be ready
-      await _controller!.start();
+
       if (mounted) {
         setState(() {
           _isControllerInitialized = true;
         });
       }
     } catch (error) {
-      debugPrint('Error initializing camera: $error');
+      debugPrint('Error setting up camera controller: $error');
       if (mounted) {
         String errorMessage = 'Camera initialization failed';
-        if (error.toString().contains('No camera found') || 
+        if (error.toString().contains('No camera found') ||
             error.toString().contains('failed to open camera')) {
           errorMessage = 'No camera available. Please use a physical device to scan QR codes.';
         }
@@ -194,6 +193,18 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
                   // Always detect QR codes when camera is active
                   _handleBarcodeDetection(capture);
                 },
+                errorBuilder: (context, error) {
+                  // Handle camera errors (e.g., simulator has no camera)
+                  String errorMessage = 'Camera error';
+                  if (error.errorCode == MobileScannerErrorCode.permissionDenied) {
+                    errorMessage = 'Camera permission denied. Please enable in Settings.';
+                  } else if (error.errorCode == MobileScannerErrorCode.unsupported) {
+                    errorMessage = 'No camera available. Please use a physical device.';
+                  } else {
+                    errorMessage = error.errorDetails?.message ?? 'Camera initialization failed';
+                  }
+                  return _buildCameraErrorWidget(errorMessage);
+                },
               )
             else
               _buildCameraPlaceholder(),
@@ -271,6 +282,57 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
                 ),
               ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCameraErrorWidget(String errorMessage) {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF1A1A1A),
+            Color(0xFF2E2E2E),
+          ],
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.videocam_off_rounded,
+              color: Colors.grey[400],
+              size: 48,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Camera Unavailable',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                errorMessage,
+                style: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
           ],
         ),
       ),

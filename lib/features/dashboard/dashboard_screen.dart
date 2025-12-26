@@ -613,13 +613,13 @@ class DashboardScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(20),
                 onTap: onTap,
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        width: 48,
-                        height: 48,
+                        width: 44,
+                        height: 44,
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
@@ -627,7 +627,7 @@ class DashboardScreen extends ConsumerWidget {
                         child: Icon(
                           icon,
                           color: Colors.white,
-                          size: 24,
+                          size: 22,
                         ),
                       ),
                       const Spacer(),
@@ -635,20 +635,20 @@ class DashboardScreen extends ConsumerWidget {
                         title,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       Text(
                         subtitle,
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.8),
-                          fontSize: 12,
+                          fontSize: 11,
                         ),
-                        maxLines: 2,
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
