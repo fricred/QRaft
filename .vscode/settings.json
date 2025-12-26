@@ -57,5 +57,14 @@
     "**/ios/Runner.xcworkspace": true,
     "**/macos/Runner.xcodeproj": true,
     "**/macos/Runner.xcworkspace": true
-  }
+  },
+  "cSpell.words": [
+    "ampm",
+    "colombian",
+    "networkname",
+    "nopass",
+    "URLQR",
+    "vcard"
+  ],
+  "java.configuration.updateBuildConfiguration": "interactive"
 }
