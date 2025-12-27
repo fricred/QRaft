@@ -11,6 +11,7 @@ import '../controllers/qr_customization_controller.dart';
 import '../controllers/qr_generator_controller.dart';
 import '../providers/qr_providers.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
+import '../../../qr_library/presentation/providers/qr_library_providers.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -808,6 +809,9 @@ class _TextQRScreenState extends ConsumerState<TextQRScreen>
 
         await controller.updateQRCode(updatedQR);
 
+        // Invalidate provider to refresh UI across app
+        ref.invalidate(userQRCodesProvider);
+
         if (mounted) {
           final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
@@ -836,6 +840,9 @@ class _TextQRScreenState extends ConsumerState<TextQRScreen>
           userId: authProvider.currentUser!.id,
           customization: customizationState.customization,
         );
+
+        // Invalidate provider to refresh UI across app
+        ref.invalidate(userQRCodesProvider);
 
         if (mounted) {
           final l10n = AppLocalizations.of(context);
