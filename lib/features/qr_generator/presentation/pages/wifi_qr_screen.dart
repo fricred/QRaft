@@ -15,6 +15,7 @@ import '../../../subscription/presentation/providers/feature_gate_providers.dart
 import '../../../subscription/presentation/providers/subscription_providers.dart';
 import '../../../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
 import '../../../subscription/presentation/widgets/feature_locked_overlay.dart';
+import '../../../ads/ads.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -298,6 +299,13 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Rewarded ad button for free users (opt-in bonus)
+                if (widget.editingQRCode == null)
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 12),
+                    child: ExtraQRSlotAdButton(compact: true),
+                  ),
+
                 PrimaryGlassButton(
                   text: widget.editingQRCode != null
                     ? (AppLocalizations.of(context)?.saveChanges ?? 'Save Changes')
@@ -307,7 +315,7 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
                   onPressed: wifiState.isValid ? _saveQRCode : null,
                   width: double.infinity,
                 ),
-                
+
                 if (!wifiState.isValid) ...[
                   const SizedBox(height: 8),
                   Text(

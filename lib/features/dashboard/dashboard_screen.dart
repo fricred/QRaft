@@ -10,6 +10,7 @@ import '../qr_generator/domain/entities/qr_code_entity.dart';
 import '../subscription/presentation/providers/subscription_providers.dart';
 import '../subscription/presentation/widgets/qr_limit_indicator.dart';
 import '../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
+import '../ads/ads.dart';
 import 'providers/dashboard_providers.dart';
 import '../../shared/widgets/qraft_logo.dart';
 import '../../l10n/app_localizations.dart';
@@ -185,6 +186,9 @@ class DashboardScreen extends ConsumerWidget {
                   ).animate()
                     .fadeIn(duration: 300.ms, delay: 150.ms, curve: Curves.easeOutCubic)
                     .slideY(begin: 0.15, duration: 300.ms, delay: 150.ms, curve: Curves.easeOutQuart),
+
+                  // Banner Ad (only for free users)
+                  StyledBannerAd(adUnitId: AdUnitIds.bannerDashboard),
 
                   const SizedBox(height: 24),
 

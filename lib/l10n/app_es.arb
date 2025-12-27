@@ -596,7 +596,6 @@
   "getStartedPro": "Comenzar",
   "unableToLoadProducts": "No se pueden cargar los productos",
   "checkConnectionRetry": "Por favor verifica tu conexión e intenta de nuevo",
-  "retry": "Reintentar",
   "paymentTerms": "El pago se cargará a tu cuenta. La suscripción se renueva automáticamente a menos que la canceles al menos 24 horas antes del final del período actual.",
 
   "proMonthly": "Pro Mensual",
@@ -620,5 +619,14 @@
   },
   "neverExpires": "Nunca expira",
   "billingIssue": "Actualizar método de pago",
-  "manageSubscription": "Gestionar Suscripción"
+  "manageSubscription": "Gestionar Suscripción",
+
+  "watchAdForBonus": "Ver Anuncio para Bonus",
+  "getExtraQRSlot": "Obtén +1 código QR por 24h",
+  "adLoadingError": "Anuncio no disponible. Intenta más tarde.",
+  "unlockWithAd": "Desbloquear con Anuncio",
+  "watchAdToUnlock": "Mira un video corto para desbloquear",
+  "adRewardGranted": "¡Bonus desbloqueado!",
+  "supportWithAds": "Apóyanos viendo anuncios",
+  "sponsoredAd": "Patrocinado"
 }

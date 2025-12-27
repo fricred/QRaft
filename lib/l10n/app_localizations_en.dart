@@ -1895,4 +1895,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get manageSubscription => 'Manage Subscription';
+
+  @override
+  String get watchAdForBonus => 'Watch Ad for Bonus';
+
+  @override
+  String get getExtraQRSlot => 'Get +1 QR slot for 24h';
+
+  @override
+  String get adLoadingError => 'Ad not available. Try again later.';
+
+  @override
+  String get unlockWithAd => 'Unlock with Ad';
+
+  @override
+  String get watchAdToUnlock => 'Watch a short video to unlock';
+
+  @override
+  String get adRewardGranted => 'Bonus unlocked!';
+
+  @override
+  String get supportWithAds => 'Support us by watching ads';
+
+  @override
+  String get sponsoredAd => 'Sponsored';
 }

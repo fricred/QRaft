@@ -1930,4 +1930,28 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get manageSubscription => 'Gestionar Suscripción';
+
+  @override
+  String get watchAdForBonus => 'Ver Anuncio para Bonus';
+
+  @override
+  String get getExtraQRSlot => 'Obtén +1 código QR por 24h';
+
+  @override
+  String get adLoadingError => 'Anuncio no disponible. Intenta más tarde.';
+
+  @override
+  String get unlockWithAd => 'Desbloquear con Anuncio';
+
+  @override
+  String get watchAdToUnlock => 'Mira un video corto para desbloquear';
+
+  @override
+  String get adRewardGranted => '¡Bonus desbloqueado!';
+
+  @override
+  String get supportWithAds => 'Apóyanos viendo anuncios';
+
+  @override
+  String get sponsoredAd => 'Patrocinado';
 }
