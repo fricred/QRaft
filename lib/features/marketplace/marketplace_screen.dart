@@ -277,7 +277,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
                 borderRadius: BorderRadius.circular(16),
                 onTap: () => _showProductDetails(product),
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -296,30 +296,32 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
                         ),
                       ),
 
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
 
                       // Product title
                       Text(
                         product['name'] as String,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
 
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
 
                       // Material
                       Text(
                         product['material'] as String,
                         style: TextStyle(
                           color: Colors.grey[400],
-                          fontSize: 14,
+                          fontSize: 13,
                         ),
                       ),
 
-                      const Spacer(),
+                      const SizedBox(height: 8),
 
                       // Price and add button
                       Row(

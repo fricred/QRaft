@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:math' show log;
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../shared/widgets/glass_button.dart';
@@ -30,6 +32,47 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
   final PageController _pageController = PageController();
   final Set<String> _processingFavorites = {};
 
+  // Search state
+  bool _isSearchExpanded = false;
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  String _searchQuery = '';
+  Set<String> _selectedFilters = {'all'};
+  Timer? _debounceTimer;
+
+  // Filter chip definitions (labels resolved via _getFilterLabel)
+  static const List<Map<String, dynamic>> _filterChipDefs = [
+    {'id': 'all', 'icon': Icons.filter_list_rounded, 'color': Color(0xFF00FF88)},
+    {'id': 'url', 'icon': Icons.link_rounded, 'color': Color(0xFF3B82F6)},
+    {'id': 'wifi', 'icon': Icons.wifi_rounded, 'color': Color(0xFF8B5CF6)},
+    {'id': 'email', 'icon': Icons.email_rounded, 'color': Color(0xFFF59E0B)},
+    {'id': 'vcard', 'icon': Icons.person_rounded, 'color': Color(0xFF00FF88)},
+    {'id': 'geo', 'icon': Icons.location_on_rounded, 'color': Color(0xFFF97316)},
+    {'id': 'text', 'icon': Icons.text_fields_rounded, 'color': Color(0xFF94A3B8)},
+  ];
+
+  String _getFilterLabel(String id, AppLocalizations l10n) {
+    switch (id) {
+      case 'all': return l10n.filterAll;
+      case 'url': return l10n.filterUrl;
+      case 'wifi': return l10n.filterWifi;
+      case 'email': return l10n.filterEmail;
+      case 'vcard': return l10n.filterVcard;
+      case 'geo': return l10n.filterLocation;
+      case 'text': return l10n.filterText;
+      default: return id;
+    }
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    _pageController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -48,44 +91,85 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.qrLibrary,
-                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 28,
+                        child: AnimatedCrossFade(
+                          duration: const Duration(milliseconds: 250),
+                          crossFadeState: _isSearchExpanded
+                              ? CrossFadeState.showSecond
+                              : CrossFadeState.showFirst,
+                          firstChild: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.qrLibrary,
+                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 28,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              l10n.manageQRCodes,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.grey[400],
-                                fontSize: 16,
+                              const SizedBox(height: 4),
+                              Text(
+                                l10n.manageQRCodes,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Colors.grey[400],
+                                  fontSize: 16,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
+                          secondChild: Row(
+                            children: [
+                              // Back button when search is expanded
+                              GestureDetector(
+                                onTap: _toggleSearch,
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF2E2E2E),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Icon(
+                                    Icons.arrow_back_ios_new_rounded,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(child: _buildExpandableSearchBar(l10n)),
+                            ],
+                          ),
                         ),
                       ),
-                      // Search button
-                      IconButton(
-                        onPressed: () => _showSearchDialog(),
-                        icon: const Icon(
-                          Icons.search_rounded,
-                          color: Colors.white,
-                          size: 28,
+                      // Search button (only visible when not expanded)
+                      if (!_isSearchExpanded)
+                        AnimatedOpacity(
+                          duration: const Duration(milliseconds: 200),
+                          opacity: _isSearchExpanded ? 0.0 : 1.0,
+                          child: IconButton(
+                            onPressed: _toggleSearch,
+                            icon: const Icon(
+                              Icons.search_rounded,
+                              color: Colors.white,
+                              size: 28,
+                            ),
+                            style: IconButton.styleFrom(
+                              backgroundColor: const Color(0xFF2E2E2E),
+                              padding: const EdgeInsets.all(12),
+                            ),
+                          ),
                         ),
-                        style: IconButton.styleFrom(
-                          backgroundColor: const Color(0xFF2E2E2E),
-                          padding: const EdgeInsets.all(12),
-                        ),
-                      ),
                     ],
                   ),
-                  
+
+                  // Filter chips (appear when search is expanded)
+                  if (_isSearchExpanded)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: _buildFilterChips(l10n),
+                    ),
+
                   const SizedBox(height: 24),
                   
                   // Tab selector with glassmorphism
@@ -250,7 +334,14 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
                     if (qrCodes.isEmpty) {
                       return _buildEmptyQRLibrary(l10n);
                     }
-                    
+
+                    // Apply search and filter
+                    final filteredCodes = _getFilteredQRCodes(qrCodes);
+
+                    if (filteredCodes.isEmpty && (_searchQuery.isNotEmpty || !_selectedFilters.contains('all'))) {
+                      return _buildNoResultsState(l10n);
+                    }
+
                     return GridView.builder(
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
@@ -258,10 +349,10 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
                         mainAxisSpacing: 16,
                         childAspectRatio: 0.75, // Polaroid aspect ratio - taller cards
                       ),
-                      itemCount: qrCodes.length,
+                      itemCount: filteredCodes.length,
                       itemBuilder: (context, index) {
                         final delay = (100 + (40.0 * log(index + 2))).toInt();
-                        return _buildEntityQRCard(qrCodes[index], l10n).animate()
+                        return _buildEntityQRCard(filteredCodes[index], l10n).animate()
                           .fadeIn(
                             duration: 300.ms,
                             delay: delay.ms,
@@ -569,106 +660,366 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
     );
   }
 
+  // ============ SEARCH FUNCTIONALITY ============
 
+  void _onSearchChanged(String value) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        setState(() {
+          _searchQuery = value.toLowerCase().trim();
+        });
+      }
+    });
+  }
 
-  void _showSearchDialog() {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: const Color(0xFF2E2E2E),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF1A73E8), Color(0xFF00FF88)],
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(
-                    Icons.search_rounded,
-                    color: Colors.white,
-                    size: 32,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.searchQRCodes,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  style: TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    hintText: l10n.searchPlaceholder,
-                    hintStyle: TextStyle(color: Colors.grey[400]),
-                    filled: true,
-                    fillColor: const Color(0xFF1A1A1A),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    prefixIcon: Icon(Icons.search_rounded, color: Colors.grey[400]),
-                  ),
-                  onSubmitted: (value) {
-                    Navigator.of(context).pop();
-                    // TODO: Implement search functionality
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(l10n.searchComingSoon),
-                        backgroundColor: const Color(0xFF2E2E2E),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SecondaryGlassButton(
-                        text: l10n.cancel,
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: PrimaryGlassButton(
-                        text: l10n.search,
-                        icon: Icons.search_rounded,
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          // TODO: Implement search functionality
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(l10n.searchComingSoon),
-                              backgroundColor: const Color(0xFF2E2E2E),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+  void _toggleSearch() {
+    HapticFeedback.lightImpact();
+    setState(() {
+      _isSearchExpanded = !_isSearchExpanded;
+      if (_isSearchExpanded) {
+        _searchFocusNode.requestFocus();
+      } else {
+        _searchController.clear();
+        _searchQuery = '';
+        _selectedFilters = {'all'};
+        _searchFocusNode.unfocus();
+      }
+    });
+  }
+
+  void _clearSearch() {
+    HapticFeedback.selectionClick();
+    _searchController.clear();
+    setState(() {
+      _searchQuery = '';
+    });
+    _searchFocusNode.requestFocus();
+  }
+
+  void _toggleFilter(String filterId) {
+    HapticFeedback.selectionClick();
+    setState(() {
+      if (filterId == 'all') {
+        _selectedFilters = {'all'};
+      } else {
+        _selectedFilters.remove('all');
+        if (_selectedFilters.contains(filterId)) {
+          _selectedFilters.remove(filterId);
+          if (_selectedFilters.isEmpty) {
+            _selectedFilters = {'all'};
+          }
+        } else {
+          _selectedFilters.add(filterId);
+        }
+      }
+    });
+  }
+
+  bool _matchesFilters(QRCodeEntity qr) {
+    // Check text query
+    if (_searchQuery.isNotEmpty) {
+      final nameMatch = qr.name.toLowerCase().contains(_searchQuery);
+      final dataMatch = qr.displayData.toLowerCase().contains(_searchQuery);
+      if (!nameMatch && !dataMatch) return false;
+    }
+
+    // Check type filters
+    if (_selectedFilters.contains('all')) return true;
+    return _selectedFilters.contains(qr.type.identifier.toLowerCase());
+  }
+
+  List<QRCodeEntity> _getFilteredQRCodes(List<QRCodeEntity> qrCodes) {
+    if (_searchQuery.isEmpty && _selectedFilters.contains('all')) {
+      return qrCodes;
+    }
+    return qrCodes.where(_matchesFilters).toList();
+  }
+
+  Widget _buildExpandableSearchBar(AppLocalizations l10n) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+      height: _isSearchExpanded ? 48 : 0,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 200),
+        opacity: _isSearchExpanded ? 1.0 : 0.0,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              height: 48,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    const Color(0xFF2E2E2E).withValues(alpha: 0.8),
+                    const Color(0xFF1A1A1A).withValues(alpha: 0.9),
                   ],
                 ),
-              ],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color(0xFF00FF88).withValues(alpha: 0.3),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF00FF88).withValues(alpha: 0.15),
+                    blurRadius: 12,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const SizedBox(width: 12),
+                  const Icon(
+                    Icons.search_rounded,
+                    color: Color(0xFF00FF88),
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      focusNode: _searchFocusNode,
+                      onChanged: _onSearchChanged,
+                      cursorColor: const Color(0xFF00FF88),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: l10n.searchByNameTypeContent,
+                        hintStyle: TextStyle(
+                          color: Colors.grey[500],
+                          fontSize: 14,
+                        ),
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ),
+                  if (_searchQuery.isNotEmpty)
+                    GestureDetector(
+                      onTap: _clearSearch,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        child: const Icon(
+                          Icons.close_rounded,
+                          color: Colors.grey,
+                          size: 18,
+                        ),
+                      ),
+                    ).animate()
+                      .fadeIn(duration: 150.ms)
+                      .scale(begin: const Offset(0.8, 0.8), duration: 150.ms),
+                  const SizedBox(width: 8),
+                ],
+              ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
+  }
+
+  Widget _buildFilterChips(AppLocalizations l10n) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOutCubic,
+      height: _isSearchExpanded ? 44 : 0,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 200),
+        opacity: _isSearchExpanded ? 1.0 : 0.0,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            children: List.generate(_filterChipDefs.length, (index) {
+              final chip = _filterChipDefs[index];
+              final chipId = chip['id'] as String;
+              final isSelected = _selectedFilters.contains(chipId);
+              final chipColor = chip['color'] as Color;
+              final chipLabel = _getFilterLabel(chipId, l10n);
+
+              return Padding(
+                padding: EdgeInsets.only(right: index < _filterChipDefs.length - 1 ? 8 : 0),
+                child: GestureDetector(
+                  onTap: () => _toggleFilter(chipId),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOutCubic,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? chipColor.withValues(alpha: 0.2)
+                          : const Color(0xFF2E2E2E),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isSelected
+                            ? chipColor.withValues(alpha: 0.5)
+                            : Colors.white.withValues(alpha: 0.1),
+                        width: 1,
+                      ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: chipColor.withValues(alpha: 0.2),
+                                blurRadius: 8,
+                                spreadRadius: 0,
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          chip['icon'] as IconData,
+                          size: 14,
+                          color: isSelected ? chipColor : Colors.grey[500],
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          chipLabel,
+                          style: TextStyle(
+                            color: isSelected ? chipColor : Colors.grey[400],
+                            fontSize: 12,
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ).animate(delay: (index * 30).ms)
+                  .fadeIn(duration: 200.ms, curve: Curves.easeOutCubic)
+                  .slideX(begin: 0.2, duration: 200.ms, curve: Curves.easeOutCubic),
+              );
+            }),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoResultsState(AppLocalizations l10n) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Icon with shake animation
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFFF59E0B), Color(0xFFEF4444)],
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(
+              Icons.search_off_rounded,
+              color: Colors.white,
+              size: 32,
+            ),
+          ).animate()
+            .shake(duration: 400.ms, hz: 2)
+            .then()
+            .shimmer(duration: 600.ms, color: Colors.white.withValues(alpha: 0.2)),
+
+          const SizedBox(height: 16),
+
+          Text(
+            l10n.noQRCodesFound,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ).animate().fadeIn(duration: 300.ms, delay: 100.ms),
+
+          const SizedBox(height: 8),
+
+          Text(
+            l10n.tryDifferentSearchTerm,
+            style: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 14,
+            ),
+          ).animate().fadeIn(duration: 300.ms, delay: 200.ms),
+
+          const SizedBox(height: 20),
+
+          TextButton(
+            onPressed: () {
+              _clearSearch();
+              setState(() => _selectedFilters = {'all'});
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: const Color(0xFF00FF88),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.refresh_rounded, size: 18),
+                const SizedBox(width: 6),
+                Text(l10n.clearFilters),
+              ],
+            ),
+          ).animate().fadeIn(duration: 300.ms, delay: 300.ms),
+        ],
+      ),
+    );
+  }
+
+  /// Highlights matching text in search results
+  List<TextSpan> _highlightMatches(String text, String query) {
+    if (query.isEmpty) {
+      return [TextSpan(text: text, style: const TextStyle(color: Colors.white))];
+    }
+
+    final spans = <TextSpan>[];
+    final lowerText = text.toLowerCase();
+    final lowerQuery = query.toLowerCase();
+    int start = 0;
+
+    while (true) {
+      final index = lowerText.indexOf(lowerQuery, start);
+      if (index == -1) {
+        if (start < text.length) {
+          spans.add(TextSpan(
+            text: text.substring(start),
+            style: const TextStyle(color: Colors.white),
+          ));
+        }
+        break;
+      }
+
+      if (index > start) {
+        spans.add(TextSpan(
+          text: text.substring(start, index),
+          style: const TextStyle(color: Colors.white),
+        ));
+      }
+
+      spans.add(TextSpan(
+        text: text.substring(index, index + query.length),
+        style: const TextStyle(
+          color: Color(0xFF00FF88),
+          fontWeight: FontWeight.bold,
+        ),
+      ));
+
+      start = index + query.length;
+    }
+
+    return spans.isEmpty
+        ? [TextSpan(text: text, style: const TextStyle(color: Colors.white))]
+        : spans;
   }
 
   Widget _buildEmptyQRLibrary(AppLocalizations l10n) {
@@ -1027,16 +1378,28 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
               onTap: () => _showEntityQRDetails(qrEntity),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                child: _searchQuery.isNotEmpty
+                    ? RichText(
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        text: TextSpan(
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          children: _highlightMatches(title, _searchQuery),
+                        ),
+                      )
+                    : Text(
+                        title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
               ),
             ),
           ),

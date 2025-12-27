@@ -1011,6 +1011,36 @@ class AppLocalizationsEs extends AppLocalizations {
   String get createFirstQRCode => 'Crea tu primer código QR para verlo aquí';
 
   @override
+  String get noQRCodesFound => 'No Se Encontraron Códigos QR';
+
+  @override
+  String get clearFilters => 'Limpiar Filtros';
+
+  @override
+  String get tryDifferentSearchTerm => 'Intenta con otro término de búsqueda';
+
+  @override
+  String get filterAll => 'Todos';
+
+  @override
+  String get filterUrl => 'URL';
+
+  @override
+  String get filterWifi => 'WiFi';
+
+  @override
+  String get filterEmail => 'Email';
+
+  @override
+  String get filterVcard => 'vCard';
+
+  @override
+  String get filterLocation => 'Ubicación';
+
+  @override
+  String get filterText => 'Texto';
+
+  @override
   String get noFavoritesYet => 'Aún No Hay Favoritos';
 
   @override

@@ -1928,6 +1928,66 @@ abstract class AppLocalizations {
   /// **'Create your first QR code to see it here'**
   String get createFirstQRCode;
 
+  /// Empty state title when search returns no results
+  ///
+  /// In en, this message translates to:
+  /// **'No QR Codes Found'**
+  String get noQRCodesFound;
+
+  /// Button text to clear search filters
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Filters'**
+  String get clearFilters;
+
+  /// Hint text when search returns no results
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different search term'**
+  String get tryDifferentSearchTerm;
+
+  /// Filter chip label for all QR types
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// Filter chip label for URL QR type
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get filterUrl;
+
+  /// Filter chip label for WiFi QR type
+  ///
+  /// In en, this message translates to:
+  /// **'WiFi'**
+  String get filterWifi;
+
+  /// Filter chip label for Email QR type
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get filterEmail;
+
+  /// Filter chip label for vCard QR type
+  ///
+  /// In en, this message translates to:
+  /// **'vCard'**
+  String get filterVcard;
+
+  /// Filter chip label for Location QR type
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get filterLocation;
+
+  /// Filter chip label for Text QR type
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get filterText;
+
   /// Empty state title when no favorite QR codes exist
   ///
   /// In en, this message translates to:

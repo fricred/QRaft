@@ -991,6 +991,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createFirstQRCode => 'Create your first QR code to see it here';
 
   @override
+  String get noQRCodesFound => 'No QR Codes Found';
+
+  @override
+  String get clearFilters => 'Clear Filters';
+
+  @override
+  String get tryDifferentSearchTerm => 'Try a different search term';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get filterUrl => 'URL';
+
+  @override
+  String get filterWifi => 'WiFi';
+
+  @override
+  String get filterEmail => 'Email';
+
+  @override
+  String get filterVcard => 'vCard';
+
+  @override
+  String get filterLocation => 'Location';
+
+  @override
+  String get filterText => 'Text';
+
+  @override
   String get noFavoritesYet => 'No Favorites Yet';
 
   @override

@@ -1644,6 +1644,56 @@
     "description": "Empty state subtitle when no QR codes exist"
   },
 
+  "noQRCodesFound": "No QR Codes Found",
+  "@noQRCodesFound": {
+    "description": "Empty state title when search returns no results"
+  },
+
+  "clearFilters": "Clear Filters",
+  "@clearFilters": {
+    "description": "Button text to clear search filters"
+  },
+
+  "tryDifferentSearchTerm": "Try a different search term",
+  "@tryDifferentSearchTerm": {
+    "description": "Hint text when search returns no results"
+  },
+
+  "filterAll": "All",
+  "@filterAll": {
+    "description": "Filter chip label for all QR types"
+  },
+
+  "filterUrl": "URL",
+  "@filterUrl": {
+    "description": "Filter chip label for URL QR type"
+  },
+
+  "filterWifi": "WiFi",
+  "@filterWifi": {
+    "description": "Filter chip label for WiFi QR type"
+  },
+
+  "filterEmail": "Email",
+  "@filterEmail": {
+    "description": "Filter chip label for Email QR type"
+  },
+
+  "filterVcard": "vCard",
+  "@filterVcard": {
+    "description": "Filter chip label for vCard QR type"
+  },
+
+  "filterLocation": "Location",
+  "@filterLocation": {
+    "description": "Filter chip label for Location QR type"
+  },
+
+  "filterText": "Text",
+  "@filterText": {
+    "description": "Filter chip label for Text QR type"
+  },
+
   "noFavoritesYet": "No Favorites Yet",
   "@noFavoritesYet": {
     "description": "Empty state title when no favorite QR codes exist"
