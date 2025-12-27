@@ -1,4 +1,5 @@
 import 'dart:math' show log;
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -188,66 +189,143 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
               ),
             ),
             
-            // Action buttons
+            // Action buttons - horizontal icon row
             Padding(
               padding: const EdgeInsets.all(24.0),
-              child: Column(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // Primary actions row
-                  Row(
-                    children: [
-                      Expanded(
-                        child: SecondaryGlassButton(
-                          text: l10n.share,
-                          icon: Icons.share_rounded,
-                          onPressed: _handleShare,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: PrimaryGlassButton(
-                          text: l10n.copyData,
-                          icon: Icons.copy_rounded,
-                          onPressed: _handleCopyData,
-                        ),
-                      ),
-                    ],
+                  _buildActionButton(
+                    icon: Icons.share_rounded,
+                    label: l10n.share,
+                    onPressed: _handleShare,
+                    delayMs: 250,
                   ),
-                  const SizedBox(height: 12),
-
-                  // Secondary actions row
-                  Row(
-                    children: [
-                      Expanded(
-                        child: SecondaryGlassButton(
-                          text: l10n.edit,
-                          icon: Icons.edit_rounded,
-                          onPressed: _handleEdit,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: GlassButton(
-                          text: _isDeleting ? l10n.deletingBtn : l10n.delete,
-                          icon: _isDeleting ? null : Icons.delete_rounded,
-                          onPressed: _isDeleting ? null : _handleDelete,
-                          gradientColors: const [
-                            Color(0xFFEF4444),
-                            Color(0xFFDC2626),
-                          ],
-                          isLoading: _isDeleting,
-                        ),
-                      ),
-                    ],
+                  _buildActionButton(
+                    icon: Icons.copy_rounded,
+                    label: l10n.copyData,
+                    onPressed: _handleCopyData,
+                    delayMs: 275,
+                  ),
+                  _buildActionButton(
+                    icon: Icons.edit_rounded,
+                    label: l10n.edit,
+                    onPressed: _handleEdit,
+                    delayMs: 300,
+                  ),
+                  _buildActionButton(
+                    icon: Icons.delete_rounded,
+                    label: l10n.delete,
+                    onPressed: _isDeleting ? null : _handleDelete,
+                    isDestructive: true,
+                    isLoading: _isDeleting,
+                    delayMs: 325,
                   ),
                 ],
               ),
-            ).animate()
-              .fadeIn(duration: 300.ms, delay: 300.ms, curve: Curves.easeOutCubic)
-              .slideY(begin: 0.15, duration: 300.ms, delay: 300.ms, curve: Curves.easeOutQuart),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback? onPressed,
+    bool isDestructive = false,
+    bool isLoading = false,
+    int delayMs = 0,
+  }) {
+    final iconColor = isDestructive
+        ? const Color(0xFFEF4444)
+        : Colors.white;
+    final labelColor = isDestructive
+        ? Colors.red[300]
+        : Colors.grey[400];
+    final borderColor = isDestructive
+        ? Colors.red.withValues(alpha: 0.15)
+        : Colors.white.withValues(alpha: 0.12);
+
+    // Extract repeated value for consistency
+    const buttonRadius = BorderRadius.all(Radius.circular(16));
+
+    // Determine if button is disabled (not loading, but no action)
+    final isDisabled = onPressed == null && !isLoading;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Tooltip(
+          message: label,
+          child: Opacity(
+            opacity: isDisabled ? 0.5 : 1.0,
+            child: Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                borderRadius: buttonRadius,
+                border: Border.all(color: borderColor, width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: buttonRadius,
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2E2E2E).withValues(alpha: 0.7),
+                      borderRadius: buttonRadius,
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: onPressed,
+                        borderRadius: buttonRadius,
+                        child: Center(
+                          child: isLoading
+                              ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(iconColor),
+                                  ),
+                                )
+                              : Icon(icon, color: iconColor, size: 22),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ).animate()
+            .fadeIn(duration: 300.ms, delay: Duration(milliseconds: delayMs))
+            .scale(
+              begin: const Offset(0.9, 0.9),
+              duration: 300.ms,
+              delay: Duration(milliseconds: delayMs),
+            ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: TextStyle(
+            color: labelColor,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ).animate()
+            .fadeIn(duration: 200.ms, delay: Duration(milliseconds: delayMs + 100)),
+      ],
     );
   }
 
