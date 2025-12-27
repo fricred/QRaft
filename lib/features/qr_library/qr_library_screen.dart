@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../shared/widgets/glass_button.dart';
+import '../../shared/widgets/animated_favorite_button.dart';
 import '../main/main_scaffold.dart';
 import 'presentation/providers/qr_library_providers.dart';
 import '../qr_generator/domain/entities/qr_code_entity.dart';
@@ -24,9 +25,10 @@ class QRLibraryScreen extends ConsumerStatefulWidget {
   ConsumerState<QRLibraryScreen> createState() => _QRLibraryScreenState();
 }
 
-class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerProviderStateMixin {
+class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
   int _selectedTab = 0;
   final PageController _pageController = PageController();
+  final Set<String> _processingFavorites = {};
 
   @override
   Widget build(BuildContext context) {
@@ -1062,23 +1064,12 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // Favorite button
-                GestureDetector(
-                  onTap: () => _toggleFavorite(qrEntity),
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      qrEntity.isFavorite 
-                        ? Icons.favorite_rounded 
-                        : Icons.favorite_border_rounded,
-                      color: qrEntity.isFavorite 
-                        ? const Color(0xFFEF4444) 
-                        : Colors.grey[400],
-                      size: 18,
-                    ),
-                  ),
+                // Favorite button with animated feedback
+                AnimatedFavoriteButton(
+                  isFavorite: qrEntity.isFavorite,
+                  isProcessing: _processingFavorites.contains(qrEntity.id),
+                  onToggle: () => _toggleFavorite(qrEntity),
+                  size: 18,
                 ),
                 
                 // Share button
@@ -1183,6 +1174,10 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
 
   void _toggleFavorite(QRCodeEntity qrEntity) async {
     final l10n = AppLocalizations.of(context)!;
+
+    // Start processing animation
+    setState(() => _processingFavorites.add(qrEntity.id));
+
     try {
       // First, ensure the controller has the latest data
       final user = ref.read(authStateProvider);
@@ -1190,35 +1185,17 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
         // Load user QR codes to ensure controller state is synced
         await ref.read(qrLibraryControllerProvider.notifier).loadUserQRCodes(user.id);
       }
-      
+
       // Toggle favorite using the controller
       await ref.read(qrLibraryControllerProvider.notifier).toggleFavorite(qrEntity.id);
-      
+
       // Refresh the user QR codes provider to get updated data
       ref.invalidate(userQRCodesProvider);
-      
-      // Show success feedback
-      if (mounted) {
-        final isFavorite = !qrEntity.isFavorite;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isFavorite 
-                ? l10n.addedToFavorites(qrEntity.name) 
-                : l10n.removedFromFavorites(qrEntity.name),
-            ),
-            backgroundColor: isFavorite 
-              ? const Color(0xFF00FF88)
-              : const Color(0xFFEF4444),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-      }
+
+      // Success feedback is now handled by AnimatedFavoriteButton animation
+      // No snackbar needed - the particle burst confirms success
     } catch (e) {
-      // Show error feedback
+      // Show error feedback (only on failure)
       if (mounted) {
         String errorMessage;
         if (e.toString().contains('not found')) {
@@ -1228,7 +1205,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
         } else {
           errorMessage = l10n.failedToUpdateFavorite(qrEntity.name);
         }
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMessage),
@@ -1244,6 +1221,11 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> with TickerPr
             ),
           ),
         );
+      }
+    } finally {
+      // Stop processing animation
+      if (mounted) {
+        setState(() => _processingFavorites.remove(qrEntity.id));
       }
     }
   }
