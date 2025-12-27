@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'features/splash/splash_screen.dart';
 import 'features/auth/presentation/pages/auth_flow.dart';
 import 'features/auth/data/providers/supabase_auth_provider.dart';
@@ -24,10 +25,14 @@ Future<void> initializeApp() async {
   try {
     // Debug environment configuration
     EnvConfig.debugConfig();
-    
+
     // Initialize Supabase only
     await SupabaseService.initialize();
     debugPrint('✅ QRaft initialized with Supabase-only authentication');
+
+    // Initialize AdMob for ads
+    await MobileAds.instance.initialize();
+    debugPrint('✅ AdMob initialized');
   } catch (e) {
     // Service already initialized or error occurred, continue
     debugPrint('Initialization error: $e');

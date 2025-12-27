@@ -574,5 +574,14 @@
   "unlimitedHistory": "Historial Ilimitado",
   "accessAllScanHistory": "Accede a todo tu historial de escaneos",
   "comingSoonBanner": "Próximamente",
-  "proSubscriptionsComingSoon": "¡Las suscripciones Pro estarán disponibles pronto!\nMantente atento a las actualizaciones."
+  "proSubscriptionsComingSoon": "¡Las suscripciones Pro estarán disponibles pronto!\nMantente atento a las actualizaciones.",
+
+  "watchAdForBonus": "Ver Anuncio para Bonus",
+  "getExtraQRSlot": "Obtén +1 código QR por 24h",
+  "adLoadingError": "Anuncio no disponible. Intenta más tarde.",
+  "unlockWithAd": "Desbloquear con Anuncio",
+  "watchAdToUnlock": "Mira un video corto para desbloquear",
+  "adRewardGranted": "¡Bonus desbloqueado!",
+  "supportWithAds": "Apóyanos viendo anuncios",
+  "sponsoredAd": "Patrocinado"
 }

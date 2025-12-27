@@ -2545,5 +2545,45 @@
   "proSubscriptionsComingSoon": "Pro subscriptions will be available soon!\nStay tuned for updates.",
   "@proSubscriptionsComingSoon": {
     "description": "Coming soon message for Pro subscriptions"
+  },
+
+  "watchAdForBonus": "Watch Ad for Bonus",
+  "@watchAdForBonus": {
+    "description": "Button text to watch ad for bonus reward"
+  },
+
+  "getExtraQRSlot": "Get +1 QR slot for 24h",
+  "@getExtraQRSlot": {
+    "description": "Description for extra QR slot reward"
+  },
+
+  "adLoadingError": "Ad not available. Try again later.",
+  "@adLoadingError": {
+    "description": "Error message when ad fails to load"
+  },
+
+  "unlockWithAd": "Unlock with Ad",
+  "@unlockWithAd": {
+    "description": "Button text to unlock feature by watching ad"
+  },
+
+  "watchAdToUnlock": "Watch a short video to unlock",
+  "@watchAdToUnlock": {
+    "description": "Description for unlocking feature with ad"
+  },
+
+  "adRewardGranted": "Bonus unlocked!",
+  "@adRewardGranted": {
+    "description": "Success message when ad reward is granted"
+  },
+
+  "supportWithAds": "Support us by watching ads",
+  "@supportWithAds": {
+    "description": "Message encouraging users to watch ads"
+  },
+
+  "sponsoredAd": "Sponsored",
+  "@sponsoredAd": {
+    "description": "Label for sponsored/ad content"
   }
 }

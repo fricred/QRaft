@@ -3361,6 +3361,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pro subscriptions will be available soon!\nStay tuned for updates.'**
   String get proSubscriptionsComingSoon;
+
+  /// Button text to watch ad for bonus reward
+  ///
+  /// In en, this message translates to:
+  /// **'Watch Ad for Bonus'**
+  String get watchAdForBonus;
+
+  /// Description for extra QR slot reward
+  ///
+  /// In en, this message translates to:
+  /// **'Get +1 QR slot for 24h'**
+  String get getExtraQRSlot;
+
+  /// Error message when ad fails to load
+  ///
+  /// In en, this message translates to:
+  /// **'Ad not available. Try again later.'**
+  String get adLoadingError;
+
+  /// Button text to unlock feature by watching ad
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock with Ad'**
+  String get unlockWithAd;
+
+  /// Description for unlocking feature with ad
+  ///
+  /// In en, this message translates to:
+  /// **'Watch a short video to unlock'**
+  String get watchAdToUnlock;
+
+  /// Success message when ad reward is granted
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus unlocked!'**
+  String get adRewardGranted;
+
+  /// Message encouraging users to watch ads
+  ///
+  /// In en, this message translates to:
+  /// **'Support us by watching ads'**
+  String get supportWithAds;
+
+  /// Label for sponsored/ad content
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsored'**
+  String get sponsoredAd;
 }
 
 class _AppLocalizationsDelegate
