@@ -229,17 +229,6 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => ref.read(navigationIndexProvider.notifier).state = 1,
-        backgroundColor: const Color(0xFF00FF88),
-        child: const Icon(
-          Icons.add_rounded,
-          color: Colors.white,
-          size: 28,
-        ),
-      ).animate()
-        .fadeIn(duration: 400.ms, delay: 200.ms, curve: Curves.easeOutCubic)
-        .scale(begin: const Offset(0.7, 0.7), duration: 400.ms, delay: 200.ms, curve: Curves.easeOutBack),
     );
   }
 
