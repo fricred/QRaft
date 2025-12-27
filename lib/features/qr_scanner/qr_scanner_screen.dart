@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,7 +6,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qraft/l10n/app_localizations.dart';
-import '../../shared/widgets/glass_button.dart';
 import 'providers/qr_scanner_provider.dart';
 import 'models/scan_result.dart';
 import 'widgets/scan_result_dialog.dart';
@@ -19,6 +19,12 @@ class QRScannerScreen extends ConsumerStatefulWidget {
 }
 
 class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
+  // Design constants for bottom controls
+  static const double _sideButtonSize = 52.0;
+  static const double _mainButtonSize = 70.0;
+  static const double _labelSpacing = 8.0;
+  static const double _labelHeight = 18.0;
+
   MobileScannerController? _controller;
   bool _isControllerInitialized = false;
 
@@ -421,59 +427,163 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
     );
   }
 
+  Widget _buildGlassIconButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+    required int delayMs,
+    double size = 52,
+    double iconSize = 22,
+  }) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.12),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF2E2E2E).withValues(alpha: 0.7),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onPressed,
+                borderRadius: BorderRadius.circular(16),
+                child: Center(
+                  child: Icon(
+                    icon,
+                    color: Colors.white,
+                    size: iconSize,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ).animate()
+      .fadeIn(duration: 300.ms, delay: Duration(milliseconds: delayMs))
+      .scale(begin: const Offset(0.9, 0.9), duration: 300.ms, delay: Duration(milliseconds: delayMs));
+  }
+
   Widget _buildBottomControls(AppLocalizations l10n, bool isScanning) {
+    // Total height based on tallest element (main button + label)
+    const double totalHeight = _mainButtonSize + _labelSpacing + _labelHeight;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-            // Scan button
-            _buildScanButton(isScanning),
-            
-            const SizedBox(height: 16),
-            
-            // Action buttons row
-            Row(
+          // Gallery button (left)
+          SizedBox(
+            width: 80,
+            height: totalHeight,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // Gallery button
-                Expanded(
-                  child: SecondaryGlassButton(
-                    text: l10n.gallery,
-                    icon: Icons.photo_library_rounded,
-                    height: 48,
-                    onPressed: () => _scanFromGallery(),
-                  ).animate()
-                    .fadeIn(duration: 300.ms, delay: 250.ms, curve: Curves.easeOutCubic)
-                    .scale(begin: const Offset(0.95, 0.95), duration: 300.ms, delay: 250.ms),
+                _buildGlassIconButton(
+                  icon: Icons.photo_library_rounded,
+                  onPressed: () => _scanFromGallery(),
+                  size: _sideButtonSize,
+                  iconSize: 22,
+                  delayMs: 250,
                 ),
-                
-                const SizedBox(width: 12),
-                
-                // History button
-                Expanded(
-                  child: SecondaryGlassButton(
-                    text: l10n.scanHistory,
-                    icon: Icons.history_rounded,
-                    height: 48,
-                    onPressed: () => _navigateToHistory(),
-                  ).animate()
-                    .fadeIn(duration: 300.ms, delay: 300.ms, curve: Curves.easeOutCubic)
-                    .scale(begin: const Offset(0.95, 0.95), duration: 300.ms, delay: 300.ms),
-                ),
+                const SizedBox(height: _labelSpacing),
+                Text(
+                  l10n.gallery,
+                  style: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ).animate()
+                  .fadeIn(duration: 200.ms, delay: 350.ms),
               ],
             ),
-          ],
-        ),
-      );
+          ),
+
+          // Scan button (center, larger)
+          SizedBox(
+            width: 90,
+            height: totalHeight,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                _buildScanButton(isScanning),
+                const SizedBox(height: _labelSpacing),
+                Text(
+                  l10n.scanner,
+                  style: TextStyle(
+                    color: isScanning ? Colors.red[300] : const Color(0xFF00FF88),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ).animate()
+                  .fadeIn(duration: 200.ms, delay: 300.ms),
+              ],
+            ),
+          ),
+
+          // History button (right)
+          SizedBox(
+            width: 80,
+            height: totalHeight,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                _buildGlassIconButton(
+                  icon: Icons.history_rounded,
+                  onPressed: () => _navigateToHistory(),
+                  size: _sideButtonSize,
+                  iconSize: 22,
+                  delayMs: 300,
+                ),
+                const SizedBox(height: _labelSpacing),
+                Text(
+                  l10n.scans,
+                  style: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ).animate()
+                  .fadeIn(duration: 200.ms, delay: 400.ms),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildScanButton(bool isScanning) {
     return Container(
-      width: 70,
-      height: 70,
+      width: _mainButtonSize,
+      height: _mainButtonSize,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: isScanning 
+          colors: isScanning
             ? [Colors.red[400]!, Colors.red[600]!]
             : [const Color(0xFF00FF88), const Color(0xFF1A73E8)],
         ),
@@ -490,7 +600,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(35),
+          borderRadius: BorderRadius.circular(_mainButtonSize / 2),
           onTap: () {
             if (isScanning) {
               ref.read(qrScannerProvider.notifier).stopScanning();
