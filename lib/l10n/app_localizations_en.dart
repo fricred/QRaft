@@ -1638,4 +1638,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorAddingToCart => 'Error adding to cart. Please try again.';
+
+  @override
+  String get marketplaceComingSoon => 'Coming Soon';
+
+  @override
+  String get marketplaceComingSoonDesc =>
+      'We\'re crafting an amazing marketplace where you can order laser-engraved QR codes on premium materials.';
+
+  @override
+  String get marketplaceFeature1 => 'Custom QR Designs';
+
+  @override
+  String get marketplaceFeature2 => 'Premium Materials';
+
+  @override
+  String get marketplaceFeature3 => 'Fast Shipping';
 }

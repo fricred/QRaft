@@ -516,5 +516,11 @@
   "added": "¡Agregado!",
   "addedToCart": "agregado al carrito!",
   "viewCart": "Ver Carrito",
-  "errorAddingToCart": "Error al agregar al carrito. Inténtalo de nuevo."
+  "errorAddingToCart": "Error al agregar al carrito. Inténtalo de nuevo.",
+
+  "marketplaceComingSoon": "Próximamente",
+  "marketplaceComingSoonDesc": "Estamos creando un increíble marketplace donde podrás ordenar códigos QR grabados con láser en materiales premium.",
+  "marketplaceFeature1": "Diseños QR Personalizados",
+  "marketplaceFeature2": "Materiales Premium",
+  "marketplaceFeature3": "Envío Rápido"
 }

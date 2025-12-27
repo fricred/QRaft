@@ -1670,4 +1670,20 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get errorAddingToCart =>
       'Error al agregar al carrito. Inténtalo de nuevo.';
+
+  @override
+  String get marketplaceComingSoon => 'Próximamente';
+
+  @override
+  String get marketplaceComingSoonDesc =>
+      'Estamos creando un increíble marketplace donde podrás ordenar códigos QR grabados con láser en materiales premium.';
+
+  @override
+  String get marketplaceFeature1 => 'Diseños QR Personalizados';
+
+  @override
+  String get marketplaceFeature2 => 'Materiales Premium';
+
+  @override
+  String get marketplaceFeature3 => 'Envío Rápido';
 }

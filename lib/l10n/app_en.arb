@@ -2292,5 +2292,30 @@
   "errorAddingToCart": "Error adding to cart. Please try again.",
   "@errorAddingToCart": {
     "description": "Error message when adding product to cart fails"
+  },
+
+  "marketplaceComingSoon": "Coming Soon",
+  "@marketplaceComingSoon": {
+    "description": "Title for marketplace coming soon overlay"
+  },
+
+  "marketplaceComingSoonDesc": "We're crafting an amazing marketplace where you can order laser-engraved QR codes on premium materials.",
+  "@marketplaceComingSoonDesc": {
+    "description": "Description for marketplace coming soon overlay"
+  },
+
+  "marketplaceFeature1": "Custom QR Designs",
+  "@marketplaceFeature1": {
+    "description": "Feature 1 for marketplace coming soon"
+  },
+
+  "marketplaceFeature2": "Premium Materials",
+  "@marketplaceFeature2": {
+    "description": "Feature 2 for marketplace coming soon"
+  },
+
+  "marketplaceFeature3": "Fast Shipping",
+  "@marketplaceFeature3": {
+    "description": "Feature 3 for marketplace coming soon"
   }
 }

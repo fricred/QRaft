@@ -3073,6 +3073,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error adding to cart. Please try again.'**
   String get errorAddingToCart;
+
+  /// Title for marketplace coming soon overlay
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon'**
+  String get marketplaceComingSoon;
+
+  /// Description for marketplace coming soon overlay
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re crafting an amazing marketplace where you can order laser-engraved QR codes on premium materials.'**
+  String get marketplaceComingSoonDesc;
+
+  /// Feature 1 for marketplace coming soon
+  ///
+  /// In en, this message translates to:
+  /// **'Custom QR Designs'**
+  String get marketplaceFeature1;
+
+  /// Feature 2 for marketplace coming soon
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Materials'**
+  String get marketplaceFeature2;
+
+  /// Feature 3 for marketplace coming soon
+  ///
+  /// In en, this message translates to:
+  /// **'Fast Shipping'**
+  String get marketplaceFeature3;
 }
 
 class _AppLocalizationsDelegate

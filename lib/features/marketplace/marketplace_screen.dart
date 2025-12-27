@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../shared/widgets/glass_button.dart';
 import 'domain/entities/product_entity.dart';
 import 'presentation/pages/product_details_screen.dart';
+import 'presentation/widgets/coming_soon_overlay.dart';
 
 class MarketplaceScreen extends StatefulWidget {
   const MarketplaceScreen({super.key});
@@ -21,9 +22,12 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
-      body: SafeArea(
-        child: Column(
-          children: [
+      body: Stack(
+        children: [
+          // Main content (visible but blurred behind overlay)
+          SafeArea(
+            child: Column(
+              children: [
             // Header
             Padding(
               padding: const EdgeInsets.all(24.0),
@@ -173,8 +177,15 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
                 ],
               ),
             ),
-          ],
-        ),
+              ],
+            ),
+          ),
+
+          // Coming Soon overlay
+          const Positioned.fill(
+            child: ComingSoonOverlay(),
+          ),
+        ],
       ),
     );
   }
