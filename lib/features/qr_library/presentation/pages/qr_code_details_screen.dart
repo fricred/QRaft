@@ -9,6 +9,10 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../qr_generator/domain/entities/qr_code_entity.dart';
 import '../../../qr_generator/presentation/pages/url_qr_screen.dart';
 import '../../../qr_generator/presentation/pages/text_qr_screen.dart';
+import '../../../qr_generator/presentation/pages/personal_info_qr_screen.dart';
+import '../../../qr_generator/presentation/pages/wifi_qr_screen.dart';
+import '../../../qr_generator/presentation/pages/email_qr_screen.dart';
+import '../../../qr_generator/presentation/pages/location_qr_screen.dart';
 import '../widgets/qr_code_display_widget.dart';
 import '../providers/qr_library_providers.dart';
 
@@ -447,57 +451,17 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
         screen = TextQRScreen(editingQRCode: widget.qrEntity);
         break;
       case 'vcard':
-        // Import PersonalInfoQRScreen when available
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.editVCardComingSoon),
-            backgroundColor: Colors.grey[600],
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-        return;
+        screen = PersonalInfoQRScreen(editingQRCode: widget.qrEntity);
+        break;
       case 'wifi':
-        // Import WiFiQRScreen when available
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.editWifiComingSoon),
-            backgroundColor: Colors.grey[600],
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-        return;
+        screen = WiFiQRScreen(editingQRCode: widget.qrEntity);
+        break;
       case 'email':
-        // Import EmailQRScreen when available
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.editEmailComingSoon),
-            backgroundColor: Colors.grey[600],
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-        return;
-      case 'location':
-        // Import LocationQRScreen when available
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.editLocationComingSoon),
-            backgroundColor: Colors.grey[600],
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-        return;
+        screen = EmailQRScreen(editingQRCode: widget.qrEntity);
+        break;
+      case 'geo':
+        screen = LocationQRScreen(editingQRCode: widget.qrEntity);
+        break;
       default:
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

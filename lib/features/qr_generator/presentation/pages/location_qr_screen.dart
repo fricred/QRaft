@@ -17,6 +17,7 @@ import '../../../qr_library/presentation/providers/qr_library_providers.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'dart:ui';
 
 /// Location Form State
 class LocationFormState {
@@ -1795,55 +1796,6 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Current location button (only show if we have current location)
-                if (_currentLocation != null && !_isLoadingLocation) ...[
-                  Row(
-                    children: [
-                      Expanded(
-                        child: SecondaryGlassButton(
-                          text: AppLocalizations.of(context)?.useCurrent ?? 'Use Current Location',
-                          icon: Icons.my_location_rounded,
-                          onPressed: () {
-                            setState(() {
-                              _selectedLocation = _currentLocation;
-                            });
-                            _mapController.move(_currentLocation!, 15.0);
-                          },
-                          width: double.infinity,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1A73E8).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: const Color(0xFF1A73E8).withValues(alpha: 0.3),
-                            width: 1,
-                          ),
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(12),
-                            onTap: () {
-                              _mapController.move(_currentLocation!, 15.0);
-                            },
-                            child: const Icon(
-                              Icons.center_focus_strong_rounded,
-                              color: Color(0xFF1A73E8),
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                
                 // Selected location info
                 if (_selectedLocation != null) ...[
                   Container(
@@ -1862,9 +1814,9 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       children: [
                         Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.location_on_rounded,
-                              color: const Color(0xFF1A73E8),
+                              color: Color(0xFF1A73E8),
                               size: 16,
                             ),
                             const SizedBox(width: 6),
@@ -1892,12 +1844,36 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                   ),
                   const SizedBox(height: 16),
                 ],
-                
-                PrimaryGlassButton(
-                  text: AppLocalizations.of(context)?.confirmLocation ?? 'Confirm Location',
-                  icon: Icons.check_rounded,
-                  onPressed: _selectedLocation != null ? _confirmLocation : null,
-                  width: double.infinity,
+
+                // Action buttons - horizontal icon row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    if (_currentLocation != null && !_isLoadingLocation)
+                      _buildActionButton(
+                        icon: Icons.my_location_rounded,
+                        label: AppLocalizations.of(context)?.useCurrent ?? 'Current',
+                        onPressed: () {
+                          setState(() => _selectedLocation = _currentLocation);
+                          _mapController.move(_currentLocation!, 15.0);
+                        },
+                        delayMs: 250,
+                      ),
+                    if (_currentLocation != null && !_isLoadingLocation)
+                      _buildActionButton(
+                        icon: Icons.center_focus_strong_rounded,
+                        label: 'Center',
+                        onPressed: () => _mapController.move(_currentLocation!, 15.0),
+                        delayMs: 275,
+                      ),
+                    _buildActionButton(
+                      icon: Icons.check_circle_rounded,
+                      label: AppLocalizations.of(context)?.confirmLocation ?? 'Confirm',
+                      onPressed: _selectedLocation != null ? _confirmLocation : null,
+                      isPrimary: true,
+                      delayMs: 300,
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -1911,5 +1887,101 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     if (_selectedLocation != null) {
       Navigator.of(context).pop(_selectedLocation);
     }
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback? onPressed,
+    bool isPrimary = false,
+    bool isLoading = false,
+    int delayMs = 0,
+  }) {
+    final iconColor = isPrimary
+        ? const Color(0xFF00FF88)
+        : Colors.white;
+    final labelColor = isPrimary
+        ? const Color(0xFF00FF88)
+        : Colors.grey[400];
+    final borderColor = isPrimary
+        ? const Color(0xFF00FF88).withValues(alpha: 0.3)
+        : Colors.white.withValues(alpha: 0.12);
+
+    const buttonRadius = BorderRadius.all(Radius.circular(16));
+    final isDisabled = onPressed == null && !isLoading;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Tooltip(
+          message: label,
+          child: Opacity(
+            opacity: isDisabled ? 0.5 : 1.0,
+            child: Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                borderRadius: buttonRadius,
+                border: Border.all(color: borderColor, width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: buttonRadius,
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2E2E2E).withValues(alpha: 0.7),
+                      borderRadius: buttonRadius,
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: onPressed,
+                        borderRadius: buttonRadius,
+                        child: Center(
+                          child: isLoading
+                              ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(iconColor),
+                                  ),
+                                )
+                              : Icon(icon, color: iconColor, size: 22),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ).animate()
+            .fadeIn(duration: 300.ms, delay: Duration(milliseconds: delayMs))
+            .scale(
+              begin: const Offset(0.9, 0.9),
+              duration: 300.ms,
+              delay: Duration(milliseconds: delayMs),
+            ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: TextStyle(
+            color: labelColor,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ).animate()
+            .fadeIn(duration: 200.ms, delay: Duration(milliseconds: delayMs + 100)),
+      ],
+    );
   }
 }
