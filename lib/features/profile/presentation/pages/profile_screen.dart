@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -10,6 +11,10 @@ import '../widgets/inline_editable_profile_info.dart' show ProfileInfoSection;
 import '../widgets/profile_stats_section.dart';
 import '../widgets/profile_actions_section.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
+import '../../../subscription/presentation/providers/subscription_providers.dart';
+import '../../../subscription/presentation/widgets/qr_limit_indicator.dart';
+import '../../../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
+import '../../../subscription/presentation/widgets/pro_badge.dart';
 import '../../../../core/providers/locale_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -111,6 +116,15 @@ class ProfileScreen extends ConsumerWidget {
               // Profile stats
               ProfileStatsSection(profile: profileState.profile)
                   .animate(delay: 100.ms)
+                  .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart)
+                  .scale(begin: const Offset(0.95, 0.95), duration: 300.ms),
+
+              const SizedBox(height: 24),
+
+              // Subscription section
+              _buildSubscriptionSection(context, ref, l10n)
+                  .animate(delay: 150.ms)
                   .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
                   .slideY(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart)
                   .scale(begin: const Offset(0.95, 0.95), duration: 300.ms),
@@ -371,6 +385,199 @@ class ProfileScreen extends ConsumerWidget {
             },
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSubscriptionSection(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+    final hasPro = ref.watch(hasProAccessProvider);
+    final planName = hasPro ? 'Pro' : 'Free';
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: hasPro
+                ? const Color(0xFFFFD700).withValues(alpha: 0.15)
+                : Colors.white.withValues(alpha: 0.05),
+            blurRadius: 20,
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color(0xFF2E2E2E).withValues(alpha: 0.7),
+                  const Color(0xFF1A1A1A).withValues(alpha: 0.8),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: hasPro
+                    ? const Color(0xFFFFD700).withValues(alpha: 0.3)
+                    : Colors.white.withValues(alpha: 0.12),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header row
+                Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        gradient: hasPro
+                            ? const LinearGradient(
+                                colors: [Color(0xFFFFD700), Color(0xFFF59E0B)],
+                              )
+                            : const LinearGradient(
+                                colors: [Color(0xFF4B5563), Color(0xFF374151)],
+                              ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        hasPro ? Icons.star_rounded : Icons.workspace_premium_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                l10n.subscription,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              if (hasPro) const ProBadge(mini: true),
+                            ],
+                          ),
+                          Text(
+                            '$planName ${l10n.plan}',
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                if (!hasPro) ...[
+                  const SizedBox(height: 16),
+                  const Divider(color: Color(0xFF3A3A3A)),
+                  const SizedBox(height: 16),
+
+                  // QR Limit for free users
+                  const QRLimitIndicator(compact: false),
+
+                  const SizedBox(height: 16),
+
+                  // Upgrade button
+                  GestureDetector(
+                    onTap: () => UpgradeBottomSheet.show(context),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFFD700), Color(0xFFF59E0B)],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFFFD700).withValues(alpha: 0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.rocket_launch_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            l10n.upgradeToPro,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ] else ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.check_circle_rounded,
+                        color: const Color(0xFF00FF88),
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.unlimitedQRCodes,
+                        style: TextStyle(
+                          color: Colors.grey[300],
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.check_circle_rounded,
+                        color: const Color(0xFF00FF88),
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.allFeatures,
+                        style: TextStyle(
+                          color: Colors.grey[300],
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

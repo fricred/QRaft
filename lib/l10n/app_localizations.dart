@@ -3103,6 +3103,264 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fast Shipping'**
   String get marketplaceFeature3;
+
+  /// Upgrade to Pro button text
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Pro'**
+  String get upgradeToPro;
+
+  /// Upgrade bottom sheet title
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Pro'**
+  String get upgradeToProTitle;
+
+  /// Upgrade bottom sheet subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock all features and create unlimited QR codes'**
+  String get upgradeToProSubtitle;
+
+  /// Message shown when upgrade is not yet available
+  ///
+  /// In en, this message translates to:
+  /// **'Payment integration coming soon! You\'ll be able to upgrade to Pro and unlock all features.'**
+  String get upgradeComingSoonMessage;
+
+  /// Maybe later button text in upgrade sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe Later'**
+  String get maybeLater;
+
+  /// Pro feature: unlimited QR codes
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited QR Codes'**
+  String get unlimitedQRCodes;
+
+  /// Pro feature: all QR types
+  ///
+  /// In en, this message translates to:
+  /// **'All QR Types'**
+  String get allQRTypes;
+
+  /// Pro feature: all features unlocked
+  ///
+  /// In en, this message translates to:
+  /// **'All Features Unlocked'**
+  String get allFeatures;
+
+  /// Color customization feature name
+  ///
+  /// In en, this message translates to:
+  /// **'Color Customization'**
+  String get colorCustomization;
+
+  /// Description for locked color customization
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Pro to customize QR code colors'**
+  String get colorCustomizationLockedDesc;
+
+  /// Logo insertion feature name
+  ///
+  /// In en, this message translates to:
+  /// **'Logo Insertion'**
+  String get logoInsertion;
+
+  /// Description for locked logo insertion
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Pro to add custom logos to your QR codes'**
+  String get logoInsertionLockedDesc;
+
+  /// Advanced templates feature name
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Templates'**
+  String get advancedTemplates;
+
+  /// Description for locked templates
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Pro to access all templates'**
+  String get templateLockedDesc;
+
+  /// Locked QR type title
+  ///
+  /// In en, this message translates to:
+  /// **'{type} QR Code'**
+  String qrTypeLocked(String type);
+
+  /// Description for locked QR type
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Pro to create {type} QR codes'**
+  String qrTypeLockedDesc(String type);
+
+  /// Title when user reaches QR code limit
+  ///
+  /// In en, this message translates to:
+  /// **'QR Limit Reached'**
+  String get qrLimitReached;
+
+  /// Format for QR codes remaining indicator
+  ///
+  /// In en, this message translates to:
+  /// **'{remaining} of {total} QR Codes'**
+  String qrCodesRemainingFormat(int remaining, int total);
+
+  /// Title showing number of hidden scan history items
+  ///
+  /// In en, this message translates to:
+  /// **'{count} more scans hidden'**
+  String hiddenScansTitle(int count);
+
+  /// Description for upgrade to see all scan history
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Pro for unlimited scan history'**
+  String get upgradeToSeeAll;
+
+  /// Free plan name
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get free;
+
+  /// Pro plan name
+  ///
+  /// In en, this message translates to:
+  /// **'Pro'**
+  String get pro;
+
+  /// Subscription section title
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get subscription;
+
+  /// Pro feature: unlimited QR codes
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited QR codes'**
+  String get featureUnlimitedQR;
+
+  /// Pro feature: all QR types
+  ///
+  /// In en, this message translates to:
+  /// **'All 6 QR types'**
+  String get featureAllTypes;
+
+  /// Pro feature: custom colors
+  ///
+  /// In en, this message translates to:
+  /// **'Custom colors & styles'**
+  String get featureCustomColors;
+
+  /// Pro feature: logo insertion
+  ///
+  /// In en, this message translates to:
+  /// **'Logo insertion'**
+  String get featureLogoInsertion;
+
+  /// Pro feature: all templates
+  ///
+  /// In en, this message translates to:
+  /// **'All templates'**
+  String get featureAllTemplates;
+
+  /// Pro feature: unlimited scan history
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited scan history'**
+  String get featureUnlimitedHistory;
+
+  /// Upgrade card title
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Premium Features'**
+  String get unlockPremiumFeatures;
+
+  /// Upgrade card subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Get more from QRaft'**
+  String get getMoreFromQRaft;
+
+  /// Upgrade button text
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade'**
+  String get upgrade;
+
+  /// Upgrade message for more features
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade for unlimited'**
+  String get upgradeForMore;
+
+  /// Plan label
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get plan;
+
+  /// Subtitle for upgrade bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock all premium features'**
+  String get unlockAllPremiumFeatures;
+
+  /// Description for unlimited QR codes feature
+  ///
+  /// In en, this message translates to:
+  /// **'Create as many as you need'**
+  String get createAsManyAsYouNeed;
+
+  /// Description for all QR types feature
+  ///
+  /// In en, this message translates to:
+  /// **'WiFi, vCard, Email, Location & more'**
+  String get allQRTypesDesc;
+
+  /// Full customization feature title
+  ///
+  /// In en, this message translates to:
+  /// **'Full Customization'**
+  String get fullCustomization;
+
+  /// Description for full customization feature
+  ///
+  /// In en, this message translates to:
+  /// **'Colors, logos, templates, shapes'**
+  String get fullCustomizationDesc;
+
+  /// Unlimited history feature title
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited History'**
+  String get unlimitedHistory;
+
+  /// Description for unlimited history feature
+  ///
+  /// In en, this message translates to:
+  /// **'Access all your scan history'**
+  String get accessAllScanHistory;
+
+  /// Coming soon banner title
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon'**
+  String get comingSoonBanner;
+
+  /// Coming soon message for Pro subscriptions
+  ///
+  /// In en, this message translates to:
+  /// **'Pro subscriptions will be available soon!\nStay tuned for updates.'**
+  String get proSubscriptionsComingSoon;
 }
 
 class _AppLocalizationsDelegate

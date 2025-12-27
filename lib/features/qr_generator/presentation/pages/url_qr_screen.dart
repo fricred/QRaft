@@ -12,6 +12,10 @@ import '../controllers/qr_generator_controller.dart';
 import '../providers/qr_providers.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
 import '../../../qr_library/presentation/providers/qr_library_providers.dart';
+import '../../../subscription/presentation/providers/feature_gate_providers.dart';
+import '../../../subscription/presentation/providers/subscription_providers.dart';
+import '../../../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
+import '../../../subscription/presentation/widgets/feature_locked_overlay.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -407,29 +411,44 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
   }
 
   Widget _buildColorsTabContent(QRCustomizationController controller, QRCustomizationState state) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
-          _buildColorRow(
-            AppLocalizations.of(context)?.foregroundColor ?? 'QR Color',
-            Color(state.customization.foregroundColor),
-            controller.updateForegroundColor,
+    final colorAccess = ref.watch(colorCustomizationAccessProvider);
+
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              _buildColorRow(
+                AppLocalizations.of(context)?.foregroundColor ?? 'QR Color',
+                Color(state.customization.foregroundColor),
+                colorAccess.isAllowed ? controller.updateForegroundColor : (_) {},
+              ),
+              const SizedBox(height: 20),
+              _buildColorRow(
+                AppLocalizations.of(context)?.backgroundColor ?? 'Background',
+                Color(state.customization.backgroundColor),
+                colorAccess.isAllowed ? controller.updateBackgroundColor : (_) {},
+              ),
+              const SizedBox(height: 20),
+              _buildColorRow(
+                AppLocalizations.of(context)?.eyeColor ?? 'Eye Color',
+                Color(state.customization.eyeColor),
+                colorAccess.isAllowed ? controller.updateEyeColor : (_) {},
+              ),
+            ],
           ),
-          const SizedBox(height: 20),
-          _buildColorRow(
-            AppLocalizations.of(context)?.backgroundColor ?? 'Background',
-            Color(state.customization.backgroundColor),
-            controller.updateBackgroundColor,
+        ),
+        // Feature locked overlay for free users
+        if (!colorAccess.isAllowed)
+          Positioned.fill(
+            child: FeatureLockedOverlay(
+              featureName: 'Color Customization',
+              description: colorAccess.lockedReason,
+              onUpgradeTap: () => UpgradeBottomSheet.show(context),
+            ),
           ),
-          const SizedBox(height: 20),
-          _buildColorRow(
-            AppLocalizations.of(context)?.eyeColor ?? 'Eye Color',
-            Color(state.customization.eyeColor),
-            controller.updateEyeColor,
-          ),
-        ],
-      ),
+      ],
     );
   }
 
@@ -483,102 +502,117 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
   }
 
   Widget _buildLogoTabContent(QRCustomizationController controller, QRCustomizationState state) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Logo preview
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: state.customization.hasLogo 
-                  ? Colors.transparent 
-                  : Colors.grey[700],
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.3),
-                width: 2,
-              ),
-            ),
-            child: state.customization.hasLogo && 
-                   state.customization.logoPath != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: Image.file(
-                      File(state.customization.logoPath!),
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => 
-                          const Icon(Icons.broken_image, color: Colors.grey, size: 48),
-                    ),
-                  )
-                : Icon(
-                    Icons.add_photo_alternate_rounded,
-                    color: Colors.grey[400],
-                    size: 48,
-                  ),
-          ),
-          
-          const SizedBox(height: 20),
-          
-          Text(
-            state.customization.hasLogo
-                ? (AppLocalizations.of(context)?.logoAddedTitle ?? 'Logo Added')
-                : (AppLocalizations.of(context)?.noLogoTitle ?? 'No Logo'),
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+    final logoAccess = ref.watch(logoInsertionAccessProvider);
 
-          const SizedBox(height: 8),
-
-          Text(
-            state.customization.hasLogo
-                ? (AppLocalizations.of(context)?.logoWillAppearInCenter ?? 'Your logo will appear in the center of the QR code')
-                : (AppLocalizations.of(context)?.addLogoToPersonalize ?? 'Add a logo to personalize your QR code'),
-            style: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 14,
-            ),
-            textAlign: TextAlign.center,
-          ),
-
-          const SizedBox(height: 30),
-
-          // Logo actions
-          if (state.customization.hasLogo) ...[
-            Row(
-              children: [
-                Expanded(
-                  child: SecondaryGlassButton(
-                    text: AppLocalizations.of(context)?.remove ?? 'Remove',
-                    icon: Icons.delete_outline,
-                    onPressed: controller.removeLogo,
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Logo preview
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  color: state.customization.hasLogo
+                      ? Colors.transparent
+                      : Colors.grey[700],
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.3),
+                    width: 2,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: SecondaryGlassButton(
-                    text: AppLocalizations.of(context)?.change ?? 'Change',
-                    icon: Icons.swap_horizontal_circle,
-                    onPressed: () => _handleAddLogo(controller),
-                  ),
+                child: state.customization.hasLogo &&
+                       state.customization.logoPath != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(14),
+                        child: Image.file(
+                          File(state.customization.logoPath!),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.broken_image, color: Colors.grey, size: 48),
+                        ),
+                      )
+                    : Icon(
+                        Icons.add_photo_alternate_rounded,
+                        color: Colors.grey[400],
+                        size: 48,
+                      ),
+              ),
+
+              const SizedBox(height: 20),
+
+              Text(
+                state.customization.hasLogo
+                    ? (AppLocalizations.of(context)?.logoAddedTitle ?? 'Logo Added')
+                    : (AppLocalizations.of(context)?.noLogoTitle ?? 'No Logo'),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              Text(
+                state.customization.hasLogo
+                    ? (AppLocalizations.of(context)?.logoWillAppearInCenter ?? 'Your logo will appear in the center of the QR code')
+                    : (AppLocalizations.of(context)?.addLogoToPersonalize ?? 'Add a logo to personalize your QR code'),
+                style: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 30),
+
+              // Logo actions
+              if (state.customization.hasLogo) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: SecondaryGlassButton(
+                        text: AppLocalizations.of(context)?.remove ?? 'Remove',
+                        icon: Icons.delete_outline,
+                        onPressed: logoAccess.isAllowed ? controller.removeLogo : null,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: SecondaryGlassButton(
+                        text: AppLocalizations.of(context)?.change ?? 'Change',
+                        icon: Icons.swap_horizontal_circle,
+                        onPressed: logoAccess.isAllowed ? () => _handleAddLogo(controller) : null,
+                      ),
+                    ),
+                  ],
+                ),
+              ] else ...[
+                PrimaryGlassButton(
+                  text: AppLocalizations.of(context)?.addLogo ?? 'Add Logo',
+                  icon: Icons.add_photo_alternate,
+                  onPressed: logoAccess.isAllowed ? () => _handleAddLogo(controller) : null,
+                  width: double.infinity,
                 ),
               ],
+            ],
+          ),
+        ),
+        // Feature locked overlay for free users
+        if (!logoAccess.isAllowed)
+          Positioned.fill(
+            child: FeatureLockedOverlay(
+              featureName: 'Logo Insertion',
+              description: logoAccess.lockedReason,
+              onUpgradeTap: () => UpgradeBottomSheet.show(context),
             ),
-          ] else ...[
-            PrimaryGlassButton(
-              text: AppLocalizations.of(context)?.addLogo ?? 'Add Logo',
-              icon: Icons.add_photo_alternate,
-              onPressed: () => _handleAddLogo(controller),
-              width: double.infinity,
-            ),
-          ],
-        ],
-      ),
+          ),
+      ],
     );
   }
 
@@ -791,6 +825,15 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
 
   void _saveQRCode() async {
     if (_isSaving) return;
+
+    // Check if user can create more QR codes (only for new QR codes)
+    if (widget.editingQRCode == null) {
+      final canCreate = ref.read(canCreateQRProvider);
+      if (!canCreate) {
+        UpgradeBottomSheet.show(context);
+        return;
+      }
+    }
 
     setState(() {
       _isSaving = true;

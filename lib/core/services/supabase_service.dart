@@ -413,19 +413,22 @@ class SupabaseService {
   }
   
   /// Get scan history as ScanResult objects
-  static Future<List<dynamic>> getScanHistory() async {
+  /// [limit] controls how many items to fetch (-1 for unlimited, defaults to 100)
+  static Future<List<dynamic>> getScanHistory({int limit = 100}) async {
     try {
       final user = client.auth.currentUser;
       if (user == null) {
         throw Exception('No authenticated user found');
       }
-      
+
+      final queryLimit = limit == -1 ? 1000 : limit; // -1 means unlimited (cap at 1000)
+
       final response = await client
           .from(SupabaseConfig.scanHistoryTable)
           .select()
           .eq('user_id', user.id)
           .order('scanned_at', ascending: false)
-          .limit(100);
+          .limit(queryLimit);
       
       // Convert to ScanResult objects
       return response.map((data) {

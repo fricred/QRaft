@@ -7,6 +7,8 @@ import '../../../shared/widgets/glass_button.dart';
 import '../providers/qr_scanner_provider.dart';
 import '../models/scan_result.dart';
 import 'scan_result_dialog.dart';
+import '../../subscription/presentation/providers/subscription_providers.dart';
+import '../../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
 
 class ScanHistoryScreen extends ConsumerWidget {
   const ScanHistoryScreen({super.key});
@@ -14,7 +16,9 @@ class ScanHistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final scanHistory = ref.watch(scanHistoryProvider);
+    final scanHistory = ref.watch(limitedScanHistoryProvider);
+    final hasHiddenItems = ref.watch(hasHiddenScanHistoryProvider);
+    final hiddenCount = ref.watch(hiddenScanHistoryCountProvider);
     final isLoading = ref.watch(scannerLoadingProvider);
     final error = ref.watch(scannerErrorProvider);
 
@@ -69,7 +73,7 @@ class ScanHistoryScreen extends ConsumerWidget {
         },
         color: const Color(0xFF00FF88),
         backgroundColor: const Color(0xFF2E2E2E),
-        child: _buildBody(context, ref, scanHistory, isLoading, error, l10n),
+        child: _buildBody(context, ref, scanHistory, isLoading, error, l10n, hasHiddenItems, hiddenCount),
       ),
     );
   }
@@ -81,6 +85,8 @@ class ScanHistoryScreen extends ConsumerWidget {
     bool isLoading,
     String? error,
     AppLocalizations l10n,
+    bool hasHiddenItems,
+    int hiddenCount,
   ) {
     if (isLoading && scanHistory.isEmpty) {
       return const Center(
@@ -135,10 +141,18 @@ class ScanHistoryScreen extends ConsumerWidget {
       return _buildEmptyState(context, l10n);
     }
 
+    // Add 1 to itemCount if there are hidden items to show upgrade message
+    final itemCount = hasHiddenItems ? scanHistory.length + 1 : scanHistory.length;
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: scanHistory.length,
+      itemCount: itemCount,
       itemBuilder: (context, index) {
+        // Show upgrade message as last item
+        if (hasHiddenItems && index == scanHistory.length) {
+          return _buildUpgradeMessage(context, hiddenCount, l10n);
+        }
+
         final scanResult = scanHistory[index];
         final delay = (50 + (30.0 * log(index + 2))).toInt();
         return _buildHistoryItem(context, ref, scanResult, index)
@@ -147,6 +161,82 @@ class ScanHistoryScreen extends ConsumerWidget {
             .slideX(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart);
       },
     );
+  }
+
+  Widget _buildUpgradeMessage(BuildContext context, int hiddenCount, AppLocalizations l10n) {
+    return GestureDetector(
+      onTap: () => UpgradeBottomSheet.show(context),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12, top: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              const Color(0xFFFFD700).withValues(alpha: 0.15),
+              const Color(0xFFF59E0B).withValues(alpha: 0.10),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: const Color(0xFFFFD700).withValues(alpha: 0.4),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            // Lock icon with gold gradient
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFFD700), Color(0xFFF59E0B)],
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.lock_rounded,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            // Message
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.hiddenScansTitle(hiddenCount),
+                    style: const TextStyle(
+                      color: Color(0xFFFFD700),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.upgradeToSeeAll,
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Chevron
+            Icon(
+              Icons.chevron_right_rounded,
+              color: const Color(0xFFFFD700).withValues(alpha: 0.7),
+              size: 28,
+            ),
+          ],
+        ),
+      ),
+    ).animate(delay: 400.ms)
+      .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+      .slideY(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart);
   }
 
   Widget _buildEmptyState(BuildContext context, AppLocalizations l10n) {

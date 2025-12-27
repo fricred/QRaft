@@ -1654,4 +1654,146 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get marketplaceFeature3 => 'Fast Shipping';
+
+  @override
+  String get upgradeToPro => 'Upgrade to Pro';
+
+  @override
+  String get upgradeToProTitle => 'Upgrade to Pro';
+
+  @override
+  String get upgradeToProSubtitle =>
+      'Unlock all features and create unlimited QR codes';
+
+  @override
+  String get upgradeComingSoonMessage =>
+      'Payment integration coming soon! You\'ll be able to upgrade to Pro and unlock all features.';
+
+  @override
+  String get maybeLater => 'Maybe Later';
+
+  @override
+  String get unlimitedQRCodes => 'Unlimited QR Codes';
+
+  @override
+  String get allQRTypes => 'All QR Types';
+
+  @override
+  String get allFeatures => 'All Features Unlocked';
+
+  @override
+  String get colorCustomization => 'Color Customization';
+
+  @override
+  String get colorCustomizationLockedDesc =>
+      'Upgrade to Pro to customize QR code colors';
+
+  @override
+  String get logoInsertion => 'Logo Insertion';
+
+  @override
+  String get logoInsertionLockedDesc =>
+      'Upgrade to Pro to add custom logos to your QR codes';
+
+  @override
+  String get advancedTemplates => 'Advanced Templates';
+
+  @override
+  String get templateLockedDesc => 'Upgrade to Pro to access all templates';
+
+  @override
+  String qrTypeLocked(String type) {
+    return '$type QR Code';
+  }
+
+  @override
+  String qrTypeLockedDesc(String type) {
+    return 'Upgrade to Pro to create $type QR codes';
+  }
+
+  @override
+  String get qrLimitReached => 'QR Limit Reached';
+
+  @override
+  String qrCodesRemainingFormat(int remaining, int total) {
+    return '$remaining of $total QR Codes';
+  }
+
+  @override
+  String hiddenScansTitle(int count) {
+    return '$count more scans hidden';
+  }
+
+  @override
+  String get upgradeToSeeAll => 'Upgrade to Pro for unlimited scan history';
+
+  @override
+  String get free => 'Free';
+
+  @override
+  String get pro => 'Pro';
+
+  @override
+  String get subscription => 'Subscription';
+
+  @override
+  String get featureUnlimitedQR => 'Unlimited QR codes';
+
+  @override
+  String get featureAllTypes => 'All 6 QR types';
+
+  @override
+  String get featureCustomColors => 'Custom colors & styles';
+
+  @override
+  String get featureLogoInsertion => 'Logo insertion';
+
+  @override
+  String get featureAllTemplates => 'All templates';
+
+  @override
+  String get featureUnlimitedHistory => 'Unlimited scan history';
+
+  @override
+  String get unlockPremiumFeatures => 'Unlock Premium Features';
+
+  @override
+  String get getMoreFromQRaft => 'Get more from QRaft';
+
+  @override
+  String get upgrade => 'Upgrade';
+
+  @override
+  String get upgradeForMore => 'Upgrade for unlimited';
+
+  @override
+  String get plan => 'Plan';
+
+  @override
+  String get unlockAllPremiumFeatures => 'Unlock all premium features';
+
+  @override
+  String get createAsManyAsYouNeed => 'Create as many as you need';
+
+  @override
+  String get allQRTypesDesc => 'WiFi, vCard, Email, Location & more';
+
+  @override
+  String get fullCustomization => 'Full Customization';
+
+  @override
+  String get fullCustomizationDesc => 'Colors, logos, templates, shapes';
+
+  @override
+  String get unlimitedHistory => 'Unlimited History';
+
+  @override
+  String get accessAllScanHistory => 'Access all your scan history';
+
+  @override
+  String get comingSoonBanner => 'Coming Soon';
+
+  @override
+  String get proSubscriptionsComingSoon =>
+      'Pro subscriptions will be available soon!\nStay tuned for updates.';
 }

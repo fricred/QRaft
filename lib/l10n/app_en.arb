@@ -2317,5 +2317,233 @@
   "marketplaceFeature3": "Fast Shipping",
   "@marketplaceFeature3": {
     "description": "Feature 3 for marketplace coming soon"
+  },
+
+  "upgradeToPro": "Upgrade to Pro",
+  "@upgradeToPro": {
+    "description": "Upgrade to Pro button text"
+  },
+
+  "upgradeToProTitle": "Upgrade to Pro",
+  "@upgradeToProTitle": {
+    "description": "Upgrade bottom sheet title"
+  },
+
+  "upgradeToProSubtitle": "Unlock all features and create unlimited QR codes",
+  "@upgradeToProSubtitle": {
+    "description": "Upgrade bottom sheet subtitle"
+  },
+
+  "upgradeComingSoonMessage": "Payment integration coming soon! You'll be able to upgrade to Pro and unlock all features.",
+  "@upgradeComingSoonMessage": {
+    "description": "Message shown when upgrade is not yet available"
+  },
+
+  "maybeLater": "Maybe Later",
+  "@maybeLater": {
+    "description": "Maybe later button text in upgrade sheet"
+  },
+
+  "unlimitedQRCodes": "Unlimited QR Codes",
+  "@unlimitedQRCodes": {
+    "description": "Pro feature: unlimited QR codes"
+  },
+
+  "allQRTypes": "All QR Types",
+  "@allQRTypes": {
+    "description": "Pro feature: all QR types"
+  },
+
+  "allFeatures": "All Features Unlocked",
+  "@allFeatures": {
+    "description": "Pro feature: all features unlocked"
+  },
+
+  "colorCustomization": "Color Customization",
+  "@colorCustomization": {
+    "description": "Color customization feature name"
+  },
+
+  "colorCustomizationLockedDesc": "Upgrade to Pro to customize QR code colors",
+  "@colorCustomizationLockedDesc": {
+    "description": "Description for locked color customization"
+  },
+
+  "logoInsertion": "Logo Insertion",
+  "@logoInsertion": {
+    "description": "Logo insertion feature name"
+  },
+
+  "logoInsertionLockedDesc": "Upgrade to Pro to add custom logos to your QR codes",
+  "@logoInsertionLockedDesc": {
+    "description": "Description for locked logo insertion"
+  },
+
+  "advancedTemplates": "Advanced Templates",
+  "@advancedTemplates": {
+    "description": "Advanced templates feature name"
+  },
+
+  "templateLockedDesc": "Upgrade to Pro to access all templates",
+  "@templateLockedDesc": {
+    "description": "Description for locked templates"
+  },
+
+  "qrTypeLocked": "{type} QR Code",
+  "@qrTypeLocked": {
+    "description": "Locked QR type title",
+    "placeholders": {
+      "type": {"type": "String"}
+    }
+  },
+
+  "qrTypeLockedDesc": "Upgrade to Pro to create {type} QR codes",
+  "@qrTypeLockedDesc": {
+    "description": "Description for locked QR type",
+    "placeholders": {
+      "type": {"type": "String"}
+    }
+  },
+
+  "qrLimitReached": "QR Limit Reached",
+  "@qrLimitReached": {
+    "description": "Title when user reaches QR code limit"
+  },
+
+  "qrCodesRemainingFormat": "{remaining} of {total} QR Codes",
+  "@qrCodesRemainingFormat": {
+    "description": "Format for QR codes remaining indicator",
+    "placeholders": {
+      "remaining": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+
+  "hiddenScansTitle": "{count} more scans hidden",
+  "@hiddenScansTitle": {
+    "description": "Title showing number of hidden scan history items",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "upgradeToSeeAll": "Upgrade to Pro for unlimited scan history",
+  "@upgradeToSeeAll": {
+    "description": "Description for upgrade to see all scan history"
+  },
+
+  "free": "Free",
+  "@free": {
+    "description": "Free plan name"
+  },
+
+  "pro": "Pro",
+  "@pro": {
+    "description": "Pro plan name"
+  },
+
+  "subscription": "Subscription",
+  "@subscription": {
+    "description": "Subscription section title"
+  },
+
+  "featureUnlimitedQR": "Unlimited QR codes",
+  "@featureUnlimitedQR": {
+    "description": "Pro feature: unlimited QR codes"
+  },
+
+  "featureAllTypes": "All 6 QR types",
+  "@featureAllTypes": {
+    "description": "Pro feature: all QR types"
+  },
+
+  "featureCustomColors": "Custom colors & styles",
+  "@featureCustomColors": {
+    "description": "Pro feature: custom colors"
+  },
+
+  "featureLogoInsertion": "Logo insertion",
+  "@featureLogoInsertion": {
+    "description": "Pro feature: logo insertion"
+  },
+
+  "featureAllTemplates": "All templates",
+  "@featureAllTemplates": {
+    "description": "Pro feature: all templates"
+  },
+
+  "featureUnlimitedHistory": "Unlimited scan history",
+  "@featureUnlimitedHistory": {
+    "description": "Pro feature: unlimited scan history"
+  },
+
+  "unlockPremiumFeatures": "Unlock Premium Features",
+  "@unlockPremiumFeatures": {
+    "description": "Upgrade card title"
+  },
+
+  "getMoreFromQRaft": "Get more from QRaft",
+  "@getMoreFromQRaft": {
+    "description": "Upgrade card subtitle"
+  },
+
+  "upgrade": "Upgrade",
+  "@upgrade": {
+    "description": "Upgrade button text"
+  },
+
+  "upgradeForMore": "Upgrade for unlimited",
+  "@upgradeForMore": {
+    "description": "Upgrade message for more features"
+  },
+
+  "plan": "Plan",
+  "@plan": {
+    "description": "Plan label"
+  },
+
+  "unlockAllPremiumFeatures": "Unlock all premium features",
+  "@unlockAllPremiumFeatures": {
+    "description": "Subtitle for upgrade bottom sheet"
+  },
+
+  "createAsManyAsYouNeed": "Create as many as you need",
+  "@createAsManyAsYouNeed": {
+    "description": "Description for unlimited QR codes feature"
+  },
+
+  "allQRTypesDesc": "WiFi, vCard, Email, Location & more",
+  "@allQRTypesDesc": {
+    "description": "Description for all QR types feature"
+  },
+
+  "fullCustomization": "Full Customization",
+  "@fullCustomization": {
+    "description": "Full customization feature title"
+  },
+
+  "fullCustomizationDesc": "Colors, logos, templates, shapes",
+  "@fullCustomizationDesc": {
+    "description": "Description for full customization feature"
+  },
+
+  "unlimitedHistory": "Unlimited History",
+  "@unlimitedHistory": {
+    "description": "Unlimited history feature title"
+  },
+
+  "accessAllScanHistory": "Access all your scan history",
+  "@accessAllScanHistory": {
+    "description": "Description for unlimited history feature"
+  },
+
+  "comingSoonBanner": "Coming Soon",
+  "@comingSoonBanner": {
+    "description": "Coming soon banner title"
+  },
+
+  "proSubscriptionsComingSoon": "Pro subscriptions will be available soon!\nStay tuned for updates.",
+  "@proSubscriptionsComingSoon": {
+    "description": "Coming soon message for Pro subscriptions"
   }
 }

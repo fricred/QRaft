@@ -11,6 +11,10 @@ import 'presentation/pages/text_qr_screen.dart';
 import 'presentation/pages/personal_info_qr_screen.dart';
 import 'presentation/pages/email_qr_screen.dart';
 import 'presentation/pages/wifi_qr_screen.dart';
+import '../subscription/presentation/providers/feature_gate_providers.dart';
+import '../subscription/presentation/widgets/pro_badge.dart';
+import '../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
+import '../subscription/presentation/widgets/qr_limit_indicator.dart';
 
 class QRGeneratorScreen extends ConsumerStatefulWidget {
   const QRGeneratorScreen({super.key});
@@ -54,8 +58,15 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
                 ),
               ).animate()
                 .fadeIn(duration: 300.ms, delay: 50.ms, curve: Curves.easeOutCubic),
-              
-              const SizedBox(height: 32),
+
+              const SizedBox(height: 16),
+
+              // QR Limit Indicator for Free users
+              const QRLimitIndicator(compact: true)
+                  .animate()
+                  .fadeIn(duration: 300.ms, delay: 100.ms, curve: Curves.easeOutCubic),
+
+              const SizedBox(height: 24),
               
               // QR Type Selection Grid
               Expanded(
@@ -184,6 +195,8 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
     required int delay,
   }) {
     final glowColor = Color(qrType.gradientColors.first);
+    final access = ref.watch(qrTypeAccessProvider(qrType));
+    final isLocked = !access.isAllowed;
 
     return Container(
       decoration: BoxDecoration(
@@ -212,101 +225,141 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
               ),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.12),
+                color: isLocked
+                    ? const Color(0xFFFFD700).withValues(alpha: 0.3)
+                    : Colors.white.withValues(alpha: 0.12),
                 width: 1,
               ),
             ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(20),
-                onTap: () {
-                  Widget targetScreen;
-                  switch (qrType) {
-                    case QRType.url:
-                      targetScreen = const URLQRScreen();
-                      break;
-                    case QRType.text:
-                      targetScreen = const TextQRScreen();
-                      break;
-                    case QRType.personalInfo:
-                      targetScreen = const PersonalInfoQRScreen();
-                      break;
-                    case QRType.email:
-                      targetScreen = const EmailQRScreen();
-                      break;
-                    case QRType.wifi:
-                      targetScreen = const WiFiQRScreen();
-                      break;
-                    case QRType.location:
-                      targetScreen = LocationQRScreen();
-                      break;
-                  }
+            child: Stack(
+              children: [
+                // Main card content
+                Opacity(
+                  opacity: isLocked ? 0.6 : 1.0,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () {
+                        if (isLocked) {
+                          UpgradeBottomSheet.show(context);
+                          return;
+                        }
 
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => targetScreen,
-                    ),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: qrType.gradientColors.map((c) => Color(c)).toList(),
+                        Widget targetScreen;
+                        switch (qrType) {
+                          case QRType.url:
+                            targetScreen = const URLQRScreen();
+                            break;
+                          case QRType.text:
+                            targetScreen = const TextQRScreen();
+                            break;
+                          case QRType.personalInfo:
+                            targetScreen = const PersonalInfoQRScreen();
+                            break;
+                          case QRType.email:
+                            targetScreen = const EmailQRScreen();
+                            break;
+                          case QRType.wifi:
+                            targetScreen = const WiFiQRScreen();
+                            break;
+                          case QRType.location:
+                            targetScreen = LocationQRScreen();
+                            break;
+                        }
+
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => targetScreen,
                           ),
-                          borderRadius: BorderRadius.circular(14),
-                          boxShadow: [
-                            BoxShadow(
-                              color: glowColor.withValues(alpha: 0.3),
-                              blurRadius: 6,
-                              offset: const Offset(0, 3),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: qrType.gradientColors.map((c) => Color(c)).toList(),
+                                ),
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: glowColor.withValues(alpha: 0.3),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                _getIconData(qrType.iconName),
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Flexible(
+                              child: Text(
+                                qrType.getDisplayName(context),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Flexible(
+                              child: Text(
+                                qrType.getDescription(context),
+                                style: TextStyle(
+                                  color: Colors.grey[400],
+                                  fontSize: 12,
+                                  height: 1.2,
+                                ),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ],
                         ),
-                        child: Icon(
-                          _getIconData(qrType.iconName),
-                          color: Colors.white,
-                          size: 24,
-                        ),
                       ),
-                      const SizedBox(height: 12),
-                      Flexible(
-                        child: Text(
-                          qrType.getDisplayName(context),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Flexible(
-                  child: Text(
-                    qrType.getDescription(context),
-                    style: TextStyle(
-                      color: Colors.grey[400],
-                      fontSize: 12,
-                      height: 1.2,
                     ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                    ],
+                // PRO badge for locked features
+                if (isLocked)
+                  const Positioned(
+                    top: 8,
+                    right: 8,
+                    child: ProBadge(mini: true),
                   ),
-                ),
-              ),
+                // Lock icon overlay for locked features
+                if (isLocked)
+                  Positioned(
+                    bottom: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.lock_rounded,
+                        size: 14,
+                        color: Color(0xFFFFD700),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),

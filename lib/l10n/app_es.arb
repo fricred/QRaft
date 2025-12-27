@@ -522,5 +522,57 @@
   "marketplaceComingSoonDesc": "Estamos creando un increíble marketplace donde podrás ordenar códigos QR grabados con láser en materiales premium.",
   "marketplaceFeature1": "Diseños QR Personalizados",
   "marketplaceFeature2": "Materiales Premium",
-  "marketplaceFeature3": "Envío Rápido"
+  "marketplaceFeature3": "Envío Rápido",
+
+  "upgradeToPro": "Mejorar a Pro",
+  "upgradeToProTitle": "Mejorar a Pro",
+  "upgradeToProSubtitle": "Desbloquea todas las funciones y crea códigos QR ilimitados",
+  "upgradeComingSoonMessage": "¡Integración de pago próximamente! Podrás mejorar a Pro y desbloquear todas las funciones.",
+  "maybeLater": "Quizás Después",
+
+  "unlimitedQRCodes": "Códigos QR Ilimitados",
+  "allQRTypes": "Todos los Tipos de QR",
+  "allFeatures": "Todas las Funciones Desbloqueadas",
+
+  "colorCustomization": "Personalización de Colores",
+  "colorCustomizationLockedDesc": "Mejora a Pro para personalizar los colores del código QR",
+  "logoInsertion": "Inserción de Logo",
+  "logoInsertionLockedDesc": "Mejora a Pro para agregar logos personalizados a tus códigos QR",
+  "advancedTemplates": "Plantillas Avanzadas",
+  "templateLockedDesc": "Mejora a Pro para acceder a todas las plantillas",
+
+  "qrTypeLocked": "Código QR {type}",
+  "qrTypeLockedDesc": "Mejora a Pro para crear códigos QR de {type}",
+  "qrLimitReached": "Límite de QR Alcanzado",
+  "qrCodesRemainingFormat": "{remaining} de {total} Códigos QR",
+
+  "hiddenScansTitle": "{count} escaneos más ocultos",
+  "upgradeToSeeAll": "Mejora a Pro para historial ilimitado",
+
+  "free": "Gratis",
+  "pro": "Pro",
+  "subscription": "Suscripción",
+
+  "featureUnlimitedQR": "Códigos QR ilimitados",
+  "featureAllTypes": "Los 6 tipos de QR",
+  "featureCustomColors": "Colores y estilos personalizados",
+  "featureLogoInsertion": "Inserción de logo",
+  "featureAllTemplates": "Todas las plantillas",
+  "featureUnlimitedHistory": "Historial de escaneos ilimitado",
+
+  "unlockPremiumFeatures": "Desbloquea Funciones Premium",
+  "getMoreFromQRaft": "Obtén más de QRaft",
+  "upgrade": "Mejorar",
+  "upgradeForMore": "Mejora para ilimitado",
+  "plan": "Plan",
+
+  "unlockAllPremiumFeatures": "Desbloquea todas las funciones premium",
+  "createAsManyAsYouNeed": "Crea tantos como necesites",
+  "allQRTypesDesc": "WiFi, vCard, Email, Ubicación y más",
+  "fullCustomization": "Personalización Completa",
+  "fullCustomizationDesc": "Colores, logos, plantillas, formas",
+  "unlimitedHistory": "Historial Ilimitado",
+  "accessAllScanHistory": "Accede a todo tu historial de escaneos",
+  "comingSoonBanner": "Próximamente",
+  "proSubscriptionsComingSoon": "¡Las suscripciones Pro estarán disponibles pronto!\nMantente atento a las actualizaciones."
 }

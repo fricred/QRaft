@@ -7,6 +7,9 @@ import '../auth/data/providers/supabase_auth_provider.dart';
 import '../profile/presentation/pages/profile_screen.dart';
 import '../main/main_scaffold.dart';
 import '../qr_generator/domain/entities/qr_code_entity.dart';
+import '../subscription/presentation/providers/subscription_providers.dart';
+import '../subscription/presentation/widgets/qr_limit_indicator.dart';
+import '../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
 import 'providers/dashboard_providers.dart';
 import '../../shared/widgets/qraft_logo.dart';
 import '../../l10n/app_localizations.dart';
@@ -165,9 +168,26 @@ class DashboardScreen extends ConsumerWidget {
                   ).animate()
                     .fadeIn(duration: 300.ms, delay: 100.ms, curve: Curves.easeOutCubic)
                     .slideY(begin: 0.15, duration: 300.ms, delay: 100.ms, curve: Curves.easeOutQuart),
-                  
+
+                  const SizedBox(height: 16),
+
+                  // Subscription Status Card
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final hasPro = ref.watch(hasProAccessProvider);
+
+                      if (hasPro) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return _buildSubscriptionCard(context, ref, l10n);
+                    },
+                  ).animate()
+                    .fadeIn(duration: 300.ms, delay: 150.ms, curve: Curves.easeOutCubic)
+                    .slideY(begin: 0.15, duration: 300.ms, delay: 150.ms, curve: Curves.easeOutQuart),
+
                   const SizedBox(height: 24),
-                  
+
                   // Recent QR Codes Section
                   Consumer(
                     builder: (context, ref, child) {
@@ -817,5 +837,124 @@ class DashboardScreen extends ConsumerWidget {
         return const Color(0xFFF97316);                // Orange
       case 'text': default: return const Color(0xFF94A3B8);  // Slate
     }
+  }
+
+  Widget _buildSubscriptionCard(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFFD700).withValues(alpha: 0.15),
+            blurRadius: 20,
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color(0xFF2E2E2E).withValues(alpha: 0.7),
+                  const Color(0xFF1A1A1A).withValues(alpha: 0.8),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: const Color(0xFFFFD700).withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                // Pro icon
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFFFD700), Color(0xFFF59E0B)],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFFFD700).withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.star_rounded,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+
+                const SizedBox(width: 16),
+
+                // Content
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const QRLimitIndicator(compact: true),
+                      const SizedBox(height: 4),
+                      Text(
+                        l10n.upgradeForMore,
+                        style: TextStyle(
+                          color: Colors.grey[400],
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Upgrade button
+                GestureDetector(
+                  onTap: () => UpgradeBottomSheet.show(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFFD700), Color(0xFFF59E0B)],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.upgrade_rounded,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          l10n.upgrade,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

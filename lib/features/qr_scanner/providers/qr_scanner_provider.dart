@@ -76,11 +76,12 @@ class QRScannerController extends StateNotifier<QRScannerState> {
   }
 
   /// Load scan history from Supabase
-  Future<void> _loadScanHistory() async {
+  /// [limit] controls how many items to fetch (-1 for unlimited)
+  Future<void> _loadScanHistory({int limit = 100}) async {
     try {
       state = state.copyWith(isLoading: true, error: null);
-      
-      final historyData = await SupabaseService.getScanHistory();
+
+      final historyData = await SupabaseService.getScanHistory(limit: limit);
       
       // Convert data to ScanResult objects
       final history = historyData.map((data) {
@@ -189,8 +190,9 @@ class QRScannerController extends StateNotifier<QRScannerState> {
   }
 
   /// Refresh scan history
-  Future<void> refreshHistory() async {
-    await _loadScanHistory();
+  /// [limit] controls how many items to fetch (-1 for unlimited)
+  Future<void> refreshHistory({int limit = 100}) async {
+    await _loadScanHistory(limit: limit);
   }
 
   /// Delete scan result from history
