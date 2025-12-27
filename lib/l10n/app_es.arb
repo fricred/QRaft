@@ -494,5 +494,27 @@
 
   "savingBtn": "Guardando...",
   "errorTitle": "Error",
-  "openSettingsMessage": "Abre Configuración > {section} > {title} para habilitar el acceso."
+  "openSettingsMessage": "Abre Configuración > {section} > {title} para habilitar el acceso.",
+
+  "inStock": "En Stock",
+  "outOfStock": "Agotado",
+  "defaultProductDescription": "Producto grabado con láser de alta calidad con tu código QR personalizado.",
+  "customization": "Personalización",
+  "selectSize": "Seleccionar Tamaño",
+  "selectFinish": "Seleccionar Acabado",
+  "productGallery": "Galería",
+  "galleryFrontView": "Vista Frontal",
+  "gallery3DPreview": "Vista 3D",
+  "galleryWithQRCode": "Con Código QR",
+  "features": "Características",
+  "featurePrecisionEngraving": "Grabado láser de precisión",
+  "featureHighQuality": "Alta calidad",
+  "featureCustomQRDesign": "Diseño de código QR personalizado",
+  "featureDurable": "Duradero y resistente",
+  "total": "Total",
+  "addToCart": "Agregar al Carrito",
+  "added": "¡Agregado!",
+  "addedToCart": "agregado al carrito!",
+  "viewCart": "Ver Carrito",
+  "errorAddingToCart": "Error al agregar al carrito. Inténtalo de nuevo."
 }

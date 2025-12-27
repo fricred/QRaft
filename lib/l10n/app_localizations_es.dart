@@ -1605,4 +1605,69 @@ class AppLocalizationsEs extends AppLocalizations {
   String openSettingsMessage(String section, String title) {
     return 'Abre Configuración > $section > $title para habilitar el acceso.';
   }
+
+  @override
+  String get inStock => 'En Stock';
+
+  @override
+  String get outOfStock => 'Agotado';
+
+  @override
+  String get defaultProductDescription =>
+      'Producto grabado con láser de alta calidad con tu código QR personalizado.';
+
+  @override
+  String get customization => 'Personalización';
+
+  @override
+  String get selectSize => 'Seleccionar Tamaño';
+
+  @override
+  String get selectFinish => 'Seleccionar Acabado';
+
+  @override
+  String get productGallery => 'Galería';
+
+  @override
+  String get galleryFrontView => 'Vista Frontal';
+
+  @override
+  String get gallery3DPreview => 'Vista 3D';
+
+  @override
+  String get galleryWithQRCode => 'Con Código QR';
+
+  @override
+  String get features => 'Características';
+
+  @override
+  String get featurePrecisionEngraving => 'Grabado láser de precisión';
+
+  @override
+  String get featureHighQuality => 'Alta calidad';
+
+  @override
+  String get featureCustomQRDesign => 'Diseño de código QR personalizado';
+
+  @override
+  String get featureDurable => 'Duradero y resistente';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get addToCart => 'Agregar al Carrito';
+
+  @override
+  String get added => '¡Agregado!';
+
+  @override
+  String get addedToCart => 'agregado al carrito!';
+
+  @override
+  String get viewCart => 'Ver Carrito';
+
+  @override
+  String get errorAddingToCart =>
+      'Error al agregar al carrito. Inténtalo de nuevo.';
 }

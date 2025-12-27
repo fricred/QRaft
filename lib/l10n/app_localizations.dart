@@ -2947,6 +2947,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open Settings > {section} > {title} to enable access.'**
   String openSettingsMessage(String section, String title);
+
+  /// Product in stock badge text
+  ///
+  /// In en, this message translates to:
+  /// **'In Stock'**
+  String get inStock;
+
+  /// Product out of stock badge text
+  ///
+  /// In en, this message translates to:
+  /// **'Out of Stock'**
+  String get outOfStock;
+
+  /// Default product description when none is provided
+  ///
+  /// In en, this message translates to:
+  /// **'High-quality laser-engraved product with your custom QR code.'**
+  String get defaultProductDescription;
+
+  /// Customization section title in product details
+  ///
+  /// In en, this message translates to:
+  /// **'Customization'**
+  String get customization;
+
+  /// Size selector label
+  ///
+  /// In en, this message translates to:
+  /// **'Select Size'**
+  String get selectSize;
+
+  /// Finish selector label
+  ///
+  /// In en, this message translates to:
+  /// **'Select Finish'**
+  String get selectFinish;
+
+  /// Product gallery section title
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get productGallery;
+
+  /// Gallery placeholder label for front view
+  ///
+  /// In en, this message translates to:
+  /// **'Front View'**
+  String get galleryFrontView;
+
+  /// Gallery placeholder label for 3D preview
+  ///
+  /// In en, this message translates to:
+  /// **'3D Preview'**
+  String get gallery3DPreview;
+
+  /// Gallery placeholder label for QR code view
+  ///
+  /// In en, this message translates to:
+  /// **'With QR Code'**
+  String get galleryWithQRCode;
+
+  /// Product features section title
+  ///
+  /// In en, this message translates to:
+  /// **'Features'**
+  String get features;
+
+  /// Feature text for precision engraving
+  ///
+  /// In en, this message translates to:
+  /// **'Precision laser engraving'**
+  String get featurePrecisionEngraving;
+
+  /// Feature prefix for high quality material
+  ///
+  /// In en, this message translates to:
+  /// **'High-quality'**
+  String get featureHighQuality;
+
+  /// Feature text for custom QR design
+  ///
+  /// In en, this message translates to:
+  /// **'Custom QR code design'**
+  String get featureCustomQRDesign;
+
+  /// Feature text for durability
+  ///
+  /// In en, this message translates to:
+  /// **'Durable and long-lasting'**
+  String get featureDurable;
+
+  /// Total price label
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// Add to cart button text
+  ///
+  /// In en, this message translates to:
+  /// **'Add to Cart'**
+  String get addToCart;
+
+  /// Added to cart success text
+  ///
+  /// In en, this message translates to:
+  /// **'Added!'**
+  String get added;
+
+  /// Added to cart success message suffix
+  ///
+  /// In en, this message translates to:
+  /// **'added to cart!'**
+  String get addedToCart;
+
+  /// View cart action button text
+  ///
+  /// In en, this message translates to:
+  /// **'View Cart'**
+  String get viewCart;
+
+  /// Error message when adding product to cart fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error adding to cart. Please try again.'**
+  String get errorAddingToCart;
 }
 
 class _AppLocalizationsDelegate

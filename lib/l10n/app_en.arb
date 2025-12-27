@@ -2187,5 +2187,110 @@
       "section": {"type": "String"},
       "title": {"type": "String"}
     }
+  },
+
+  "inStock": "In Stock",
+  "@inStock": {
+    "description": "Product in stock badge text"
+  },
+
+  "outOfStock": "Out of Stock",
+  "@outOfStock": {
+    "description": "Product out of stock badge text"
+  },
+
+  "defaultProductDescription": "High-quality laser-engraved product with your custom QR code.",
+  "@defaultProductDescription": {
+    "description": "Default product description when none is provided"
+  },
+
+  "customization": "Customization",
+  "@customization": {
+    "description": "Customization section title in product details"
+  },
+
+  "selectSize": "Select Size",
+  "@selectSize": {
+    "description": "Size selector label"
+  },
+
+  "selectFinish": "Select Finish",
+  "@selectFinish": {
+    "description": "Finish selector label"
+  },
+
+  "productGallery": "Gallery",
+  "@productGallery": {
+    "description": "Product gallery section title"
+  },
+
+  "galleryFrontView": "Front View",
+  "@galleryFrontView": {
+    "description": "Gallery placeholder label for front view"
+  },
+
+  "gallery3DPreview": "3D Preview",
+  "@gallery3DPreview": {
+    "description": "Gallery placeholder label for 3D preview"
+  },
+
+  "galleryWithQRCode": "With QR Code",
+  "@galleryWithQRCode": {
+    "description": "Gallery placeholder label for QR code view"
+  },
+
+  "features": "Features",
+  "@features": {
+    "description": "Product features section title"
+  },
+
+  "featurePrecisionEngraving": "Precision laser engraving",
+  "@featurePrecisionEngraving": {
+    "description": "Feature text for precision engraving"
+  },
+
+  "featureHighQuality": "High-quality",
+  "@featureHighQuality": {
+    "description": "Feature prefix for high quality material"
+  },
+
+  "featureCustomQRDesign": "Custom QR code design",
+  "@featureCustomQRDesign": {
+    "description": "Feature text for custom QR design"
+  },
+
+  "featureDurable": "Durable and long-lasting",
+  "@featureDurable": {
+    "description": "Feature text for durability"
+  },
+
+  "total": "Total",
+  "@total": {
+    "description": "Total price label"
+  },
+
+  "addToCart": "Add to Cart",
+  "@addToCart": {
+    "description": "Add to cart button text"
+  },
+
+  "added": "Added!",
+  "@added": {
+    "description": "Added to cart success text"
+  },
+
+  "addedToCart": "added to cart!",
+  "@addedToCart": {
+    "description": "Added to cart success message suffix"
+  },
+
+  "viewCart": "View Cart",
+  "@viewCart": {
+    "description": "View cart action button text"
+  },
+
+  "errorAddingToCart": "Error adding to cart. Please try again.",
+  "@errorAddingToCart": {
+    "description": "Error message when adding product to cart fails"
   }
 }

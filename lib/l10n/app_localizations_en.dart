@@ -1574,4 +1574,68 @@ class AppLocalizationsEn extends AppLocalizations {
   String openSettingsMessage(String section, String title) {
     return 'Open Settings > $section > $title to enable access.';
   }
+
+  @override
+  String get inStock => 'In Stock';
+
+  @override
+  String get outOfStock => 'Out of Stock';
+
+  @override
+  String get defaultProductDescription =>
+      'High-quality laser-engraved product with your custom QR code.';
+
+  @override
+  String get customization => 'Customization';
+
+  @override
+  String get selectSize => 'Select Size';
+
+  @override
+  String get selectFinish => 'Select Finish';
+
+  @override
+  String get productGallery => 'Gallery';
+
+  @override
+  String get galleryFrontView => 'Front View';
+
+  @override
+  String get gallery3DPreview => '3D Preview';
+
+  @override
+  String get galleryWithQRCode => 'With QR Code';
+
+  @override
+  String get features => 'Features';
+
+  @override
+  String get featurePrecisionEngraving => 'Precision laser engraving';
+
+  @override
+  String get featureHighQuality => 'High-quality';
+
+  @override
+  String get featureCustomQRDesign => 'Custom QR code design';
+
+  @override
+  String get featureDurable => 'Durable and long-lasting';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get addToCart => 'Add to Cart';
+
+  @override
+  String get added => 'Added!';
+
+  @override
+  String get addedToCart => 'added to cart!';
+
+  @override
+  String get viewCart => 'View Cart';
+
+  @override
+  String get errorAddingToCart => 'Error adding to cart. Please try again.';
 }
