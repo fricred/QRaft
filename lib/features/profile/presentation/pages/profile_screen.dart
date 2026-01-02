@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:intl/intl.dart';
 import 'package:qraft/l10n/app_localizations.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../../shared/widgets/language_selector.dart';
@@ -15,6 +18,7 @@ import '../../../subscription/presentation/providers/subscription_providers.dart
 import '../../../subscription/presentation/widgets/qr_limit_indicator.dart';
 import '../../../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
 import '../../../subscription/presentation/widgets/pro_badge.dart';
+import '../../../subscription/domain/entities/subscription_plan.dart';
 import '../../../../core/providers/locale_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -389,9 +393,87 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
+  /// Open the device's subscription management (App Store / Google Play)
+  Future<void> _openSubscriptionManagement(BuildContext context) async {
+    final url = Platform.isIOS
+        ? 'https://apps.apple.com/account/subscriptions'
+        : 'https://play.google.com/store/account/subscriptions';
+
+    try {
+      await launchUrl(
+        Uri.parse(url),
+        mode: LaunchMode.externalApplication,
+      );
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not open subscription management'),
+            backgroundColor: Colors.red[700],
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    }
+  }
+
+  /// Get the display name for the subscription plan
+  String _getPlanDisplayName(SubscriptionPlan plan, AppLocalizations l10n) {
+    if (!plan.hasProAccess) return l10n.free;
+
+    switch (plan.periodType) {
+      case SubscriptionPeriod.monthly:
+        return l10n.proMonthly;
+      case SubscriptionPeriod.annual:
+        return l10n.proAnnual;
+      case SubscriptionPeriod.lifetime:
+        return l10n.proLifetime;
+      default:
+        return l10n.pro;
+    }
+  }
+
+  /// Get the subscription info text (renewal/expiration date)
+  String? _getSubscriptionInfo(SubscriptionPlan plan, AppLocalizations l10n) {
+    if (!plan.hasProAccess) return null;
+
+    // Lifetime plans never expire
+    if (plan.periodType == SubscriptionPeriod.lifetime) {
+      return l10n.neverExpires;
+    }
+
+    // Billing issue - show warning
+    if (plan.status == SubscriptionStatus.billingIssue) {
+      return l10n.billingIssue;
+    }
+
+    // Show renewal or expiration date
+    if (plan.expiresAt != null) {
+      final dateStr = DateFormat.yMMMd().format(plan.expiresAt!);
+      if (plan.status == SubscriptionStatus.cancelled) {
+        return l10n.expiresOn(dateStr);
+      }
+      return l10n.renewsOn(dateStr);
+    }
+
+    return null;
+  }
+
   Widget _buildSubscriptionSection(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
-    final hasPro = ref.watch(hasProAccessProvider);
-    final planName = hasPro ? 'Pro' : 'Free';
+    final subscriptionAsync = ref.watch(subscriptionPlanProvider);
+
+    return subscriptionAsync.when(
+      data: (subscription) => _buildSubscriptionCard(context, ref, l10n, subscription),
+      loading: () => _buildSubscriptionCard(context, ref, l10n, const SubscriptionPlan()),
+      error: (_, __) => _buildSubscriptionCard(context, ref, l10n, const SubscriptionPlan()),
+    );
+  }
+
+  Widget _buildSubscriptionCard(BuildContext context, WidgetRef ref, AppLocalizations l10n, SubscriptionPlan subscription) {
+    final hasPro = subscription.hasProAccess;
+    final planName = _getPlanDisplayName(subscription, l10n);
+    final subscriptionInfo = _getSubscriptionInfo(subscription, l10n);
 
     return Container(
       decoration: BoxDecoration(
@@ -474,12 +556,52 @@ class ProfileScreen extends ConsumerWidget {
                             ],
                           ),
                           Text(
-                            '$planName ${l10n.plan}',
+                            planName,
                             style: TextStyle(
                               color: Colors.grey[400],
                               fontSize: 13,
                             ),
                           ),
+                          if (subscriptionInfo != null) ...[
+                            const SizedBox(height: 2),
+                            Row(
+                              children: [
+                                if (subscription.periodType == SubscriptionPeriod.lifetime)
+                                  Icon(
+                                    Icons.all_inclusive_rounded,
+                                    color: const Color(0xFF00FF88),
+                                    size: 12,
+                                  )
+                                else if (subscription.status == SubscriptionStatus.billingIssue)
+                                  Icon(
+                                    Icons.warning_amber_rounded,
+                                    color: Colors.orange,
+                                    size: 12,
+                                  )
+                                else
+                                  Icon(
+                                    Icons.schedule_rounded,
+                                    color: Colors.grey[500],
+                                    size: 12,
+                                  ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  subscriptionInfo,
+                                  style: TextStyle(
+                                    color: subscription.status == SubscriptionStatus.billingIssue
+                                        ? Colors.orange
+                                        : subscription.periodType == SubscriptionPeriod.lifetime
+                                            ? const Color(0xFF00FF88)
+                                            : Colors.grey[500],
+                                    fontSize: 11,
+                                    fontWeight: subscription.status == SubscriptionStatus.billingIssue
+                                        ? FontWeight.w500
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -572,6 +694,28 @@ class ProfileScreen extends ConsumerWidget {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 16),
+                  // Manage Subscription button
+                  TextButton.icon(
+                    onPressed: () => _openSubscriptionManagement(context),
+                    icon: Icon(
+                      Icons.open_in_new_rounded,
+                      size: 16,
+                      color: Colors.grey[400],
+                    ),
+                    label: Text(
+                      l10n.manageSubscription,
+                      style: TextStyle(
+                        color: Colors.grey[400],
+                        fontSize: 13,
+                      ),
+                    ),
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
                   ),
                 ],
               ],

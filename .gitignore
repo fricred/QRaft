@@ -47,3 +47,8 @@ app.*.map.json
 # Environment variables (keep env.example.json for reference)
 env.json
 .env
+
+# Android signing
+android/key.properties
+android/app/upload-keystore.jks
+*.jks

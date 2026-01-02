@@ -1830,4 +1830,104 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get proSubscriptionsComingSoon =>
       '¡Las suscripciones Pro estarán disponibles pronto!\nMantente atento a las actualizaciones.';
+
+  @override
+  String get restorePurchases => 'Restaurar Compras';
+
+  @override
+  String get restoring => 'Restaurando...';
+
+  @override
+  String get purchasesRestoredSuccess => '¡Compras restauradas exitosamente!';
+
+  @override
+  String get selectPlan => 'Selecciona un plan';
+
+  @override
+  String startFreeTrial(int days) {
+    return 'Iniciar Prueba Gratis de $days Días';
+  }
+
+  @override
+  String get purchaseLifetimeAccess => 'Comprar Acceso de Por Vida';
+
+  @override
+  String get subscribeNow => 'Suscribirse Ahora';
+
+  @override
+  String get monthly => 'Mensual';
+
+  @override
+  String get annual => 'Anual';
+
+  @override
+  String get lifetime => 'De Por Vida';
+
+  @override
+  String get perMonth => '/mes';
+
+  @override
+  String get perYear => '/año';
+
+  @override
+  String savePercent(int percent) {
+    return 'Ahorra $percent%';
+  }
+
+  @override
+  String get bestValue => 'Mejor Valor';
+
+  @override
+  String daysFreeTrial(int days) {
+    return '$days días de prueba gratis';
+  }
+
+  @override
+  String get welcomeToPro => '¡Bienvenido a Pro!';
+
+  @override
+  String get allFeaturesUnlocked =>
+      'Todas las funciones premium están desbloqueadas';
+
+  @override
+  String get getStartedPro => 'Comenzar';
+
+  @override
+  String get unableToLoadProducts => 'No se pueden cargar los productos';
+
+  @override
+  String get checkConnectionRetry =>
+      'Por favor verifica tu conexión e intenta de nuevo';
+
+  @override
+  String get paymentTerms =>
+      'El pago se cargará a tu cuenta. La suscripción se renueva automáticamente a menos que la canceles al menos 24 horas antes del final del período actual.';
+
+  @override
+  String get proMonthly => 'Pro Mensual';
+
+  @override
+  String get proAnnual => 'Pro Anual';
+
+  @override
+  String get proLifetime => 'Pro De Por Vida';
+
+  @override
+  String renewsOn(String date) {
+    return 'Se renueva el $date';
+  }
+
+  @override
+  String expiresOn(String date) {
+    return 'Expira el $date';
+  }
+
+  @override
+  String get neverExpires => 'Nunca expira';
+
+  @override
+  String get billingIssue => 'Actualizar método de pago';
+
+  @override
+  String get manageSubscription => 'Gestionar Suscripción';
 }

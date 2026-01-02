@@ -1796,4 +1796,103 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get proSubscriptionsComingSoon =>
       'Pro subscriptions will be available soon!\nStay tuned for updates.';
+
+  @override
+  String get restorePurchases => 'Restore Purchases';
+
+  @override
+  String get restoring => 'Restoring...';
+
+  @override
+  String get purchasesRestoredSuccess => 'Purchases restored successfully!';
+
+  @override
+  String get selectPlan => 'Select a plan';
+
+  @override
+  String startFreeTrial(int days) {
+    return 'Start $days-Day Free Trial';
+  }
+
+  @override
+  String get purchaseLifetimeAccess => 'Purchase Lifetime Access';
+
+  @override
+  String get subscribeNow => 'Subscribe Now';
+
+  @override
+  String get monthly => 'Monthly';
+
+  @override
+  String get annual => 'Annual';
+
+  @override
+  String get lifetime => 'Lifetime';
+
+  @override
+  String get perMonth => '/month';
+
+  @override
+  String get perYear => '/year';
+
+  @override
+  String savePercent(int percent) {
+    return 'Save $percent%';
+  }
+
+  @override
+  String get bestValue => 'Best Value';
+
+  @override
+  String daysFreeTrial(int days) {
+    return '$days days free trial';
+  }
+
+  @override
+  String get welcomeToPro => 'Welcome to Pro!';
+
+  @override
+  String get allFeaturesUnlocked => 'All premium features are now unlocked';
+
+  @override
+  String get getStartedPro => 'Get Started';
+
+  @override
+  String get unableToLoadProducts => 'Unable to load products';
+
+  @override
+  String get checkConnectionRetry =>
+      'Please check your connection and try again';
+
+  @override
+  String get paymentTerms =>
+      'Payment will be charged to your account. Subscription automatically renews unless canceled at least 24 hours before the end of the current period.';
+
+  @override
+  String get proMonthly => 'Pro Monthly';
+
+  @override
+  String get proAnnual => 'Pro Annual';
+
+  @override
+  String get proLifetime => 'Pro Lifetime';
+
+  @override
+  String renewsOn(String date) {
+    return 'Renews $date';
+  }
+
+  @override
+  String expiresOn(String date) {
+    return 'Expires $date';
+  }
+
+  @override
+  String get neverExpires => 'Never expires';
+
+  @override
+  String get billingIssue => 'Update payment method';
+
+  @override
+  String get manageSubscription => 'Manage Subscription';
 }

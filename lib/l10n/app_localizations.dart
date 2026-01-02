@@ -3361,6 +3361,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pro subscriptions will be available soon!\nStay tuned for updates.'**
   String get proSubscriptionsComingSoon;
+
+  /// Restore purchases button text
+  ///
+  /// In en, this message translates to:
+  /// **'Restore Purchases'**
+  String get restorePurchases;
+
+  /// Restoring purchases loading text
+  ///
+  /// In en, this message translates to:
+  /// **'Restoring...'**
+  String get restoring;
+
+  /// Success message when purchases are restored
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases restored successfully!'**
+  String get purchasesRestoredSuccess;
+
+  /// Prompt to select a subscription plan
+  ///
+  /// In en, this message translates to:
+  /// **'Select a plan'**
+  String get selectPlan;
+
+  /// Start free trial button text
+  ///
+  /// In en, this message translates to:
+  /// **'Start {days}-Day Free Trial'**
+  String startFreeTrial(int days);
+
+  /// Purchase lifetime access button text
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase Lifetime Access'**
+  String get purchaseLifetimeAccess;
+
+  /// Subscribe now button text
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe Now'**
+  String get subscribeNow;
+
+  /// Monthly subscription type
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get monthly;
+
+  /// Annual subscription type
+  ///
+  /// In en, this message translates to:
+  /// **'Annual'**
+  String get annual;
+
+  /// Lifetime purchase type
+  ///
+  /// In en, this message translates to:
+  /// **'Lifetime'**
+  String get lifetime;
+
+  /// Per month price suffix
+  ///
+  /// In en, this message translates to:
+  /// **'/month'**
+  String get perMonth;
+
+  /// Per year price suffix
+  ///
+  /// In en, this message translates to:
+  /// **'/year'**
+  String get perYear;
+
+  /// Savings percentage badge
+  ///
+  /// In en, this message translates to:
+  /// **'Save {percent}%'**
+  String savePercent(int percent);
+
+  /// Best value badge text
+  ///
+  /// In en, this message translates to:
+  /// **'Best Value'**
+  String get bestValue;
+
+  /// Free trial days text
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days free trial'**
+  String daysFreeTrial(int days);
+
+  /// Welcome message after successful purchase
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Pro!'**
+  String get welcomeToPro;
+
+  /// Features unlocked message after purchase
+  ///
+  /// In en, this message translates to:
+  /// **'All premium features are now unlocked'**
+  String get allFeaturesUnlocked;
+
+  /// Get started button after purchase success
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get getStartedPro;
+
+  /// Error message when products cannot be loaded
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load products'**
+  String get unableToLoadProducts;
+
+  /// Retry connection message
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your connection and try again'**
+  String get checkConnectionRetry;
+
+  /// Legal payment terms text
+  ///
+  /// In en, this message translates to:
+  /// **'Payment will be charged to your account. Subscription automatically renews unless canceled at least 24 hours before the end of the current period.'**
+  String get paymentTerms;
+
+  /// Pro monthly subscription plan name
+  ///
+  /// In en, this message translates to:
+  /// **'Pro Monthly'**
+  String get proMonthly;
+
+  /// Pro annual subscription plan name
+  ///
+  /// In en, this message translates to:
+  /// **'Pro Annual'**
+  String get proAnnual;
+
+  /// Pro lifetime subscription plan name
+  ///
+  /// In en, this message translates to:
+  /// **'Pro Lifetime'**
+  String get proLifetime;
+
+  /// Subscription renewal date text
+  ///
+  /// In en, this message translates to:
+  /// **'Renews {date}'**
+  String renewsOn(String date);
+
+  /// Subscription expiration date text
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {date}'**
+  String expiresOn(String date);
+
+  /// Text for lifetime subscriptions
+  ///
+  /// In en, this message translates to:
+  /// **'Never expires'**
+  String get neverExpires;
+
+  /// Billing issue warning text
+  ///
+  /// In en, this message translates to:
+  /// **'Update payment method'**
+  String get billingIssue;
+
+  /// Button to open device subscription management
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Subscription'**
+  String get manageSubscription;
 }
 
 class _AppLocalizationsDelegate

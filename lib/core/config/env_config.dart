@@ -23,7 +23,24 @@ class EnvConfig {
     'SUPABASE_SERVICE_KEY',
     defaultValue: 'your-service-key-here',
   );
-  
+
+  /// RevenueCat API Key for iOS
+  static const String revenueCatApiKeyIOS = String.fromEnvironment(
+    'REVENUECAT_API_KEY_IOS',
+    defaultValue: '',
+  );
+
+  /// RevenueCat API Key for Android
+  static const String revenueCatApiKeyAndroid = String.fromEnvironment(
+    'REVENUECAT_API_KEY_ANDROID',
+    defaultValue: '',
+  );
+
+  /// Check if RevenueCat is properly configured
+  static bool get isRevenueCatConfigured {
+    return revenueCatApiKeyIOS.isNotEmpty || revenueCatApiKeyAndroid.isNotEmpty;
+  }
+
   /// Check if Supabase is properly configured
   static bool get isSupabaseConfigured {
     return !supabaseUrl.contains('your-project') && 

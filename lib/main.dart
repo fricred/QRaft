@@ -5,6 +5,7 @@ import 'features/splash/splash_screen.dart';
 import 'features/auth/presentation/pages/auth_flow.dart';
 import 'features/auth/data/providers/supabase_auth_provider.dart';
 import 'features/main/main_scaffold.dart';
+import 'features/subscription/presentation/providers/purchase_providers.dart';
 import 'core/services/deeplink_service.dart';
 import 'core/services/supabase_service.dart';
 import 'core/config/env_config.dart';
@@ -101,18 +102,42 @@ class _QRaftAppState extends ConsumerState<QRaftApp> {
   }
 }
 
-class AuthWrapper extends ConsumerWidget {
+class AuthWrapper extends ConsumerStatefulWidget {
   const AuthWrapper({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends ConsumerState<AuthWrapper> {
+  String? _lastUserId;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final authProvider = ref.watch(supabaseAuthProvider);
     final currentUser = authProvider.currentUser;
-    
+
     // Initialize deeplink handler
     ref.watch(deepLinkHandlerProvider);
-    
+
+    // Initialize RevenueCat and Subscription Realtime when user authenticates
+    if (currentUser != null && _lastUserId != currentUser.id) {
+      _lastUserId = currentUser.id;
+      Future.microtask(() {
+        initializeRevenueCat(ref, currentUser.id);
+        startSubscriptionRealtime(ref, currentUser.id);
+      });
+    }
+
+    // Stop realtime listener when user logs out
+    if (currentUser == null && _lastUserId != null) {
+      _lastUserId = null;
+      Future.microtask(() {
+        stopSubscriptionRealtime(ref);
+      });
+    }
+
     if (authProvider.isLoading) {
       return const Scaffold(
         backgroundColor: Color(0xFF1A1A1A),

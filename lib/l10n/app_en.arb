@@ -2545,5 +2545,170 @@
   "proSubscriptionsComingSoon": "Pro subscriptions will be available soon!\nStay tuned for updates.",
   "@proSubscriptionsComingSoon": {
     "description": "Coming soon message for Pro subscriptions"
+  },
+
+  "restorePurchases": "Restore Purchases",
+  "@restorePurchases": {
+    "description": "Restore purchases button text"
+  },
+
+  "restoring": "Restoring...",
+  "@restoring": {
+    "description": "Restoring purchases loading text"
+  },
+
+  "purchasesRestoredSuccess": "Purchases restored successfully!",
+  "@purchasesRestoredSuccess": {
+    "description": "Success message when purchases are restored"
+  },
+
+  "selectPlan": "Select a plan",
+  "@selectPlan": {
+    "description": "Prompt to select a subscription plan"
+  },
+
+  "startFreeTrial": "Start {days}-Day Free Trial",
+  "@startFreeTrial": {
+    "description": "Start free trial button text",
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+
+  "purchaseLifetimeAccess": "Purchase Lifetime Access",
+  "@purchaseLifetimeAccess": {
+    "description": "Purchase lifetime access button text"
+  },
+
+  "subscribeNow": "Subscribe Now",
+  "@subscribeNow": {
+    "description": "Subscribe now button text"
+  },
+
+  "monthly": "Monthly",
+  "@monthly": {
+    "description": "Monthly subscription type"
+  },
+
+  "annual": "Annual",
+  "@annual": {
+    "description": "Annual subscription type"
+  },
+
+  "lifetime": "Lifetime",
+  "@lifetime": {
+    "description": "Lifetime purchase type"
+  },
+
+  "perMonth": "/month",
+  "@perMonth": {
+    "description": "Per month price suffix"
+  },
+
+  "perYear": "/year",
+  "@perYear": {
+    "description": "Per year price suffix"
+  },
+
+  "savePercent": "Save {percent}%",
+  "@savePercent": {
+    "description": "Savings percentage badge",
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+
+  "bestValue": "Best Value",
+  "@bestValue": {
+    "description": "Best value badge text"
+  },
+
+  "daysFreeTrial": "{days} days free trial",
+  "@daysFreeTrial": {
+    "description": "Free trial days text",
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+
+  "welcomeToPro": "Welcome to Pro!",
+  "@welcomeToPro": {
+    "description": "Welcome message after successful purchase"
+  },
+
+  "allFeaturesUnlocked": "All premium features are now unlocked",
+  "@allFeaturesUnlocked": {
+    "description": "Features unlocked message after purchase"
+  },
+
+  "getStartedPro": "Get Started",
+  "@getStartedPro": {
+    "description": "Get started button after purchase success"
+  },
+
+  "unableToLoadProducts": "Unable to load products",
+  "@unableToLoadProducts": {
+    "description": "Error message when products cannot be loaded"
+  },
+
+  "checkConnectionRetry": "Please check your connection and try again",
+  "@checkConnectionRetry": {
+    "description": "Retry connection message"
+  },
+
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+
+  "paymentTerms": "Payment will be charged to your account. Subscription automatically renews unless canceled at least 24 hours before the end of the current period.",
+  "@paymentTerms": {
+    "description": "Legal payment terms text"
+  },
+
+  "proMonthly": "Pro Monthly",
+  "@proMonthly": {
+    "description": "Pro monthly subscription plan name"
+  },
+
+  "proAnnual": "Pro Annual",
+  "@proAnnual": {
+    "description": "Pro annual subscription plan name"
+  },
+
+  "proLifetime": "Pro Lifetime",
+  "@proLifetime": {
+    "description": "Pro lifetime subscription plan name"
+  },
+
+  "renewsOn": "Renews {date}",
+  "@renewsOn": {
+    "description": "Subscription renewal date text",
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+
+  "expiresOn": "Expires {date}",
+  "@expiresOn": {
+    "description": "Subscription expiration date text",
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+
+  "neverExpires": "Never expires",
+  "@neverExpires": {
+    "description": "Text for lifetime subscriptions"
+  },
+
+  "billingIssue": "Update payment method",
+  "@billingIssue": {
+    "description": "Billing issue warning text"
+  },
+
+  "manageSubscription": "Manage Subscription",
+  "@manageSubscription": {
+    "description": "Button to open device subscription management"
   }
 }

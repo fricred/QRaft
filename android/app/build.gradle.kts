@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -5,10 +8,16 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val keystorePropertiesFile = rootProject.file("key.properties")
+val keystoreProperties = Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "io.gothcorp.qraft"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "29.0.14033849"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -17,6 +26,15 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String? ?: "upload"
+            keyPassword = keystoreProperties["keyPassword"] as String? ?: ""
+            storeFile = file(keystoreProperties["storeFile"] as String? ?: "upload-keystore.jks")
+            storePassword = keystoreProperties["storePassword"] as String? ?: ""
+        }
     }
 
     defaultConfig {
@@ -32,17 +50,14 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
     // Enable 16 KB page size support for Android 15+
     packaging {
         jniLibs {
-            useLegacyPackaging = false
-            keepDebugSymbols += "**/*.so"
+            useLegacyPackaging = true
         }
     }
 }

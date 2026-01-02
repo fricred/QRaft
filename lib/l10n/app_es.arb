@@ -574,5 +574,51 @@
   "unlimitedHistory": "Historial Ilimitado",
   "accessAllScanHistory": "Accede a todo tu historial de escaneos",
   "comingSoonBanner": "Próximamente",
-  "proSubscriptionsComingSoon": "¡Las suscripciones Pro estarán disponibles pronto!\nMantente atento a las actualizaciones."
+  "proSubscriptionsComingSoon": "¡Las suscripciones Pro estarán disponibles pronto!\nMantente atento a las actualizaciones.",
+
+  "restorePurchases": "Restaurar Compras",
+  "restoring": "Restaurando...",
+  "purchasesRestoredSuccess": "¡Compras restauradas exitosamente!",
+  "selectPlan": "Selecciona un plan",
+  "startFreeTrial": "Iniciar Prueba Gratis de {days} Días",
+  "purchaseLifetimeAccess": "Comprar Acceso de Por Vida",
+  "subscribeNow": "Suscribirse Ahora",
+  "monthly": "Mensual",
+  "annual": "Anual",
+  "lifetime": "De Por Vida",
+  "perMonth": "/mes",
+  "perYear": "/año",
+  "savePercent": "Ahorra {percent}%",
+  "bestValue": "Mejor Valor",
+  "daysFreeTrial": "{days} días de prueba gratis",
+  "welcomeToPro": "¡Bienvenido a Pro!",
+  "allFeaturesUnlocked": "Todas las funciones premium están desbloqueadas",
+  "getStartedPro": "Comenzar",
+  "unableToLoadProducts": "No se pueden cargar los productos",
+  "checkConnectionRetry": "Por favor verifica tu conexión e intenta de nuevo",
+  "retry": "Reintentar",
+  "paymentTerms": "El pago se cargará a tu cuenta. La suscripción se renueva automáticamente a menos que la canceles al menos 24 horas antes del final del período actual.",
+
+  "proMonthly": "Pro Mensual",
+  "proAnnual": "Pro Anual",
+  "proLifetime": "Pro De Por Vida",
+  "renewsOn": "Se renueva el {date}",
+  "@renewsOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "expiresOn": "Expira el {date}",
+  "@expiresOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "neverExpires": "Nunca expira",
+  "billingIssue": "Actualizar método de pago",
+  "manageSubscription": "Gestionar Suscripción"
 }

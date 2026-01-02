@@ -12,7 +12,15 @@ enum SubscriptionStatus {
   active,
   expired,
   cancelled,
-  trial
+  trial,
+  billingIssue
+}
+
+/// Subscription period type
+enum SubscriptionPeriod {
+  monthly,
+  annual,
+  lifetime
 }
 
 /// Represents a user's subscription plan
@@ -22,6 +30,9 @@ class SubscriptionPlan extends Equatable {
   final DateTime? expiresAt;
   final DateTime? trialStartedAt;
   final DateTime? trialEndsAt;
+  final String? productId;
+  final SubscriptionPeriod? periodType;
+  final DateTime? purchaseDate;
 
   const SubscriptionPlan({
     this.tier = SubscriptionTier.free,
@@ -29,6 +40,9 @@ class SubscriptionPlan extends Equatable {
     this.expiresAt,
     this.trialStartedAt,
     this.trialEndsAt,
+    this.productId,
+    this.periodType,
+    this.purchaseDate,
   });
 
   /// Check if user has active Pro subscription
@@ -68,7 +82,26 @@ class SubscriptionPlan extends Equatable {
       trialEndsAt: map['trial_ends_at'] != null
           ? DateTime.parse(map['trial_ends_at'] as String)
           : null,
+      productId: map['subscription_product_id'] as String?,
+      periodType: _parsePeriodType(map['subscription_period_type'] as String?),
+      purchaseDate: map['original_purchase_date'] != null
+          ? DateTime.parse(map['original_purchase_date'] as String)
+          : null,
     );
+  }
+
+  static SubscriptionPeriod? _parsePeriodType(String? periodType) {
+    if (periodType == null) return null;
+    switch (periodType) {
+      case 'monthly':
+        return SubscriptionPeriod.monthly;
+      case 'annual':
+        return SubscriptionPeriod.annual;
+      case 'lifetime':
+        return SubscriptionPeriod.lifetime;
+      default:
+        return null;
+    }
   }
 
   static SubscriptionTier _parseTier(String tier) {
@@ -90,11 +123,13 @@ class SubscriptionPlan extends Equatable {
         return SubscriptionStatus.cancelled;
       case 'trial':
         return SubscriptionStatus.trial;
+      case 'billing_issue':
+        return SubscriptionStatus.billingIssue;
       default:
         return SubscriptionStatus.active;
     }
   }
 
   @override
-  List<Object?> get props => [tier, status, expiresAt, trialStartedAt, trialEndsAt];
+  List<Object?> get props => [tier, status, expiresAt, trialStartedAt, trialEndsAt, productId, periodType, purchaseDate];
 }
