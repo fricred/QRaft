@@ -1,0 +1,1101 @@
+{
+  "version": "2.8",
+  "children": [
+    {
+      "type": "frame",
+      "id": "L4tuM",
+      "x": 0,
+      "y": 0,
+      "name": "Feature Graphic",
+      "clip": true,
+      "width": 1024,
+      "height": 500,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 135,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#0D0D0D",
+            "position": 0
+          },
+          {
+            "color": "#1A1A1A",
+            "position": 0.5
+          },
+          {
+            "color": "#0A1A10",
+            "position": 1
+          }
+        ]
+      },
+      "gap": 48,
+      "padding": [
+        40,
+        72
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "bKRRa",
+          "name": "leftCol",
+          "width": 520,
+          "layout": "vertical",
+          "gap": 14,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Qko09",
+              "name": "badge",
+              "fill": "#00FF8820",
+              "cornerRadius": 100,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#00FF8840"
+              },
+              "gap": 6,
+              "padding": [
+                6,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "nM6GL",
+                  "name": "badgeIcon",
+                  "width": 14,
+                  "height": 14,
+                  "iconFontName": "qr-code",
+                  "iconFontFamily": "lucide",
+                  "fill": "#00FF88"
+                },
+                {
+                  "type": "text",
+                  "id": "zvIE2",
+                  "name": "badgeText",
+                  "fill": "#00FF88",
+                  "content": "Generador y Escáner de QR",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "dGLmU",
+              "name": "titleText",
+              "fill": "#FFFFFF",
+              "content": "QRaft",
+              "fontFamily": "Plus Jakarta Sans",
+              "fontSize": 72,
+              "fontWeight": "800",
+              "letterSpacing": -2
+            },
+            {
+              "type": "text",
+              "id": "9x7sf",
+              "name": "tagline",
+              "fill": "#00FF88",
+              "content": "Crea. Escanea. Personaliza.",
+              "fontFamily": "Inter",
+              "fontSize": 26,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "xOgiC",
+              "name": "descText",
+              "fill": "#FFFFFFB3",
+              "textGrowth": "fixed-width",
+              "width": 480,
+              "content": "Genera códigos QR personalizados, escanea al instante y ordena productos físicos grabados con láser.",
+              "lineHeight": 1.5,
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "5l4BD",
+              "name": "pillRow",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "ZXf2E",
+                  "name": "pill1",
+                  "fill": "#2E2E2E",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#FFFFFF1F"
+                  },
+                  "gap": 6,
+                  "padding": [
+                    5,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "1j7T7",
+                      "name": "pill1Icon",
+                      "width": 12,
+                      "height": 12,
+                      "iconFontName": "grid-2x2",
+                      "iconFontFamily": "lucide",
+                      "fill": "#00FF88"
+                    },
+                    {
+                      "type": "text",
+                      "id": "md3J9",
+                      "name": "pill1Text",
+                      "fill": "#FFFFFF99",
+                      "content": "6+ Tipos de QR",
+                      "fontFamily": "Inter",
+                      "fontSize": 11,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "2qlCo",
+                  "name": "pill2",
+                  "fill": "#2E2E2E",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#FFFFFF1F"
+                  },
+                  "gap": 6,
+                  "padding": [
+                    5,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "Vdgue",
+                      "name": "pill2Icon",
+                      "width": 12,
+                      "height": 12,
+                      "iconFontName": "scan",
+                      "iconFontFamily": "lucide",
+                      "fill": "#00FF88"
+                    },
+                    {
+                      "type": "text",
+                      "id": "1JfMn",
+                      "name": "pill2Text",
+                      "fill": "#FFFFFF99",
+                      "content": "Escáner",
+                      "fontFamily": "Inter",
+                      "fontSize": 11,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "qx784",
+                  "name": "pill3",
+                  "fill": "#2E2E2E",
+                  "cornerRadius": 14,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#FFFFFF1F"
+                  },
+                  "gap": 6,
+                  "padding": [
+                    5,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "avzI9",
+                      "name": "pill3Icon",
+                      "width": 12,
+                      "height": 12,
+                      "iconFontName": "shopping-bag",
+                      "iconFontFamily": "lucide",
+                      "fill": "#00FF88"
+                    },
+                    {
+                      "type": "text",
+                      "id": "v4HdZ",
+                      "name": "pill3Text",
+                      "fill": "#FFFFFF99",
+                      "content": "Tienda",
+                      "fontFamily": "Inter",
+                      "fontSize": 11,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "jshzS",
+          "name": "rightSide",
+          "width": 320,
+          "height": 320,
+          "fill": "#2E2E2E",
+          "cornerRadius": 28,
+          "stroke": {
+            "thickness": 1,
+            "fill": "#FFFFFF1F"
+          },
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "bijjc",
+              "x": 40,
+              "y": 40,
+              "name": "glow1",
+              "fill": "#00FF8812",
+              "width": 240,
+              "height": 240,
+              "effect": {
+                "type": "blur",
+                "radius": 50
+              }
+            },
+            {
+              "type": "frame",
+              "id": "lZlME",
+              "x": 50,
+              "y": 50,
+              "name": "qrBox",
+              "width": 220,
+              "height": 220,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "./images/generated-1771123541349.png",
+                "mode": "fill"
+              },
+              "cornerRadius": 16
+            },
+            {
+              "type": "frame",
+              "id": "Rk31s",
+              "x": 30,
+              "y": 30,
+              "name": "cornerTL",
+              "width": 36,
+              "height": 36,
+              "stroke": {
+                "thickness": 2,
+                "fill": "#00FF88"
+              }
+            },
+            {
+              "type": "frame",
+              "id": "nH2xi",
+              "x": 254,
+              "y": 254,
+              "name": "cornerBR",
+              "width": 36,
+              "height": 36,
+              "stroke": {
+                "thickness": 2,
+                "fill": "#00FF88"
+              }
+            },
+            {
+              "type": "ellipse",
+              "id": "08aQW",
+              "x": 140,
+              "y": 140,
+              "name": "centerDot",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#00FF88",
+                    "position": 0
+                  },
+                  {
+                    "color": "#1A73E8",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 40,
+              "height": 40
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "2g2hO",
+      "x": 1224,
+      "y": 0,
+      "name": "SS1 - Generate",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#0D0D0D",
+            "position": 0
+          },
+          {
+            "color": "#1A1A1A",
+            "position": 0.4
+          },
+          {
+            "color": "#0A1A10",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 20,
+      "padding": [
+        60,
+        60,
+        0,
+        60
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "D6L2u",
+          "name": "badge1",
+          "fill": "#00FF8820",
+          "cornerRadius": 100,
+          "stroke": {
+            "thickness": 1,
+            "fill": "#00FF8840"
+          },
+          "gap": 6,
+          "padding": [
+            8,
+            20
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "MGZE7",
+              "name": "badge1i",
+              "width": 16,
+              "height": 16,
+              "iconFontName": "zap",
+              "iconFontFamily": "lucide",
+              "fill": "#00FF88"
+            },
+            {
+              "type": "text",
+              "id": "1GzIz",
+              "name": "badge1t",
+              "fill": "#00FF88",
+              "content": "Rápido y Fácil",
+              "fontFamily": "Inter",
+              "fontSize": 15,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "2dfN9",
+          "name": "head1",
+          "fill": "#FFFFFF",
+          "textGrowth": "fixed-width",
+          "width": 900,
+          "content": "Crea Códigos QR\nEn Segundos",
+          "lineHeight": 1.15,
+          "textAlign": "center",
+          "fontFamily": "Plus Jakarta Sans",
+          "fontSize": 46,
+          "fontWeight": "800"
+        },
+        {
+          "type": "text",
+          "id": "R7LOe",
+          "name": "sub1",
+          "fill": "#FFFFFFB3",
+          "content": "6+ tipos incluyendo URL, WiFi, vCard y más",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 20,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "Tjfob",
+          "name": "device1",
+          "clip": true,
+          "width": 740,
+          "height": 1610,
+          "fill": "#000000",
+          "cornerRadius": 50,
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "ACFQl",
+              "x": 10,
+              "y": 10,
+              "name": "screen1",
+              "clip": true,
+              "width": 720,
+              "height": 1590,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "./images/screen1.png",
+                "mode": "fill"
+              },
+              "cornerRadius": 42
+            },
+            {
+              "type": "frame",
+              "id": "90Csj",
+              "x": 270,
+              "y": 18,
+              "name": "notch1",
+              "width": 200,
+              "height": 36,
+              "fill": "#000000",
+              "cornerRadius": 18
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "vhDY0",
+      "x": 2504,
+      "y": 0,
+      "name": "SS2 - Scanner",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#0D0D0D",
+            "position": 0
+          },
+          {
+            "color": "#1A1A1A",
+            "position": 0.4
+          },
+          {
+            "color": "#0A1A10",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 20,
+      "padding": [
+        60,
+        60,
+        0,
+        60
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "S04hJ",
+          "name": "badge2",
+          "fill": "#00FF8820",
+          "cornerRadius": 100,
+          "stroke": {
+            "thickness": 1,
+            "fill": "#00FF8840"
+          },
+          "gap": 6,
+          "padding": [
+            8,
+            20
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "cRLCB",
+              "name": "badge2i",
+              "width": 16,
+              "height": 16,
+              "iconFontName": "scan",
+              "iconFontFamily": "lucide",
+              "fill": "#00FF88"
+            },
+            {
+              "type": "text",
+              "id": "uYjUA",
+              "name": "badge2t",
+              "fill": "#00FF88",
+              "content": "Detección Instantánea",
+              "fontFamily": "Inter",
+              "fontSize": 15,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "6vTC3",
+          "name": "head2",
+          "fill": "#FFFFFF",
+          "textGrowth": "fixed-width",
+          "width": 900,
+          "content": "Escanea Cualquier\nCódigo QR",
+          "lineHeight": 1.15,
+          "textAlign": "center",
+          "fontFamily": "Plus Jakarta Sans",
+          "fontSize": 46,
+          "fontWeight": "800"
+        },
+        {
+          "type": "text",
+          "id": "yasHw",
+          "name": "sub2",
+          "fill": "#FFFFFFB3",
+          "content": "Apunta tu cámara y escanea al instante",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 20,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "MEHok",
+          "name": "device2",
+          "clip": true,
+          "width": 740,
+          "height": 1610,
+          "fill": "#000000",
+          "cornerRadius": 50,
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "pnY3M",
+              "x": 10,
+              "y": 10,
+              "name": "screen2",
+              "clip": true,
+              "width": 720,
+              "height": 1590,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "./images/screen2.png",
+                "mode": "fill"
+              },
+              "cornerRadius": 42
+            },
+            {
+              "type": "frame",
+              "id": "o7pFJ",
+              "x": 270,
+              "y": 18,
+              "name": "notch2",
+              "width": 200,
+              "height": 36,
+              "fill": "#000000",
+              "cornerRadius": 18
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "RmBYO",
+      "x": 3784,
+      "y": 0,
+      "name": "SS3 - Library",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#0D0D0D",
+            "position": 0
+          },
+          {
+            "color": "#1A1A1A",
+            "position": 0.4
+          },
+          {
+            "color": "#120A1A",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 20,
+      "padding": [
+        60,
+        60,
+        0,
+        60
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "CTbom",
+          "name": "badge3",
+          "fill": "#8B5CF620",
+          "cornerRadius": 100,
+          "stroke": {
+            "thickness": 1,
+            "fill": "#8B5CF640"
+          },
+          "gap": 6,
+          "padding": [
+            8,
+            20
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "JLn7E",
+              "name": "badge3i",
+              "width": 16,
+              "height": 16,
+              "iconFontName": "book-open",
+              "iconFontFamily": "lucide",
+              "fill": "#8B5CF6"
+            },
+            {
+              "type": "text",
+              "id": "63VAa",
+              "name": "badge3t",
+              "fill": "#8B5CF6",
+              "content": "Organiza y Comparte",
+              "fontFamily": "Inter",
+              "fontSize": 15,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "IqJXv",
+          "name": "head3",
+          "fill": "#FFFFFF",
+          "textGrowth": "fixed-width",
+          "width": 900,
+          "content": "Tu Biblioteca\nde QR",
+          "lineHeight": 1.15,
+          "textAlign": "center",
+          "fontFamily": "Plus Jakarta Sans",
+          "fontSize": 46,
+          "fontWeight": "800"
+        },
+        {
+          "type": "text",
+          "id": "RSKOm",
+          "name": "sub3",
+          "fill": "#FFFFFFB3",
+          "content": "Guarda, organiza y comparte tus códigos QR",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 20,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "gcl4P",
+          "name": "device3",
+          "clip": true,
+          "width": 740,
+          "height": 1610,
+          "fill": "#000000",
+          "cornerRadius": 50,
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "dBPpx",
+              "x": 10,
+              "y": 10,
+              "name": "screen3",
+              "clip": true,
+              "width": 720,
+              "height": 1590,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "./images/screen3.png",
+                "mode": "fill"
+              },
+              "cornerRadius": 42
+            },
+            {
+              "type": "frame",
+              "id": "r4eqo",
+              "x": 270,
+              "y": 18,
+              "name": "notch3",
+              "width": 200,
+              "height": 36,
+              "fill": "#000000",
+              "cornerRadius": 18
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "rKmeb",
+      "x": 5064,
+      "y": 0,
+      "name": "SS4 - Customize",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#0D0D0D",
+            "position": 0
+          },
+          {
+            "color": "#1A1A1A",
+            "position": 0.4
+          },
+          {
+            "color": "#0A0F1A",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 20,
+      "padding": [
+        60,
+        60,
+        0,
+        60
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "K4C4g",
+          "name": "badge4",
+          "fill": "#1A73E820",
+          "cornerRadius": 100,
+          "stroke": {
+            "thickness": 1,
+            "fill": "#1A73E840"
+          },
+          "gap": 6,
+          "padding": [
+            8,
+            20
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "hfzD5",
+              "name": "badge4i",
+              "width": 16,
+              "height": 16,
+              "iconFontName": "palette",
+              "iconFontFamily": "lucide",
+              "fill": "#60A5FA"
+            },
+            {
+              "type": "text",
+              "id": "L9Hlz",
+              "name": "badge4t",
+              "fill": "#60A5FA",
+              "content": "Personaliza",
+              "fontFamily": "Inter",
+              "fontSize": 15,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "O2EU4",
+          "name": "head4",
+          "fill": "#FFFFFF",
+          "textGrowth": "fixed-width",
+          "width": 900,
+          "content": "Hazlo\nTuyo",
+          "lineHeight": 1.15,
+          "textAlign": "center",
+          "fontFamily": "Plus Jakarta Sans",
+          "fontSize": 46,
+          "fontWeight": "800"
+        },
+        {
+          "type": "text",
+          "id": "fwrxg",
+          "name": "sub4",
+          "fill": "#FFFFFFB3",
+          "content": "Colores, logos, plantillas y más",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 20,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "Hf5Yn",
+          "name": "device4",
+          "clip": true,
+          "width": 740,
+          "height": 1610,
+          "fill": "#000000",
+          "cornerRadius": 50,
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "Teosi",
+              "x": 10,
+              "y": 10,
+              "name": "screen4",
+              "clip": true,
+              "width": 720,
+              "height": 1590,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "./images/screen4.png",
+                "mode": "fill"
+              },
+              "cornerRadius": 42
+            },
+            {
+              "type": "frame",
+              "id": "LGNfJ",
+              "x": 270,
+              "y": 18,
+              "name": "notch4",
+              "width": 200,
+              "height": 36,
+              "fill": "#000000",
+              "cornerRadius": 18
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Gdt7i",
+      "x": 6344,
+      "y": 0,
+      "name": "SS5 - Marketplace",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#0D0D0D",
+            "position": 0
+          },
+          {
+            "color": "#1A1A1A",
+            "position": 0.4
+          },
+          {
+            "color": "#1A120A",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 20,
+      "padding": [
+        60,
+        60,
+        0,
+        60
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "n68jR",
+          "name": "badge5",
+          "fill": "#F9731620",
+          "cornerRadius": 100,
+          "stroke": {
+            "thickness": 1,
+            "fill": "#F9731640"
+          },
+          "gap": 6,
+          "padding": [
+            8,
+            20
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "tREBj",
+              "name": "badge5i",
+              "width": 16,
+              "height": 16,
+              "iconFontName": "sparkles",
+              "iconFontFamily": "lucide",
+              "fill": "#FB923C"
+            },
+            {
+              "type": "text",
+              "id": "04uTd",
+              "name": "badge5t",
+              "fill": "#FB923C",
+              "content": "Productos Físicos",
+              "fontFamily": "Inter",
+              "fontSize": 15,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "0KIq2",
+          "name": "head5",
+          "fill": "#FFFFFF",
+          "textGrowth": "fixed-width",
+          "width": 900,
+          "content": "Códigos QR\nGrabados con Láser",
+          "lineHeight": 1.15,
+          "textAlign": "center",
+          "fontFamily": "Plus Jakarta Sans",
+          "fontSize": 46,
+          "fontWeight": "800"
+        },
+        {
+          "type": "text",
+          "id": "i8slO",
+          "name": "sub5",
+          "fill": "#FFFFFFB3",
+          "content": "Madera, metal, acrílico y más materiales",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 20,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "gqtD0",
+          "name": "device5",
+          "clip": true,
+          "width": 740,
+          "height": 1610,
+          "fill": "#000000",
+          "cornerRadius": 50,
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "EpN6B",
+              "x": 10,
+              "y": 10,
+              "name": "screen5",
+              "clip": true,
+              "width": 720,
+              "height": 1590,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "./images/screen5.png",
+                "mode": "fill"
+              },
+              "cornerRadius": 42
+            },
+            {
+              "type": "frame",
+              "id": "b7dG7",
+              "x": 270,
+              "y": 18,
+              "name": "notch5",
+              "width": 200,
+              "height": 36,
+              "fill": "#000000",
+              "cornerRadius": 18
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
