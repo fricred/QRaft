@@ -26,23 +26,19 @@ class AdUnitIds {
 
   // ===========================================
   // Production Ad Unit IDs
-  // TODO: Replace with your actual AdMob ad unit IDs
   // ===========================================
 
   /// Production Banner Ad for Dashboard
-  static const String prodBannerDashboard = 'ca-app-pub-XXXXX/YYYYY';
+  static const String prodBannerDashboard = 'ca-app-pub-9213497138890427/5750052792';
 
   /// Production Banner Ad for Library
-  static const String prodBannerLibrary = 'ca-app-pub-XXXXX/ZZZZZ';
+  static const String prodBannerLibrary = 'ca-app-pub-9213497138890427/5916749349';
 
   /// Production Rewarded Ad for QR Save bonus
-  static const String prodRewardedQRSave = 'ca-app-pub-XXXXX/AAAAA';
+  static const String prodRewardedQRSave = 'ca-app-pub-9213497138890427/4744092884';
 
   /// Production Rewarded Ad for Scan bonus
-  static const String prodRewardedScan = 'ca-app-pub-XXXXX/BBBBB';
-
-  /// Production Native Ad for Scan History
-  static const String prodNativeHistory = 'ca-app-pub-XXXXX/CCCCC';
+  static const String prodRewardedScan = 'ca-app-pub-9213497138890427/8179950602';
 
   // ===========================================
   // Dynamic Ad Unit ID getters
@@ -68,11 +64,9 @@ class AdUnitIds {
   static String get rewardedScan =>
       isTestMode ? testRewarded : prodRewardedScan;
 
-  /// Native Ad Unit ID (Scan History)
-  static String get nativeHistory =>
-      isTestMode ? testNative : prodNativeHistory;
+  /// Native Ad Unit ID (Scan History) - uses test ID until production unit is created
+  static String get nativeHistory => testNative;
 
-  /// Interstitial Ad Unit ID (for future use)
-  static String get interstitial =>
-      isTestMode ? testInterstitial : testInterstitial; // TODO: Add production ID
+  /// Interstitial Ad Unit ID - uses test ID until production unit is created
+  static String get interstitial => testInterstitial;
 }

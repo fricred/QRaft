@@ -16,8 +16,6 @@ class SupabaseService {
   
   static Future<void> initialize() async {
     debugPrint('Initializing Supabase...');
-    debugPrint('Supabase URL: ${SupabaseConfig.supabaseUrl}');
-    debugPrint('Supabase Key: ${SupabaseConfig.supabaseAnonKey.substring(0, 10)}...');
     
     // Only initialize if we have valid config
     if (SupabaseConfig.supabaseUrl.contains('your-project') || 

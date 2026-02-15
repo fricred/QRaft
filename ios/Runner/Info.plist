@@ -82,9 +82,9 @@
 	<string>QRaft needs access to your contacts to help you quickly create QR codes with contact email addresses.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>QRaft needs access to your location to create location-based QR codes with your current GPS coordinates.</string>
-	<!-- AdMob App ID (Test ID - replace with production ID before release) -->
+	<!-- AdMob App ID (Production) -->
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<string>ca-app-pub-9213497138890427~5118672998</string>
 	<!-- SKAdNetwork IDs for iOS 14+ ad attribution -->
 	<key>SKAdNetworkItems</key>
 	<array>
