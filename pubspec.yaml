@@ -47,6 +47,12 @@ dependencies:
   # Backend Integration
   supabase_flutter: ^2.0.0
 
+  # Firebase (Phase 1: minimum wiring only — services activated in Phases 10 + 12 per D-01)
+  # firebase_core 4.7.0 is the current stable that matches firebase_messaging 16.x +
+  # firebase_crashlytics 5.x + firebase_analytics 12.x (verified via pub.dev API 2026-05-01)
+  # — those companion packages are added in plan 04. Pin here so plan 04 has no version drift.
+  firebase_core: ^4.7.0
+
   # QR Functionality
   qr_flutter: ^4.1.0
   mobile_scanner: ^7.2.0
