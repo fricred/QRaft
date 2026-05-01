@@ -1,12 +1,12 @@
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-01 (post plan 01-01)
+**Last updated:** 2026-05-01 (post plan 01-02)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 1 — Foundation Hardening (plan 01-01 complete; advancing to plan 01-02)
+**Current focus**: Phase 1 — Foundation Hardening (plans 01-01 + 01-02 complete; advancing to plan 01-03)
 
 **Strategic anchors**:
 - Brownfield foundation: Auth, GlassButton, deeplinks, i18n, Supabase, AdMob inicial — preservar y construir encima
@@ -19,11 +19,11 @@
 
 **Milestone:** v1.0
 **Phase:** 1 of 12 — Foundation Hardening
-**Plan:** 1/8 complete — next: 01-02 Maestro foundation scaffolding
-**Status:** Plan 01-01 (Flutter SDK + scanner bump) complete; Phase 1 in progress
-**Last session:** 2026-05-01 — Plan 01-01 executed sequentially (2 tasks, 1 deviation: pub-syntax fix for SDK constraint), commits `55b4710` + `3ca9881`. Analyzer baseline = 0 issues.
+**Plan:** 2/8 complete — next: 01-03 Firebase minimum wiring
+**Status:** Plans 01-01 + 01-02 complete; Phase 1 in progress
+**Last session:** 2026-05-01 — Plan 01-02 (Maestro foundation scaffolding) executed sequentially (2 tasks, 0 deviations), commits `9b1cc5d` + `8849773`. Both helpers pass `maestro check-syntax`. `.maestro/` root with config, conventions, version pin, and 2 helper scaffolds is in place.
 
-**Progress:** [▱▱▱▱▱▱▱▱▱▱▱▱] 0/12 phases complete (0%) — Phase 1: 1/8 plans complete (12.5%)
+**Progress:** [▱▱▱▱▱▱▱▱▱▱▱▱] 0/12 phases complete (0%) — Phase 1: 2/8 plans complete (25%)
 
 ```
 Phase 1:  ▱ Foundation Hardening              ← NEXT
@@ -55,6 +55,11 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 |----------|--------|
 | Flutter SDK floor expressed as `sdk: ^3.7.0` + `flutter: '>=3.29.0'` (NOT `sdk: ^3.29.0`) | plan 01-01 SUMMARY (`3ca9881`) — pub treats `environment.sdk` as Dart SDK, Dart 3.29 doesn't exist |
 | Analyzer baseline = 0 issues (recorded for plan 01-07 final-gate regression check) | plan 01-01 SUMMARY |
+| Maestro selector convention `<feature>_<element>_<role>` documented in `.maestro/CONVENTIONS.md`; 13 verbatim selector ids enumerated for plans 06 + 07 to copy (forgot_password_*, ump_*, login_*, scanner_*, home_dashboard_root) | plan 01-02 SUMMARY |
+| `maestro check-syntax` CLI used as syntax validator (equivalent to `mcp__maestro__check_flow_syntax`; both wrap the same Maestro 2.4.0 binary) | plan 01-02 SUMMARY |
+| `.maestro/helpers/login.yaml` ships as text-matcher scaffold; plan 07 tightens to id matchers after plan 06 adds Keys to `auth_flow.dart` widgets | plan 01-02 SUMMARY (inline upgrade-path comments embedded in login.yaml) |
+| `dismiss-permissions.yaml` localizes "Permitir" (es-CO) alongside English variants because the app ships es/en | plan 01-02 SUMMARY |
+| Maestro CI integration deferred (D-16) — documented in CONVENTIONS.md so future planners do not accidentally re-scope | plan 01-02 SUMMARY |
 | Wompi as payment processor (PSE/Nequi/Daviplata/cards) | PROJECT.md |
 | Solo Colombia v1.0 | PROJECT.md |
 | 4-6 month timeline, feature-complete priority | PROJECT.md |
@@ -115,27 +120,33 @@ Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
 
-**Files written this session (plan 01-01 execution):**
-- `pubspec.yaml` — SDK constraint corrected (`sdk: ^3.7.0` + `flutter: '>=3.29.0'`); `mobile_scanner: ^7.2.0`
-- `pubspec.lock` — `mobile_scanner` 7.1.4 → 7.2.0
-- `.planning/phases/01-foundation-hardening/01-01-flutter-sdk-and-scanner-bump-SUMMARY.md`
+**Files written this session (plan 01-02 execution):**
+- `.maestro/config.yaml` — Maestro project config (appId io.gothcorp.qraft)
+- `.maestro/.tool-versions` — `maestro 2.4.0` pin (asdf-style)
+- `.maestro/CONVENTIONS.md` — selector convention `<feature>_<element>_<role>` + verbatim selector ids for plans 06/07
+- `.maestro/helpers/dismiss-permissions.yaml` — system-dialog dismissal helper (executable; `maestro check-syntax` OK)
+- `.maestro/helpers/login.yaml` — login scaffold with text matchers + plan-07 upgrade-path comments (`maestro check-syntax` OK)
+- `.planning/phases/01-foundation-hardening/01-02-maestro-foundation-scaffolding-SUMMARY.md`
 - `.planning/STATE.md` (this file)
-- `.planning/ROADMAP.md` (plan 01-01 checkbox marked)
+- `.planning/ROADMAP.md` (plan 01-02 checkbox marked)
 
 **Files from prior sessions:**
+- `pubspec.yaml`, `pubspec.lock` (modified in plan 01-01)
 - `.planning/PROJECT.md`, `.planning/REQUIREMENTS.md`, `.planning/v2-vision.md`, `.planning/config.json`
 - `.planning/research/{SUMMARY,STACK,ARCHITECTURE,PITFALLS}.md`
 - `.planning/codebase/{STACK,ARCHITECTURE,CONCERNS}.md`
-- `.planning/ROADMAP.md` (created by gsd-roadmapper, this session updates progress only)
-- `.planning/phases/01-foundation-hardening/{01-CONTEXT,01-PATTERNS,01-01-...-PLAN}.md`
+- `.planning/ROADMAP.md` (created by gsd-roadmapper; sessions update progress only)
+- `.planning/phases/01-foundation-hardening/{01-CONTEXT,01-PATTERNS,01-01-...-PLAN,01-01-...-SUMMARY,01-02-...-PLAN}.md`
 
-**Next command:** `/gsd-execute-phase 1` continuation — next plan is **01-02 Maestro foundation scaffolding**.
+**Next command:** `/gsd-execute-phase 1` continuation — next plan is **01-03 Firebase minimum wiring**.
 
 **Recommended next plans (Phase 1 wave order):**
-- `01-02-maestro-foundation-scaffolding-PLAN.md` (next, can run in parallel with 01-03 if desired)
-- `01-03-firebase-minimum-wiring-PLAN.md` (depends on 01-01 stable pub baseline ✓)
+- `01-03-firebase-minimum-wiring-PLAN.md` (depends on 01-01 stable pub baseline ✓; independent of 01-02)
 - `01-04-milestone-packages-install-PLAN.md` (depends on 01-01 + 01-03)
+- `01-05-ump-consent-and-admob-gating-PLAN.md` (depends on 01-04; will introduce ump_* widgets following CONVENTIONS.md)
+- `01-06-forgot-password-controller-refactor-PLAN.md` (will add Keys to dialog widgets per CONVENTIONS.md)
+- `01-07-maestro-flows-and-controller-tests-PLAN.md` (will tighten login.yaml from text- to id-matchers and author 9 phase-1 flows on top of helpers + conventions)
 
 ---
 *State initialized: 2026-05-01 by gsd-roadmapper*
-*Last updated: 2026-05-01 by plan 01-01 executor*
+*Last updated: 2026-05-01 by plan 01-02 executor*

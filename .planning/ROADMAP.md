@@ -46,9 +46,9 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
   3. ForgotPasswordDialog test suite is fully green (5 previously-failing tests resolved)
   4. AdMob UMP consent SDK is integrated and consent form shows on first launch before any ad request (modern path: `ConsentInformation`/`ConsentForm` from `google_mobile_ads ^5.1.0` — no separate UMP package; verified via Google AdMob Flutter privacy docs 2026-05-01)
   5. Milestone packages installed cleanly: `pretty_qr_code`, `screenshot`, `csv`, `image`, `firebase_messaging`, `firebase_crashlytics`, `firebase_analytics`, `flutter_form_builder`, `form_builder_validators`, `flutter_local_notifications`
-**Plans**: 8 plans (1/8 complete)
+**Plans**: 8 plans (2/8 complete)
 - [x] 01-01-flutter-sdk-and-scanner-bump-PLAN.md — bump Flutter SDK ^3.29 + mobile_scanner ^7.2.0; verify pub upgrade dry-run clean ✓ 2026-05-01 (commits `55b4710` + `3ca9881`; pubspec.yaml uses `sdk: ^3.7.0` + `flutter: '>=3.29.0'` per pub-canonical syntax)
-- [ ] 01-02-maestro-foundation-scaffolding-PLAN.md — establish .maestro/ root + config + conventions + helper scaffolds
+- [x] 01-02-maestro-foundation-scaffolding-PLAN.md — establish .maestro/ root + config + conventions + helper scaffolds ✓ 2026-05-01 (commits `9b1cc5d` + `8849773`; 5 files created: config.yaml, CONVENTIONS.md, .tool-versions, helpers/dismiss-permissions.yaml, helpers/login.yaml; both helpers pass `maestro check-syntax`)
 - [ ] 01-03-firebase-minimum-wiring-PLAN.md — reintroduce firebase_core for project qraft-e8a1d (config + Firebase.initializeApp; no service activation)
 - [ ] 01-04-milestone-packages-install-PLAN.md — install 10 milestone packages without wiring (no separate UMP install — `ConsentInformation`/`ConsentForm` ship inside `google_mobile_ads ^5.1.0` which is already in pubspec)
 - [ ] 01-05-ump-consent-and-admob-gating-PLAN.md — UMP service + consent screen + UmpGate; refactor main.dart so AdMob init waits for UMP; banner reads npa flag
