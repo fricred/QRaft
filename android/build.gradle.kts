@@ -1,3 +1,9 @@
+plugins {
+    // Firebase google-services plugin (Phase 1 plan 01-03 — minimum wiring per D-01).
+    // Declared with `apply false` here so the app-level build.gradle.kts can apply it.
+    id("com.google.gms.google-services") version "4.4.2" apply false
+}
+
 allprojects {
     repositories {
         google()

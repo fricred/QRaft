@@ -1,5 +1,8 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '13.0'
+# Bumped to 15.0 (Phase 1 plan 01-03 deviation Rule 3) — firebase_core 4.7.0 requires
+# iOS deployment target >= 15.0. Previous floor 13.0 was set for mobile_scanner 7.x;
+# 15.0 still satisfies mobile_scanner's >=13 requirement.
+platform :ios, '15.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
