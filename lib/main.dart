@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'features/splash/splash_screen.dart';
 import 'features/auth/presentation/pages/auth_flow.dart';
 import 'features/auth/data/providers/supabase_auth_provider.dart';
@@ -30,6 +32,12 @@ Future<void> initializeApp() async {
     // Initialize Supabase only
     await SupabaseService.initialize();
     debugPrint('✅ QRaft initialized with Supabase-only authentication');
+
+    // Initialize Firebase (Phase 1: minimum wiring per D-01)
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    debugPrint('✅ Firebase initialized');
 
     // Initialize AdMob for ads
     await MobileAds.instance.initialize();
