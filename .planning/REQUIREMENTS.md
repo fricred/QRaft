@@ -126,62 +126,77 @@ Diferidos a v2.0. Tracked but not in current roadmap. Ver `.planning/v2-vision.m
 
 ## Traceability
 
-Empty initially. Populated by gsd-roadmapper agent during roadmap creation.
+Populated by gsd-roadmapper agent on 2026-05-01.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| QR-01 | TBD | Pending |
-| QR-02 | TBD | Pending |
-| QR-03 | TBD | Pending |
-| QR-04 | TBD | Pending |
-| QR-05 | TBD | Pending |
-| QR-06 | TBD | Pending |
-| QR-07 | TBD | Pending |
-| QR-08 | TBD | Pending |
-| QR-09 | TBD | Pending |
-| QR-10 | TBD | Pending |
-| QRD-01 | TBD | Pending |
-| QRD-02 | TBD | Pending |
-| QRD-03 | TBD | Pending |
-| SCAN-01 | TBD | Pending |
-| SCAN-02 | TBD | Pending |
-| SCAN-03 | TBD | Pending |
-| SCAN-04 | TBD | Pending |
-| MKT-01 | TBD | Pending |
-| MKT-02 | TBD | Pending |
-| MKT-03 | TBD | Pending |
-| MKT-04 | TBD | Pending |
-| MKT-05 | TBD | Pending |
-| MKT-06 | TBD | Pending |
-| MKT-07 | TBD | Pending |
-| MKT-08 | TBD | Pending |
-| MKT-09 | TBD | Pending |
-| MKT-10 | TBD | Pending |
-| MKT-11 | TBD | Pending |
-| MKT-12 | TBD | Pending |
-| RDR-01 | TBD | Pending |
-| RDR-02 | TBD | Pending |
-| RDR-03 | TBD | Pending |
-| RDR-04 | TBD | Pending |
-| RDR-05 | TBD | Pending |
-| RDR-06 | TBD | Pending |
-| TAT-01 | TBD | Pending |
-| TAT-02 | TBD | Pending |
-| TAT-03 | TBD | Pending |
-| TAT-04 | TBD | Pending |
-| LGL-02 | TBD | Pending |
-| LGL-03 | TBD | Pending |
-| LGL-04 | TBD | Pending |
-| LGL-05 | TBD | Pending |
-| OPT-01 | TBD | Pending |
-| OPT-02 | TBD | Pending |
-| OPT-03 | TBD | Pending |
+| QR-01 | Phase 2 | Pending |
+| QR-02 | Phase 5 | Pending |
+| QR-03 | Phase 5 | Pending |
+| QR-04 | Phase 5 | Pending |
+| QR-05 | Phase 5 | Pending |
+| QR-06 | Phase 5 | Pending |
+| QR-07 | Phase 5 | Pending |
+| QR-08 | Phase 2 | Pending |
+| QR-09 | Phase 2 | Pending |
+| QR-10 | Phase 5 | Pending |
+| QRD-01 | Phase 6 | Pending |
+| QRD-02 | Phase 6 | Pending |
+| QRD-03 | Phase 6 | Pending |
+| SCAN-01 | Phase 1 | Pending |
+| SCAN-02 | Phase 3 | Pending |
+| SCAN-03 | Phase 3 | Pending |
+| SCAN-04 | Phase 3 | Pending |
+| MKT-01 | Phase 7 | Pending |
+| MKT-02 | Phase 7 | Pending |
+| MKT-03 | Phase 8 | Pending |
+| MKT-04 | Phase 9 | Pending |
+| MKT-05 | Phase 9 | Pending |
+| MKT-06 | Phase 9 | Pending |
+| MKT-07 | Phase 10 | Pending |
+| MKT-08 | Phase 10 | Pending |
+| MKT-09 | Phase 10 | Pending |
+| MKT-10 | Phase 12 | Pending |
+| MKT-11 | Phase 11 | Pending |
+| MKT-12 | Phase 8 | Pending |
+| RDR-01 | Phase 4 | Pending |
+| RDR-02 | Phase 4 | Pending |
+| RDR-03 | Phase 4 | Pending |
+| RDR-04 | Phase 4 | Pending |
+| RDR-05 | Phase 4 | Pending |
+| RDR-06 | Phase 4 | Pending |
+| TAT-01 | Phase 11 | Pending |
+| TAT-02 | Phase 11 | Pending |
+| TAT-03 | Phase 11 | Pending |
+| TAT-04 | Phase 11 | Pending |
+| LGL-02 | Phase 9 | Pending |
+| LGL-03 | Phase 9 | Pending |
+| LGL-04 | Phase 9 | Pending |
+| LGL-05 | Phase 9 | Pending |
+| OPT-01 | Phase 12 | Pending |
+| OPT-02 | Phase 12 | Pending |
+| OPT-03 | Phase 12 | Pending |
 
 **Coverage:**
 - v1 requirements: 46 total
-- Mapped to phases: 0 (pending roadmapper)
-- Unmapped: 46 ⚠️ (will resolve after `/gsd-roadmapper` runs)
+- Mapped to phases: 46 ✓
+- Unmapped: 0
+
+**Per-phase requirement count:**
+- Phase 1: 1 (SCAN-01)
+- Phase 2: 3 (QR-01, QR-08, QR-09)
+- Phase 3: 3 (SCAN-02, SCAN-03, SCAN-04)
+- Phase 4: 6 (RDR-01..06)
+- Phase 5: 7 (QR-02, QR-03, QR-04, QR-05, QR-06, QR-07, QR-10)
+- Phase 6: 3 (QRD-01, QRD-02, QRD-03)
+- Phase 7: 2 (MKT-01, MKT-02)
+- Phase 8: 2 (MKT-03, MKT-12)
+- Phase 9: 7 (MKT-04, MKT-05, MKT-06, LGL-02, LGL-03, LGL-04, LGL-05)
+- Phase 10: 3 (MKT-07, MKT-08, MKT-09)
+- Phase 11: 5 (MKT-11, TAT-01, TAT-02, TAT-03, TAT-04)
+- Phase 12: 4 (MKT-10, OPT-01, OPT-02, OPT-03)
+- **Total: 46 ✓**
 
 ---
 *Requirements defined: 2026-05-01*
-*Last updated: 2026-05-01 after initial definition*
+*Last updated: 2026-05-01 — traceability populated by gsd-roadmapper*
