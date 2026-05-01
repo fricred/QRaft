@@ -44,9 +44,18 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
   1. `flutter run` on iOS real device builds and launches `mobile_scanner` 7.2.0 without dependency errors
   2. Flutter SDK is verified ≥3.29 and `firebase_core` upgrade path tested via `flutter pub upgrade --dry-run`
   3. ForgotPasswordDialog test suite is fully green (5 previously-failing tests resolved)
-  4. AdMob UMP consent SDK (`google_user_messaging_platform`) is integrated and consent form shows on first launch before any ad request
+  4. AdMob UMP consent SDK is integrated and consent form shows on first launch before any ad request (modern path: `ConsentInformation`/`ConsentForm` from `google_mobile_ads ^5.1.0` — no separate UMP package; verified via Google AdMob Flutter privacy docs 2026-05-01)
   5. Milestone packages installed cleanly: `pretty_qr_code`, `screenshot`, `csv`, `image`, `firebase_messaging`, `firebase_crashlytics`, `firebase_analytics`, `flutter_form_builder`, `form_builder_validators`, `flutter_local_notifications`
-**Plans**: TBD
+**Plans**: 8 plans
+- [ ] 01-01-flutter-sdk-and-scanner-bump-PLAN.md — bump Flutter SDK ^3.29 + mobile_scanner ^7.2.0; verify pub upgrade dry-run clean
+- [ ] 01-02-maestro-foundation-scaffolding-PLAN.md — establish .maestro/ root + config + conventions + helper scaffolds
+- [ ] 01-03-firebase-minimum-wiring-PLAN.md — reintroduce firebase_core for project qraft-e8a1d (config + Firebase.initializeApp; no service activation)
+- [ ] 01-04-milestone-packages-install-PLAN.md — install 10 milestone packages without wiring (no separate UMP install — `ConsentInformation`/`ConsentForm` ship inside `google_mobile_ads ^5.1.0` which is already in pubspec)
+- [ ] 01-05-ump-consent-and-admob-gating-PLAN.md — UMP service + consent screen + UmpGate; refactor main.dart so AdMob init waits for UMP; banner reads npa flag
+- [ ] 01-06-forgot-password-controller-refactor-PLAN.md — extract ForgotPasswordController + add Maestro Keys to dialog/login/welcome/scaffold/scanner; reconcile CLAUDE.md/CONCERNS.md test count
+- [ ] 01-07-maestro-flows-and-controller-tests-PLAN.md — write controller + dialog tests; author 9 phase-1 Maestro flows; run on iOS sim + Android emulator
+- [ ] 01-08-phase-verification-PLAN.md — run D-11 closure suite; produce 01-VERIFICATION.md; advance STATE.md + ROADMAP.md to Phase 2
+
 **UI hint**: yes
 **Research needed before planning**: NO (research SUMMARY.md already covered scope; verify SDK version is operational task)
 **Parallel-eligible**: NO (must complete first — unblocks scanner + observability)
