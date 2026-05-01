@@ -43,13 +43,13 @@
 ## Known Bugs
 
 **ForgotPasswordDialog Test Failures:**
-- Symptoms: 5 out of 13 tests failing for password reset flow
+- Symptoms: 0 out of 6 tests failing pre-refactor for password reset flow (verified empirically 2026-05-01 via `grep -cE 'testWidgets\(|^\s*test\(' test/features/auth/presentation/widgets/forgot_password_dialog_test.dart` = 6, and `flutter test ...forgot_password_dialog_test.dart` = `+6 -0 All tests passed!` — prior 5/13 figure in this doc was stale; reconciled per Phase 1 D-10). The actual concern is not test failures but the underlying async/state-machine fragility documented below: the test count was correct in shape (Riverpod async state race conditions are real) but inflated in numbers.
 - Files: 
   - `lib/features/auth/presentation/widgets/forgot_password_dialog.dart`
-  - `test/features/auth/presentation/widgets/forgot_password_dialog_test.dart` (reference in CLAUDE.md)
-- Trigger: User submits email in forgot password dialog under various error conditions
-- Cause: Async state management issues with Riverpod provider state, email validation edge cases, loading state race conditions
-- Fix approach: Isolate state management logic from UI, mock Riverpod providers properly in tests, add explicit wait conditions for async operations
+  - `test/features/auth/presentation/widgets/forgot_password_dialog_test.dart`
+- Trigger: User submits email in forgot password dialog under various error conditions (race condition surface, even when current tests pass)
+- Cause: Async state management issues with Riverpod provider state, email validation edge cases, loading state race conditions; widget holds an `_emailSent` boolean and reads `authProvider.errorMessage` after `await`, both of which can drift from the underlying `SupabaseAuthProvider` state machine
+- Fix approach: Phase 1 plan 06 extracts state into a new `ForgotPasswordController` (StateNotifier + immutable state); Phase 1 plan 07 rewrites the test suite against the controller (controller tests + minimal widget tests), restoring full coverage and removing the race surface
 
 **QR Scanner Permission Handling Gaps:**
 - Symptoms: Camera permission request may fail silently on cold app start
@@ -320,11 +320,11 @@
 ## Test Coverage Gaps
 
 **ForgotPasswordDialog Incomplete Coverage:**
-- What's not tested: 5 out of 13 tests failing (per CLAUDE.md)
+- What's not tested: 0 of 6 tests failing pre-refactor (verified empirically 2026-05-01); the 5/13 figure previously cited from CLAUDE.md was stale. The real coverage gap is depth, not failure rate: only happy-path UI assertions exist (renders, contains email field, validates empty input, accepts valid format, has cancel/send buttons, cancel closes dialog). Async submission paths, error states, success state, and loading transitions are NOT exercised. Phase 1 plan 06 extracts state into a controller; plan 07 rewrites the suite (controller-level state tests + reduced widget tests) to close the depth gap.
 - Files: `lib/features/auth/presentation/widgets/forgot_password_dialog.dart`
-- Risk: Password reset flow may crash in production
+- Risk: Password reset flow may crash in production paths the tests don't cover (loading races, AuthException handling, success transition)
 - Priority: High - auth feature is critical
-- Fix: Debug failing tests, verify Riverpod state management, add error case tests
+- Fix: Phase 1 plan 06 extracts ForgotPasswordController; plan 07 rewrites tests against the controller and restores depth coverage
 
 **QR Type Detection and Parsing:**
 - What's not tested: Different QR type parsing (WiFi, vCard, location, events)
