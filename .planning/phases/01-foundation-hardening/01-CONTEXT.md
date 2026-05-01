@@ -176,6 +176,30 @@ Eliminate brownfield blockers and align baseline so Phases 2–12 build on solid
 - **Maestro CI integration (GitHub Actions runner or Maestro Cloud)** — Phase 1 keeps Maestro local-only. CI integration belongs in Phase 12 (OPT-03 observability) or earlier if other phases create urgency. Decision matrix (`macos-latest` runner with iOS simulator vs Maestro Cloud free/paid tier) deferred until then.
 - **Phase-specific Maestro flows for Phases 2–12** — each subsequent phase extends the foundation (e.g., Phase 2 adds QR generation flows, Phase 9 adds checkout flows). Captured implicitly in the foundation Phase 1 establishes; not enumerated here.
 
+### ⚠️ Architectural revision parked for Phase 2 discussion (informational, not Phase 1 work)
+
+**QR encoding strategy needs refinement before `/gsd-discuss-phase 2`.** Surfaced 2026-05-01 during Phase 1 context gathering. The currently-locked anchor in `.planning/PROJECT.md:171` and `.planning/v2-vision.md` ("todo QR engraved apunta a qraft.link/{slug}") is technically infeasible for 5 of the 6 QR types in QR-01:
+
+| Type | Why direct encoding is required |
+|---|---|
+| Texto | A URL redirect would just open the browser — scanner cannot show plain text inline |
+| vCard | Scanner needs `BEGIN:VCARD...END:VCARD` inline to offer "Save contact"; URL redirect cannot trigger contact save |
+| WiFi | Scanner needs `WIFI:T:WPA;S:SSID;P:pass;;` inline to offer "Join network"; URL redirect cannot trigger WiFi join |
+| Eventos | Scanner needs `BEGIN:VEVENT...END:VEVENT` inline to add to calendar; URL redirect cannot |
+| Ubicación | Scanner needs `geo:lat,lon` inline to open Maps with pin; URL redirect opens browser only |
+| URL | ✅ Compatible with both qraft.link redirect and direct encoding |
+
+**Implications for Phase 1:** none. Phase 1 is foundation hardening — does not generate QRs, does not write redirect logic, does not constrain marketplace. D-01..D-17 are independent of this revision.
+
+**Implications downstream (must resolve before Phase 2 plan):**
+- Phase 2 (QR Generation Core, QR-01) — encoding behavior per type
+- Phase 4 (Redirect Service Foundation, RDR-03) — what types get a slug
+- Phase 5 (QR Customization, QR-10 toggle) — natural home for the "redirect vs direct" helper UI
+- Phase 7 (Marketplace, MKT-01..02) — what's allowed engraved
+- `.planning/v2-vision.md` — wording must change from "every static QR engraved" to a more precise scope
+
+Tracked in `.planning/STATE.md` "Decisions to Revisit" and flagged in `.planning/PROJECT.md` Key Decisions row 171 (status changed to ⚠️ Revisit). Resolution candidates listed there: parametrizable user-choice with helper UI, URL-only marketplace restriction, hybrid heterogeneous engraving, or strategy abandonment.
+
 </deferred>
 
 ---

@@ -82,6 +82,7 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | Free destination editing in v1 | If abuse emerges (mass automated changes), introduce rate limit in v1.x |
 | Operator dashboard tech (Flutter Web vs Supabase Studio) | Decided during Phase 11 research |
 | AI provider for QRD-02 (Replicate vs Stability vs OpenAI) | Decided during Phase 6 research |
+| **QR encoding strategy: qraft.link redirect vs inline data, parametrizable per-QR** | **MUST resolve before `/gsd-discuss-phase 2`.** Surface raised 2026-05-01 during Phase 1 discussion: the locked anchor "todo engraved → qraft.link/{slug}" only works for URL-type QRs; texto/vCard/WiFi/eventos/ubicación REQUIRE inline data because scanners cannot execute native actions (join WiFi, save contact, open map, add calendar event) from a redirect URL. Need to decide: (a) parametrizable user-choice with helper UI defaulting to qraft.link for URL and direct for others, (b) restrict marketplace to URL-type only, (c) hybrid heterogeneous engraving, (d) abandon qraft.link strategy. Affects Phases 2/4/5/7 and `.planning/v2-vision.md`. |
 
 ### Active Todos
 
