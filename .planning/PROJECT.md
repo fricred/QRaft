@@ -77,6 +77,24 @@ QRaft es una app móvil (iOS + Android, Flutter) que permite a usuarios en Colom
 - [ ] **LGL-04**: Garantía 3 meses por defectos (Ley 1480) — flujo de reclamo separado del retracto
 - [ ] **LGL-05**: PQRS module (Peticiones/Quejas/Reclamos/Sugerencias) — norma Colombia para apps consumer-facing
 
+#### Redirect Service (foundation para v2 dynamic QRs)
+
+**Decisión estratégica clave:** Todo QR engraved en marketplace apunta a `qraft.link/{slug}` desde día 1, NO a la URL del usuario directamente. Esto convierte cada venta v1 en un lead pre-calificado para la subscripción de v2 sin requerir feature adicional en v1.
+
+- [ ] **RDR-01**: Dominio `qraft.link` (o equivalente) registrado + DNS configurado
+- [ ] **RDR-02**: Servicio de redirects (Supabase Edge Function o Cloudflare Worker) con tabla `redirects` (slug, destination_url, owner_id, created_at)
+- [ ] **RDR-03**: Cada orden de marketplace genera slug único (`qraft.link/abc123`) que el láser graba; default destination = la URL que el usuario ingresó al diseñar
+- [ ] **RDR-04**: Edición libre del destination_url desde la app (en v1.0 es feature gratis; v2.0 introducirá tiers premium para multi-destination/landing builder/analytics avanzadas)
+- [ ] **RDR-05**: Scan analytics básico (count, last_scanned_at, last_country) — almost free de implementar y crítico para la propuesta de valor
+- [ ] **RDR-06**: SLA monitoring + alertas de downtime (crítico — tatuajes y QRs grabados dependen de uptime)
+
+#### Tattoo Line (producto mínimo v1.0, evoluciona en v2.0)
+
+- [ ] **TAT-01**: Categoría "Tattoo Stencil/Transfer" en marketplace — papel transfer / tatuaje temporal con QR para llevar al tatuador
+- [ ] **TAT-02**: "Tattoo-safe QR" como tercera opción del toggle (junto a print-safe y digital-only) — validación extra conservadora: módulos grandes, EC level H, 15% logo cap (no 20%), simulación de distorsión de piel
+- [ ] **TAT-03**: Contenido educativo/FAQ sobre tatuar QRs (tamaño mínimo, ubicación corporal, healing, preguntas frecuentes)
+- [ ] **TAT-04**: Waitlist/CTA para estudios de tatuaje partner (validación de demanda B2B sin construir feature aún)
+
 #### Optimización (cross-cutting)
 
 - [ ] **OPT-01**: Performance — 60fps en Android low-end, splash sub-2s, scroll/transiciones sin jank
@@ -91,6 +109,9 @@ QRaft es una app móvil (iOS + Android, Flutter) que permite a usuarios en Colom
 - **Internacionalización más allá de es/en** — solo Colombia en v1.0; portugués/francés/etc. se evalúa post-v1.0
 - **Marketplace fuera de Colombia** — solo COP, envío nacional, Wompi colombiano. Multi-país queda para v2
 - **Automatización IoT con la máquina XTool F1 Ultra** — la integración directa máquina-app (envío de archivos, telemetría, control remoto) queda para v2. La operación se hace manual a través del operator dashboard (MKT-11)
+- **Dynamic QR features completos (multi-destination, geo/time-based, landing page builder, dominio custom, deep analytics)** — diferidos a **v2.0**. v1.0 solo construye la *foundation* (RDR-01..06): redirect service + edición libre del destination. Ver `.planning/v2-vision.md`
+- **Subscripción premium para dynamic QRs** — el modelo de monetización por suscripción para mantener vivo el redirect dinámico llega en v2.0. v1.0 ofrece edición de destination gratis para validar y construir base instalada
+- **AI-stylized QRs para grabado láser (marketplace)** — incompatible con escaneabilidad post-engraving (failure rate ~10-15%). Solo permitidos en flujo digital-only (QRD-02). Marketplace usa solo QRs print-safe
 - **B2B wholesale / cuentas corporativas** — `QR-07` (bulk) está en v1.0 pero como feature de usuario individual; gestión de cuentas empresariales con descuentos/contratos queda fuera
 
 ## Context
@@ -147,6 +168,9 @@ QRaft es una app móvil (iOS + Android, Flutter) que permite a usuarios en Colom
 | DIAN factura electrónica vía proveedor (Alegra/Siigo/Dataico TBD) | Construir factura DIAN-compliant in-house es prohibitivo. Decisión de proveedor específico se difiere a research del marketplace phase | — Pending |
 | Operator dashboard como Flutter Web build separado vs Supabase Studio | Decisión técnica diferida — depende de quién opera (developer-only → Studio basta; staff no-técnico → Flutter Web). Surfacear durante el roadmap | — Pending |
 | Wompi vía REST + Web Checkout en webview_flutter (no SDK Flutter) | El community SDK `wompi_payment_colombia` está stale (21 meses). REST con WebView reduce PCI scope y mantiene UI controlada | — Pending |
+| **Estrategia v1→v2: todo QR engraved apunta a `qraft.link/{slug}`** (no URL directa) | Decisión arquitectónica crítica que convierte cada cliente v1 en lead pre-calificado para subscripción de dynamic QRs en v2. Si v1 grabara URLs directas, esos clientes quedarían lock-out de v2 forever. Costo en v1: ~1 fase pequeña (RDR-01..06). Beneficio en v2: TAM masivo. Ver `.planning/v2-vision.md` | — Pending |
+| Tattoo line como producto mínimo en v1.0 (TAT-01..04) | Wedge perfecto: irreversible + emocional + necesidad de preservar décadas. Validar demanda y captar segmento antes de construir feature dynamic completo en v2.0 | — Pending |
+| Edición del redirect destination es **gratis** en v1.0 | Permite validar la propuesta de valor sin presión de monetización antes de tener masa crítica. v2.0 introduce tiers premium para multi-destination/landing builder/analytics | ⚠️ Revisit — si abuso emerge (cambios masivos automatizados), introducir rate limit en v1.x |
 
 ## Evolution
 
