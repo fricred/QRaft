@@ -1,12 +1,12 @@
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-01
+**Last updated:** 2026-05-01 (post plan 01-01)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 1 — Foundation Hardening (resolve brownfield blockers, install milestone packages)
+**Current focus**: Phase 1 — Foundation Hardening (plan 01-01 complete; advancing to plan 01-02)
 
 **Strategic anchors**:
 - Brownfield foundation: Auth, GlassButton, deeplinks, i18n, Supabase, AdMob inicial — preservar y construir encima
@@ -19,11 +19,11 @@
 
 **Milestone:** v1.0
 **Phase:** 1 of 12 — Foundation Hardening
-**Plan:** Ready to execute (8 plans across 6 waves)
-**Status:** Phase 1 planned — verification passed, awaiting `/gsd-execute-phase 1`
-**Last session:** 2026-05-01 — Phase 1 plans generated (8 plans, 2 revision iterations, plan-checker PASSED on iteration 3)
+**Plan:** 1/8 complete — next: 01-02 Maestro foundation scaffolding
+**Status:** Plan 01-01 (Flutter SDK + scanner bump) complete; Phase 1 in progress
+**Last session:** 2026-05-01 — Plan 01-01 executed sequentially (2 tasks, 1 deviation: pub-syntax fix for SDK constraint), commits `55b4710` + `3ca9881`. Analyzer baseline = 0 issues.
 
-**Progress:** [▱▱▱▱▱▱▱▱▱▱▱▱] 0/12 phases complete (0%)
+**Progress:** [▱▱▱▱▱▱▱▱▱▱▱▱] 0/12 phases complete (0%) — Phase 1: 1/8 plans complete (12.5%)
 
 ```
 Phase 1:  ▱ Foundation Hardening              ← NEXT
@@ -49,10 +49,12 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 
 ## Accumulated Context
 
-### Decisions Locked (during initialization)
+### Decisions Locked (during initialization + execution)
 
 | Decision | Source |
 |----------|--------|
+| Flutter SDK floor expressed as `sdk: ^3.7.0` + `flutter: '>=3.29.0'` (NOT `sdk: ^3.29.0`) | plan 01-01 SUMMARY (`3ca9881`) — pub treats `environment.sdk` as Dart SDK, Dart 3.29 doesn't exist |
+| Analyzer baseline = 0 issues (recorded for plan 01-07 final-gate regression check) | plan 01-01 SUMMARY |
 | Wompi as payment processor (PSE/Nequi/Daviplata/cards) | PROJECT.md |
 | Solo Colombia v1.0 | PROJECT.md |
 | 4-6 month timeline, feature-complete priority | PROJECT.md |
@@ -86,9 +88,10 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 
 ### Active Todos
 
-- [ ] Verify Flutter SDK ≥ 3.29 (mobile_scanner 7.x requirement) — Phase 1
-- [ ] Run `flutter pub upgrade --dry-run` to confirm `firebase_core` upgrade path | Phase 1
-- [ ] Confirm `pubspec.lock` resolves `pretty_qr_code` alongside `qr_flutter` (both depend on `qr` package) — Phase 1
+- [x] Verify Flutter SDK ≥ 3.29 (mobile_scanner 7.x requirement) — Phase 1 ✓ Plan 01-01 (`3ca9881`): `sdk: ^3.7.0` + `flutter: '>=3.29.0'`; mobile_scanner@7.2.0 locked
+- [ ] Run `flutter pub upgrade --dry-run` to confirm `firebase_core` upgrade path | Phase 1 plan 01-03
+- [ ] Confirm `pubspec.lock` resolves `pretty_qr_code` alongside `qr_flutter` (both depend on `qr` package) — Phase 1 plan 01-04 (qr_flutter@4.1.0 + transitive `qr` 3.0.2 verified clean by plan 01-01)
+- [ ] Update `01-PATTERNS.md:498` snippet from `sdk: ^3.29.0` to `sdk: ^3.7.0` + `flutter: '>=3.29.0'` (carried over from plan 01-01 deferred-items)
 - [ ] Register `qraft.link` (or chosen alternative) domain — Phase 4
 - [ ] Source real photography of materials (madera, acrílico, metal, cuero, vidrio, piedra) — before Phase 7
 - [ ] Engage Colombian lawyer for terms review and Ley 1480 / 1581 disclaimer language — before Phase 9
@@ -112,22 +115,27 @@ Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
 
-**Files written this session:**
-- `.planning/PROJECT.md` (initialization)
-- `.planning/REQUIREMENTS.md` (46 v1 requirements)
-- `.planning/research/SUMMARY.md`, `STACK.md`, `ARCHITECTURE.md`, `PITFALLS.md`
-- `.planning/codebase/STACK.md`, `ARCHITECTURE.md`, `CONCERNS.md`
-- `.planning/v2-vision.md`
-- `.planning/config.json`
-- `.planning/ROADMAP.md` ← created by gsd-roadmapper
-- `.planning/STATE.md` ← created by gsd-roadmapper (this file)
+**Files written this session (plan 01-01 execution):**
+- `pubspec.yaml` — SDK constraint corrected (`sdk: ^3.7.0` + `flutter: '>=3.29.0'`); `mobile_scanner: ^7.2.0`
+- `pubspec.lock` — `mobile_scanner` 7.1.4 → 7.2.0
+- `.planning/phases/01-foundation-hardening/01-01-flutter-sdk-and-scanner-bump-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+- `.planning/ROADMAP.md` (plan 01-01 checkbox marked)
 
-**Next command:** `/gsd-plan-phase 1` (Phase 1 has no research prerequisite)
+**Files from prior sessions:**
+- `.planning/PROJECT.md`, `.planning/REQUIREMENTS.md`, `.planning/v2-vision.md`, `.planning/config.json`
+- `.planning/research/{SUMMARY,STACK,ARCHITECTURE,PITFALLS}.md`
+- `.planning/codebase/{STACK,ARCHITECTURE,CONCERNS}.md`
+- `.planning/ROADMAP.md` (created by gsd-roadmapper, this session updates progress only)
+- `.planning/phases/01-foundation-hardening/{01-CONTEXT,01-PATTERNS,01-01-...-PLAN}.md`
 
-**If user prefers parallel work after Phase 1:**
-- `/gsd-plan-phase 2` (QR Generation Core)
-- `/gsd-plan-phase 3` (QR Scanner — needs `/gsd-research-phase 3` first)
-- `/gsd-plan-phase 4` (Redirect Service)
+**Next command:** `/gsd-execute-phase 1` continuation — next plan is **01-02 Maestro foundation scaffolding**.
+
+**Recommended next plans (Phase 1 wave order):**
+- `01-02-maestro-foundation-scaffolding-PLAN.md` (next, can run in parallel with 01-03 if desired)
+- `01-03-firebase-minimum-wiring-PLAN.md` (depends on 01-01 stable pub baseline ✓)
+- `01-04-milestone-packages-install-PLAN.md` (depends on 01-01 + 01-03)
 
 ---
 *State initialized: 2026-05-01 by gsd-roadmapper*
+*Last updated: 2026-05-01 by plan 01-01 executor*
