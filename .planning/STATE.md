@@ -1,12 +1,12 @@
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-01 (post plan 01-04)
+**Last updated:** 2026-05-01 (post plan 01-06)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 1 — Foundation Hardening (plans 01-01 + 01-02 + 01-03 + 01-04 complete; advancing to plan 01-05)
+**Current focus**: Phase 1 — Foundation Hardening (plans 01-01 + 01-02 + 01-03 + 01-04 + 01-06 complete; plan 01-05 still pending in wave 4 — UMP+AdMob; plan 01-06 ran ahead of 05 per orchestrator wave plan)
 
 **Strategic anchors**:
 - Brownfield foundation: Auth, GlassButton, deeplinks, i18n, Supabase, AdMob inicial — preservar y construir encima
@@ -19,11 +19,11 @@
 
 **Milestone:** v1.0
 **Phase:** 1 of 12 — Foundation Hardening
-**Plan:** 4/8 complete — next: 01-05 UMP consent + AdMob gating
-**Status:** Plans 01-01 + 01-02 + 01-03 + 01-04 complete; Phase 1 in progress
-**Last session:** 2026-05-01 — Plan 01-04 (milestone packages install) executed in single autonomous session, 1 task, ~20 minutes. Commit `1990bb6`. 10 milestone packages declared in pubspec.yaml under labeled sections: firebase_messaging 16.2.0 + firebase_crashlytics 5.2.0 + firebase_analytics 12.3.0 (Firebase service trio sharing firebase_core ^4.7.0 cohort), pretty_qr_code 3.6.0 + screenshot 3.0.0 + image 4.5.4 + csv 8.0.0 (Advanced QR Generation), flutter_form_builder 10.3.0+2 + form_builder_validators 11.3.0 (Forms), flutter_local_notifications 17.2.4 (Notifications). One Rule 3 deviation: enabled Android core library desugaring (`isCoreLibraryDesugaringEnabled = true` + `desugar_jdk_libs 2.1.4`) required by flutter_local_notifications 17.x — parallel in spirit to plan 01-03's iOS deployment-target bump. firebase_core stayed at 4.7.0 exactly (no bump from plan 03 pin). Both `flutter build apk --debug` and `flutter build ios --debug --no-codesign` pass; analyzer baseline preserved at 0 issues. D-01 boundary verified: zero FCM/Crashlytics/Analytics/UMP imports in `lib/`. No standalone UMP package installed — modern UMP API ships in google_mobile_ads ^5.1.0 (already in pubspec); plan 05 will import ConsentInformation/ConsentForm from there.
+**Plan:** 5/8 complete — next: 01-05 UMP consent + AdMob gating (wave 4) and 01-07 Maestro flows + controller tests (wave 5)
+**Status:** Plans 01-01 + 01-02 + 01-03 + 01-04 + 01-06 complete; Phase 1 in progress
+**Last session:** 2026-05-01 — Plan 01-06 (forgot-password controller refactor) executed sequentially on `feature/adds`, 3 tasks, ~11 minutes. Commits `47339ee` (docs reconciliation) + `fda41b7` (controller created) + `217db0c` (dialog refactor + Maestro Keys). Created `lib/features/auth/presentation/controllers/forgot_password_controller.dart` (142 lines) with `ForgotPasswordState` immutable state class + `ForgotPasswordController` extending `StateNotifier<ForgotPasswordState>` (mirrors `qr_customization_controller.dart` precedent per D-09; no AsyncNotifier in codebase). Constructor accepts `SupabaseClient? client` for testability (default falls back to `SupabaseService.client`). Provider is `StateNotifierProvider.autoDispose`. Dialog refactored: `_emailSent` boolean gone, direct `supabaseAuthProvider` import gone; reads `ref.watch(forgotPasswordControllerProvider)` and submits via `.notifier.submit(email)`. 20 stable Maestro Keys added across 5 lib files following `.maestro/CONVENTIONS.md` selector convention `<feature>_<element>_<role>`: 5 dialog (`forgot_password_*`), 5 login (`login_*`), 3 welcome (`welcome_*`), 6 main scaffold (`main_scaffold_root` + `MainScaffoldKeys` class enumerating 5 tab keys), 1 scanner (`qr_scanner_screen_root`). Source-of-truth pattern: literal Key strings live in `main_scaffold.dart` (`MainScaffoldKeys` class), passed as `Key?` props to `main_navigation.dart` which renders them. Doc reconciliation per D-10: empirical test count is 6 (not 13), 0 failing pre-refactor (not 5/13) — corrected in CLAUDE.md + `.planning/codebase/CONCERNS.md`. 4 stale `auth_controller(_simple_test).dart` references scrubbed from CLAUDE.md and replaced with the actual `supabase_auth_provider_test.dart` path + a forward-pointer to the new ForgotPasswordController. flutter analyze: 0 issues; flutter build apk + ios debug both succeed. Test breakage on the dialog suite (6/6 fail with "Supabase not initialized" exception) is the contract change explicitly documented as expected by the plan; plan 07 task 1 rewrites the suite against the controller. Whole-suite delta: pre `+89 ~1 -85` → post `+83 ~1 -91` (exactly +6 dialog failures, no collateral damage to 85 pre-existing failures or 89 pre-existing passes).
 
-**Progress:** [▱▱▱▱▱▱▱▱▱▱▱▱] 0/12 phases complete (0%) — Phase 1: 4/8 plans complete (50%)
+**Progress:** [▱▱▱▱▱▱▱▱▱▱▱▱] 0/12 phases complete (0%) — Phase 1: 5/8 plans complete (63%)
 
 ```
 Phase 1:  ▱ Foundation Hardening              ← NEXT
@@ -69,6 +69,10 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | No standalone UMP package installed. Modern UMP API ships INSIDE google_mobile_ads ^5.1.0 — plan 05 imports `ConsentInformation`/`ConsentForm` from there. The third-party `user_messaging_platform` package on pub.dev is discontinued (last 1.3.0); the `google_user_messaging_platform` package referenced in earlier drafts does NOT exist on pub.dev. Verified via Google AdMob Flutter privacy docs 2026-05-01. | plan 01-04 SUMMARY (`1990bb6`) |
 | Android core library desugaring enabled in `android/app/build.gradle.kts`: `isCoreLibraryDesugaringEnabled = true` in compileOptions + `coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")` in dependencies block. Required by flutter_local_notifications 17.x; future packages requiring Java 8+ stdlib backport on minSdk < 26 inherit this floor. | plan 01-04 SUMMARY (`1990bb6`) — Rule 3 deviation |
 | pubspec.yaml dep-grouping pattern extended: 4 new sections added by plan 04 (# Advanced QR Generation, # Forms, # Notifications, plus Firebase trio extension under existing # Firebase). Section comments precede grouped entries. | plan 01-04 SUMMARY (`1990bb6`) |
+| ForgotPasswordController pattern: `StateNotifier<ForgotPasswordState>` + immutable state class (D-09 resolution); mirrors `qr_customization_controller.dart` since no AsyncNotifier example exists in the codebase. Constructor accepts `SupabaseClient? client` for testability (do NOT use static SupabaseService.client inside the controller body — that is the testability blocker D-08 calls out). Provider is `StateNotifierProvider.autoDispose` so re-entry into the dialog auto-resets state, sidestepping the race condition in CONCERNS.md. Re-entrancy guard: `if (state.isLoading) return;` at top of submit(). | plan 01-06 SUMMARY (`fda41b7`) |
+| ForgotPasswordDialog test count: empirically 6 tests, 0 failing pre-refactor (verified `grep -cE 'testWidgets\\(\|^\\s*test\\(' = 6` and `flutter test ...forgot_password_dialog_test.dart = +6 -0`). Prior 5/13 figure in CLAUDE.md + CONCERNS.md was stale (D-10 reconciliation). Post-refactor: 6/6 fail with "Supabase has not been initialized" runtime exception because tests still override the obsolete `supabaseAuthProvider`; plan 07 task 1 rewrites the suite against `forgotPasswordControllerProvider` with a MockSupabaseClient injected via the controller constructor. | plan 01-06 SUMMARY (`47339ee`, `217db0c`) |
+| Maestro Key source-of-truth pattern: when a Key spans multiple files (e.g., `main_scaffold_scanner_tab` is owned semantically by main_scaffold but rendered by main_navigation), the literal Key string lives in the feature scaffold file (so it's greppable from its semantic owner) and is passed as a `Key?` prop to the rendering widget. Implementation: `MainScaffoldKeys` class in `main_scaffold.dart` enumerates all 5 tab Keys; `MainNavigation` accepts `Key? <name>TabKey` params and applies them to GestureDetectors. | plan 01-06 SUMMARY (`217db0c`) |
+| auth_controller.dart scrub: the file `lib/features/auth/presentation/controllers/auth_controller.dart` and its test `test/features/auth/presentation/controllers/auth_controller_simple_test.dart` do NOT exist on disk (verified `ls lib/features/auth/presentation/controllers/` was empty pre-plan-06; post-plan-06 it contains only `forgot_password_controller.dart`). 4 stale references in CLAUDE.md (lines 66, 786, 828, 849) replaced with `test/features/auth/data/providers/supabase_auth_provider_test.dart` (the actual auth test path) plus a forward-pointer to the new ForgotPasswordController. Future doc edits MUST NOT re-introduce auth_controller references. | plan 01-06 SUMMARY (`47339ee`) |
 | Wompi as payment processor (PSE/Nequi/Daviplata/cards) | PROJECT.md |
 | Solo Colombia v1.0 | PROJECT.md |
 | 4-6 month timeline, feature-complete priority | PROJECT.md |
@@ -130,33 +134,37 @@ Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
 
-**Files written this session (plan 01-04 execution):**
-- `pubspec.yaml` — added 7 new dep entries to existing `# Firebase` section + 3 new sections (`# Advanced QR Generation`, `# Forms`, `# Notifications`); 10 new packages total
-- `pubspec.lock` — regenerated by `flutter pub get`; 20 dependencies changed (10 direct + 10 transitive)
-- `ios/Podfile.lock` — regenerated by `pod install`; 42 pods total (was 25 after plan 03); +Firebase service pods + companion Google SDKs + flutter_local_notifications
-- `android/app/build.gradle.kts` — enabled core library desugaring (`isCoreLibraryDesugaringEnabled = true` + new `dependencies { coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4") }` block) — Rule 3 deviation for flutter_local_notifications 17.x
-- `macos/Flutter/GeneratedPluginRegistrant.swift` — auto-regenerated by Flutter tooling to register firebase_analytics + firebase_crashlytics + firebase_messaging + flutter_local_notifications plugins for macOS embedder (mechanical plumbing, NOT Dart wiring)
-- `.planning/phases/01-foundation-hardening/01-04-milestone-packages-install-SUMMARY.md`
+**Files written this session (plan 01-06 execution):**
+- `lib/features/auth/presentation/controllers/forgot_password_controller.dart` (created, 142 lines) — ForgotPasswordState + ForgotPasswordController + forgotPasswordControllerProvider
+- `lib/features/auth/presentation/widgets/forgot_password_dialog.dart` — refactored to consume controller; `_emailSent` removed; +5 Maestro Keys; +2 Semantics labels
+- `lib/features/auth/presentation/pages/login_screen.dart` — extended `_buildTextField` with optional `Key? fieldKey` param; +5 Maestro Keys
+- `lib/features/auth/presentation/pages/welcome_screen.dart` — +3 Maestro Keys
+- `lib/features/main/main_scaffold.dart` — +1 root Key + new `MainScaffoldKeys` class enumerating all 5 tab Keys; passes Keys to MainNavigation
+- `lib/shared/widgets/main_navigation.dart` — extended with optional `Key?` params per tab; applied to GestureDetectors in `_buildNavItem` and `_buildCenterButton`
+- `lib/features/qr_scanner/qr_scanner_screen.dart` — +1 Scaffold root Key
+- `CLAUDE.md` — test-count line corrected; 4 auth_controller(_simple_test).dart references scrubbed and replaced with supabase_auth_provider_test.dart + ForgotPasswordController forward-pointer
+- `.planning/codebase/CONCERNS.md` — test-count corrected in 2 places (Known Bugs + Test Coverage Gaps)
+- `.planning/phases/01-foundation-hardening/01-06-forgot-password-controller-refactor-SUMMARY.md`
 - `.planning/STATE.md` (this file)
-- `.planning/ROADMAP.md` (plan 01-04 checkbox marked + Phase 1 progress 4/8)
+- `.planning/ROADMAP.md` (plan 01-06 checkbox marked + Phase 1 progress 5/8)
 
 **Files from prior sessions:**
+- Plan 01-04: `pubspec.yaml`, `pubspec.lock`, `ios/Podfile.lock`, `android/app/build.gradle.kts`, `macos/Flutter/GeneratedPluginRegistrant.swift`, plan 01-04 SUMMARY
 - Plan 01-03: `lib/firebase_options.dart`, `android/app/google-services.json`, `ios/Runner/GoogleService-Info.plist`, `android/app/build.gradle.kts`, `android/build.gradle.kts`, `ios/Podfile`, `ios/Runner.xcodeproj/project.pbxproj`, `lib/main.dart`, `lib/l10n/app_localizations.dart`, plan 01-03 SUMMARY
 - Plan 01-01: `pubspec.yaml`, `pubspec.lock` (initial SDK + scanner bumps)
 - Plan 01-02: `.maestro/{config.yaml,.tool-versions,CONVENTIONS.md,helpers/*}`
 - `.planning/PROJECT.md`, `.planning/REQUIREMENTS.md`, `.planning/v2-vision.md`, `.planning/config.json`
 - `.planning/research/{SUMMARY,STACK,ARCHITECTURE,PITFALLS}.md`
 - `.planning/codebase/{STACK,ARCHITECTURE,CONCERNS}.md`
-- `.planning/phases/01-foundation-hardening/{01-CONTEXT,01-PATTERNS,01-01-...-PLAN,01-01-...-SUMMARY,01-02-...-PLAN,01-02-...-SUMMARY,01-03-...-PLAN,01-03-...-SUMMARY,01-04-...-PLAN}.md`
+- `.planning/phases/01-foundation-hardening/{01-CONTEXT,01-PATTERNS,01-01..06-PLAN,01-01..04+06-SUMMARY}.md`
 
-**Next command:** `/gsd-execute-phase 1` continuation — next plan is **01-05 UMP consent + AdMob gating**.
+**Next command:** `/gsd-execute-phase 1` continuation — pending plans `01-05` (UMP+AdMob), `01-07` (Maestro flows + controller tests), `01-08` (phase verification).
 
 **Recommended next plans (Phase 1 wave order):**
 - `01-05-ump-consent-and-admob-gating-PLAN.md` (depends on 01-04; will introduce ump_* widgets following CONVENTIONS.md; will extract AdMob init from `lib/main.dart:43` behind UMP gate; imports `ConsentInformation`/`ConsentForm` from already-installed google_mobile_ads ^5.1.0 — no separate UMP install needed since plan 04 deliberately did not add one)
-- `01-06-forgot-password-controller-refactor-PLAN.md` (will add Keys to dialog widgets per CONVENTIONS.md)
-- `01-07-maestro-flows-and-controller-tests-PLAN.md` (will tighten login.yaml from text- to id-matchers and author 9 phase-1 flows on top of helpers + conventions)
+- `01-07-maestro-flows-and-controller-tests-PLAN.md` (READY: depends on 01-06 Maestro Keys + ForgotPasswordController. Tasks: rewrite forgot_password_dialog_test.dart against the controller via MockSupabaseClient injection; author forgot_password_controller_test.dart unit tests; tighten `.maestro/helpers/login.yaml` from text- to id-matchers using the 5 login_* Keys plan 06 added; author 9 phase-1 Maestro flows; run on iOS sim + Android emulator)
 - `01-08-phase-verification-PLAN.md` (D-11 closure suite; produces 01-VERIFICATION.md)
 
 ---
 *State initialized: 2026-05-01 by gsd-roadmapper*
-*Last updated: 2026-05-01 by plan 01-04 executor*
+*Last updated: 2026-05-01 by plan 01-06 executor*
