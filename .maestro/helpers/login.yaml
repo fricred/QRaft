@@ -1,0 +1,21 @@
+# Helper: login.yaml
+# Purpose: authenticate as a known test user. Reused by Phases 2–12 to land in authenticated state.
+# Selectors: text-based today (existing labels); plan 07 tightens to id-based once plan 06 adds Keys.
+# Env vars required: MAESTRO_TEST_EMAIL, MAESTRO_TEST_PASSWORD.
+
+appId: io.gothcorp.qraft
+---
+# NOTE: this scaffold uses text matchers because Keys are added in plan 06.
+# Plan 07 should switch the matchers below to:
+#   - tapOn: { id: login_email_field }
+#   - tapOn: { id: login_password_field }
+#   - tapOn: { id: login_submit_button }
+- tapOn:
+    text: "Email"
+- inputText: ${MAESTRO_TEST_EMAIL}
+- tapOn:
+    text: "Password"
+- inputText: ${MAESTRO_TEST_PASSWORD}
+- hideKeyboard
+- tapOn:
+    text: "Sign In"

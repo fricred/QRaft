@@ -1,0 +1,31 @@
+# Helper: dismiss-permissions.yaml
+# Purpose: tap "Allow" / "OK" on iOS+Android system permission dialogs that may appear on first launch.
+# Used by: any flow that triggers permission requests (scanner tab, location QR, contacts).
+# This handles the OS-level dialog, NOT the Flutter rationale UI.
+
+appId: io.gothcorp.qraft
+---
+- runFlow:
+    when:
+      visible:
+        text: "Allow"
+    commands:
+      - tapOn: "Allow"
+- runFlow:
+    when:
+      visible:
+        text: "While Using the App"
+    commands:
+      - tapOn: "While Using the App"
+- runFlow:
+    when:
+      visible:
+        text: "OK"
+    commands:
+      - tapOn: "OK"
+- runFlow:
+    when:
+      visible:
+        text: "Permitir"  # es-CO localized variant
+    commands:
+      - tapOn: "Permitir"
