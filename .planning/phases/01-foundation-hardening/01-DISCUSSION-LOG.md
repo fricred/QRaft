@@ -5,7 +5,7 @@
 
 **Date:** 2026-05-01
 **Phase:** 1-Foundation Hardening
-**Areas discussed:** Firebase reintroduction scope, AdMob UMP consent UX, ForgotPasswordDialog test fix approach, Verification depth bar
+**Areas discussed:** Firebase reintroduction scope, AdMob UMP consent UX, ForgotPasswordDialog test fix approach, Verification depth bar, Maestro test automation foundation
 
 ---
 
@@ -124,12 +124,66 @@
 
 ---
 
+## Maestro Test Automation Foundation
+
+> **Late-discovered gap.** User raised that Maestro is installed and ready, and that "podemos automatizar gran parte del proceso". Re-opened verification depth (Q1 above) and added Maestro foundation as a fifth area. The DoD captured under "Verification Depth Bar" is now superseded by D-11 in CONTEXT.md (Maestro flows green added to closure criteria).
+
+### Q1: ¿Qué alcance debe tener la integración de Maestro en Phase 1?
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Foundation + flows específicos de Phase 1 | Phase 1 establece directorio .maestro/, convenciones, helpers reutilizables, integración CI, y flows específicos: UMP consent, UMP denial, ForgotPassword, scanner tab launch. Sube el bar de Phase 1 done a "flows verdes en simulator iOS + emulator Android". | ✓ |
+| Solo flows específicos de Phase 1, sin infra | Escribe flows pero no establece convenciones. Cada fase posterior se inventa su patrón. | |
+| Solo infra/foundation, sin flows específicos | Phase 1 instala flows directory, conventions, helpers reutilizables. NO flows de UMP ni ForgotPassword en esta fase. | |
+| Diferir Maestro a una fase aparte | Phase 1 se mantiene como estaba. Crear Phase 1.5 o agregarlo a Phase 12. | |
+
+**User's choice:** Foundation + flows específicos de Phase 1
+**Notes:** Maestro es foundational — no Phase-1-only. Helpers de auth (login/logout) son especialmente alto leverage para Phases 2–12.
+
+### Q2: ¿Qué flows específicos automatizamos en Phase 1?
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Launch + UMP consent (golden path) | Cold launch → splash → UMP form → accept → home → banner ad renders. | ✓ |
+| Launch + UMP denial → npa=1 | Cold launch → UMP form → deny → home → banner sigue (npa=1). | ✓ |
+| ForgotPasswordDialog E2E | Login → open dialog → email → submit → success state. | ✓ |
+| Scanner tab launch (sin escanear) | Login → scanner tab → camera permission → grant → UI loads. | ✓ |
+
+**User's choice:** "Todo lo que se pueda" — los 4 flows arriba seleccionados, plus auth foundation flows (login válido/inválido, logout, session persistence) y app launch happy path como helpers reutilizables.
+**Notes:** Maximum Phase-1-scoped coverage. Planner debe ser agresivo en cobertura, conservador solo cuando un flow demanda funcionalidad de fase posterior (e.g., escanear QR real = Phase 3).
+
+### Q3: ¿Cómo corren los flows de Maestro en CI?
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Local runner en GitHub Actions | macOS runner + Linux runner, maestro test localmente. Sin costo extra. | |
+| Maestro Cloud | Cloud + API. Más rápido y paraleliza, pero free tier limitado. | |
+| Solo local (no CI aún) | Phase 1 monta flows + helpers; dev corre maestro test manualmente. CI integration en fase posterior. | ✓ |
+
+**User's choice:** Solo local (no CI aún)
+**Notes:** Phase 1 done = flows verdes en local de Jeisson. CI runner (local en GHA macos-latest vs Maestro Cloud) decisión deferida a Phase 12 OPT-03 o phase dedicada.
+
+### Q4: ¿La Definition of Done de Phase 1 cambia con Maestro?
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Sí, sumar 'flows Maestro verdes' al DoD | DoD: pub upgrade --dry-run + flutter analyze + flutter test + flutter run + maestro test verde en iOS sim + Android emulator. | ✓ |
+| No cambia, Maestro queda como nice-to-have | Flows escritos pero no bloquean cierre. Riesgo: cierran rotos. | |
+
+**User's choice:** Sí, sumar 'flows Maestro verdes' al DoD
+**Notes:** D-11 en CONTEXT.md actualizado. Supersedes la versión inicial de "Verification Depth Bar" arriba.
+
+---
+
 ## Claude's Discretion
 
 - Exact controller pattern for ForgotPasswordDialog refactor (StateNotifier vs AsyncNotifier vs hybrid).
 - pubspec.yaml ordering / grouping of new packages.
 - Whether to combine package installs into a single `pub add` or stage them.
 - Naming of the new UMP consent screen widget and route.
+- Concrete `.maestro/` subdirectory layout (`.maestro/auth/`, `.maestro/launch/`, etc.) and helper flow signatures.
+- Which `Key`s and `Semantics` labels to add to existing widgets (login screen, splash, banner ad widget) so Maestro can target them reliably.
+- Maestro `config.yaml` device-target defaults (iPhone 15 simulator + Pixel 7 emulator vs other defaults).
 
 ## Deferred Ideas
 
@@ -141,3 +195,5 @@
 - Splitting the 1500+ line UI screens flagged in CONCERNS.md — revisit during Phases 2/5/8.
 - Reconciling pubspec/CLAUDE.md docs that still describe Firebase Auth as active — doc cleanup.
 - CI pre-commit hook to verify env.json is never staged — backlog.
+- Maestro CI integration (GitHub Actions runner or Maestro Cloud) — Phase 12 OPT-03 or earlier if other phases create urgency.
+- Phase-specific Maestro flows for Phases 2–12 — each phase extends the foundation Phase 1 establishes.
