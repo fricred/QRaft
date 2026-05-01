@@ -71,7 +71,6 @@ QRaft es una app móvil (iOS + Android, Flutter) que permite a usuarios en Colom
 
 #### Compliance Colombia (legal blockers para v1.0)
 
-- [ ] **LGL-01**: DIAN factura electrónica — integración con proveedor (Alegra/Siigo/Dataico) para emitir UBL 2.1 + CUFE en cada venta. **Sin esto no se puede operar legalmente**
 - [ ] **LGL-02**: Disclaimer Ley 1480 Art. 47 — exhibir en checkout/post-orden que productos personalizados (grabados) están exentos del retracto 5 días
 - [ ] **LGL-03**: Política de privacidad + habeas data Ley 1581 — flujo de consentimiento, derecho al olvido, registro RNBD si supera umbral
 - [ ] **LGL-04**: Garantía 3 meses por defectos (Ley 1480) — flujo de reclamo separado del retracto
@@ -112,6 +111,7 @@ QRaft es una app móvil (iOS + Android, Flutter) que permite a usuarios en Colom
 - **Dynamic QR features completos (multi-destination, geo/time-based, landing page builder, dominio custom, deep analytics)** — diferidos a **v2.0**. v1.0 solo construye la *foundation* (RDR-01..06): redirect service + edición libre del destination. Ver `.planning/v2-vision.md`
 - **Subscripción premium para dynamic QRs** — el modelo de monetización por suscripción para mantener vivo el redirect dinámico llega en v2.0. v1.0 ofrece edición de destination gratis para validar y construir base instalada
 - **AI-stylized QRs para grabado láser (marketplace)** — incompatible con escaneabilidad post-engraving (failure rate ~10-15%). Solo permitidos en flujo digital-only (QRD-02). Marketplace usa solo QRs print-safe
+- **DIAN factura electrónica** — diferido a v2.0 con **risk acceptance explícito**. v1.0 opera marketplace + Wompi sin emitir factura DIAN, asumiendo riesgo fiscal hasta 950 UVT (~$47M COP) en caso de auditoría DIAN. v2.0 integra DIAN (in-house o provider TBD) + plan de regularización fiscal histórica de transacciones v1.0. Ver `.planning/v2-vision.md` sección "Compliance & Risk Surfaces"
 - **B2B wholesale / cuentas corporativas** — `QR-07` (bulk) está en v1.0 pero como feature de usuario individual; gestión de cuentas empresariales con descuentos/contratos queda fuera
 
 ## Context
@@ -170,6 +170,7 @@ QRaft es una app móvil (iOS + Android, Flutter) que permite a usuarios en Colom
 | Wompi vía REST + Web Checkout en webview_flutter (no SDK Flutter) | El community SDK `wompi_payment_colombia` está stale (21 meses). REST con WebView reduce PCI scope y mantiene UI controlada | — Pending |
 | **Estrategia v1→v2: todo QR engraved apunta a `qraft.link/{slug}`** (no URL directa) | Decisión arquitectónica crítica que convierte cada cliente v1 en lead pre-calificado para subscripción de dynamic QRs en v2. Si v1 grabara URLs directas, esos clientes quedarían lock-out de v2 forever. Costo en v1: ~1 fase pequeña (RDR-01..06). Beneficio en v2: TAM masivo. Ver `.planning/v2-vision.md` | — Pending |
 | Tattoo line como producto mínimo en v1.0 (TAT-01..04) | Wedge perfecto: irreversible + emocional + necesidad de preservar décadas. Validar demanda y captar segmento antes de construir feature dynamic completo en v2.0 | — Pending |
+| **DIAN factura electrónica diferida a v2.0 con risk acceptance** | v1.0 ship marketplace + Wompi sin factura DIAN. Razones: (1) habilitación DIAN bloquearía launch 4-8 semanas, (2) costo de provider o tiempo de in-house pesa contra ASAP, (3) escala v1.0 esperada baja → riesgo de auditoría limitado. Aceptamos exposure fiscal hasta 950 UVT en exchange por velocidad. v2.0 incluye DIAN + plan de regularización histórica | ⚠️ Revisit — si volumen v1.0 supera ~50 órdenes/mes o aparece presión fiscal, acelerar DIAN como hotfix |
 | Edición del redirect destination es **gratis** en v1.0 | Permite validar la propuesta de valor sin presión de monetización antes de tener masa crítica. v2.0 introduce tiers premium para multi-destination/landing builder/analytics | ⚠️ Revisit — si abuso emerge (cambios masivos automatizados), introducir rate limit en v1.x |
 
 ## Evolution

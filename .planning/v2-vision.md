@@ -138,6 +138,33 @@ To resolve before activating v2.0 roadmap:
 
 ---
 
+## Hard Requirements de v2.0 (debt arrastrada de v1.0)
+
+Estas son **obligaciones diferidas** que v1.0 explícitamente saltó por tiempo/scope. v2.0 NO ship hasta que estas estén resueltas:
+
+### DIAN Factura Electrónica + Regularización Fiscal Histórica
+
+v1.0 operó marketplace + Wompi sin emitir DIAN factura electrónica como decisión de risk acceptance. v2.0 debe:
+
+1. **Integrar DIAN factura electrónica** (in-house o provider — decisión a tomar con data real de volumen v1.0)
+   - Habilitación previa con DIAN
+   - Set de pruebas (24 casos, 3 fases)
+   - Resolución de numeración
+   - Certificado digital de firma
+   - XML UBL 2.1 + firma XAdES-BES + CUFE
+   - Eventos obligatorios (acuse, aceptación, reclamo)
+2. **Plan de regularización fiscal histórica** para transacciones v1.0:
+   - Inventario completo de ventas v1.0 con NIT comprador, monto, fecha, IVA
+   - Emisión retroactiva de facturas (si DIAN lo permite por contingencia) o
+   - Acuerdo con DIAN bajo régimen de fiscalización
+   - Asesoría tributaria/contable obligatoria — NO improvisar
+3. **Comunicación a clientes v1.0**: si reclaman factura, plan claro
+4. **Provisión contable**: separar ingresos v1.0 que pueden tener costo fiscal retroactivo
+
+**Riesgo aceptado en v1.0:** hasta 950 UVT (~$47M COP) en multas DIAN. Si v1.0 supera ~50 órdenes/mes, este riesgo escala — escalación de DIAN integration debe priorizarse.
+
+---
+
 ## Activation Triggers
 
 v2.0 should be considered ready to plan when:
@@ -159,6 +186,7 @@ These phases will be scoped properly via `/gsd-new-milestone v2.0` when triggere
 
 | Phase (v2) | Theme |
 |---|---|
+| **v2.0** | **DIAN factura electrónica integration + regularización histórica v1.0** (BLOCKER — debe ir primero) |
 | v2.A | Subscription billing infrastructure (RevenueCat → Stripe / Wompi recurring) |
 | v2.B | Pro tier — multi-destination + scheduled changes |
 | v2.C | Pro tier — deep analytics dashboard |
