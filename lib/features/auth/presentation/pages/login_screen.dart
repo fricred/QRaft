@@ -55,6 +55,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = authProvider.isLoading;
     
     return Scaffold(
+      key: const Key('login_screen_root'),
       backgroundColor: const Color(0xFF1A1A1A),
       body: Stack(
         children: [
@@ -200,6 +201,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 // Email field
                                 _buildTextField(
                                   l10n: l10n,
+                                  fieldKey: const Key('login_email_field'),
                                   controller: _emailController,
                                   focusNode: _emailFocusNode,
                                   label: l10n.email,
@@ -218,12 +220,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     return null;
                                   },
                                 ),
-                                
+
                                 const SizedBox(height: 20),
-                                
+
                                 // Password field
                                 _buildTextField(
                                   l10n: l10n,
+                                  fieldKey: const Key('login_password_field'),
                                   controller: _passwordController,
                                   focusNode: _passwordFocusNode,
                                   label: l10n.password,
@@ -261,6 +264,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: TextButton(
+                                    key: const Key('login_forgot_password_link'),
                                     onPressed: widget.onForgotPasswordPressed,
                                     style: TextButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -275,11 +279,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     ),
                                   ),
                                 ),
-                                
+
                                 const SizedBox(height: 24),
-                                
+
                                 // Login button
                                 PrimaryGlassButton(
+                                  key: const Key('login_submit_button'),
                                   text: l10n.signIn,
                                   onPressed: _handleLogin,
                                   isLoading: isLoading,
@@ -332,6 +337,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     required String label,
     required String hint,
     required IconData icon,
+    Key? fieldKey,
     TextInputType? keyboardType,
     bool obscureText = false,
     Widget? suffixIcon,
@@ -353,6 +359,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         const SizedBox(height: 8),
         TextFormField(
+          key: fieldKey,
           controller: controller,
           focusNode: focusNode,
           keyboardType: keyboardType,
