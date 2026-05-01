@@ -30,11 +30,16 @@ class AdMobService {
   }
 
   /// Load a banner ad
+  ///
+  /// Per D-06: callers pass `nonPersonalizedAds: !consentGranted` derived from
+  /// `consentGrantedProvider` so the npa=1 flag is set when the user denied
+  /// personalized ads (banner still renders).
   Future<BannerAd?> loadBannerAd({
     required String adUnitId,
     AdSize size = AdSize.banner,
     void Function(Ad)? onAdLoaded,
     void Function(Ad, LoadAdError)? onAdFailedToLoad,
+    bool nonPersonalizedAds = false,
   }) async {
     if (!_isInitialized) {
       debugPrint('AdMob not initialized. Call initialize() first.');
@@ -46,7 +51,7 @@ class AdMobService {
     final bannerAd = BannerAd(
       adUnitId: adUnitId,
       size: size,
-      request: const AdRequest(),
+      request: AdRequest(nonPersonalizedAds: nonPersonalizedAds),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
           onAdLoaded?.call(ad);
@@ -66,11 +71,15 @@ class AdMobService {
   }
 
   /// Show a rewarded ad
+  ///
+  /// Per D-06: callers pass `nonPersonalizedAds: !consentGranted` derived from
+  /// `consentGrantedProvider`.
   Future<bool> showRewardedAd({
     required String adUnitId,
     required void Function(AdWithoutView ad, RewardItem reward) onUserEarnedReward,
     void Function()? onAdDismissed,
     void Function(AdError error)? onAdFailedToShow,
+    bool nonPersonalizedAds = false,
   }) async {
     if (!_isInitialized) {
       debugPrint('AdMob not initialized. Call initialize() first.');
@@ -81,7 +90,7 @@ class AdMobService {
 
     await RewardedAd.load(
       adUnitId: adUnitId,
-      request: const AdRequest(),
+      request: AdRequest(nonPersonalizedAds: nonPersonalizedAds),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) {
           ad.fullScreenContentCallback = FullScreenContentCallback(
@@ -125,10 +134,15 @@ class AdMobService {
   }
 
   /// Show an interstitial ad (if cooldown allows)
+  ///
+  /// Per D-06: callers pass `nonPersonalizedAds: !consentGranted` derived from
+  /// `consentGrantedProvider`. Library-ready for Phase 9 marketplace upsells;
+  /// no in-app callers yet, default `false` is currently safe.
   Future<bool> showInterstitialAd({
     required String adUnitId,
     void Function()? onAdDismissed,
     void Function(AdError error)? onAdFailedToShow,
+    bool nonPersonalizedAds = false,
   }) async {
     if (!_isInitialized) {
       debugPrint('AdMob not initialized. Call initialize() first.');
@@ -144,7 +158,7 @@ class AdMobService {
 
     await InterstitialAd.load(
       adUnitId: adUnitId,
-      request: const AdRequest(),
+      request: AdRequest(nonPersonalizedAds: nonPersonalizedAds),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
           ad.fullScreenContentCallback = FullScreenContentCallback(
@@ -176,11 +190,16 @@ class AdMobService {
   }
 
   /// Load a native ad
+  ///
+  /// Per D-06: callers pass `nonPersonalizedAds: !consentGranted` derived from
+  /// `consentGrantedProvider`. Library-ready for future phases; no in-app
+  /// callers yet, default `false` is currently safe.
   Future<NativeAd?> loadNativeAd({
     required String adUnitId,
     required String factoryId,
     void Function(Ad)? onAdLoaded,
     void Function(Ad, LoadAdError)? onAdFailedToLoad,
+    bool nonPersonalizedAds = false,
   }) async {
     if (!_isInitialized) {
       debugPrint('AdMob not initialized. Call initialize() first.');
@@ -192,7 +211,7 @@ class AdMobService {
     final nativeAd = NativeAd(
       adUnitId: adUnitId,
       factoryId: factoryId,
-      request: const AdRequest(),
+      request: AdRequest(nonPersonalizedAds: nonPersonalizedAds),
       listener: NativeAdListener(
         onAdLoaded: (ad) {
           onAdLoaded?.call(ad);

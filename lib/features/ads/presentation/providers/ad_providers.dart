@@ -4,6 +4,7 @@ import 'package:qraft/features/ads/constants/ad_unit_ids.dart';
 import 'package:qraft/features/ads/data/services/admob_service.dart';
 import 'package:qraft/features/ads/domain/entities/ad_config.dart';
 import 'package:qraft/features/subscription/presentation/providers/subscription_providers.dart';
+import '../../../consent/presentation/providers/consent_providers.dart';
 
 /// Provider for AdMob service instance
 final adMobServiceProvider = Provider<AdMobService>((ref) {
@@ -28,13 +29,20 @@ final dashboardBannerAdProvider = FutureProvider<BannerAd?>((ref) async {
   final shouldShow = ref.watch(shouldShowAdsProvider);
   if (!shouldShow) return null;
 
+  // Wait for UMP to resolve before loading. (D-04)
+  final consentReady = ref.watch(umpConsentReadyProvider);
+  if (!consentReady) return null;
+
   // Ensure AdMob is initialized
   await ref.watch(adMobInitProvider.future);
 
+  // Pass npa flag based on consent. (D-06)
+  final personalizedAllowed = ref.watch(consentGrantedProvider);
   final service = ref.read(adMobServiceProvider);
   return service.loadBannerAd(
     adUnitId: AdUnitIds.bannerDashboard,
     size: AdSize.banner,
+    nonPersonalizedAds: !personalizedAllowed,
   );
 });
 
@@ -43,12 +51,19 @@ final libraryBannerAdProvider = FutureProvider<BannerAd?>((ref) async {
   final shouldShow = ref.watch(shouldShowAdsProvider);
   if (!shouldShow) return null;
 
+  // Wait for UMP to resolve before loading. (D-04)
+  final consentReady = ref.watch(umpConsentReadyProvider);
+  if (!consentReady) return null;
+
   await ref.watch(adMobInitProvider.future);
 
+  // Pass npa flag based on consent. (D-06)
+  final personalizedAllowed = ref.watch(consentGrantedProvider);
   final service = ref.read(adMobServiceProvider);
   return service.loadBannerAd(
     adUnitId: AdUnitIds.bannerLibrary,
     size: AdSize.banner,
+    nonPersonalizedAds: !personalizedAllowed,
   );
 });
 

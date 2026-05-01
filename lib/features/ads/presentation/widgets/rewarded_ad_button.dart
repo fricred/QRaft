@@ -4,6 +4,7 @@ import 'package:qraft/features/ads/constants/ad_unit_ids.dart';
 import 'package:qraft/features/ads/domain/entities/ad_config.dart';
 import 'package:qraft/features/ads/presentation/providers/ad_providers.dart';
 import 'package:qraft/l10n/app_localizations.dart';
+import '../../../consent/presentation/providers/consent_providers.dart';
 
 /// A button that shows a rewarded ad and grants a reward
 class RewardedAdButton extends ConsumerStatefulWidget {
@@ -41,9 +42,12 @@ class _RewardedAdButtonState extends ConsumerState<RewardedAdButton> {
     // Ensure AdMob is initialized
     await ref.read(adMobInitProvider.future);
 
+    // Pass npa flag based on consent. (D-06)
+    final personalizedAllowed = ref.read(consentGrantedProvider);
     final service = ref.read(adMobServiceProvider);
     final success = await service.showRewardedAd(
       adUnitId: widget.adUnitId,
+      nonPersonalizedAds: !personalizedAllowed,
       onUserEarnedReward: (_, reward) {
         // Grant the reward
         ref.read(adRewardProvider.notifier).addReward(widget.rewardType);

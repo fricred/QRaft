@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'features/splash/splash_screen.dart';
@@ -9,6 +8,9 @@ import 'features/auth/presentation/pages/auth_flow.dart';
 import 'features/auth/data/providers/supabase_auth_provider.dart';
 import 'features/main/main_scaffold.dart';
 import 'features/subscription/presentation/providers/purchase_providers.dart';
+import 'features/ads/presentation/providers/ad_providers.dart';
+import 'features/consent/presentation/providers/consent_providers.dart';
+import 'features/consent/presentation/widgets/ump_gate.dart';
 import 'core/services/deeplink_service.dart';
 import 'core/services/supabase_service.dart';
 import 'core/config/env_config.dart';
@@ -39,9 +41,10 @@ Future<void> initializeApp() async {
     );
     debugPrint('✅ Firebase initialized');
 
-    // Initialize AdMob for ads
-    await MobileAds.instance.initialize();
-    debugPrint('✅ AdMob initialized');
+    // NOTE: AdMob SDK init is intentionally NOT called here (D-04). UMP
+    // consent must resolve first; AdMob init is triggered via
+    // adMobInitProvider once umpConsentReadyProvider flips true (see
+    // ref.listen in _QRaftAppState.build below).
   } catch (e) {
     // Service already initialized or error occurred, continue
     debugPrint('Initialization error: $e');
@@ -71,7 +74,16 @@ class _QRaftAppState extends ConsumerState<QRaftApp> {
   @override
   Widget build(BuildContext context) {
     final locale = ref.watch(localeProvider);
-    
+
+    // Trigger AdMob init only after UMP resolves. (D-04)
+    // adMobInitProvider is idempotent (see AdMobService.initialize()).
+    ref.listen<bool>(umpConsentReadyProvider, (prev, next) {
+      if (next == true && prev != true) {
+        // UMP just resolved — kick off AdMob init.
+        ref.read(adMobInitProvider.future);
+      }
+    });
+
     return MaterialApp(
       title: 'QRaft',
       debugShowCheckedModeBanner: false,
@@ -102,7 +114,7 @@ class _QRaftAppState extends ConsumerState<QRaftApp> {
         ),
         useMaterial3: true,
       ),
-      home: _showSplash 
+      home: _showSplash
           ? SplashScreen(
               onInitializationComplete: () {
                 setState(() {
@@ -110,7 +122,8 @@ class _QRaftAppState extends ConsumerState<QRaftApp> {
                 });
               },
             )
-          : const AuthWrapper(),
+          // UmpGate ensures UMP consent resolves before AuthWrapper mounts.
+          : const UmpGate(child: AuthWrapper()),
     );
   }
 }

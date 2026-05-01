@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:qraft/features/ads/presentation/providers/ad_providers.dart';
+import '../../../consent/presentation/providers/consent_providers.dart';
 
 /// A widget that displays a banner ad
 /// Only shows for free tier users
@@ -42,16 +43,23 @@ class _BannerAdWidgetState extends ConsumerState<BannerAdWidget> {
     final shouldShow = ref.read(shouldShowAdsProvider);
     if (!shouldShow) return;
 
+    // Do not load before UMP resolves. (D-04)
+    final consentReady = ref.read(umpConsentReadyProvider);
+    if (!consentReady) return;
+
     if (_isLoading) return;
     _isLoading = true;
 
     // Ensure AdMob is initialized
     await ref.read(adMobInitProvider.future);
 
+    // Pass npa flag based on consent. (D-06)
+    final personalizedAllowed = ref.read(consentGrantedProvider);
     final service = ref.read(adMobServiceProvider);
     final ad = await service.loadBannerAd(
       adUnitId: widget.adUnitId,
       size: widget.size,
+      nonPersonalizedAds: !personalizedAllowed,
       onAdLoaded: (_) {
         if (mounted) {
           setState(() {
@@ -79,8 +87,16 @@ class _BannerAdWidgetState extends ConsumerState<BannerAdWidget> {
   @override
   Widget build(BuildContext context) {
     final shouldShow = ref.watch(shouldShowAdsProvider);
+    final consentReady = ref.watch(umpConsentReadyProvider);
 
-    if (!shouldShow || !_isLoaded || _bannerAd == null) {
+    // Re-trigger load when consent flips ready post-construction. (D-04)
+    ref.listen<bool>(umpConsentReadyProvider, (prev, next) {
+      if (next == true && prev != true && !_isLoaded && !_isLoading) {
+        _loadAd();
+      }
+    });
+
+    if (!shouldShow || !consentReady || !_isLoaded || _bannerAd == null) {
       return const SizedBox.shrink();
     }
 
