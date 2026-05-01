@@ -48,10 +48,25 @@ dependencies:
   supabase_flutter: ^2.0.0
 
   # Firebase (Phase 1: minimum wiring only — services activated in Phases 10 + 12 per D-01)
-  # firebase_core 4.7.0 is the current stable that matches firebase_messaging 16.x +
-  # firebase_crashlytics 5.x + firebase_analytics 12.x (verified via pub.dev API 2026-05-01)
-  # — those companion packages are added in plan 04. Pin here so plan 04 has no version drift.
+  # Versions verified via pub.dev API 2026-05-01: each declares firebase_core ^4.7.0 as its dep,
+  # so the trio resolves cleanly with the firebase_core ^4.7.0 pin from plan 03.
   firebase_core: ^4.7.0
+  firebase_messaging: ^16.2.0
+  firebase_crashlytics: ^5.2.0
+  firebase_analytics: ^12.3.0
+
+  # Advanced QR Generation (Phase 5: QR-02..06)
+  pretty_qr_code: ^3.6.0
+  screenshot: ^3.0.0
+  image: ^4.5.4
+  csv: ^8.0.0
+
+  # Forms (Phase 9: MKT-04 checkout)
+  flutter_form_builder: ^10.3.0
+  form_builder_validators: ^11.1.2
+
+  # Notifications (Phase 10: MKT-09 + companion to firebase_messaging)
+  flutter_local_notifications: ^17.2.4
 
   # QR Functionality
   qr_flutter: ^4.1.0
