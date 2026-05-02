@@ -1,3 +1,4 @@
+import 'dart:async' show unawaited;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,7 +19,8 @@ class QRScannerScreen extends ConsumerStatefulWidget {
   ConsumerState<QRScannerScreen> createState() => _QRScannerScreenState();
 }
 
-class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
+class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
+    with WidgetsBindingObserver {
   // Design constants for bottom controls
   static const double _sideButtonSize = 52.0;
   static const double _mainButtonSize = 70.0;
@@ -27,11 +29,27 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
 
   MobileScannerController? _controller;
   bool _isControllerInitialized = false;
+  bool _isPermissionPermanentlyDenied = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _checkPermissionsAndSetupController();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final controller = _controller;
+    if (controller == null || !_isControllerInitialized) return;
+    switch (state) {
+      case AppLifecycleState.inactive:
+        unawaited(controller.stop());
+      case AppLifecycleState.resumed:
+        unawaited(controller.start());
+      default:
+        break;
+    }
   }
 
   void _checkPermissionsAndSetupController() async {
@@ -42,7 +60,16 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
         final result = await Permission.camera.request();
         if (!result.isGranted) {
           if (mounted) {
-            ref.read(qrScannerProvider.notifier).logDetailedError('Camera Permission', 'Camera permission denied');
+            final isPermanent = result.isPermanentlyDenied;
+            setState(() {
+              _isPermissionPermanentlyDenied = isPermanent;
+            });
+            ref.read(qrScannerProvider.notifier).logDetailedError(
+              'Camera Permission',
+              isPermanent
+                  ? 'Camera permission permanently denied'
+                  : 'Camera permission denied',
+            );
           }
           return;
         }
@@ -78,6 +105,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller?.dispose();
     super.dispose();
   }
@@ -161,19 +189,23 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
             ),
           ),
           // Flash toggle
-          IconButton(
-            onPressed: () {
-              ref.read(qrScannerProvider.notifier).toggleFlash();
-              _controller?.toggleTorch();
-            },
-            icon: Icon(
-              isFlashOn ? Icons.flash_on_rounded : Icons.flash_off_rounded,
-              color: isFlashOn ? const Color(0xFF00FF88) : Colors.white,
-              size: 24,
-            ),
-            style: IconButton.styleFrom(
-              backgroundColor: const Color(0xFF2E2E2E),
-              padding: const EdgeInsets.all(10),
+          Semantics(
+            identifier: 'scanner_flash_button',
+            child: IconButton(
+              key: const Key('scanner_flash_button'),
+              onPressed: () {
+                ref.read(qrScannerProvider.notifier).toggleFlash();
+                _controller?.toggleTorch();
+              },
+              icon: Icon(
+                isFlashOn ? Icons.flash_on_rounded : Icons.flash_off_rounded,
+                color: isFlashOn ? const Color(0xFF00FF88) : Colors.white,
+                size: 24,
+              ),
+              style: IconButton.styleFrom(
+                backgroundColor: const Color(0xFF2E2E2E),
+                padding: const EdgeInsets.all(10),
+              ),
             ),
           ),
         ],
@@ -199,9 +231,12 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
         child: Stack(
           children: [
             // Camera preview
-            if (_controller != null && _isControllerInitialized)
+            if (_isPermissionPermanentlyDenied)
+              _buildPermissionDeniedView()
+            else if (_controller != null && _isControllerInitialized)
               MobileScanner(
                 controller: _controller,
+                tapToFocus: true,
                 onDetect: (BarcodeCapture capture) {
                   // Always detect QR codes when camera is active
                   _handleBarcodeDetection(capture);
@@ -353,6 +388,74 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
     );
   }
 
+  Widget _buildPermissionDeniedView() {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF1A1A1A), Color(0xFF2E2E2E)],
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.no_photography_rounded,
+              color: Colors.grey,
+              size: 48,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.cameraPermissionDenied,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                l10n.cameraPermissionDeniedMessage,
+                style: TextStyle(color: Colors.grey[400], fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Semantics(
+              identifier: 'scanner_open_settings_button',
+              child: ElevatedButton.icon(
+                key: const Key('scanner_open_settings_button'),
+                onPressed: _openAppSettings,
+                icon: const Icon(Icons.settings_rounded),
+                label: Text(l10n.openSettings),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00FF88),
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildScanningOverlay(bool isScanning) {
     return Stack(
       children: [
@@ -438,8 +541,10 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
     required int delayMs,
     double size = 52,
     double iconSize = 22,
+    String? semanticsIdentifier,
   }) {
-    return Container(
+    final container = Container(
+      key: semanticsIdentifier != null ? Key(semanticsIdentifier) : null,
       width: size,
       height: size,
       decoration: BoxDecoration(
@@ -485,6 +590,14 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
     ).animate()
       .fadeIn(duration: 300.ms, delay: Duration(milliseconds: delayMs))
       .scale(begin: const Offset(0.9, 0.9), duration: 300.ms, delay: Duration(milliseconds: delayMs));
+
+    if (semanticsIdentifier != null) {
+      return Semantics(
+        identifier: semanticsIdentifier,
+        child: container,
+      );
+    }
+    return container;
   }
 
   Widget _buildBottomControls(AppLocalizations l10n, bool isScanning) {
@@ -510,6 +623,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
                   size: _sideButtonSize,
                   iconSize: 22,
                   delayMs: 250,
+                  semanticsIdentifier: 'scanner_gallery_button',
                 ),
                 const SizedBox(height: _labelSpacing),
                 Text(
@@ -562,6 +676,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
                   size: _sideButtonSize,
                   iconSize: 22,
                   delayMs: 300,
+                  semanticsIdentifier: 'scanner_history_button',
                 ),
                 const SizedBox(height: _labelSpacing),
                 Text(
