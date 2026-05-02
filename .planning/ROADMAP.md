@@ -70,11 +70,12 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
   3. User can edit and duplicate any QR in their library
   4. User can share a QR via system share sheet (link or PNG image)
   5. Library list scrolls smoothly with 100+ items (pagination, ListView.builder, lazy thumbnails)
-**Plans**: 3 (1/3 complete)
+**Plans**: 3 (2/3 complete)
 **UI hint**: yes
 **Research needed before planning**: NO
 **Parallel-eligible**: YES (with Phase 3, Phase 4)
 - [x] 02-01-qr-domain-layer-PLAN.md — QRType.event + EventData iCal model + getUserQRCodesPaginated repository + Supabase migration ✓ 2026-05-01 (commits `1d34017` + `057ce60`; 7 enum cases; VCALENDAR/VEVENT iCal; Supabase .range() pagination; 0 analyzer issues)
+- [x] 02-02-qr-preview-widget-pretty-qr-PLAN.md — QRPreviewWidget rewritten with PrettyQrView + RepaintBoundary; repaintKey GlobalKey wired to all 6 QR screens ✓ 2026-05-02 (commits `dc3b7c2` + `b3dafe9`; Colors.white hardcoded T-02-04; _TypeBadge extracted; 0 analyzer issues)
 
 ### Phase 3: QR Scanner
 **Goal**: Users can scan QRs with full-screen Carden Pro UI and have the app act on results based on QR type
