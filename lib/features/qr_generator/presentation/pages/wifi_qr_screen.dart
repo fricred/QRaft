@@ -158,6 +158,8 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isSaving = false;
+  // GlobalKey for RepaintBoundary — enables PNG export in Plan 05
+  final GlobalKey repaintKey = GlobalKey();
 
   @override
   void initState() {
@@ -601,30 +603,35 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
       );
     }
 
-    return QrImageView(
-      data: wifiState.wifiData.qrData,
-      version: QrVersions.auto,
-      size: qrSize,
-      backgroundColor: Color(customizationState.customization.backgroundColor),
-      eyeStyle: QrEyeStyle(
-        eyeShape: customizationState.customization.eyeShape == 0 
-            ? QrEyeShape.square 
-            : QrEyeShape.circle,
-        color: Color(customizationState.customization.eyeColor),
-      ),
-      dataModuleStyle: QrDataModuleStyle(
-        dataModuleShape: customizationState.customization.dataShape == 0
-            ? QrDataModuleShape.square
-            : QrDataModuleShape.circle,
-        color: Color(customizationState.customization.foregroundColor),
-      ),
-      embeddedImage: customizationState.customization.hasLogo && 
-                   customizationState.customization.logoPath != null
-          ? FileImage(File(customizationState.customization.logoPath!))
-          : null,
-      embeddedImageStyle: QrEmbeddedImageStyle(
-        size: Size(customizationState.customization.logoSize, 
-                  customizationState.customization.logoSize),
+    return RepaintBoundary(
+      key: repaintKey,
+      child: QrImageView(
+        data: wifiState.wifiData.qrData,
+        version: QrVersions.auto,
+        size: qrSize,
+        backgroundColor: Color(customizationState.customization.backgroundColor),
+        eyeStyle: QrEyeStyle(
+          eyeShape: customizationState.customization.eyeShape == 0
+              ? QrEyeShape.square
+              : QrEyeShape.circle,
+          color: Color(customizationState.customization.eyeColor),
+        ),
+        dataModuleStyle: QrDataModuleStyle(
+          dataModuleShape: customizationState.customization.dataShape == 0
+              ? QrDataModuleShape.square
+              : QrDataModuleShape.circle,
+          color: Color(customizationState.customization.foregroundColor),
+        ),
+        embeddedImage: customizationState.customization.hasLogo &&
+                customizationState.customization.logoPath != null
+            ? FileImage(File(customizationState.customization.logoPath!))
+            : null,
+        embeddedImageStyle: QrEmbeddedImageStyle(
+          size: Size(
+            customizationState.customization.logoSize,
+            customizationState.customization.logoSize,
+          ),
+        ),
       ),
     );
   }
