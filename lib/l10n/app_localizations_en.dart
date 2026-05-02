@@ -1928,4 +1928,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sponsoredAd => 'Sponsored';
+
+  @override
+  String get shareQR => 'Share QR';
+
+  @override
+  String get exportQRPng => 'Export as PNG';
 }

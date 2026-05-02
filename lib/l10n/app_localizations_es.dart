@@ -1964,4 +1964,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sponsoredAd => 'Patrocinado';
+
+  @override
+  String get shareQR => 'Compartir QR';
+
+  @override
+  String get exportQRPng => 'Exportar como PNG';
 }

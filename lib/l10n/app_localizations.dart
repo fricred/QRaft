@@ -3601,6 +3601,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sponsored'**
   String get sponsoredAd;
+
+  /// Button label to share a QR code as a PNG image
+  ///
+  /// In en, this message translates to:
+  /// **'Share QR'**
+  String get shareQR;
+
+  /// Button label to export a QR code as a PNG file
+  ///
+  /// In en, this message translates to:
+  /// **'Export as PNG'**
+  String get exportQRPng;
 }
 
 class _AppLocalizationsDelegate
