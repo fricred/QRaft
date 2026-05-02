@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:qraft/l10n/app_localizations.dart';
@@ -318,6 +320,8 @@ class ScanResultDialog extends StatelessWidget {
         return 'Open';
       case QRCodeType.wifi:
         return 'Connect';
+      case QRCodeType.vcard:
+        return 'Save Contact';
       case QRCodeType.email:
         return 'Email';
       case QRCodeType.phone:
@@ -337,6 +341,8 @@ class ScanResultDialog extends StatelessWidget {
         return Icons.open_in_new_rounded;
       case QRCodeType.wifi:
         return Icons.wifi_rounded;
+      case QRCodeType.vcard:
+        return Icons.contact_page_rounded;
       case QRCodeType.email:
         return Icons.email_rounded;
       case QRCodeType.phone:
@@ -438,7 +444,72 @@ class ScanResultDialog extends StatelessWidget {
             }
           }
           break;
-          
+
+        case QRCodeType.vcard:
+          final hasPermission = await FlutterContacts.requestPermission();
+          if (!hasPermission) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Contacts permission required'),
+                  backgroundColor: Colors.orange,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              );
+            }
+            return;
+          }
+          final fullName = scanResult.parsedData?['name'] as String? ?? '';
+          final nameParts = fullName.split(' ');
+          final contact = Contact()
+            ..name.first = nameParts.isNotEmpty ? nameParts.first : fullName
+            ..name.last = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : ''
+            ..phones = [
+              if (scanResult.parsedData?['phone'] != null)
+                Phone(scanResult.parsedData!['phone'] as String),
+            ]
+            ..emails = [
+              if (scanResult.parsedData?['email'] != null)
+                Email(scanResult.parsedData!['email'] as String),
+            ]
+            ..organizations = [
+              if (scanResult.parsedData?['organization'] != null)
+                Organization(company: scanResult.parsedData!['organization'] as String),
+            ];
+          await FlutterContacts.insertContact(contact);
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Contact saved'),
+                backgroundColor: Color(0xFF00FF88),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+            Navigator.of(context).pop();
+          }
+          return;
+
+        case QRCodeType.wifi:
+          final ssid = scanResult.parsedData?['ssid'] as String? ?? 'Unknown Network';
+          final password = scanResult.parsedData?['password'] as String? ?? '';
+          final security = scanResult.parsedData?['security'] as String? ?? 'WPA';
+          if (context.mounted) {
+            showModalBottomSheet(
+              context: context,
+              backgroundColor: const Color(0xFF2E2E2E),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              builder: (_) => _WifiCredentialsSheet(
+                ssid: ssid,
+                password: password,
+                security: security,
+              ),
+            );
+          }
+          return;
+
         default:
           await Share.share(scanResult.rawValue);
           break;
@@ -479,5 +550,146 @@ class ScanResultDialog extends StatelessWidget {
   String _capitalizeFirst(String text) {
     if (text.isEmpty) return text;
     return text[0].toUpperCase() + text.substring(1).replaceAll('_', ' ');
+  }
+}
+
+class _WifiCredentialsSheet extends StatelessWidget {
+  final String ssid;
+  final String password;
+  final String security;
+
+  const _WifiCredentialsSheet({
+    required this.ssid,
+    required this.password,
+    required this.security,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.wifi_rounded, color: Color(0xFF00FF88), size: 24),
+              const SizedBox(width: 12),
+              const Text(
+                'WiFi Network',
+                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00FF88).withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  security,
+                  style: const TextStyle(color: Color(0xFF00FF88), fontSize: 12),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          _CredentialRow(label: 'Network (SSID)', value: ssid),
+          const SizedBox(height: 12),
+          _CredentialRow(label: 'Password', value: password, obscure: true),
+          const SizedBox(height: 24),
+          Semantics(
+            identifier: 'wifi_open_settings_button',
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                key: const Key('wifi_open_settings_button'),
+                onPressed: () async {
+                  // iOS: App-prefs:root=WIFI, Android: android.settings.WIFI_SETTINGS
+                  // Fall back to openAppSettings() if neither launches
+                  final iosUri = Uri.parse('App-prefs:root=WIFI');
+                  final androidUri = Uri.parse('android.settings.WIFI_SETTINGS');
+                  bool launched = false;
+                  if (await canLaunchUrl(iosUri)) {
+                    launched = await launchUrl(iosUri);
+                  } else if (await canLaunchUrl(androidUri)) {
+                    launched = await launchUrl(androidUri);
+                  }
+                  if (!launched) {
+                    await openAppSettings();
+                  }
+                },
+                icon: const Icon(Icons.settings_rounded),
+                label: const Text('Open WiFi Settings'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00FF88),
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CredentialRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool obscure;
+
+  const _CredentialRow({
+    required this.label,
+    required this.value,
+    this.obscure = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1A1A),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.white12),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                const SizedBox(height: 4),
+                Text(
+                  obscure && value.isNotEmpty ? '•' * value.length.clamp(0, 16) : value,
+                  style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: value));
+              HapticFeedback.lightImpact();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('$label copied'),
+                  backgroundColor: const Color(0xFF00FF88),
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            },
+            icon: const Icon(Icons.copy_rounded, color: Color(0xFF00FF88), size: 20),
+          ),
+        ],
+      ),
+    );
   }
 }
