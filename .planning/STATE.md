@@ -6,7 +6,7 @@
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 2 — QR Generation Core (Phase 1 complete ✓ 2026-05-01, passed-with-residuals)
+**Current focus**: Phase 2 — QR Generation Core, plan 02-01 complete ✓ 2026-05-01
 
 **Strategic anchors**:
 - Brownfield foundation: Auth, GlassButton, deeplinks, i18n, Supabase, AdMob inicial — preservar y construir encima
@@ -18,12 +18,12 @@
 ## Current Position
 
 **Milestone:** v1.0
-**Phase:** 1 of 12 — Foundation Hardening
-**Plan:** Phase 1 COMPLETE (8/8) — Phase 2 next: plan + execute QR Generation Core
-**Status:** Phase 1 closed passed-with-residuals 2026-05-01
+**Phase:** 2 of 12 — QR Generation Core
+**Plan:** Phase 2 in progress — 1/3 plans complete (02-01 ✓)
+**Status:** Phase 2 in progress 2026-05-01
 **Last session:** 2026-05-01 — Plan 01-07 (Maestro flows + controller tests) executed cross-session on `feature/adds`. Tasks 1+3 autonomous (commits `bd39494` 14 Flutter tests, `7eeae6d` 9 flow YAMLs); semantics rollout `627859d`; manual close-out commits `41908d0` (remove legacy SupabaseForgotPasswordDialog from main.dart, freeing 215 lines of dead code), `cb1663c` (Semantics(identifier:) on dashboard_profile_button + profile_sign_out_button + profile_sign_out_confirm_button), `3cf599d` (Maestro YAML iterations: suite recursion config, scrollUntilVisible for off-fold welcome CTA, pressKey:Enter for keyboard-occluded login_submit_button), `b52d28f` (Navigator.popUntil(isFirst) after signOut + 30s timeout on logout assertion), `3c29309` (CONVENTIONS.md Phase 1 status section). Android Medium_Phone suite: **8/9 flows PASS** (splash-happy 8s, ump-accept 7s, ump-deny-npa 9s, login-valid 27s, login-invalid 24s, forgot-password 24s, session-persistence 37s, scanner-tab-launch 37s) — auth/logout RESIDUAL with the loading dialog "Cerrando sesión..." stuck visible past 30s, signOut() hangs at the SupabaseClient call (likely interaction with subscription realtime listener teardown in AuthWrapper). iOS suite ran on iPhone 17 Pro pre-Semantics (4/7 pass, expected); not re-run after Semantics+popUntil fixes — recommended at start of next session. Real product bugs surfaced and fixed by Maestro E2E (legacy dialog dead code, Navigator stack occlusion). Plan 01-07 deviations: 6 auto-fixed (4 Rule 3 blocking, 2 Rule 4 functionally required). flutter analyze: 0 issues. Whole-suite test delta from `+83 ~1 -91` to `+97 ~1 -85` (the 6 broken-by-design dialog tests from plan 01-06 are now sane; +8 controller tests added). Earlier session: Plan 01-05 (UMP consent + AdMob gating) executed sequentially on `feature/adds`, 3 tasks, ~7 minutes. Commits `cd834ff` (consent module: ConsentState + UmpService + 5 providers) + `b7ad68a` (UmpConsentScreen + UmpGate) + `8518f79` (main.dart bootstrap reorder + AdMobService 4 method signatures + BannerAdWidget + RewardedAdButton + ad_providers refactor). New `lib/features/consent/` feature module: `ConsentState` enum with 5 values (unknown/required/notRequired/obtained/denied) + `ConsentStateX` extension exposing `isResolved` + `isPersonalizedAllowed` booleans (37 lines); `UmpService` singleton (132 lines) wrapping `ConsentInformation.instance.requestConsentInfoUpdate` + `ConsentForm.loadAndShowConsentFormIfRequired` from google_mobile_ads ^5.1.0 — NO separate UMP package install per plan 04 D-01 — using Completer-to-Future bridge over the callback-based UMP API; accept-vs-deny disambiguation via `canRequestAds()` because `ConsentStatus.obtained` covers both; fail-open posture so app does not deadlock on UMP errors. 5 Riverpod providers (umpServiceProvider, umpInitProvider, consentStateProvider, umpConsentReadyProvider, consentGrantedProvider). UmpConsentScreen ConsumerStatefulWidget triggers Google's UMP form on first frame via `WidgetsBinding.instance.addPostFrameCallback`; Carden Pro design tokens (#1A1A1A scaffold + #2E2E2E 24-radius card) + PrimaryGlassButton CTA + 2 stable Maestro Keys (`ump_consent_screen_root`, `ump_continue_button`). UmpGate ConsumerWidget with `.when()` loading/error/data branches; explicit `consent_state.dart` import so `state.isResolved` extension getter resolves. main.dart bootstrap reordered per D-04: removed `MobileAds.instance.initialize()` from `initializeApp()` (now only env → Supabase → Firebase); added `ref.listen<bool>(umpConsentReadyProvider, ...)` in `_QRaftAppState.build` that fires `ref.read(adMobInitProvider.future)` exactly once on UMP-resolves transition (FutureProvider memoization + idempotent `AdMobService.initialize()` keep it safe); AuthWrapper wrapped in `UmpGate(child: AuthWrapper())`. AdMobService 4 ad-loading methods (loadBannerAd lines 33-69, showRewardedAd lines 70-118, showInterstitialAd lines 130-181, loadNativeAd lines 184-217) now accept `bool nonPersonalizedAds = false` and pass it into `AdRequest(nonPersonalizedAds: nonPersonalizedAds)` per D-06; 0 `const AdRequest()` remaining, 4 `AdRequest(nonPersonalizedAds:` sites. BannerAdWidget._loadAd() bails if `!umpConsentReadyProvider` (D-04) AND passes `nonPersonalizedAds: !consentGranted` (D-06); `build()` watches `umpConsentReadyProvider` + ref.listen re-triggers `_loadAd` when consent flips ready post-construction (re-entrancy guard `!_isLoaded && !_isLoading`) — handles widgets built before UMP resolves. RewardedAdButton._showRewardedAd() reads consentGrantedProvider and forwards `!personalizedAllowed`. ad_providers.dart `dashboardBannerAdProvider` + `libraryBannerAdProvider` both gate on `umpConsentReadyProvider` AND forward npa flag. Maestro selector deviation documented: `ump_settings_link` Key NOT added because the "manage settings" link is rendered by Google's UMP system overlay (not a Flutter widget); plan 07 will target it via text matcher. flutter analyze: 0 issues; flutter build apk --debug --target-platform android-arm64: Built in 9.5s; flutter build ios --debug --no-codesign: Built in 9.9s. Whole-suite test delta unchanged from plan 06 (`+83 ~1 -91` — 0 new test breakage from this plan). Closes ROADMAP success criterion #4 (UMP integrated, consent form on first launch before any ad request).
 
-**Progress:** [▰▱▱▱▱▱▱▱▱▱▱▱] 1/12 phases complete (8.3%)
+**Progress:** [▰▱▱▱▱▱▱▱▱▱▱▱] 1/12 phases complete (8.3%) — Phase 2 in progress (1/3 plans)
 
 ```
 Phase 1:  ▰ Foundation Hardening              ✓ COMPLETE (passed-with-residuals 2026-05-01)
@@ -73,6 +73,9 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | ForgotPasswordDialog test count: empirically 6 tests, 0 failing pre-refactor (verified `grep -cE 'testWidgets\\(\|^\\s*test\\(' = 6` and `flutter test ...forgot_password_dialog_test.dart = +6 -0`). Prior 5/13 figure in CLAUDE.md + CONCERNS.md was stale (D-10 reconciliation). Post-refactor: 6/6 fail with "Supabase has not been initialized" runtime exception because tests still override the obsolete `supabaseAuthProvider`; plan 07 task 1 rewrites the suite against `forgotPasswordControllerProvider` with a MockSupabaseClient injected via the controller constructor. | plan 01-06 SUMMARY (`47339ee`, `217db0c`) |
 | Maestro Key source-of-truth pattern: when a Key spans multiple files (e.g., `main_scaffold_scanner_tab` is owned semantically by main_scaffold but rendered by main_navigation), the literal Key string lives in the feature scaffold file (so it's greppable from its semantic owner) and is passed as a `Key?` prop to the rendering widget. Implementation: `MainScaffoldKeys` class in `main_scaffold.dart` enumerates all 5 tab Keys; `MainNavigation` accepts `Key? <name>TabKey` params and applies them to GestureDetectors. | plan 01-06 SUMMARY (`217db0c`) |
 | auth_controller.dart scrub: the file `lib/features/auth/presentation/controllers/auth_controller.dart` and its test `test/features/auth/presentation/controllers/auth_controller_simple_test.dart` do NOT exist on disk (verified `ls lib/features/auth/presentation/controllers/` was empty pre-plan-06; post-plan-06 it contains only `forgot_password_controller.dart`). 4 stale references in CLAUDE.md (lines 66, 786, 828, 849) replaced with `test/features/auth/data/providers/supabase_auth_provider_test.dart` (the actual auth test path) plus a forward-pointer to the new ForgotPasswordController. Future doc edits MUST NOT re-introduce auth_controller references. | plan 01-06 SUMMARY (`47339ee`) |
+| EventData iCal uses local time (no Z suffix) for v1 — avoids timezone complexity for first-party generated events | plan 02-01 SUMMARY (`1d34017`) |
+| QRType.event routes to ComingSoonQRScreen in v1 — event form UI deferred to plan 02-02+ | plan 02-01 SUMMARY (`1d34017`) |
+| FeatureType.qrTypeEvent added to feature gate infrastructure — event type treated identically to other QR types for plan/subscription gating | plan 02-01 SUMMARY (`057ce60`) |
 | Wompi as payment processor (PSE/Nequi/Daviplata/cards) | PROJECT.md |
 | Solo Colombia v1.0 | PROJECT.md |
 | 4-6 month timeline, feature-complete priority | PROJECT.md |
@@ -134,7 +137,28 @@ Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
 
-**Files written this session (plan 01-06 execution):**
+**Files written this session (plan 02-01 execution):**
+- `lib/features/qr_generator/domain/entities/qr_type.dart` — added `QRType.event` (vevent, cyan gradient, event_rounded); all switch cases updated
+- `lib/features/qr_generator/domain/entities/qr_data_models.dart` — added `EventData` class with VCALENDAR/VEVENT iCal serialization
+- `lib/l10n/app_en.arb` + `lib/l10n/app_es.arb` — added qrTypeEvent / qrTypeEventDesc keys
+- `lib/l10n/app_localizations*.dart` — regenerated via `flutter gen-l10n`
+- `lib/features/qr_generator/presentation/pages/qr_form_screen.dart` — 5 switch case additions for event
+- `lib/features/qr_generator/presentation/widgets/qr_preview_widget.dart` — 2 switch case additions for event
+- `lib/features/qr_generator/qr_generator_screen.dart` — event routes to ComingSoonQRScreen; import added
+- `lib/features/qr_generator/domain/repositories/qr_repository.dart` — added getUserQRCodesPaginated abstract method
+- `lib/features/qr_generator/data/datasources/qr_remote_data_source.dart` — added getUserQRCodesPaginated to interface
+- `lib/features/qr_generator/data/datasources/qr_supabase_data_source.dart` — implemented getUserQRCodesPaginated with .range()
+- `lib/features/qr_generator/data/repositories/qr_repository_impl.dart` — implemented getUserQRCodesPaginated with local cache fallback
+- `lib/features/subscription/domain/entities/feature_access.dart` — added FeatureType.qrTypeEvent
+- `lib/features/subscription/presentation/providers/feature_gate_providers.dart` — added event cases to _qrTypeToFeature + _qrTypeDisplayName
+- `supabase/migrations/20260501100000_add_event_qr_type.sql` — documentation-only no-op migration
+- `.planning/phases/02-qr-generation-core/02-01-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+- `.planning/ROADMAP.md` (plan 02-01 checkbox marked)
+
+**Last session:** 2026-05-01 — Plan 02-01 (QR domain layer: event type + pagination) executed on `feature/adds`. Tasks 1+2 autonomous. Commits `1d34017` (QRType.event + EventData + i18n + switch exhaustiveness fixes across 3 presentation files) + `057ce60` (getUserQRCodesPaginated + FeatureType.qrTypeEvent + SQL migration). flutter analyze 0 issues.
+
+**Files from prior sessions:**
 - `lib/features/auth/presentation/controllers/forgot_password_controller.dart` (created, 142 lines) — ForgotPasswordState + ForgotPasswordController + forgotPasswordControllerProvider
 - `lib/features/auth/presentation/widgets/forgot_password_dialog.dart` — refactored to consume controller; `_emailSent` removed; +5 Maestro Keys; +2 Semantics labels
 - `lib/features/auth/presentation/pages/login_screen.dart` — extended `_buildTextField` with optional `Key? fieldKey` param; +5 Maestro Keys
