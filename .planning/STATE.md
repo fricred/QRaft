@@ -20,7 +20,7 @@ progress:
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 2 — QR Generation Core, **COMPLETE** ✓ 2026-05-02 (all 4 plans done)
+**Current focus**: Phase 4 — Redirect Service Foundation, **IN PROGRESS** (1/3 plans done — 04-01 ✓ 2026-05-02)
 
 **Strategic anchors**:
 
@@ -33,19 +33,18 @@ progress:
 ## Current Position
 
 **Milestone:** v1.0
-**Phase:** 2 of 12 — QR Generation Core
-**Plan:** Phase 2 COMPLETE — 4/4 plans complete (02-01 ✓, 02-02 ✓, 02-03 ✓, 02-04 ✓)
-**Status:** Phase 2 complete 2026-05-02
+**Phase:** 4 of 12 — Redirect Service Foundation (parallel execution)
+**Plan:** 04-01 ✓ 2026-05-02 (1/3 plans — 04-02 and 04-03 pending)
+**Status:** Phase 4 in progress
 **Last session:** 2026-05-01 — Plan 01-07 (Maestro flows + controller tests) executed cross-session on `feature/adds`. Tasks 1+3 autonomous (commits `bd39494` 14 Flutter tests, `7eeae6d` 9 flow YAMLs); semantics rollout `627859d`; manual close-out commits `41908d0` (remove legacy SupabaseForgotPasswordDialog from main.dart, freeing 215 lines of dead code), `cb1663c` (Semantics(identifier:) on dashboard_profile_button + profile_sign_out_button + profile_sign_out_confirm_button), `3cf599d` (Maestro YAML iterations: suite recursion config, scrollUntilVisible for off-fold welcome CTA, pressKey:Enter for keyboard-occluded login_submit_button), `b52d28f` (Navigator.popUntil(isFirst) after signOut + 30s timeout on logout assertion), `3c29309` (CONVENTIONS.md Phase 1 status section). Android Medium_Phone suite: **8/9 flows PASS** (splash-happy 8s, ump-accept 7s, ump-deny-npa 9s, login-valid 27s, login-invalid 24s, forgot-password 24s, session-persistence 37s, scanner-tab-launch 37s) — auth/logout RESIDUAL with the loading dialog "Cerrando sesión..." stuck visible past 30s, signOut() hangs at the SupabaseClient call (likely interaction with subscription realtime listener teardown in AuthWrapper). iOS suite ran on iPhone 17 Pro pre-Semantics (4/7 pass, expected); not re-run after Semantics+popUntil fixes — recommended at start of next session. Real product bugs surfaced and fixed by Maestro E2E (legacy dialog dead code, Navigator stack occlusion). Plan 01-07 deviations: 6 auto-fixed (4 Rule 3 blocking, 2 Rule 4 functionally required). flutter analyze: 0 issues. Whole-suite test delta from `+83 ~1 -91` to `+97 ~1 -85` (the 6 broken-by-design dialog tests from plan 01-06 are now sane; +8 controller tests added). Earlier session: Plan 01-05 (UMP consent + AdMob gating) executed sequentially on `feature/adds`, 3 tasks, ~7 minutes. Commits `cd834ff` (consent module: ConsentState + UmpService + 5 providers) + `b7ad68a` (UmpConsentScreen + UmpGate) + `8518f79` (main.dart bootstrap reorder + AdMobService 4 method signatures + BannerAdWidget + RewardedAdButton + ad_providers refactor). New `lib/features/consent/` feature module: `ConsentState` enum with 5 values (unknown/required/notRequired/obtained/denied) + `ConsentStateX` extension exposing `isResolved` + `isPersonalizedAllowed` booleans (37 lines); `UmpService` singleton (132 lines) wrapping `ConsentInformation.instance.requestConsentInfoUpdate` + `ConsentForm.loadAndShowConsentFormIfRequired` from google_mobile_ads ^5.1.0 — NO separate UMP package install per plan 04 D-01 — using Completer-to-Future bridge over the callback-based UMP API; accept-vs-deny disambiguation via `canRequestAds()` because `ConsentStatus.obtained` covers both; fail-open posture so app does not deadlock on UMP errors. 5 Riverpod providers (umpServiceProvider, umpInitProvider, consentStateProvider, umpConsentReadyProvider, consentGrantedProvider). UmpConsentScreen ConsumerStatefulWidget triggers Google's UMP form on first frame via `WidgetsBinding.instance.addPostFrameCallback`; Carden Pro design tokens (#1A1A1A scaffold + #2E2E2E 24-radius card) + PrimaryGlassButton CTA + 2 stable Maestro Keys (`ump_consent_screen_root`, `ump_continue_button`). UmpGate ConsumerWidget with `.when()` loading/error/data branches; explicit `consent_state.dart` import so `state.isResolved` extension getter resolves. main.dart bootstrap reordered per D-04: removed `MobileAds.instance.initialize()` from `initializeApp()` (now only env → Supabase → Firebase); added `ref.listen<bool>(umpConsentReadyProvider, ...)` in `_QRaftAppState.build` that fires `ref.read(adMobInitProvider.future)` exactly once on UMP-resolves transition (FutureProvider memoization + idempotent `AdMobService.initialize()` keep it safe); AuthWrapper wrapped in `UmpGate(child: AuthWrapper())`. AdMobService 4 ad-loading methods (loadBannerAd lines 33-69, showRewardedAd lines 70-118, showInterstitialAd lines 130-181, loadNativeAd lines 184-217) now accept `bool nonPersonalizedAds = false` and pass it into `AdRequest(nonPersonalizedAds: nonPersonalizedAds)` per D-06; 0 `const AdRequest()` remaining, 4 `AdRequest(nonPersonalizedAds:` sites. BannerAdWidget._loadAd() bails if `!umpConsentReadyProvider` (D-04) AND passes `nonPersonalizedAds: !consentGranted` (D-06); `build()` watches `umpConsentReadyProvider` + ref.listen re-triggers `_loadAd` when consent flips ready post-construction (re-entrancy guard `!_isLoaded && !_isLoading`) — handles widgets built before UMP resolves. RewardedAdButton._showRewardedAd() reads consentGrantedProvider and forwards `!personalizedAllowed`. ad_providers.dart `dashboardBannerAdProvider` + `libraryBannerAdProvider` both gate on `umpConsentReadyProvider` AND forward npa flag. Maestro selector deviation documented: `ump_settings_link` Key NOT added because the "manage settings" link is rendered by Google's UMP system overlay (not a Flutter widget); plan 07 will target it via text matcher. flutter analyze: 0 issues; flutter build apk --debug --target-platform android-arm64: Built in 9.5s; flutter build ios --debug --no-codesign: Built in 9.9s. Whole-suite test delta unchanged from plan 06 (`+83 ~1 -91` — 0 new test breakage from this plan). Closes ROADMAP success criterion #4 (UMP integrated, consent form on first launch before any ad request).
 
-**Progress:** [▰▰▱▱▱▱▱▱▱▱▱▱] 2/12 phases complete (16.7%) — Phase 3 is next
+**Progress:** [▰▰▱▱▱▱▱▱▱▱▱▱] 2/12 phases complete (16.7%) — Phase 3 and 4 in parallel
 
 ```
 Phase 1:  ▰ Foundation Hardening              ✓ COMPLETE (passed-with-residuals 2026-05-01)
-Phase 2:  ▰ QR Generation Core                ✓ COMPLETE 2026-05-02 (3/3 plans)
-Phase 3:  ▱ QR Scanner                        ← NEXT (parallel-eligible with P4)
-Phase 4:  ▱ Redirect Service Foundation       (parallel-eligible after P1)
-Phase 4:  ▱ Redirect Service Foundation       (parallel-eligible after P1)
+Phase 2:  ▰ QR Generation Core                ✓ COMPLETE 2026-05-02 (4/4 plans)
+Phase 3:  ▱ QR Scanner                        (parallel with P4)
+Phase 4:  ▶ Redirect Service Foundation       IN PROGRESS 1/3 plans (04-01 ✓ 2026-05-02)
 Phase 5:  ▱ QR Customization (Print-Safe)
 Phase 6:  ▱ QR Digital-Only Features          (parallel-eligible after P5)
 Phase 7:  ▱ Marketplace Catalog + QR Export   (parallel-eligible after P5)
@@ -107,6 +106,10 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | Tattoo line as minimal product in v1 (TAT-01..04) | PROJECT.md |
 | DIAN factura DEFERRED to v2 with risk acceptance ≤950 UVT | PROJECT.md, v2-vision.md |
 | Free destination editing in v1 (no monetization friction) | PROJECT.md, v2-vision.md |
+| Atomic scan_count increment deferred to plan 04-02 Postgres RPC; v1 uses read-modify-write in RedirectRepositoryImpl.incrementScanCount | plan 04-01 SUMMARY (`8122624`) |
+| `supabaseClientProvider` introduced as overridable Riverpod Provider so tests can inject mock SupabaseClient without global Supabase.instance dependency | plan 04-01 SUMMARY (`8122624`) |
+| auto-update trigger `trg_redirects_updated_at` added to redirects migration for server-side updated_at management | plan 04-01 SUMMARY (`8122624`) |
+| redirects migration `20260502000000_redirects_table.sql` requires manual application via Supabase Dashboard → SQL Editor; NOT auto-applied | plan 04-01 SUMMARY (`8122624`) |
 | `pretty_qr_code` 3.6.0 for advanced customization (replaces qr_flutter for QR-02..06) | research SUMMARY.md |
 | `mobile_scanner` 7.2.0 (Vision API on iOS) — unblocks SCAN-01 | research SUMMARY.md |
 | Server-authoritative order FSM (Postgres CHECK + RPC); client read-only | research ARCHITECTURE.md |
@@ -155,6 +158,20 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 04-01 execution):**
+- `supabase/migrations/20260502000000_redirects_table.sql` — redirects table DDL + RLS + auto-update trigger; needs manual application
+- `lib/features/redirect/domain/entities/redirect_entity.dart` — RedirectEntity Equatable with fromJson/toJson/copyWith
+- `lib/features/redirect/domain/repositories/redirect_repository.dart` — abstract interface (6 methods)
+- `lib/features/redirect/domain/utils/slug_generator.dart` — SlugGenerator with Random.secure() + generateUntilUnique retry loop
+- `lib/features/redirect/data/datasources/redirect_supabase_data_source.dart` — PostgREST datasource
+- `lib/features/redirect/data/repositories/redirect_repository_impl.dart` — wires datasource + slug generation
+- `lib/features/redirect/presentation/providers/redirect_providers.dart` — supabaseClientProvider + redirectRepositoryProvider + userRedirectsProvider
+- `.planning/phases/04-redirect-service-foundation/04-01-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+- `.planning/ROADMAP.md` (04-01 checkbox marked, Phase 4 plans listed)
+
+**Last session (plan 04-01):** 2026-05-02 — Redirects table migration + full Dart domain/data layer. Commit `8122624`. flutter analyze 0 issues. Phase 4 in progress (1/3 plans).
 
 **Files written this session (plan 02-03 execution):**
 - `lib/features/qr_generator/presentation/controllers/event_form_controller.dart` — EventFormState + EventFormController + eventFormProvider (autoDispose)
