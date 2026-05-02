@@ -10,6 +10,11 @@ tags:
 - runFlow: ../launch/ump-accept.yaml
 - assertVisible:
     id: "welcome_screen_root"
+- scrollUntilVisible:
+    element:
+      id: "welcome_login_cta"
+    direction: DOWN
+    timeout: 10000
 - tapOn:
     id: "welcome_login_cta"
 - assertVisible:
@@ -20,15 +25,13 @@ tags:
 - tapOn:
     id: "login_password_field"
 - inputText: wrong-password-123
-- hideKeyboard
-- tapOn:
-    id: "login_submit_button"
-# Error UI must surface — assert error text appears AND login screen still visible.
-# `extendedWaitUntil` is the only command that accepts a custom timeout (verified
-# at https://docs.maestro.dev/reference/commands-available/extendedwaituntil).
-- assertVisible:
-    id: "login_screen_root"
+# Press Enter to submit (keyboard occludes login_submit_button on iOS sim).
+- pressKey: Enter
+# When SupabaseAuthProvider returns an AuthException, AuthWrapper in main.dart:178-212
+# REPLACES the login screen with a full-screen "Authentication Error" Scaffold (currentUser
+# stays null, errorMessage becomes non-null). So login_screen_root is gone — the bar is
+# that an error UI surfaces, NOT that we stay on the login screen.
 - extendedWaitUntil:
     visible:
-      text: ".*(invalid|incorrect|failed|error|Invalid|Incorrect|Failed|Error).*"
-    timeout: 10000
+      text: "Authentication Error"
+    timeout: 15000

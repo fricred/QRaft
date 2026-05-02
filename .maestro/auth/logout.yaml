@@ -9,22 +9,25 @@ tags:
 - runFlow: ../helpers/dismiss-permissions.yaml
 - runFlow: ../launch/ump-accept.yaml
 - runFlow: ../helpers/login.yaml
-# Profile/Marketplace tab is where the logout action typically lives. The MainScaffoldKeys
-# class enumerates 5 tabs: dashboard / generate / scanner / library / marketplace.
-# There is no dedicated "profile" tab in the current scaffold (verified
-# lib/features/main/main_scaffold.dart). Logout is exposed inside the Library or
-# Marketplace flow today; flows fall back to a text matcher so this remains
-# resilient if the host screen moves.
+# Sign-out lives on the Profile screen (lib/features/profile/presentation/pages/profile_screen.dart).
+# Path: dashboard tab -> profile button -> sign-out GlassButton -> confirm dialog.
 - tapOn:
-    id: "main_scaffold_marketplace_tab"
+    id: "main_scaffold_dashboard_tab"
 - tapOn:
-    text: "(Logout|Cerrar sesión|Sign out|Log out)"
-    optional: true
-# Some apps put logout behind a settings icon — try a fallback if first tap missed.
+    id: "dashboard_profile_button"
+- extendedWaitUntil:
+    visible:
+      id: "profile_sign_out_button"
+    timeout: 10000
 - tapOn:
-    text: "(Logout|Cerrar sesión|Sign out|Log out)"
-    optional: true
+    id: "profile_sign_out_button"
+- extendedWaitUntil:
+    visible:
+      id: "profile_sign_out_confirm_button"
+    timeout: 10000
+- tapOn:
+    id: "profile_sign_out_confirm_button"
 - extendedWaitUntil:
     visible:
       id: "welcome_screen_root"
-    timeout: 10000
+    timeout: 15000

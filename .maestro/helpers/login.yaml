@@ -11,6 +11,13 @@ appId: io.gothcorp.qraft
 - runFlow: ../helpers/dismiss-permissions.yaml
 - assertVisible:
     id: "welcome_screen_root"
+# The welcome screen is a SingleChildScrollView; on small viewports the
+# login/signup CTAs sit below the fold. Scroll until the login CTA is visible.
+- scrollUntilVisible:
+    element:
+      id: "welcome_login_cta"
+    direction: DOWN
+    timeout: 10000
 - tapOn:
     id: "welcome_login_cta"
 - assertVisible:
@@ -21,9 +28,11 @@ appId: io.gothcorp.qraft
 - tapOn:
     id: "login_password_field"
 - inputText: ${MAESTRO_TEST_PASSWORD}
-- hideKeyboard
-- tapOn:
-    id: "login_submit_button"
+# The password field is wired to onSubmitted: _handleLogin, so pressing Enter
+# triggers the login action without needing to dismiss keyboard / tap submit.
+# This is the most reliable cross-platform path on iOS sim where the soft
+# keyboard occludes the login_submit_button below it.
+- pressKey: Enter
 # Wait for post-login transition; main scaffold home tab is the canonical landed state.
 - extendedWaitUntil:
     visible:
