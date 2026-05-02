@@ -155,14 +155,20 @@ class ProfileScreen extends ConsumerWidget {
 
               const SizedBox(height: 32),
 
-              // Sign out button
-              GlassButton(
-                text: l10n.signOut,
-                onPressed: () async {
-                  await _showSignOutDialog(context, ref, l10n);
-                },
-                width: double.infinity,
-                gradientColors: [Colors.red[400]!, Colors.red[600]!],
+              // Sign out button — Maestro selector: profile_sign_out_button
+              Semantics(
+                identifier: 'profile_sign_out_button',
+                button: true,
+                label: 'Sign out',
+                child: GlassButton(
+                  key: const Key('profile_sign_out_button'),
+                  text: l10n.signOut,
+                  onPressed: () async {
+                    await _showSignOutDialog(context, ref, l10n);
+                  },
+                  width: double.infinity,
+                  gradientColors: [Colors.red[400]!, Colors.red[600]!],
+                ),
               )
                   .animate(delay: 400.ms)
                   .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
@@ -320,71 +326,77 @@ class ProfileScreen extends ConsumerWidget {
           Consumer(
             builder: (context, ref, child) {
               final authProvider = ref.watch(supabaseAuthProvider);
-              return TextButton(
-                onPressed: authProvider.isLoading ? null : () async {
-                  try {
-                    // Close sign out dialog first
-                    Navigator.pop(context);
-                    
-                    // Show loading dialog
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) => AlertDialog(
-                        backgroundColor: const Color(0xFF2E2E2E),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        content: Row(
-                          children: [
-                            CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF00FF88)),
-                            ),
-                            const SizedBox(width: 16),
-                            Text(
-                              l10n.signingOut,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                    
-                    // Perform sign out
-                    await authProvider.signOut();
-                    
-                    // Close loading dialog - AuthWrapper will handle navigation automatically
-                    if (context.mounted) {
+              return Semantics(
+                identifier: 'profile_sign_out_confirm_button',
+                button: true,
+                label: 'Confirm sign out',
+                child: TextButton(
+                  key: const Key('profile_sign_out_confirm_button'),
+                  onPressed: authProvider.isLoading ? null : () async {
+                    try {
+                      // Close sign out dialog first
                       Navigator.pop(context);
-                    }
-                  } catch (e) {
-                    // Close loading dialog if it's still open
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                      
-                      // Show error message
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l10n.signOutFailed),
-                          backgroundColor: Colors.red[700],
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+
+                      // Show loading dialog
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => AlertDialog(
+                          backgroundColor: const Color(0xFF2E2E2E),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          content: Row(
+                            children: [
+                              CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF00FF88)),
+                              ),
+                              const SizedBox(width: 16),
+                              Text(
+                                l10n.signingOut,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
                         ),
                       );
+
+                      // Perform sign out
+                      await authProvider.signOut();
+
+                      // Close loading dialog - AuthWrapper will handle navigation automatically
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                      }
+                    } catch (e) {
+                      // Close loading dialog if it's still open
+                      if (context.mounted) {
+                        Navigator.pop(context);
+
+                        // Show error message
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(l10n.signOutFailed),
+                            backgroundColor: Colors.red[700],
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                        );
+                      }
                     }
-                  }
-                },
-                child: authProvider.isLoading 
-                  ? SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.red[400]!),
+                  },
+                  child: authProvider.isLoading
+                    ? SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.red[400]!),
+                        ),
+                      )
+                    : Text(
+                        l10n.signOut,
+                        style: TextStyle(color: Colors.red[400]),
                       ),
-                    )
-                  : Text(
-                      l10n.signOut,
-                      style: TextStyle(color: Colors.red[400]),
-                    ),
+                ),
               );
             },
           ),

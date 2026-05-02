@@ -88,29 +88,37 @@ class DashboardScreen extends ConsumerWidget {
                         ),
                       ),
                       
-                      // Profile/Settings button
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ProfileScreen(),
+                      // Profile/Settings button — Maestro selector: dashboard_profile_button
+                      // Wrapped in Semantics(identifier:) so iOS exposes the id on the
+                      // accessibility tree (Maestro `id:` queries that tree).
+                      Semantics(
+                        identifier: 'dashboard_profile_button',
+                        button: true,
+                        label: 'Profile',
+                        child: GestureDetector(
+                          key: const Key('dashboard_profile_button'),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ProfileScreen(),
+                              ),
+                            );
+                          },
+                          onLongPress: () {
+                            _showQuickActionsMenu(context, ref, l10n);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2E2E2E),
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                          );
-                        },
-                        onLongPress: () {
-                          _showQuickActionsMenu(context, ref, l10n);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF2E2E2E),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.account_circle_outlined,
-                            color: Colors.white,
-                            size: 28,
+                            child: const Icon(
+                              Icons.account_circle_outlined,
+                              color: Colors.white,
+                              size: 28,
+                            ),
                           ),
                         ),
                       ),
