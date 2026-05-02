@@ -127,9 +127,9 @@ Plans:
   5. User can browse 8-12 curated templates and apply one to a QR with a single tap
   6. User selects "Print-safe / Digital-only / Tattoo-safe" profile in the editor and validations differ correctly per profile
   7. User can bulk-import a CSV (`;`-delimited for Excel-ES) and generate N QRs at once with a default template applied
-**Plans**: 5 plans
+**Plans**: 5 plans (1/5 complete)
 Plans:
-- [ ] 05-01-PLAN.md — QrProfile enum + QrProfileValidator + 9 new QRCustomization fields + controller methods + QrProfileToggle widget (Wave 1)
+- [x] 05-01-PLAN.md — QrProfile enum + QrProfileValidator + 9 new QRCustomization fields + controller methods + QrProfileToggle widget (Wave 1) ✓ 2026-05-01 (commits `c2f992b` + `19bdca9` + `d61a72f` + `f34f456`; QrProfile+GradientType+QrProfileConstraints extension; QrProfileValidator 8 unit tests; QRCustomization 9 new fields backward-compat; controller 6 new methods; QrProfileToggle SegmentedButton; 0 analyzer issues)
 - [ ] 05-02-PLAN.md — QrDecorationBuilder factory + logo embed + EC-H enforcement + QrLogoPickerWidget + QRPreviewWidget upgrade (Wave 2)
 - [ ] 05-03-PLAN.md — Gradient brush (linear/radial) + QrExportService print-safe PNG + QrColorPickerWidget 8 presets (Wave 2, parallel to 05-02)
 - [ ] 05-04-PLAN.md — buildShape() 8 module + 8 eye presets + PrettyQrShape.custom + QrPresetGalleryWidget + QrFrameWidget (Wave 3)

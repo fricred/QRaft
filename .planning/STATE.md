@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-02T11:22:00Z"
+last_updated: "2026-05-02T17:14:43Z"
 progress:
   total_phases: 12
   completed_phases: 2
-  total_plans: 11
-  completed_plans: 11
-  percent: 100
+  total_plans: 23
+  completed_plans: 18
+  percent: 74
 ---
 
 # State: QRaft v1.0
@@ -20,7 +20,7 @@ progress:
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 4 — Redirect Service Foundation, **COMPLETE** (3/3 plans done — 04-01 ✓, 04-02 ✓, 04-03 ✓ 2026-05-01). Phase 3 (QR Scanner) in parallel — 2/3 plans done, 03-03 pending.
+**Current focus**: Phase 5 — QR Customization (Print-Safe), IN PROGRESS (1/5 plans done — 05-01 ✓ 2026-05-01). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
 
 **Strategic anchors**:
 
@@ -33,19 +33,19 @@ progress:
 ## Current Position
 
 **Milestone:** v1.0
-**Phase:** 4 of 12 — Redirect Service Foundation (COMPLETE), Phase 3 in parallel
-**Plan:** 04-03 ✓ 2026-05-01 (3/3 plans — Phase 4 COMPLETE)
-**Status:** Phase 4 complete; Phase 3 in progress (2/3 plans); Phase 5 next
+**Phase:** 5 of 12 — QR Customization (Print-Safe), IN PROGRESS
+**Plan:** 05-01 ✓ 2026-05-01 (1/5 plans)
+**Status:** Phase 5 in progress; Phase 4 complete; Phase 3 in progress (2/3 plans)
 **Last session:** 2026-05-02 — Plan 03-02 (gallery analyzeImage + vCard + WiFi) executed cross-session on `feature/adds`. Tasks 1+3 autonomous (commits `bd39494` 14 Flutter tests, `7eeae6d` 9 flow YAMLs); semantics rollout `627859d`; manual close-out commits `41908d0` (remove legacy SupabaseForgotPasswordDialog from main.dart, freeing 215 lines of dead code), `cb1663c` (Semantics(identifier:) on dashboard_profile_button + profile_sign_out_button + profile_sign_out_confirm_button), `3cf599d` (Maestro YAML iterations: suite recursion config, scrollUntilVisible for off-fold welcome CTA, pressKey:Enter for keyboard-occluded login_submit_button), `b52d28f` (Navigator.popUntil(isFirst) after signOut + 30s timeout on logout assertion), `3c29309` (CONVENTIONS.md Phase 1 status section). Android Medium_Phone suite: **8/9 flows PASS** (splash-happy 8s, ump-accept 7s, ump-deny-npa 9s, login-valid 27s, login-invalid 24s, forgot-password 24s, session-persistence 37s, scanner-tab-launch 37s) — auth/logout RESIDUAL with the loading dialog "Cerrando sesión..." stuck visible past 30s, signOut() hangs at the SupabaseClient call (likely interaction with subscription realtime listener teardown in AuthWrapper). iOS suite ran on iPhone 17 Pro pre-Semantics (4/7 pass, expected); not re-run after Semantics+popUntil fixes — recommended at start of next session. Real product bugs surfaced and fixed by Maestro E2E (legacy dialog dead code, Navigator stack occlusion). Plan 01-07 deviations: 6 auto-fixed (4 Rule 3 blocking, 2 Rule 4 functionally required). flutter analyze: 0 issues. Whole-suite test delta from `+83 ~1 -91` to `+97 ~1 -85` (the 6 broken-by-design dialog tests from plan 01-06 are now sane; +8 controller tests added). Earlier session: Plan 01-05 (UMP consent + AdMob gating) executed sequentially on `feature/adds`, 3 tasks, ~7 minutes. Commits `cd834ff` (consent module: ConsentState + UmpService + 5 providers) + `b7ad68a` (UmpConsentScreen + UmpGate) + `8518f79` (main.dart bootstrap reorder + AdMobService 4 method signatures + BannerAdWidget + RewardedAdButton + ad_providers refactor). New `lib/features/consent/` feature module: `ConsentState` enum with 5 values (unknown/required/notRequired/obtained/denied) + `ConsentStateX` extension exposing `isResolved` + `isPersonalizedAllowed` booleans (37 lines); `UmpService` singleton (132 lines) wrapping `ConsentInformation.instance.requestConsentInfoUpdate` + `ConsentForm.loadAndShowConsentFormIfRequired` from google_mobile_ads ^5.1.0 — NO separate UMP package install per plan 04 D-01 — using Completer-to-Future bridge over the callback-based UMP API; accept-vs-deny disambiguation via `canRequestAds()` because `ConsentStatus.obtained` covers both; fail-open posture so app does not deadlock on UMP errors. 5 Riverpod providers (umpServiceProvider, umpInitProvider, consentStateProvider, umpConsentReadyProvider, consentGrantedProvider). UmpConsentScreen ConsumerStatefulWidget triggers Google's UMP form on first frame via `WidgetsBinding.instance.addPostFrameCallback`; Carden Pro design tokens (#1A1A1A scaffold + #2E2E2E 24-radius card) + PrimaryGlassButton CTA + 2 stable Maestro Keys (`ump_consent_screen_root`, `ump_continue_button`). UmpGate ConsumerWidget with `.when()` loading/error/data branches; explicit `consent_state.dart` import so `state.isResolved` extension getter resolves. main.dart bootstrap reordered per D-04: removed `MobileAds.instance.initialize()` from `initializeApp()` (now only env → Supabase → Firebase); added `ref.listen<bool>(umpConsentReadyProvider, ...)` in `_QRaftAppState.build` that fires `ref.read(adMobInitProvider.future)` exactly once on UMP-resolves transition (FutureProvider memoization + idempotent `AdMobService.initialize()` keep it safe); AuthWrapper wrapped in `UmpGate(child: AuthWrapper())`. AdMobService 4 ad-loading methods (loadBannerAd lines 33-69, showRewardedAd lines 70-118, showInterstitialAd lines 130-181, loadNativeAd lines 184-217) now accept `bool nonPersonalizedAds = false` and pass it into `AdRequest(nonPersonalizedAds: nonPersonalizedAds)` per D-06; 0 `const AdRequest()` remaining, 4 `AdRequest(nonPersonalizedAds:` sites. BannerAdWidget._loadAd() bails if `!umpConsentReadyProvider` (D-04) AND passes `nonPersonalizedAds: !consentGranted` (D-06); `build()` watches `umpConsentReadyProvider` + ref.listen re-triggers `_loadAd` when consent flips ready post-construction (re-entrancy guard `!_isLoaded && !_isLoading`) — handles widgets built before UMP resolves. RewardedAdButton._showRewardedAd() reads consentGrantedProvider and forwards `!personalizedAllowed`. ad_providers.dart `dashboardBannerAdProvider` + `libraryBannerAdProvider` both gate on `umpConsentReadyProvider` AND forward npa flag. Maestro selector deviation documented: `ump_settings_link` Key NOT added because the "manage settings" link is rendered by Google's UMP system overlay (not a Flutter widget); plan 07 will target it via text matcher. flutter analyze: 0 issues; flutter build apk --debug --target-platform android-arm64: Built in 9.5s; flutter build ios --debug --no-codesign: Built in 9.9s. Whole-suite test delta unchanged from plan 06 (`+83 ~1 -91` — 0 new test breakage from this plan). Closes ROADMAP success criterion #4 (UMP integrated, consent form on first launch before any ad request).
 
-**Progress:** [▰▰▰▰▱▱▱▱▱▱▱▱] 4/12 phases complete (33.3%) — Phase 3 in progress, Phase 5 next
+**Progress:** [▰▰▰▰▱▱▱▱▱▱▱▱] 4/12 phases complete (33.3%) — Phase 3 + Phase 5 in progress
 
 ```
 Phase 1:  ▰ Foundation Hardening              ✓ COMPLETE (passed-with-residuals 2026-05-01)
 Phase 2:  ▰ QR Generation Core                ✓ COMPLETE 2026-05-02 (4/4 plans)
 Phase 3:  ▱ QR Scanner                        IN PROGRESS (2/3 plans — 03-03 pending)
 Phase 4:  ▰ Redirect Service Foundation       ✓ COMPLETE 2026-05-01 (3/3 plans)
-Phase 5:  ▶ QR Customization (Print-Safe)     NEXT
+Phase 5:  ▶ QR Customization (Print-Safe)     IN PROGRESS (1/5 plans)
 Phase 6:  ▱ QR Digital-Only Features          (parallel-eligible after P5)
 Phase 7:  ▱ Marketplace Catalog + QR Export   (parallel-eligible after P5)
 Phase 8:  ▱ Cart & Customization Snapshot
@@ -113,6 +113,10 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | RedirectEditScreen takes slug → loads redirect entity id → calls updateDestinationUrl(id:, destinationUrl:); empty slug shows "no redirect linked" gracefully (QRCodeEntity has no slug field yet) | plan 04-03 SUMMARY (`6f3a055`) |
 | Follow-up required: add `slug` column to qr_codes table + expose on QRCodeEntity so `_editRedirectDestination` can pass real slug instead of `''` | plan 04-03 SUMMARY (`6f3a055`) |
 | `pretty_qr_code` 3.6.0 for advanced customization (replaces qr_flutter for QR-02..06) | research SUMMARY.md |
+| QrProfile stored as int index in QRCustomization for Equatable/JSON compat; QrProfile.values[index] used in controller | plan 05-01 SUMMARY (`f34f456`) |
+| logoCoverage clamped at controller entry (updateLogoCoverage) as first-line T-05-01-01 defense; QrProfileValidator provides second-line check at export | plan 05-01 SUMMARY (`f34f456`) |
+| updateProfile() auto-enforces EC-H when profile.requiresEcH is true and current level < 3 | plan 05-01 SUMMARY (`f34f456`) |
+| GradientType.solid as default ensures zero migration cost for all existing QRCustomization instances | plan 05-01 SUMMARY (`f34f456`) |
 | `mobile_scanner` 7.2.0 (Vision API on iOS) — unblocks SCAN-01 | research SUMMARY.md |
 | Server-authoritative order FSM (Postgres CHECK + RPC); client read-only | research ARCHITECTURE.md |
 | Idempotent webhook via `payment_events.event_id PRIMARY KEY` | research ARCHITECTURE.md |
@@ -161,7 +165,22 @@ Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
 
+**Files written this session (plan 05-01 execution):**
+
+- `lib/features/qr_generator/domain/value_objects/qr_profile.dart` — QrProfile + GradientType enums + QrProfileConstraints extension
+- `lib/features/qr_generator/domain/services/qr_profile_validator.dart` — QrProfileValidator static service + QrValidationResult
+- `lib/features/qr_generator/domain/entities/qr_code_entity.dart` — QRCustomization extended with 9 Phase 5 fields (hasGradient, gradientStart, gradientEnd, gradientType, modulePreset, eyePreset, profile, frameText, logoCoverage)
+- `lib/features/qr_generator/presentation/controllers/qr_customization_controller.dart` — 6 new methods added (updateProfile, updateModulePreset, updateEyePreset, updateGradient, updateFrameText, updateLogoCoverage)
+- `lib/features/qr_generator/presentation/widgets/qr_profile_toggle.dart` — Material 3 SegmentedButton with Semantics identifier
+- `test/features/qr_generator/domain/qr_profile_validator_test.dart` — 8 unit tests (TDD RED then GREEN)
+- `test/features/qr_generator/presentation/controllers/qr_customization_controller_phase5_test.dart` — 16 unit tests
+- `.planning/phases/05-qr-customization/05-01-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+
+**Last session (plan 05-01):** 2026-05-01 — QrProfile enum + QrProfileValidator + QRCustomization 9-field extension + controller 6 new methods + QrProfileToggle widget. Commits `c2f992b` (RED validator tests) + `19bdca9` (GREEN validator impl) + `d61a72f` (RED controller tests) + `f34f456` (GREEN controller impl). flutter analyze 0 issues. Phase 5 in progress (1/5 plans).
+
 **Files written this session (plan 03-02 execution):**
+
 - `lib/features/qr_scanner/providers/qr_scanner_provider.dart` — scanFromGallery rewritten to accept MobileScannerController + real analyzeImage call; _processGalleryMockResult deleted; noQRFoundInImage error state; stop/start camera wrapping analyzeImage
 - `lib/features/qr_scanner/qr_scanner_screen.dart` — _scanFromGallery passes _controller! to provider; null guard added
 - `lib/features/qr_scanner/widgets/scan_result_dialog.dart` — flutter_contacts import; case QRCodeType.vcard: FlutterContacts.requestPermission + insertContact; case QRCodeType.wifi: _WifiCredentialsSheet modal; _WifiCredentialsSheet + _CredentialRow private widgets; missing vcard label/icon fixed in _getActionButtonText/_getActionButtonIcon
@@ -172,6 +191,7 @@ Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 **Last session (plan 03-02):** 2026-05-02 — Real gallery QR scan + vCard contact save + WiFi credential sheet. Commits `c6c1319` (analyzeImage) + `aa481bb` (vCard + WiFi). flutter analyze 0 issues. Phase 3 in progress (2/3 plans).
 
 **Files written this session (plan 04-01 execution):**
+
 - `supabase/migrations/20260502000000_redirects_table.sql` — redirects table DDL + RLS + auto-update trigger; needs manual application
 - `lib/features/redirect/domain/entities/redirect_entity.dart` — RedirectEntity Equatable with fromJson/toJson/copyWith
 - `lib/features/redirect/domain/repositories/redirect_repository.dart` — abstract interface (6 methods)
@@ -186,6 +206,7 @@ Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 **Last session (plan 04-01):** 2026-05-02 — Redirects table migration + full Dart domain/data layer. Commit `8122624`. flutter analyze 0 issues. Phase 4 in progress (1/3 plans).
 
 **Files written this session (plan 02-03 execution):**
+
 - `lib/features/qr_generator/presentation/controllers/event_form_controller.dart` — EventFormState + EventFormController + eventFormProvider (autoDispose)
 - `lib/features/qr_generator/presentation/widgets/forms/event_form.dart` — flutter_form_builder 6-field form (name, title, startDT required; endDT, location, description optional; description maxLength 500)
 - `lib/features/qr_generator/presentation/pages/event_qr_screen.dart` — ConsumerStatefulWidget 2-tab Form/Style + edit mode + RepaintBoundary + Semantics key
@@ -202,6 +223,7 @@ Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 **Last session (plan 02-03):** 2026-05-02 — EventQRScreen implemented (6th QR type, QR-01 complete). Tasks 1+2 autonomous. Commits `9b244f9` (EventFormController + EventForm + EventQRScreen) + `51cae1c` (generator wiring + library filter). flutter analyze 0 issues. Phase 2 COMPLETE.
 
 **Files written this session (plan 02-02 execution):**
+
 - `lib/features/qr_generator/presentation/widgets/qr_preview_widget.dart` — rewritten: PrettyQrView.data() replaces QrImageView; GlobalKey? repaintKey param; RepaintBoundary wraps container; Colors.white hardcoded; _TypeBadge private widget extracted
 - `lib/features/qr_generator/presentation/pages/url_qr_screen.dart` — `final GlobalKey repaintKey = GlobalKey()` added to State; QrImageView wrapped in RepaintBoundary(key: repaintKey)
 - `lib/features/qr_generator/presentation/pages/text_qr_screen.dart` — same repaintKey pattern

@@ -16,7 +16,7 @@
 - [ ] **QR-07**: User puede generar QRs en bulk importando un CSV (separador `;` para Excel-ES)
 - [ ] **QR-08**: User puede guardar, editar y duplicar QRs en su library personal
 - [ ] **QR-09**: User puede compartir/exportar QR (link, imagen PNG, redes sociales)
-- [ ] **QR-10**: User selecciona perfil "Print-safe / Digital-only / Tattoo-safe" en el editor con validaciones específicas por perfil
+- [x] **QR-10**: User selecciona perfil "Print-safe / Digital-only / Tattoo-safe" en el editor con validaciones específicas por perfil ✓ 2026-05-01 (plan 05-01)
 
 ### QR Digital-Only (no graban en marketplace)
 
@@ -139,7 +139,7 @@ Populated by gsd-roadmapper agent on 2026-05-01.
 | QR-07 | Phase 5 | Pending |
 | QR-08 | Phase 2 | Pending |
 | QR-09 | Phase 2 | Pending |
-| QR-10 | Phase 5 | Pending |
+| QR-10 | Phase 5 | Complete ✓ 2026-05-01 |
 | QRD-01 | Phase 6 | Pending |
 | QRD-02 | Phase 6 | Pending |
 | QRD-03 | Phase 6 | Pending |
