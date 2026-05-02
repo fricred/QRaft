@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:qraft/features/qr_generator/domain/entities/qr_code_entity.dart';
 import 'package:qraft/features/qr_generator/domain/services/qr_decoration_builder.dart';
+import 'package:qraft/features/qr_generator/domain/value_objects/qr_profile.dart';
 
 void main() {
   // ---------------------------------------------------------------------------
@@ -126,6 +127,62 @@ void main() {
         () => QrDecorationBuilder.buildQrImage('', customization),
         returnsNormally,
       );
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // buildBrush tests (Task 1 — Plan 05-03)
+  // ---------------------------------------------------------------------------
+
+  group('QrDecorationBuilder.buildBrush', () {
+    test('returns a plain Color (not PrettyQrBrush gradient) when hasGradient=false', () {
+      const customization = QRCustomization(
+        hasGradient: false,
+        foregroundColor: 0xFF000000,
+      );
+      final brush = QrDecorationBuilder.buildBrush(customization);
+      expect(brush, isA<Color>());
+      expect(brush, isNot(isA<PrettyQrGradientBrush>()));
+      expect((brush as Color).value, 0xFF000000);
+    });
+
+    test('returns PrettyQrGradientBrush (not plain Color) for linear gradient with valid colors', () {
+      const customization = QRCustomization(
+        hasGradient: true,
+        gradientType: GradientType.linear,
+        gradientStart: 0xFF1A73E8,
+        gradientEnd: 0xFF00FF88,
+      );
+      final brush = QrDecorationBuilder.buildBrush(customization);
+      expect(brush, isA<PrettyQrGradientBrush>());
+      final gradientBrush = brush as PrettyQrGradientBrush;
+      expect(gradientBrush.gradient, isA<LinearGradient>());
+    });
+
+    test('returns PrettyQrGradientBrush for radial gradient with valid colors', () {
+      const customization = QRCustomization(
+        hasGradient: true,
+        gradientType: GradientType.radial,
+        gradientStart: 0xFF6366F1,
+        gradientEnd: 0xFFFF6B6B,
+      );
+      final brush = QrDecorationBuilder.buildBrush(customization);
+      expect(brush, isA<PrettyQrGradientBrush>());
+      final gradientBrush = brush as PrettyQrGradientBrush;
+      expect(gradientBrush.gradient, isA<RadialGradient>());
+    });
+
+    test('falls back to plain Color when hasGradient=true but gradientStart is null', () {
+      const customization = QRCustomization(
+        hasGradient: true,
+        gradientType: GradientType.linear,
+        gradientStart: null,
+        gradientEnd: 0xFF00FF88,
+        foregroundColor: 0xFF000000,
+      );
+      final brush = QrDecorationBuilder.buildBrush(customization);
+      expect(brush, isA<Color>());
+      expect(brush, isNot(isA<PrettyQrGradientBrush>()));
     });
   });
 }
