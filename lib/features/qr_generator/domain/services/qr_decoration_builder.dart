@@ -25,16 +25,37 @@ class QrDecorationBuilder {
   ///  - Always white background (dark-on-light constraint, T-02-04)
   ///  - Always [PrettyQrQuietZone.standard] (ISO/IEC 18004 §7.3.1)
   ///  - Optional logo image clamped to the profile's [QrProfileConstraints.maxLogoScale]
-  ///
-  /// The `shape` field is `null` here — plans 03/04 extend this method to add
-  /// module/eye shape presets.
+  ///  - Shape assembled from module + eye presets via [buildShape]
   static PrettyQrDecoration buildDecoration(QRCustomization c) {
     return PrettyQrDecoration(
       quietZone: PrettyQrQuietZone.standard,
       background: Colors.white,
       image: _buildImage(c),
-      // shape: null — plans 03/04 will extend this to add module/eye presets
+      shape: buildShape(c),
     );
+  }
+
+  /// Builds a [PrettyQrShape] using the [QRCustomization.modulePreset] and
+  /// [QRCustomization.eyePreset] index values (0–7).
+  ///
+  /// Uses [PrettyQrShape.custom] (@experimental) to separate module and eye
+  /// styling. Wrapped in try-catch: if the @experimental API throws for any
+  /// reason, returns [PrettyQrShape()] default (T-05-04-01).
+  ///
+  /// Out-of-range preset indices fall through to the `_` switch case which
+  /// returns safe default [PrettyQrSquaresSymbol()] — no [RangeError] possible
+  /// (T-05-04-02).
+  static PrettyQrShape buildShape(QRCustomization c) {
+    try {
+      final brush = buildBrush(c);
+      final moduleSymbol = _moduleSymbol(c.modulePreset, brush);
+      final eyeSymbol = _eyeSymbol(c.eyePreset, brush);
+      return PrettyQrShape.custom(moduleSymbol, finderPattern: eyeSymbol);
+    } catch (_) {
+      // PrettyQrShape is abstract — fall back to Classic Square, which is
+      // always safe and ISO 18004 compliant (T-05-04-01).
+      return const PrettyQrSquaresSymbol();
+    }
   }
 
   /// Builds a brush (color or gradient) for QR module fill from [QRCustomization].
@@ -91,6 +112,79 @@ class QrDecorationBuilder {
   // ---------------------------------------------------------------------------
   // Private helpers
   // ---------------------------------------------------------------------------
+
+  /// Maps [QRCustomization.modulePreset] (0-7) to a [PrettyQrShape] instance
+  /// with the given [brush] applied as the symbol color.
+  ///
+  /// The `_` fallback (out-of-range) returns a safe Classic Square preset.
+  static PrettyQrShape _moduleSymbol(int preset, dynamic brush) =>
+      switch (preset) {
+        0 => PrettyQrSquaresSymbol(color: brush as Color, rounding: 0.0),
+        1 => PrettyQrSquaresSymbol(
+            color: brush as Color,
+            rounding: 0.5,
+            density: 0.9,
+          ),
+        2 => PrettyQrSquaresSymbol(
+            color: brush as Color,
+            rounding: 0.8,
+            density: 0.9,
+          ),
+        3 => PrettyQrSmoothSymbol(color: brush as Color, roundFactor: 1.0),
+        4 => PrettyQrSmoothSymbol(color: brush as Color, roundFactor: 0.5),
+        5 => PrettyQrDotsSymbol(
+            color: brush as Color,
+            density: 1.0,
+            unifiedFinderPattern: false,
+          ),
+        6 => PrettyQrDotsSymbol(
+            color: brush as Color,
+            density: 0.75,
+            unifiedFinderPattern: false,
+          ),
+        7 => PrettyQrDotsSymbol(
+            color: brush as Color,
+            density: 0.6,
+            unifiedFinderPattern: false,
+          ),
+        _ => PrettyQrSquaresSymbol(color: brush as Color), // out-of-range fallback
+      };
+
+  /// Maps [QRCustomization.eyePreset] (0-7) to a [PrettyQrShape] instance
+  /// for use as the finder-pattern (eye) symbol in [PrettyQrShape.custom].
+  ///
+  /// The `_` fallback (out-of-range) returns a safe Classic Square preset.
+  static PrettyQrShape _eyeSymbol(int preset, dynamic brush) =>
+      switch (preset) {
+        0 => PrettyQrSquaresSymbol(color: brush as Color, rounding: 0.0),
+        1 => PrettyQrSquaresSymbol(
+            color: brush as Color,
+            rounding: 0.5,
+            unifiedFinderPattern: true,
+          ),
+        2 => PrettyQrDotsSymbol(
+            color: brush as Color,
+            unifiedFinderPattern: true,
+          ),
+        3 => PrettyQrSquaresSymbol(
+            color: brush as Color,
+            rounding: 0.8,
+            unifiedFinderPattern: true,
+          ),
+        4 => PrettyQrSmoothSymbol(color: brush as Color, roundFactor: 1.0),
+        5 => PrettyQrSquaresSymbol(
+            color: brush as Color,
+            rounding: 0.0,
+            density: 0.9,
+          ),
+        6 => PrettyQrDotsSymbol(
+            color: brush as Color,
+            density: 0.9,
+            unifiedFinderPattern: true,
+          ),
+        7 => PrettyQrSmoothSymbol(color: brush as Color, roundFactor: 0.3),
+        _ => PrettyQrSquaresSymbol(color: brush as Color), // out-of-range fallback
+      };
 
   static PrettyQrDecorationImage? _buildImage(QRCustomization c) {
     if (!c.hasLogo || c.logoPath == null) return null;
