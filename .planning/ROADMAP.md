@@ -131,7 +131,7 @@ Plans:
 Plans:
 - [x] 05-01-PLAN.md — QrProfile enum + QrProfileValidator + 9 new QRCustomization fields + controller methods + QrProfileToggle widget (Wave 1) ✓ 2026-05-01 (commits `c2f992b` + `19bdca9` + `d61a72f` + `f34f456`; QrProfile+GradientType+QrProfileConstraints extension; QrProfileValidator 8 unit tests; QRCustomization 9 new fields backward-compat; controller 6 new methods; QrProfileToggle SegmentedButton; 0 analyzer issues)
 - [x] 05-02-PLAN.md — QrDecorationBuilder factory + logo embed + EC-H enforcement + QrLogoPickerWidget + QRPreviewWidget upgrade (Wave 2) ✓ 2026-05-02 (commits `5254012` RED + `36c7873` GREEN + `37b0327` widget; QrDecorationBuilder static service buildDecoration+buildQrImage; logo coverage clamped to profile.maxLogoScale; EC-H forced when hasLogo; PrettyQrQuietZone.standard; QrLogoPickerWidget PNG/JPG whitelist + 2MB gate; QRPreviewWidget ConsumerStatefulWidget QrImage in initState; 11 tests pass; 0 analyzer issues; APK debug build success)
-- [ ] 05-03-PLAN.md — Gradient brush (linear/radial) + QrExportService print-safe PNG + QrColorPickerWidget 8 presets (Wave 2, parallel to 05-02)
+- [x] 05-03-PLAN.md — Gradient brush (linear/radial) + QrExportService print-safe PNG + QrColorPickerWidget 8 presets (Wave 2, parallel to 05-02) ✓ 2026-05-02 (commits `ae4e1a5` RED + `23cebed` GREEN + `14ccacc` widget; buildBrush returns Color/PrettyQrBrush.gradient; QrExportService.exportPrintSafe 2160px toImageAsBytes white background forced; QrColorPickerWidget 8 swatches + hex validation; 15 tests pass; 0 analyzer issues)
 - [ ] 05-04-PLAN.md — buildShape() 8 module + 8 eye presets + PrettyQrShape.custom + QrPresetGalleryWidget + QrFrameWidget (Wave 3)
 - [ ] 05-05-PLAN.md — 8 curated QrFullTemplate objects + applyFullTemplate() + QrTemplateGalleryWidget + QrBulkImportService CSV + QrBulkImportSheet (Wave 3, parallel to 05-04)
 **UI hint**: yes
@@ -304,7 +304,7 @@ Phase 6    Phase 7           │
 | 2. QR Generation Core | 4/4 | Complete | 2026-05-02 |
 | 3. QR Scanner | 2/3 | In progress | - |
 | 4. Redirect Service Foundation | 3/3 | Complete | 2026-05-01 |
-| 5. QR Customization (Print-Safe) | 0/5 | Not started | - |
+| 5. QR Customization (Print-Safe) | 3/5 | In progress | 2026-05-02 (plans 01-03) |
 | 6. QR Digital-Only Features | 0/? | Not started | - |
 | 7. Marketplace Catalog + QR Export | 0/? | Not started | - |
 | 8. Cart & Customization Snapshot | 0/? | Not started | - |
