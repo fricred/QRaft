@@ -77,6 +77,7 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
                   label: l10n.dashboardTitle,
                   isCenter: false,
                   itemKey: widget.dashboardTabKey,
+                  semanticIdentifier: 'main_scaffold_dashboard_tab',
                 ),
                 _buildNavItem(
                   index: 2,
@@ -84,6 +85,7 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
                   label: l10n.scanner,
                   isCenter: false,
                   itemKey: widget.scannerTabKey,
+                  semanticIdentifier: 'main_scaffold_scanner_tab',
                 ),
                 const SizedBox(width: 60), // Space for center button
                 _buildNavItem(
@@ -92,6 +94,7 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
                   label: l10n.libraryNav,
                   isCenter: false,
                   itemKey: widget.libraryTabKey,
+                  semanticIdentifier: 'main_scaffold_library_tab',
                 ),
                 _buildNavItem(
                   index: 4,
@@ -99,6 +102,7 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
                   label: l10n.marketplaceNav,
                   isCenter: false,
                   itemKey: widget.marketplaceTabKey,
+                  semanticIdentifier: 'main_scaffold_marketplace_tab',
                 ),
               ],
             ),
@@ -125,11 +129,15 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
     required String label,
     required bool isCenter,
     Key? itemKey,
+    String? semanticIdentifier,
   }) {
     final isSelected = widget.currentIndex == index;
 
     return Expanded(
-      child: GestureDetector(
+      child: Semantics(
+        identifier: semanticIdentifier,
+        button: true,
+        child: GestureDetector(
         key: itemKey,
         onTap: () {
           widget.onTap(index);
@@ -182,13 +190,17 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
           ),
         ),
       ),
+      ),
     );
   }
 
   Widget _buildCenterButton() {
     final isSelected = widget.currentIndex == 1; // Generate is center
 
-    return GestureDetector(
+    return Semantics(
+      identifier: 'main_scaffold_generate_tab',
+      button: true,
+      child: GestureDetector(
       key: widget.generateTabKey,
       onTap: () {
         widget.onTap(1); // Generate index
@@ -232,6 +244,7 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
         duration: isSelected ? 1000.ms : 0.ms,
         color: Colors.white.withValues(alpha: 0.3),
       ),
+    ),
     );
   }
 }

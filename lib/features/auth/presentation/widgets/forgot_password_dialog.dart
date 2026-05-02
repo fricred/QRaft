@@ -38,7 +38,10 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
     final isLoading = fpState.isLoading;
     final emailSent = fpState.emailSent;
 
-    return Dialog(
+    return Semantics(
+      identifier: 'forgot_password_dialog_root',
+      container: true,
+      child: Dialog(
       key: const Key('forgot_password_dialog_root'),
       backgroundColor: Colors.transparent,
       child: Container(
@@ -143,7 +146,10 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    TextFormField(
+                    Semantics(
+                      identifier: 'forgot_password_email_field',
+                      textField: true,
+                      child: TextFormField(
                       key: const Key('forgot_password_email_field'),
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
@@ -193,6 +199,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                         return null;
                       },
                     ),
+                    ),
                   ],
                 ),
               )
@@ -209,7 +216,10 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                     flex: 1,
                     child: SizedBox(
                       height: 56,
-                      child: OutlinedButton(
+                      child: Semantics(
+                        identifier: 'forgot_password_cancel_button',
+                        button: true,
+                        child: OutlinedButton(
                         key: const Key('forgot_password_cancel_button'),
                         onPressed: isLoading ? null : () => Navigator.of(context).pop(),
                         style: OutlinedButton.styleFrom(
@@ -230,13 +240,16 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                           ),
                         ),
                       ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     flex: 1,
                     child: Semantics(
+                      identifier: 'forgot_password_send_button',
                       label: 'Send reset email',
+                      button: true,
                       child: PrimaryGlassButton(
                         key: const Key('forgot_password_send_button'),
                         text: l10n.sendResetLink,
@@ -249,7 +262,10 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
               ).animate().fadeIn(duration: 600.ms, delay: 400.ms),
             ] else ...[
               // Success state
-              Column(
+              Semantics(
+                identifier: 'forgot_password_success_state',
+                container: true,
+                child: Column(
                 key: const Key('forgot_password_success_state'),
                 children: [
                   Container(
@@ -313,10 +329,12 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                       .slideY(begin: 0.3, duration: 600.ms, delay: 600.ms),
                 ],
               ),
+              ),
             ],
           ],
         ),
       ),
+    ),
     );
   }
 }

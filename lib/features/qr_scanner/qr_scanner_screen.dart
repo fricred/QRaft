@@ -102,7 +102,10 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
       }
     });
 
-    return Scaffold(
+    return Semantics(
+      identifier: 'qr_scanner_screen_root',
+      container: true,
+      child: Scaffold(
       key: const Key('qr_scanner_screen_root'),
       backgroundColor: const Color(0xFF1A1A1A),
       body: SafeArea(
@@ -125,6 +128,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
           ],
         ),
       ),
+    ),
     );
   }
 

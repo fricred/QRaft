@@ -54,7 +54,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authProvider = ref.watch(supabaseAuthProvider);
     final isLoading = authProvider.isLoading;
     
-    return Scaffold(
+    return Semantics(
+      identifier: 'login_screen_root',
+      container: true,
+      child: Scaffold(
       key: const Key('login_screen_root'),
       backgroundColor: const Color(0xFF1A1A1A),
       body: Stack(
@@ -199,63 +202,71 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   child: Column(
                               children: [
                                 // Email field
-                                _buildTextField(
-                                  l10n: l10n,
-                                  fieldKey: const Key('login_email_field'),
-                                  controller: _emailController,
-                                  focusNode: _emailFocusNode,
-                                  label: l10n.email,
-                                  hint: l10n.enterEmail,
-                                  icon: Icons.email_outlined,
-                                  keyboardType: TextInputType.emailAddress,
-                                  textInputAction: TextInputAction.next,
-                                  onSubmitted: () => _passwordFocusNode.requestFocus(),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return l10n.pleaseEnterEmail;
-                                    }
-                                    if (!value.contains('@')) {
-                                      return l10n.pleaseEnterValidEmail;
-                                    }
-                                    return null;
-                                  },
+                                Semantics(
+                                  identifier: 'login_email_field',
+                                  textField: true,
+                                  child: _buildTextField(
+                                    l10n: l10n,
+                                    fieldKey: const Key('login_email_field'),
+                                    controller: _emailController,
+                                    focusNode: _emailFocusNode,
+                                    label: l10n.email,
+                                    hint: l10n.enterEmail,
+                                    icon: Icons.email_outlined,
+                                    keyboardType: TextInputType.emailAddress,
+                                    textInputAction: TextInputAction.next,
+                                    onSubmitted: () => _passwordFocusNode.requestFocus(),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return l10n.pleaseEnterEmail;
+                                      }
+                                      if (!value.contains('@')) {
+                                        return l10n.pleaseEnterValidEmail;
+                                      }
+                                      return null;
+                                    },
+                                  ),
                                 ),
 
                                 const SizedBox(height: 20),
 
                                 // Password field
-                                _buildTextField(
-                                  l10n: l10n,
-                                  fieldKey: const Key('login_password_field'),
-                                  controller: _passwordController,
-                                  focusNode: _passwordFocusNode,
-                                  label: l10n.password,
-                                  hint: l10n.enterPassword,
-                                  icon: Icons.lock_outline,
-                                  obscureText: _obscurePassword,
-                                  textInputAction: TextInputAction.done,
-                                  onSubmitted: _handleLogin,
-                                  suffixIcon: IconButton(
-                                    onPressed: () {
-                                      setState(() => _obscurePassword = !_obscurePassword);
-                                    },
-                                    icon: Icon(
-                                      _obscurePassword 
-                                        ? Icons.visibility_off_outlined 
-                                        : Icons.visibility_outlined,
-                                      color: Colors.grey[400],
-                                      size: 20,
+                                Semantics(
+                                  identifier: 'login_password_field',
+                                  textField: true,
+                                  child: _buildTextField(
+                                    l10n: l10n,
+                                    fieldKey: const Key('login_password_field'),
+                                    controller: _passwordController,
+                                    focusNode: _passwordFocusNode,
+                                    label: l10n.password,
+                                    hint: l10n.enterPassword,
+                                    icon: Icons.lock_outline,
+                                    obscureText: _obscurePassword,
+                                    textInputAction: TextInputAction.done,
+                                    onSubmitted: _handleLogin,
+                                    suffixIcon: IconButton(
+                                      onPressed: () {
+                                        setState(() => _obscurePassword = !_obscurePassword);
+                                      },
+                                      icon: Icon(
+                                        _obscurePassword
+                                          ? Icons.visibility_off_outlined
+                                          : Icons.visibility_outlined,
+                                        color: Colors.grey[400],
+                                        size: 20,
+                                      ),
                                     ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return l10n.pleaseEnterPassword;
+                                      }
+                                      if (value.length < 6) {
+                                        return l10n.passwordMinLength;
+                                      }
+                                      return null;
+                                    },
                                   ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return l10n.pleaseEnterPassword;
-                                    }
-                                    if (value.length < 6) {
-                                      return l10n.passwordMinLength;
-                                    }
-                                    return null;
-                                  },
                                 ),
                                 
                                 const SizedBox(height: 12),
@@ -263,18 +274,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 // Forgot password
                                 Align(
                                   alignment: Alignment.centerRight,
-                                  child: TextButton(
-                                    key: const Key('login_forgot_password_link'),
-                                    onPressed: widget.onForgotPasswordPressed,
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(vertical: 8),
-                                    ),
-                                    child: Text(
-                                      l10n.forgotPassword,
-                                      style: TextStyle(
-                                        color: const Color(0xFF00FF88),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
+                                  child: Semantics(
+                                    identifier: 'login_forgot_password_link',
+                                    button: true,
+                                    child: TextButton(
+                                      key: const Key('login_forgot_password_link'),
+                                      onPressed: widget.onForgotPasswordPressed,
+                                      style: TextButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(vertical: 8),
+                                      ),
+                                      child: Text(
+                                        l10n.forgotPassword,
+                                        style: TextStyle(
+                                          color: const Color(0xFF00FF88),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -283,12 +298,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 const SizedBox(height: 24),
 
                                 // Login button
-                                PrimaryGlassButton(
-                                  key: const Key('login_submit_button'),
-                                  text: l10n.signIn,
-                                  onPressed: _handleLogin,
-                                  isLoading: isLoading,
-                                  width: double.infinity,
+                                Semantics(
+                                  identifier: 'login_submit_button',
+                                  button: true,
+                                  child: PrimaryGlassButton(
+                                    key: const Key('login_submit_button'),
+                                    text: l10n.signIn,
+                                    onPressed: _handleLogin,
+                                    isLoading: isLoading,
+                                    width: double.infinity,
+                                  ),
                                 ),
                               ],
                             ),
@@ -328,6 +347,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 

@@ -52,7 +52,10 @@ class _UmpConsentScreenState extends ConsumerState<UmpConsentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Semantics(
+      identifier: 'ump_consent_screen_root',
+      container: true,
+      child: Scaffold(
       key: const Key('ump_consent_screen_root'),
       backgroundColor: const Color(0xFF1A1A1A),
       body: SafeArea(
@@ -102,12 +105,16 @@ class _UmpConsentScreenState extends ConsumerState<UmpConsentScreen> {
                     ),
                   ],
                   const SizedBox(height: 24),
-                  PrimaryGlassButton(
-                    key: const Key('ump_continue_button'),
-                    text: 'Continue',
-                    onPressed: _showingForm ? null : _triggerForm,
-                    isLoading: _showingForm,
-                    width: double.infinity,
+                  Semantics(
+                    identifier: 'ump_continue_button',
+                    button: true,
+                    child: PrimaryGlassButton(
+                      key: const Key('ump_continue_button'),
+                      text: 'Continue',
+                      onPressed: _showingForm ? null : _triggerForm,
+                      isLoading: _showingForm,
+                      width: double.infinity,
+                    ),
                   ),
                 ],
               ),
@@ -115,6 +122,7 @@ class _UmpConsentScreenState extends ConsumerState<UmpConsentScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 }
