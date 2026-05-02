@@ -24,7 +24,7 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
 - [x] **Phase 1: Foundation Hardening** — Resolve brownfield concerns (mobile_scanner iOS, ForgotPasswordDialog tests, AdMob UMP consent), align Flutter SDK ≥3.29, install milestone packages ✓ 2026-05-01 (passed-with-residuals: all 5 success criteria verified; R-01 logout hang deferred)
 - [x] **Phase 2: QR Generation Core** — Users can generate QR codes for all 6 data types and save/share them from a personal library ✓ 2026-05-02
 - [ ] **Phase 3: QR Scanner** — Users can scan QRs full-screen with type-aware actions and persistent history (parallel to Phase 2)
-- [ ] **Phase 4: Redirect Service Foundation** — `qraft.link/{slug}` infrastructure live, foundation for v2 dynamic monetization (parallel to Phases 2-3)
+- [x] **Phase 4: Redirect Service Foundation** — `qraft.link/{slug}` infrastructure live, foundation for v2 dynamic monetization (parallel to Phases 2-3) ✓ 2026-05-01
 - [ ] **Phase 5: QR Customization (Print-Safe)** — Users can personalize QRs with logos/colors/styles/frames/templates and select print/digital/tattoo profile
 - [ ] **Phase 6: QR Digital-Only Features** — Users can create animated, AI-stylized, and home-screen-widget QRs (digital-only flow)
 - [ ] **Phase 7: Marketplace Catalog + QR Export Pipeline** — Users can browse engraved-product catalog and see live preview of their customized QR on each material
@@ -108,12 +108,12 @@ Plans:
   3. Each redirect record stores slug, destination_url, owner_id, scan_count, last_scanned_at, last_country in `redirects` table with RLS
   4. Authenticated user can edit destination_url of QRs they own from inside the app and the change takes effect immediately (free in v1)
   5. SLA monitoring is configured (uptime check + alerts) and demonstrable downtime alert fires in <5 min during a controlled test
-**Plans**: 3 plans (1/3 complete)
+**Plans**: 3 plans (3/3 complete) ✓ 2026-05-01
 **Research needed before planning**: NO (Edge Function vs Cloudflare Worker decision can be made during plan)
 **Parallel-eligible**: YES (with Phase 2, Phase 3) — must complete before Phase 11 ships first marketplace order
 - [x] 04-01-redirects-table-and-rls-PLAN.md — `redirects` table DDL + RLS + Dart domain/data layer (entity, repo interface, slug generator, Supabase datasource, Riverpod providers) ✓ 2026-05-02 (commit `8122624`; 7 files; 0 analyzer issues; migration needs manual Supabase Dashboard application)
-- [ ] 04-02-edge-function-redirect-PLAN.md — Supabase Edge Function for slug resolution + atomic scan_count RPC
-- [ ] 04-03-flutter-destination-editing-PLAN.md — in-app UI for editing destination_url of owned redirects
+- [x] 04-02-edge-function-redirect-PLAN.md — Supabase Edge Function for slug resolution + atomic scan_count RPC ✓ 2026-05-02
+- [x] 04-03-flutter-destination-editing-PLAN.md — in-app UI for editing destination_url of owned redirects ✓ 2026-05-01 (commit `6f3a055`; RedirectEditScreen + QR library popup menu + i18n; 0 analyzer issues)
 
 ### Phase 5: QR Customization (Print-Safe + Toggle Infrastructure)
 **Goal**: Users can personalize QRs with logos, colors, gradients, eye/module styles, frames, and curated templates; explicit print-safe / digital-only / tattoo-safe profile toggle gates validations
