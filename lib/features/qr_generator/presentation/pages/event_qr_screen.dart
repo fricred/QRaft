@@ -1,0 +1,905 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../../shared/widgets/glass_button.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../domain/entities/qr_type.dart';
+import '../../domain/entities/qr_code_entity.dart';
+import '../widgets/forms/event_form.dart';
+import '../controllers/event_form_controller.dart';
+import '../controllers/qr_customization_controller.dart';
+import '../controllers/qr_generator_controller.dart';
+import '../providers/qr_providers.dart';
+import '../../../auth/data/providers/supabase_auth_provider.dart';
+import '../../../qr_library/presentation/providers/qr_library_providers.dart';
+import '../../../subscription/presentation/providers/feature_gate_providers.dart';
+import '../../../subscription/presentation/providers/subscription_providers.dart';
+import '../../../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
+import '../../../subscription/presentation/widgets/feature_locked_overlay.dart';
+
+/// Screen for creating and editing Event QR codes.
+///
+/// Mirrors [TextQRScreen] with a 2-tab layout:
+///   Tab 0 — Form (EventForm)
+///   Tab 1 — Style (QR customisation)
+class EventQRScreen extends ConsumerStatefulWidget {
+  final QRCodeEntity? editingQRCode;
+
+  const EventQRScreen({
+    super.key,
+    this.editingQRCode,
+  });
+
+  @override
+  ConsumerState<EventQRScreen> createState() => _EventQRScreenState();
+}
+
+class _EventQRScreenState extends ConsumerState<EventQRScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  bool _isSaving = false;
+
+  // GlobalKey for RepaintBoundary — enables PNG export in Plan 05
+  final GlobalKey repaintKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final qrToEdit = widget.editingQRCode;
+
+      if (qrToEdit != null) {
+        // EDIT MODE: Phase 2 simplification — pre-fill name only.
+        // Full iCal re-parse deferred to Phase 5.
+        ref.read(eventFormProvider.notifier)
+          ..updateName(qrToEdit.name)
+          ..updateTitle(qrToEdit.name);
+        ref.read(qrCustomizationControllerProvider.notifier)
+            .loadFromEntity(qrToEdit);
+      } else {
+        ref.read(eventFormProvider.notifier).reset();
+        ref.read(qrCustomizationControllerProvider.notifier).reset();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final eventState = ref.watch(eventFormProvider);
+    final l10n = AppLocalizations.of(context)!;
+
+    return Semantics(
+      label: 'event_qr_screen_root',
+      child: Scaffold(
+        key: const Key('event_qr_screen_root'),
+        backgroundColor: const Color(0xFF1A1A1A),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: Text(
+            widget.editingQRCode != null
+                ? (l10n.editQRCode)
+                : (l10n.qrTypeEvent),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          bottom: TabBar(
+            controller: _tabController,
+            indicatorColor: const Color(0xFF06B6D4),
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.grey[400],
+            tabs: [
+              Tab(
+                icon: const Icon(Icons.edit_rounded),
+                text: l10n.qrFormStepEnterInfo,
+              ),
+              Tab(
+                icon: const Icon(Icons.palette_rounded),
+                text: l10n.qrFormStepCustomize,
+              ),
+            ],
+          ),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  // Form Tab
+                  EventForm(onContinue: () => _tabController.animateTo(1)),
+
+                  // Style Tab
+                  _buildStyleTab(),
+                ],
+              ),
+            ),
+
+            // Bottom action area
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2E2E2E),
+                border: Border(
+                  top: BorderSide(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    width: 1,
+                  ),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  PrimaryGlassButton(
+                    text: widget.editingQRCode != null
+                        ? l10n.saveChanges
+                        : l10n.qrFormButtonSave,
+                    icon: widget.editingQRCode != null
+                        ? Icons.check_rounded
+                        : Icons.save_rounded,
+                    isLoading: _isSaving,
+                    onPressed: eventState.isValid ? _saveQRCode : null,
+                    width: double.infinity,
+                  ),
+                  if (!eventState.isValid) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.qrFormCompleteFields,
+                      style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Style Tab ────────────────────────────────────────────────────────────
+
+  Widget _buildStyleTab() {
+    final customizationState = ref.watch(qrCustomizationControllerProvider);
+    final customizationController =
+        ref.read(qrCustomizationControllerProvider.notifier);
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            AppLocalizations.of(context)?.customizeQR ?? 'Customize your QR',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+          )
+              .animate()
+              .fadeIn(duration: 600.ms)
+              .slideY(begin: -0.3, duration: 600.ms),
+        ),
+
+        // QR Preview
+        Container(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Color(customizationState.customization.backgroundColor),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildQRPreviewWidget(customizationState, isSmallPreview: true),
+              const SizedBox(height: 12),
+              if (ref.watch(eventFormProvider).isValid)
+                GestureDetector(
+                  onTap: () => _showFullSizePreview(customizationState),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.zoom_in_rounded,
+                            color: Colors.white, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          AppLocalizations.of(context)?.viewFullSize ??
+                              'View Full Size',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        )
+            .animate()
+            .fadeIn(duration: 800.ms, delay: 200.ms)
+            .scale(begin: const Offset(0.8, 0.8), duration: 800.ms, delay: 200.ms),
+
+        // Customisation sub-tabs
+        Expanded(
+          child: DefaultTabController(
+            length: 3,
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[800],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: TabBar(
+                    indicator: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF06B6D4), Color(0xFF0891B2)],
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    dividerColor: Colors.transparent,
+                    labelColor: Colors.white,
+                    unselectedLabelColor: Colors.grey[400],
+                    labelStyle: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w600),
+                    tabs: [
+                      Tab(
+                        child: Column(mainAxisSize: MainAxisSize.min, children: [
+                          const Icon(Icons.palette_rounded, size: 18),
+                          const SizedBox(height: 2),
+                          Text(
+                              AppLocalizations.of(context)?.styleColors ??
+                                  'Colors',
+                              style: const TextStyle(fontSize: 10)),
+                        ]),
+                      ),
+                      Tab(
+                        child: Column(mainAxisSize: MainAxisSize.min, children: [
+                          const Icon(Icons.photo_size_select_large_rounded,
+                              size: 18),
+                          const SizedBox(height: 2),
+                          Text(
+                              AppLocalizations.of(context)?.qrSize ?? 'Size',
+                              style: const TextStyle(fontSize: 10)),
+                        ]),
+                      ),
+                      Tab(
+                        child: Column(mainAxisSize: MainAxisSize.min, children: [
+                          const Icon(Icons.add_photo_alternate_rounded,
+                              size: 18),
+                          const SizedBox(height: 2),
+                          Text(
+                              AppLocalizations.of(context)?.logo ?? 'Logo',
+                              style: const TextStyle(fontSize: 10)),
+                        ]),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _buildColorsTabContent(
+                          customizationController, customizationState),
+                      _buildSizeTabContent(
+                          customizationController, customizationState),
+                      _buildLogoTabContent(
+                          customizationController, customizationState),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQRPreviewWidget(QRCustomizationState customizationState,
+      {bool isSmallPreview = false}) {
+    final eventState = ref.watch(eventFormProvider);
+    final eventData = eventState.toEventData();
+    final qrSize =
+        isSmallPreview ? 150.0 : customizationState.customization.size;
+
+    if (eventData == null) {
+      return Container(
+        width: 150,
+        height: 150,
+        decoration: BoxDecoration(
+          color: Colors.grey[700],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+              color: Colors.white.withValues(alpha: 0.2), width: 2),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.qr_code_rounded, color: Colors.grey[400], size: 48),
+            const SizedBox(height: 8),
+            Text(
+              AppLocalizations.of(context)?.completeFormToSeePreview ??
+                  'Complete form\nto see preview',
+              style: TextStyle(color: Colors.grey[400], fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return RepaintBoundary(
+      key: repaintKey,
+      child: QrImageView(
+        data: eventData.qrData,
+        version: QrVersions.auto,
+        size: qrSize,
+        backgroundColor:
+            Color(customizationState.customization.backgroundColor),
+        eyeStyle: QrEyeStyle(
+          eyeShape:
+              customizationState.customization.eyeShape == 0
+                  ? QrEyeShape.square
+                  : QrEyeShape.circle,
+          color: Color(customizationState.customization.eyeColor),
+        ),
+        dataModuleStyle: QrDataModuleStyle(
+          dataModuleShape:
+              customizationState.customization.dataShape == 0
+                  ? QrDataModuleShape.square
+                  : QrDataModuleShape.circle,
+          color: Color(customizationState.customization.foregroundColor),
+        ),
+        embeddedImage: customizationState.customization.hasLogo &&
+                customizationState.customization.logoPath != null
+            ? FileImage(File(customizationState.customization.logoPath!))
+            : null,
+        embeddedImageStyle: QrEmbeddedImageStyle(
+          size: Size(
+            customizationState.customization.logoSize,
+            customizationState.customization.logoSize,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildColorsTabContent(QRCustomizationController controller,
+      QRCustomizationState state) {
+    final colorAccess = ref.watch(colorCustomizationAccessProvider);
+
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              _buildColorRow(
+                AppLocalizations.of(context)?.foregroundColor ?? 'QR Color',
+                Color(state.customization.foregroundColor),
+                controller.updateForegroundColor,
+              ),
+              const SizedBox(height: 20),
+              _buildColorRow(
+                AppLocalizations.of(context)?.backgroundColor ?? 'Background',
+                Color(state.customization.backgroundColor),
+                controller.updateBackgroundColor,
+              ),
+              const SizedBox(height: 20),
+              _buildColorRow(
+                AppLocalizations.of(context)?.eyeColor ?? 'Eye Color',
+                Color(state.customization.eyeColor),
+                controller.updateEyeColor,
+              ),
+            ],
+          ),
+        ),
+        if (!colorAccess.isAllowed)
+          Positioned.fill(
+            child: FeatureLockedOverlay(
+              featureName: AppLocalizations.of(context)?.colorCustomization ??
+                  'Color Customization',
+              description:
+                  AppLocalizations.of(context)?.colorCustomizationLockedDesc ??
+                      'Upgrade to Pro to customize QR code colors',
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildSizeTabContent(QRCustomizationController controller,
+      QRCustomizationState state) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            AppLocalizations.of(context)?.qrCodeSizeTitle ?? 'QR Code Size',
+            style: const TextStyle(
+                color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            '${state.customization.size.toInt()}px',
+            style: const TextStyle(
+                color: Colors.white, fontSize: 48, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 30),
+          Slider(
+            value: state.customization.size,
+            min: 150.0,
+            max: 500.0,
+            divisions: 14,
+            activeColor: const Color(0xFF06B6D4),
+            inactiveColor: Colors.grey[600],
+            onChanged: controller.updateSize,
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('150px',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+              Text(AppLocalizations.of(context)?.sizeSmall ?? 'Small',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+              Text(AppLocalizations.of(context)?.sizeMedium ?? 'Medium',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+              Text(AppLocalizations.of(context)?.sizeLarge ?? 'Large',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+              Text('500px',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLogoTabContent(QRCustomizationController controller,
+      QRCustomizationState state) {
+    final logoAccess = ref.watch(logoInsertionAccessProvider);
+
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  color: state.customization.hasLogo
+                      ? Colors.transparent
+                      : Colors.grey[700],
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.3), width: 2),
+                ),
+                child: state.customization.hasLogo &&
+                        state.customization.logoPath != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(14),
+                        child: Image.file(
+                          File(state.customization.logoPath!),
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => const Icon(
+                              Icons.broken_image,
+                              color: Colors.grey,
+                              size: 48),
+                        ),
+                      )
+                    : Icon(Icons.add_photo_alternate_rounded,
+                        color: Colors.grey[400], size: 48),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                state.customization.hasLogo
+                    ? (AppLocalizations.of(context)?.logoAddedTitle ??
+                        'Logo Added')
+                    : (AppLocalizations.of(context)?.noLogoTitle ?? 'No Logo'),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                state.customization.hasLogo
+                    ? (AppLocalizations.of(context)?.logoWillAppearInCenter ??
+                        'Your logo will appear in the center of the QR code')
+                    : (AppLocalizations.of(context)?.addLogoToPersonalize ??
+                        'Add a logo to personalize your QR code'),
+                style: TextStyle(color: Colors.grey[400], fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 30),
+              if (state.customization.hasLogo) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: SecondaryGlassButton(
+                        text:
+                            AppLocalizations.of(context)?.remove ?? 'Remove',
+                        icon: Icons.delete_outline,
+                        onPressed: controller.removeLogo,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: SecondaryGlassButton(
+                        text:
+                            AppLocalizations.of(context)?.change ?? 'Change',
+                        icon: Icons.swap_horizontal_circle,
+                        onPressed: () => _handleAddLogo(controller),
+                      ),
+                    ),
+                  ],
+                ),
+              ] else ...[
+                PrimaryGlassButton(
+                  text: AppLocalizations.of(context)?.addLogo ?? 'Add Logo',
+                  icon: Icons.add_photo_alternate,
+                  onPressed: () => _handleAddLogo(controller),
+                  width: double.infinity,
+                ),
+              ],
+            ],
+          ),
+        ),
+        if (!logoAccess.isAllowed)
+          Positioned.fill(
+            child: FeatureLockedOverlay(
+              featureName:
+                  AppLocalizations.of(context)?.logoInsertion ?? 'Logo Insertion',
+              description:
+                  AppLocalizations.of(context)?.logoInsertionLockedDesc ??
+                      'Upgrade to Pro to add your logo to QR codes',
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildColorRow(
+      String title, Color selectedColor, Function(Color) onChanged) {
+    const predefinedColors = [
+      Color(0xFF000000), Color(0xFFFFFFFF), Color(0xFF808080),
+      Color(0xFF1A73E8), Color(0xFF00FF88), Color(0xFF06B6D4),
+      Color(0xFFEF4444), Color(0xFFF59E0B), Color(0xFF10B981),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title,
+            style: const TextStyle(
+                color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: selectedColor,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.3), width: 2),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: predefinedColors.map((color) {
+                  final isSelected = color == selectedColor;
+                  return GestureDetector(
+                    onTap: () => onChanged(color),
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: isSelected
+                              ? const Color(0xFF06B6D4)
+                              : Colors.white.withValues(alpha: 0.2),
+                          width: isSelected ? 2 : 1,
+                        ),
+                      ),
+                      child: isSelected
+                          ? const Icon(Icons.check, color: Colors.white, size: 16)
+                          : null,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  void _showFullSizePreview(QRCustomizationState customizationState) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.8),
+      builder: (context) => Dialog.fullscreen(
+        backgroundColor: Colors.transparent,
+        child: Stack(
+          children: [
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              color: Colors.black.withValues(alpha: 0.8),
+            ),
+            Center(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Container(
+                    padding: const EdgeInsets.all(40),
+                    margin: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Color(
+                          customizationState.customization.backgroundColor),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${customizationState.customization.size.toInt()}px',
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        _buildQRPreviewWidget(customizationState,
+                            isSmallPreview: false),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 60,
+              right: 20,
+              child: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2), width: 1),
+                  ),
+                  child: const Icon(Icons.close_rounded,
+                      color: Colors.white, size: 24),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _handleAddLogo(QRCustomizationController controller) async {
+    try {
+      final picker = ImagePicker();
+      final image = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 200,
+        maxHeight: 200,
+        imageQuality: 85,
+      );
+
+      if (image != null) {
+        controller.updateLogo(image.path, 40.0);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  AppLocalizations.of(context)?.logoUpdatedSuccessfully ??
+                      'Logo updated successfully!'),
+              backgroundColor: const Color(0xFF00FF88),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                AppLocalizations.of(context)?.failedToPickImage(e.toString()) ??
+                    'Failed to pick image: ${e.toString()}'),
+            backgroundColor: const Color(0xFFEF4444),
+          ),
+        );
+      }
+    }
+  }
+
+  void _saveQRCode() async {
+    if (_isSaving) return;
+
+    // Check QR limit for new QR codes (not edits)
+    if (widget.editingQRCode == null) {
+      final canCreate = ref.read(canCreateQRProvider);
+      if (!canCreate) {
+        UpgradeBottomSheet.show(context);
+        return;
+      }
+    }
+
+    setState(() => _isSaving = true);
+
+    try {
+      final authProvider = ref.read(supabaseAuthProvider);
+      if (authProvider.currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final eventState = ref.read(eventFormProvider);
+      if (!eventState.isValid) {
+        throw Exception('Invalid form data');
+      }
+
+      final eventData = eventState.toEventData();
+      if (eventData == null) throw Exception('Invalid event data');
+
+      final customizationState = ref.read(qrCustomizationControllerProvider);
+      final qrName = eventState.name.trim().isNotEmpty
+          ? eventState.name.trim()
+          : eventData.title;
+
+      if (widget.editingQRCode != null) {
+        // EDIT MODE
+        final controller = ref.read(qrGeneratorControllerProvider.notifier);
+        final updatedQR = widget.editingQRCode!.copyWith(
+          name: qrName,
+          data: eventData.qrData,
+          displayData: eventData.displayText,
+          customization: customizationState.customization,
+          updatedAt: DateTime.now(),
+        );
+
+        await controller.updateQRCode(updatedQR);
+        ref.invalidate(userQRCodesProvider);
+
+        if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 8),
+                Text(l10n.qrUpdatedSuccess(qrName)),
+              ]),
+              backgroundColor: const Color(0xFF00FF88),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          Navigator.of(context).pop(updatedQR);
+        }
+      } else {
+        // CREATE MODE
+        final generateQRUseCase = ref.read(generateQRUseCaseProvider);
+        final savedQRCode = await generateQRUseCase.execute(
+          name: qrName,
+          type: QRType.event,
+          data: eventData,
+          userId: authProvider.currentUser!.id,
+          customization: customizationState.customization,
+        );
+
+        ref.invalidate(userQRCodesProvider);
+
+        if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 8),
+                Text(l10n.qrSavedSuccess(qrName)),
+              ]),
+              backgroundColor: const Color(0xFF00FF88),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          Navigator.of(context).pop(savedQRCode);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(children: [
+              const Icon(Icons.error, color: Colors.white),
+              const SizedBox(width: 8),
+              Expanded(child: Text(l10n.failedToSaveQR(e.toString()))),
+            ]),
+            backgroundColor: const Color(0xFFEF4444),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+}
