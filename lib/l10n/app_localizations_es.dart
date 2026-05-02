@@ -1970,4 +1970,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get exportQRPng => 'Exportar como PNG';
+
+  @override
+  String get editRedirectDestination => 'Editar destino de redirección';
+
+  @override
+  String get redirectDestinationUpdated =>
+      'Destino de redirección actualizado correctamente';
 }

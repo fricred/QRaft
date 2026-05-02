@@ -2770,5 +2770,15 @@
   "exportQRPng": "Export as PNG",
   "@exportQRPng": {
     "description": "Button label to export a QR code as a PNG file"
+  },
+
+  "editRedirectDestination": "Edit redirect destination",
+  "@editRedirectDestination": {
+    "description": "Menu item and screen title for editing the redirect destination URL of a QR code"
+  },
+
+  "redirectDestinationUpdated": "Redirect destination updated successfully",
+  "@redirectDestinationUpdated": {
+    "description": "Success snackbar message shown after updating a redirect destination URL"
   }
 }

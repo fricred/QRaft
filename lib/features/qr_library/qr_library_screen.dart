@@ -23,6 +23,7 @@ import '../qr_generator/presentation/pages/event_qr_screen.dart';
 import '../qr_generator/presentation/pages/location_qr_screen.dart';
 import 'presentation/pages/qr_code_details_screen.dart';
 import '../auth/data/providers/supabase_auth_provider.dart';
+import '../redirect/presentation/screens/redirect_edit_screen.dart';
 import '../../l10n/app_localizations.dart';
 
 class QRLibraryScreen extends ConsumerStatefulWidget {
@@ -1489,6 +1490,24 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
                         ],
                       ),
                     ),
+                    // Show "Edit redirect destination" for URL-type QRs.
+                    // QRCodeEntity does not yet carry a slug field — the screen
+                    // handles the empty-slug case gracefully (follow-up: add
+                    // slug to QRCodeEntity once the qr_codes table column exists).
+                    if (qrEntity.type.identifier == 'url')
+                      PopupMenuItem<String>(
+                        value: 'editRedirect',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.swap_horiz_rounded, color: Color(0xFF3B82F6), size: 16),
+                            const SizedBox(width: 8),
+                            Text(
+                              l10n.editRedirectDestination,
+                              style: const TextStyle(color: Color(0xFF3B82F6), fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
                     PopupMenuItem<String>(
                       value: 'share',
                       child: Row(
@@ -1669,6 +1688,9 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
       case 'edit':
         _editQRCode(qrEntity);
         break;
+      case 'editRedirect':
+        _editRedirectDestination(qrEntity);
+        break;
       case 'share':
         _shareQRCode(qrEntity);
         break;
@@ -1676,6 +1698,24 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
         _confirmDeleteQR(qrEntity);
         break;
     }
+  }
+
+  /// Navigate to [RedirectEditScreen] for URL-type QR codes.
+  ///
+  /// QRCodeEntity does not currently carry a slug field; an empty string is
+  /// passed and the screen shows a "no redirect linked" message. This is a
+  /// known follow-up: add the slug column to qr_codes + expose it on the
+  /// entity model so the slug can be passed here directly.
+  void _editRedirectDestination(QRCodeEntity qrEntity) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => RedirectEditScreen(
+          // TODO(follow-up): replace '' with qrEntity.slug once
+          // QRCodeEntity carries the slug field.
+          slug: '',
+        ),
+      ),
+    );
   }
 
   void _editQRCode(QRCodeEntity qrEntity) {

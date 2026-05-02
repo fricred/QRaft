@@ -641,5 +641,15 @@
   "exportQRPng": "Exportar como PNG",
   "@exportQRPng": {
     "description": "Etiqueta del botón para exportar un código QR como archivo PNG"
+  },
+
+  "editRedirectDestination": "Editar destino de redirección",
+  "@editRedirectDestination": {
+    "description": "Opción de menú y título de pantalla para editar la URL de destino de redirección de un código QR"
+  },
+
+  "redirectDestinationUpdated": "Destino de redirección actualizado correctamente",
+  "@redirectDestinationUpdated": {
+    "description": "Mensaje de snackbar de éxito al actualizar la URL de destino de redirección"
   }
 }

@@ -1934,4 +1934,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportQRPng => 'Export as PNG';
+
+  @override
+  String get editRedirectDestination => 'Edit redirect destination';
+
+  @override
+  String get redirectDestinationUpdated =>
+      'Redirect destination updated successfully';
 }

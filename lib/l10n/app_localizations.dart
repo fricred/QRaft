@@ -3613,6 +3613,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Export as PNG'**
   String get exportQRPng;
+
+  /// Menu item and screen title for editing the redirect destination URL of a QR code
+  ///
+  /// In en, this message translates to:
+  /// **'Edit redirect destination'**
+  String get editRedirectDestination;
+
+  /// Success snackbar message shown after updating a redirect destination URL
+  ///
+  /// In en, this message translates to:
+  /// **'Redirect destination updated successfully'**
+  String get redirectDestinationUpdated;
 }
 
 class _AppLocalizationsDelegate
