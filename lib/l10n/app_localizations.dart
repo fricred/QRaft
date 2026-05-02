@@ -2000,6 +2000,12 @@ abstract class AppLocalizations {
   /// **'Text'**
   String get filterText;
 
+  /// Filter chip label for Event (iCal) QR type
+  ///
+  /// In en, this message translates to:
+  /// **'Event'**
+  String get filterEvent;
+
   /// Empty state title when no favorite QR codes exist
   ///
   /// In en, this message translates to:

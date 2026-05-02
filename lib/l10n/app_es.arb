@@ -322,6 +322,7 @@
   "filterVcard": "vCard",
   "filterLocation": "Ubicación",
   "filterText": "Texto",
+  "filterEvent": "Evento",
   "noFavoritesYet": "Aún No Hay Favoritos",
   "starFavoriteQRCodes": "Marca con estrella tus códigos QR favoritos para verlos aquí",
   "noRecentQRs": "No Hay QRs Recientes",

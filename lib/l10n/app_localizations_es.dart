@@ -1048,6 +1048,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get filterText => 'Texto';
 
   @override
+  String get filterEvent => 'Evento';
+
+  @override
   String get noFavoritesYet => 'Aún No Hay Favoritos';
 
   @override

@@ -1704,6 +1704,11 @@
     "description": "Filter chip label for Text QR type"
   },
 
+  "filterEvent": "Event",
+  "@filterEvent": {
+    "description": "Filter chip label for Event (iCal) QR type"
+  },
+
   "noFavoritesYet": "No Favorites Yet",
   "@noFavoritesYet": {
     "description": "Empty state title when no favorite QR codes exist"

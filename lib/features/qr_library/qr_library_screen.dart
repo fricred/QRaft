@@ -15,6 +15,7 @@ import '../qr_generator/presentation/pages/text_qr_screen.dart';
 import '../qr_generator/presentation/pages/personal_info_qr_screen.dart';
 import '../qr_generator/presentation/pages/wifi_qr_screen.dart';
 import '../qr_generator/presentation/pages/email_qr_screen.dart';
+import '../qr_generator/presentation/pages/event_qr_screen.dart';
 import '../qr_generator/presentation/pages/location_qr_screen.dart';
 import 'presentation/pages/qr_code_details_screen.dart';
 import '../auth/data/providers/supabase_auth_provider.dart';
@@ -48,6 +49,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
     {'id': 'email', 'icon': Icons.email_rounded, 'color': Color(0xFFF59E0B)},
     {'id': 'vcard', 'icon': Icons.person_rounded, 'color': Color(0xFF00FF88)},
     {'id': 'geo', 'icon': Icons.location_on_rounded, 'color': Color(0xFFF97316)},
+    {'id': 'vevent', 'icon': Icons.event_rounded, 'color': Color(0xFF06B6D4)},
     {'id': 'text', 'icon': Icons.text_fields_rounded, 'color': Color(0xFF94A3B8)},
   ];
 
@@ -59,6 +61,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
       case 'email': return l10n.filterEmail;
       case 'vcard': return l10n.filterVcard;
       case 'geo': return l10n.filterLocation;
+      case 'vevent': return l10n.filterEvent;
       case 'text': return l10n.filterText;
       default: return id;
     }
@@ -1642,6 +1645,8 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
         return EmailQRScreen(editingQRCode: qrEntity);
       case 'geo':  // ← Location QR identifier is 'geo', not 'location'
         return LocationQRScreen(editingQRCode: qrEntity);
+      case 'vevent':
+        return EventQRScreen(editingQRCode: qrEntity);
       default:
         return _showComingSoonMessage(qrEntity.type.identifier);
     }

@@ -5,7 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/app_localizations.dart';
 import 'domain/entities/qr_type.dart';
-import 'presentation/pages/coming_soon_qr_screen.dart';
+import 'presentation/pages/event_qr_screen.dart';
 import 'presentation/pages/location_qr_screen.dart';
 import 'presentation/pages/url_qr_screen.dart';
 import 'presentation/pages/text_qr_screen.dart';
@@ -268,7 +268,7 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
                             targetScreen = LocationQRScreen();
                             break;
                           case QRType.event:
-                            targetScreen = ComingSoonQRScreen(qrType: qrType);
+                            targetScreen = const EventQRScreen();
                             break;
                         }
 
@@ -388,6 +388,8 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
         return Icons.email_rounded;
       case 'location_on_rounded':
         return Icons.location_on_rounded;
+      case 'event_rounded':
+        return Icons.event_rounded;
       default:
         return Icons.qr_code_rounded;
     }
