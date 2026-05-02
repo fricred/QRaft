@@ -89,9 +89,13 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
   3. Every successful scan persists to `scan_history` table and appears in scan history view
   4. URL scan offers "Open" action; vCard offers "Save contact"; WiFi offers "Connect"; email/phone trigger native actions
   5. Camera permission denial shows a recovery UI with rationale and "Open Settings" deep link
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 03-01-PLAN.md — tapToFocus + lifecycle observer + permission recovery widget + Maestro keys
+- [ ] 03-02-PLAN.md — real gallery scan (analyzeImage) + vCard flutter_contacts + WiFi credential sheet
+- [ ] 03-03-PLAN.md — Maestro flow update + phase verification
 **UI hint**: yes
-**Research needed before planning**: YES — scanner-matrix CI test setup (per research SUMMARY.md "Phase 3 scanner matrix"); confirm scanner UX overlay design before plan
+**Research needed before planning**: NO (research complete — 03-RESEARCH.md)
 **Parallel-eligible**: YES (with Phase 2, Phase 4)
 
 ### Phase 4: Redirect Service Foundation
@@ -289,7 +293,7 @@ Phase 6    Phase 7           │
 |-------|----------------|--------|-----------|
 | 1. Foundation Hardening | 4/8 | In progress | - |
 | 2. QR Generation Core | 0/? | Not started | - |
-| 3. QR Scanner | 0/? | Not started | - |
+| 3. QR Scanner | 0/3 | In progress | - |
 | 4. Redirect Service Foundation | 0/? | Not started | - |
 | 5. QR Customization (Print-Safe) | 0/? | Not started | - |
 | 6. QR Digital-Only Features | 0/? | Not started | - |
