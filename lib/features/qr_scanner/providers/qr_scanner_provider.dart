@@ -282,8 +282,8 @@ class QRScannerController extends StateNotifier<QRScannerState> {
     }
   }
 
-  /// Scan QR code from gallery image
-  Future<void> scanFromGallery() async {
+  /// Scan QR code from gallery image using real analyzeImage API
+  Future<void> scanFromGallery(MobileScannerController controller) async {
     try {
       state = state.copyWith(isLoading: true, error: null);
       debugPrint('📷 Opening gallery for QR scan...');
@@ -310,77 +310,43 @@ class QRScannerController extends StateNotifier<QRScannerState> {
       }
 
       debugPrint('📷 Image selected: ${image.path}');
-      
+
+      // Stop live camera stream before calling analyzeImage (avoids undefined behavior)
+      await controller.stop();
+
       try {
-        debugPrint('🔍 Attempting to analyze image: ${image.path}');
-        
-        // Note: mobile_scanner's analyzeImage returns a bool indicating if QR codes were found
-        // The actual QR data would be received through the controller's callback
-        // For now, we'll create a mock implementation for testing error handling
-        
-        // This is a simplified mock implementation for testing purposes
-        // In a production app, you would use a proper QR detection library
-        debugPrint('📝 Note: Using mock implementation for gallery QR scanning');
-        debugPrint('🧪 Creating mock result for testing error handling and logging...');
-        
-        final mockRawValue = 'https://example.com/gallery-test-qr-${DateTime.now().millisecondsSinceEpoch}';
-        await _processGalleryMockResult(mockRawValue, 'Gallery Image: ${image.name}');
-        
-      } catch (analysisError) {
-        debugPrint('❌ Error in gallery scan process: $analysisError');
-        throw Exception('Gallery scan process failed: $analysisError');
+        final BarcodeCapture? capture = await controller.analyzeImage(image.path);
+
+        if (capture != null && capture.barcodes.isNotEmpty) {
+          final rawValue = capture.barcodes.first.rawValue;
+          if (rawValue != null && rawValue.isNotEmpty) {
+            final scanResult = ScanResult.fromRawValue(rawValue);
+            await SupabaseService.saveScanResult(scanResult);
+            final updatedHistory = [scanResult, ...state.scanHistory];
+            state = state.copyWith(
+              lastScanResult: scanResult,
+              scanHistory: updatedHistory,
+              isLoading: false,
+              error: null,
+            );
+            debugPrint('✅ Gallery scan result: ${scanResult.type} - ${scanResult.displayValue}');
+          } else {
+            state = state.copyWith(isLoading: false, error: 'noQRFoundInImage');
+          }
+        } else {
+          state = state.copyWith(isLoading: false, error: 'noQRFoundInImage');
+        }
+      } on MobileScannerBarcodeException catch (e) {
+        logDetailedError('Gallery analyzeImage', e);
+        state = state.copyWith(isLoading: false);
+      } finally {
+        // Resume live camera stream regardless of outcome
+        await controller.start();
       }
-      
+
     } catch (e) {
       debugPrint('❌ Failed to scan QR from gallery: $e');
       logDetailedError('Gallery QR Scan', e);
-    }
-  }
-
-  /// Process mock scan result from gallery for testing
-  Future<void> _processGalleryMockResult(String rawValue, String source) async {
-    try {
-      debugPrint('📱 Gallery QR Code (mock): $rawValue');
-      debugPrint('🖼️ Source: $source');
-
-      // Create scan result with gallery source info
-      final scanResult = ScanResult.fromRawValue(rawValue);
-      
-      // Add source information to parsed data
-      final enhancedParsedData = Map<String, dynamic>.from(scanResult.parsedData ?? {});
-      enhancedParsedData['source'] = 'gallery';
-      enhancedParsedData['sourceInfo'] = source;
-      enhancedParsedData['testMode'] = true; // Mark as test data
-
-      final enhancedScanResult = ScanResult(
-        id: scanResult.id,
-        rawValue: scanResult.rawValue,
-        type: scanResult.type,
-        displayValue: scanResult.displayValue,
-        parsedData: enhancedParsedData,
-        scannedAt: scanResult.scannedAt,
-      );
-      
-      // Save to database
-      await SupabaseService.saveScanResult(enhancedScanResult);
-      
-      // Update state
-      final updatedHistory = [enhancedScanResult, ...state.scanHistory];
-      state = state.copyWith(
-        lastScanResult: enhancedScanResult,
-        scanHistory: updatedHistory,
-        isLoading: false,
-        error: null,
-      );
-
-      debugPrint('✅ Gallery mock scan result processed: ${enhancedScanResult.type} - ${enhancedScanResult.displayValue}');
-      
-    } catch (e, stackTrace) {
-      debugPrint('❌ Failed to process gallery mock scan result: $e');
-      logDetailedError('Gallery Mock Scan Processing', e, stackTrace: stackTrace);
-      state = state.copyWith(
-        isLoading: false,
-      );
     }
   }
 

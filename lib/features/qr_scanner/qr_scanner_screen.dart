@@ -867,7 +867,8 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
   }
 
   void _scanFromGallery() {
-    ref.read(qrScannerProvider.notifier).scanFromGallery();
+    if (_controller == null) return;
+    ref.read(qrScannerProvider.notifier).scanFromGallery(_controller!);
     HapticFeedback.lightImpact();
   }
 
