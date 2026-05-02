@@ -91,8 +91,8 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
   5. Camera permission denial shows a recovery UI with rationale and "Open Settings" deep link
 **Plans**: 3 plans
 Plans:
-- [ ] 03-01-PLAN.md — tapToFocus + lifecycle observer + permission recovery widget + Maestro keys
-- [ ] 03-02-PLAN.md — real gallery scan (analyzeImage) + vCard flutter_contacts + WiFi credential sheet
+- [x] 03-01-PLAN.md — tapToFocus + lifecycle observer + permission recovery widget + Maestro keys ✓ 2026-05-02 (commits `e1f39c4` + `59408a7`; tapToFocus, lifecycle observer, permission recovery UI, Maestro keys; 0 analyzer issues)
+- [x] 03-02-PLAN.md — real gallery scan (analyzeImage) + vCard flutter_contacts + WiFi credential sheet ✓ 2026-05-02 (commits `c6c1319` + `aa481bb`; _processGalleryMockResult deleted, noQRFoundInImage error, stop/start camera wrapping analyzeImage; vCard FlutterContacts.requestPermission + insertContact; WiFi _WifiCredentialsSheet with SSID/password/copy/settings; 0 analyzer issues)
 - [ ] 03-03-PLAN.md — Maestro flow update + phase verification
 **UI hint**: yes
 **Research needed before planning**: NO (research complete — 03-RESEARCH.md)
