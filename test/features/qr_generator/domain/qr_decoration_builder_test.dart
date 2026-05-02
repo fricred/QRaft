@@ -143,7 +143,7 @@ void main() {
       final brush = QrDecorationBuilder.buildBrush(customization);
       expect(brush, isA<Color>());
       expect(brush, isNot(isA<PrettyQrGradientBrush>()));
-      expect((brush as Color).value, 0xFF000000);
+      expect((brush as Color).toARGB32(), 0xFF000000);
     });
 
     test('returns PrettyQrGradientBrush (not plain Color) for linear gradient with valid colors', () {
