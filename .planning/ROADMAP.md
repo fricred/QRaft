@@ -127,9 +127,15 @@ Plans:
   5. User can browse 8-12 curated templates and apply one to a QR with a single tap
   6. User selects "Print-safe / Digital-only / Tattoo-safe" profile in the editor and validations differ correctly per profile
   7. User can bulk-import a CSV (`;`-delimited for Excel-ES) and generate N QRs at once with a default template applied
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+- [ ] 05-01-PLAN.md — QrProfile enum + QrProfileValidator + 9 new QRCustomization fields + controller methods + QrProfileToggle widget (Wave 1)
+- [ ] 05-02-PLAN.md — QrDecorationBuilder factory + logo embed + EC-H enforcement + QrLogoPickerWidget + QRPreviewWidget upgrade (Wave 2)
+- [ ] 05-03-PLAN.md — Gradient brush (linear/radial) + QrExportService print-safe PNG + QrColorPickerWidget 8 presets (Wave 2, parallel to 05-02)
+- [ ] 05-04-PLAN.md — buildShape() 8 module + 8 eye presets + PrettyQrShape.custom + QrPresetGalleryWidget + QrFrameWidget (Wave 3)
+- [ ] 05-05-PLAN.md — 8 curated QrFullTemplate objects + applyFullTemplate() + QrTemplateGalleryWidget + QrBulkImportService CSV + QrBulkImportSheet (Wave 3, parallel to 05-04)
 **UI hint**: yes
-**Research needed before planning**: YES — `pretty_qr_code` eye-style scanner-compatibility matrix (per research SUMMARY.md "Phase 3 scanner matrix" — applies here in v1 phase numbering)
+**Research needed before planning**: NO (research complete — 05-RESEARCH.md)
 **Parallel-eligible**: NO (gates Phase 6, Phase 7)
 
 ### Phase 6: QR Digital-Only Features
@@ -294,11 +300,11 @@ Phase 6    Phase 7           │
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation Hardening | 4/8 | In progress | - |
-| 2. QR Generation Core | 0/? | Not started | - |
-| 3. QR Scanner | 0/3 | In progress | - |
-| 4. Redirect Service Foundation | 0/? | Not started | - |
-| 5. QR Customization (Print-Safe) | 0/? | Not started | - |
+| 1. Foundation Hardening | 8/8 | Complete | 2026-05-01 |
+| 2. QR Generation Core | 4/4 | Complete | 2026-05-02 |
+| 3. QR Scanner | 2/3 | In progress | - |
+| 4. Redirect Service Foundation | 3/3 | Complete | 2026-05-01 |
+| 5. QR Customization (Print-Safe) | 0/5 | Not started | - |
 | 6. QR Digital-Only Features | 0/? | Not started | - |
 | 7. Marketplace Catalog + QR Export | 0/? | Not started | - |
 | 8. Cart & Customization Snapshot | 0/? | Not started | - |
@@ -332,12 +338,11 @@ Per research SUMMARY.md flags + dependency analysis:
 | Phase | Research needed |
 |-------|-----------------|
 | Phase 3 | Scanner-matrix CI test setup, full-screen overlay UX confirmation |
-| Phase 5 | `pretty_qr_code` eye-style scanner-compatibility matrix (curated preset validation) |
 | Phase 6 | AI provider selection (Replicate/Stability/OpenAI), animated export libs, native widget impl per platform |
 | Phase 7 | Real photographed product samples per material |
 | Phase 11 | Operator tech decision (Flutter Web vs Supabase Studio); tattoo-safe QR validation on skin samples |
 
-Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase` without prior `/gsd-research-phase`.
+Phases 1, 2, 4, 5, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase` without prior `/gsd-research-phase`.
 
 ## Out of Scope (NOT in any v1 phase)
 
@@ -364,4 +369,4 @@ Update on phase transitions:
 
 ---
 *Roadmap created: 2026-05-01*
-*Last updated: 2026-05-01 after initialization*
+*Last updated: 2026-05-01 — Phase 5 plans created (5 plans, 3 waves)*
