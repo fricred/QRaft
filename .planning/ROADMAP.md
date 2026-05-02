@@ -22,7 +22,7 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
 ## Phases
 
 - [x] **Phase 1: Foundation Hardening** — Resolve brownfield concerns (mobile_scanner iOS, ForgotPasswordDialog tests, AdMob UMP consent), align Flutter SDK ≥3.29, install milestone packages ✓ 2026-05-01 (passed-with-residuals: all 5 success criteria verified; R-01 logout hang deferred)
-- [ ] **Phase 2: QR Generation Core** — Users can generate QR codes for all 6 data types and save/share them from a personal library
+- [x] **Phase 2: QR Generation Core** — Users can generate QR codes for all 6 data types and save/share them from a personal library ✓ 2026-05-02
 - [ ] **Phase 3: QR Scanner** — Users can scan QRs full-screen with type-aware actions and persistent history (parallel to Phase 2)
 - [ ] **Phase 4: Redirect Service Foundation** — `qraft.link/{slug}` infrastructure live, foundation for v2 dynamic monetization (parallel to Phases 2-3)
 - [ ] **Phase 5: QR Customization (Print-Safe)** — Users can personalize QRs with logos/colors/styles/frames/templates and select print/digital/tattoo profile
@@ -70,12 +70,13 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
   3. User can edit and duplicate any QR in their library
   4. User can share a QR via system share sheet (link or PNG image)
   5. Library list scrolls smoothly with 100+ items (pagination, ListView.builder, lazy thumbnails)
-**Plans**: 3 (2/3 complete)
+**Plans**: 3 (3/3 complete) ✓ 2026-05-02
 **UI hint**: yes
 **Research needed before planning**: NO
 **Parallel-eligible**: YES (with Phase 3, Phase 4)
 - [x] 02-01-qr-domain-layer-PLAN.md — QRType.event + EventData iCal model + getUserQRCodesPaginated repository + Supabase migration ✓ 2026-05-01 (commits `1d34017` + `057ce60`; 7 enum cases; VCALENDAR/VEVENT iCal; Supabase .range() pagination; 0 analyzer issues)
 - [x] 02-02-qr-preview-widget-pretty-qr-PLAN.md — QRPreviewWidget rewritten with PrettyQrView + RepaintBoundary; repaintKey GlobalKey wired to all 6 QR screens ✓ 2026-05-02 (commits `dc3b7c2` + `b3dafe9`; Colors.white hardcoded T-02-04; _TypeBadge extracted; 0 analyzer issues)
+- [x] 02-03-event-qr-screen-PLAN.md — EventQRScreen (6th QR type, completes QR-01) + EventFormController + EventForm + generator wiring + vevent filter chip + filterEvent i18n ✓ 2026-05-02 (commits `9b244f9` + `51cae1c`; description maxLength 500 T-02-07; EventQRScreen in _getEditScreenForQRType; coming_soon stub replaced; 0 analyzer issues)
 
 ### Phase 3: QR Scanner
 **Goal**: Users can scan QRs with full-screen Carden Pro UI and have the app act on results based on QR type

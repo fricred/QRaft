@@ -7,7 +7,7 @@
 
 ### QR Generation (Print-Safe)
 
-- [ ] **QR-01**: User puede generar QRs para tipos URL, texto, vCard, WiFi, eventos, ubicación
+- [x] **QR-01**: User puede generar QRs para tipos URL, texto, vCard, WiFi, eventos, ubicación ✓ Phase 2 plan 02-03
 - [ ] **QR-02**: User puede embeber logo central con halo blanco/transparente — error correction nivel H obligatorio, cap ≤20% (≤15% para tattoo profile)
 - [ ] **QR-03**: User puede personalizar colores y gradientes (lineales/radiales) con paletas pre-definidas
 - [ ] **QR-04**: User puede elegir estilos de módulos y "eyes" desde galería curada (bordes redondeados, puntos circulares, formas validadas con scanner-matrix)
@@ -130,7 +130,7 @@ Populated by gsd-roadmapper agent on 2026-05-01.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| QR-01 | Phase 2 | Pending |
+| QR-01 | Phase 2 | Complete ✓ |
 | QR-02 | Phase 5 | Pending |
 | QR-03 | Phase 5 | Pending |
 | QR-04 | Phase 5 | Pending |
