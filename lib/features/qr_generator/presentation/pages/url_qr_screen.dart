@@ -7,6 +7,7 @@ import '../../domain/entities/qr_type.dart';
 import '../../domain/entities/qr_code_entity.dart';
 import '../../domain/entities/qr_data_models.dart';
 import '../widgets/forms/url_form.dart';
+import '../widgets/qr_share_button.dart';
 import '../controllers/qr_customization_controller.dart';
 import '../controllers/qr_generator_controller.dart';
 import '../providers/qr_providers.dart';
@@ -148,7 +149,15 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
                   onPressed: urlState.isValid ? _saveQRCode : null,
                   width: double.infinity,
                 ),
-                
+
+                if (urlState.isValid) ...[
+                  const SizedBox(height: 12),
+                  QrShareButton(
+                    repaintKey: repaintKey,
+                    qrName: urlState.name.isNotEmpty ? urlState.name : 'QR Code',
+                  ),
+                ],
+
                 if (!urlState.isValid) ...[
                   const SizedBox(height: 8),
                   Text(

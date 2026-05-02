@@ -7,6 +7,7 @@ import '../../domain/entities/qr_type.dart';
 import '../../domain/entities/qr_code_entity.dart';
 import '../../domain/entities/qr_data_models.dart';
 import '../widgets/forms/email_form.dart';
+import '../widgets/qr_share_button.dart';
 import '../controllers/qr_customization_controller.dart';
 import '../controllers/qr_generator_controller.dart';
 import '../providers/qr_providers.dart';
@@ -179,7 +180,15 @@ class _EmailQRScreenState extends ConsumerState<EmailQRScreen>
                   onPressed: emailState.isValid ? _saveQRCode : null,
                   width: double.infinity,
                 ),
-                
+
+                if (emailState.isValid) ...[
+                  const SizedBox(height: 12),
+                  QrShareButton(
+                    repaintKey: repaintKey,
+                    qrName: emailState.name.isNotEmpty ? emailState.name : 'QR Code',
+                  ),
+                ],
+
                 if (!emailState.isValid) ...[
                   const SizedBox(height: 8),
                   Text(

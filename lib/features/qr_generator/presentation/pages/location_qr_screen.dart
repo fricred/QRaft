@@ -10,6 +10,7 @@ import '../../domain/entities/qr_type.dart';
 import '../../domain/entities/qr_code_entity.dart';
 import '../../domain/entities/qr_data_models.dart';
 import '../controllers/qr_customization_controller.dart';
+import '../widgets/qr_share_button.dart';
 import '../controllers/qr_generator_controller.dart';
 import '../providers/qr_providers.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
@@ -375,7 +376,15 @@ class _LocationQRScreenState extends ConsumerState<LocationQRScreen>
                   onPressed: locationState.isValid ? _saveQRCode : null,
                   width: double.infinity,
                 ),
-                
+
+                if (locationState.isValid) ...[
+                  const SizedBox(height: 12),
+                  QrShareButton(
+                    repaintKey: repaintKey,
+                    qrName: locationState.name.isNotEmpty ? locationState.name : 'Location QR',
+                  ),
+                ],
+
                 if (!locationState.isValid) ...[
                   const SizedBox(height: 8),
                   Text(

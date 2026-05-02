@@ -631,5 +631,15 @@
   "watchAdToUnlock": "Mira un video corto para desbloquear",
   "adRewardGranted": "¡Bonus desbloqueado!",
   "supportWithAds": "Apóyanos viendo anuncios",
-  "sponsoredAd": "Patrocinado"
+  "sponsoredAd": "Patrocinado",
+
+  "shareQR": "Compartir QR",
+  "@shareQR": {
+    "description": "Etiqueta del botón para compartir un código QR como imagen PNG"
+  },
+
+  "exportQRPng": "Exportar como PNG",
+  "@exportQRPng": {
+    "description": "Etiqueta del botón para exportar un código QR como archivo PNG"
+  }
 }

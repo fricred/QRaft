@@ -7,6 +7,7 @@ import '../../domain/entities/qr_type.dart';
 import '../../domain/entities/qr_code_entity.dart';
 import '../../domain/entities/qr_data_models.dart';
 import '../widgets/forms/personal_info_form.dart';
+import '../widgets/qr_share_button.dart';
 import '../controllers/qr_customization_controller.dart';
 import '../controllers/qr_generator_controller.dart';
 import '../providers/qr_providers.dart';
@@ -206,7 +207,15 @@ class _PersonalInfoQRScreenState extends ConsumerState<PersonalInfoQRScreen>
                   onPressed: personalInfoState.isValid ? _saveQRCode : null,
                   width: double.infinity,
                 ),
-                
+
+                if (personalInfoState.isValid) ...[
+                  const SizedBox(height: 12),
+                  QrShareButton(
+                    repaintKey: repaintKey,
+                    qrName: personalInfoState.name.isNotEmpty ? personalInfoState.name : 'QR Code',
+                  ),
+                ],
+
                 if (!personalInfoState.isValid) ...[
                   const SizedBox(height: 8),
                   Text(

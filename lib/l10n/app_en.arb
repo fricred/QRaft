@@ -2760,5 +2760,15 @@
   "sponsoredAd": "Sponsored",
   "@sponsoredAd": {
     "description": "Label for sponsored/ad content"
+  },
+
+  "shareQR": "Share QR",
+  "@shareQR": {
+    "description": "Button label to share a QR code as a PNG image"
+  },
+
+  "exportQRPng": "Export as PNG",
+  "@exportQRPng": {
+    "description": "Button label to export a QR code as a PNG file"
   }
 }

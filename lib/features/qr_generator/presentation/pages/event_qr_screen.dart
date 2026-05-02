@@ -9,6 +9,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/qr_type.dart';
 import '../../domain/entities/qr_code_entity.dart';
 import '../widgets/forms/event_form.dart';
+import '../widgets/qr_share_button.dart';
 import '../controllers/event_form_controller.dart';
 import '../controllers/qr_customization_controller.dart';
 import '../controllers/qr_generator_controller.dart';
@@ -159,6 +160,13 @@ class _EventQRScreenState extends ConsumerState<EventQRScreen>
                     onPressed: eventState.isValid ? _saveQRCode : null,
                     width: double.infinity,
                   ),
+                  if (eventState.isValid) ...[
+                    const SizedBox(height: 12),
+                    QrShareButton(
+                      repaintKey: repaintKey,
+                      qrName: eventState.name.trim().isNotEmpty ? eventState.name.trim() : 'Event QR',
+                    ),
+                  ],
                   if (!eventState.isValid) ...[
                     const SizedBox(height: 8),
                     Text(

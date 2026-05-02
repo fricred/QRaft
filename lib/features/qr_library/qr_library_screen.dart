@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math' show log;
 import 'dart:ui';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../shared/widgets/glass_button.dart';
 import '../../shared/widgets/animated_favorite_button.dart';
 import '../main/main_scaffold.dart';
@@ -1585,19 +1589,76 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
     }
   }
 
-  void _shareQRCode(QRCodeEntity qrEntity) {
-    final l10n = AppLocalizations.of(context)!;
-    // TODO: Implement QR code sharing with image generation
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.sharingQRCode(qrEntity.name)),
-        backgroundColor: const Color(0xFF00FF88),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+  Future<void> _shareQRCode(QRCodeEntity qrEntity) async {
+    // Render QR data to a PNG via QrPainter offscreen canvas, then share.
+    try {
+      const int size = 900; // 3x the display size for print quality
+
+      final QrPainter painter = QrPainter(
+        data: qrEntity.data,
+        version: QrVersions.auto,
+        gapless: true,
+        eyeStyle: const QrEyeStyle(
+          eyeShape: QrEyeShape.square,
+          color: ui.Color(0xFF000000),
         ),
-      ),
-    );
+        dataModuleStyle: const QrDataModuleStyle(
+          dataModuleShape: QrDataModuleShape.square,
+          color: ui.Color(0xFF000000),
+        ),
+      );
+
+      final ui.PictureRecorder recorder = ui.PictureRecorder();
+      final Canvas canvas = Canvas(
+        recorder,
+        Rect.fromLTWH(0, 0, size.toDouble(), size.toDouble()),
+      );
+
+      // White background
+      canvas.drawRect(
+        Rect.fromLTWH(0, 0, size.toDouble(), size.toDouble()),
+        Paint()..color = const ui.Color(0xFFFFFFFF),
+      );
+      painter.paint(canvas, const Size(size / 1.0, size / 1.0));
+
+      final ui.Image image = await recorder.endRecording().toImage(size, size);
+      final ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+
+      if (byteData == null) {
+        _showShareError('Failed to encode QR image.');
+        return;
+      }
+
+      final sanitizedName =
+          qrEntity.name.replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '_');
+      final fileName =
+          'qraft_${sanitizedName}_${DateTime.now().millisecondsSinceEpoch}.png';
+      final tmpFile = File('${Directory.systemTemp.path}/$fileName');
+      await tmpFile.writeAsBytes(byteData.buffer.asUint8List());
+
+      await Share.shareXFiles(
+        [XFile(tmpFile.path)],
+        text: 'QR: ${qrEntity.name}',
+      );
+    } catch (e) {
+      _showShareError('Failed to share QR: $e');
+    }
+  }
+
+  void _showShareError(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: const Color(0xFFEF4444),
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   void _handleMenuAction(String action, QRCodeEntity qrEntity) {
