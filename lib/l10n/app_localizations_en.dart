@@ -639,6 +639,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get qrTypeLocationDesc => 'GPS coordinates\nand map points';
 
   @override
+  String get qrTypeEvent => 'Event';
+
+  @override
+  String get qrTypeEventDesc => 'Calendar event with date,\ntime, and location';
+
+  @override
   String get styleColors => 'Colors';
 
   @override

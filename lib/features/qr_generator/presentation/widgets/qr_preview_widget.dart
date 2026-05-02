@@ -131,6 +131,8 @@ class QRPreviewWidget extends StatelessWidget {
         return 'mailto:example@email.com?subject=Hello&body=Sample message';
       case QRType.location:
         return 'geo:37.7749,-122.4194?q=37.7749,-122.4194(Sample Location)';
+      case QRType.event:
+        return 'BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:Sample Event\nDTSTART:20260501T100000\nEND:VEVENT\nEND:VCALENDAR';
     }
   }
 
@@ -148,6 +150,8 @@ class QRPreviewWidget extends StatelessWidget {
         return 'Email with pre-filled content';
       case QRType.location:
         return 'GPS coordinates and location';
+      case QRType.event:
+        return 'Calendar event (iCal format)';
     }
   }
 

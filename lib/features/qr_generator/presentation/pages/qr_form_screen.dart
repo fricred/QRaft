@@ -929,6 +929,7 @@ class _QRFormScreenState extends ConsumerState<QRFormScreen> {
       case QRType.wifi:
       case QRType.email:
       case QRType.location:
+      case QRType.event:
         return 'Coming soon - ${widget.qrType.getDisplayName(context)}';
     }
   }
@@ -1006,11 +1007,12 @@ class _QRFormScreenState extends ConsumerState<QRFormScreen> {
       case QRType.wifi:
       case QRType.email:
       case QRType.location:
+      case QRType.event:
         // For "coming soon" forms, always allow proceeding
         return true;
     }
   }
-  
+
   bool _validateColombianTaxForm() {
     final state = ref.watch(colombianTaxFormProvider);
     
@@ -1129,6 +1131,7 @@ class _QRFormScreenState extends ConsumerState<QRFormScreen> {
       case QRType.wifi:
       case QRType.email:
       case QRType.location:
+      case QRType.event:
         // For "coming soon" forms, return a placeholder
         return URLData(url: 'https://qraft.app/coming-soon');
     }
@@ -1148,6 +1151,7 @@ class _QRFormScreenState extends ConsumerState<QRFormScreen> {
       case QRType.wifi:
       case QRType.email:
       case QRType.location:
+      case QRType.event:
         return 'Coming Soon - ${widget.qrType.getDisplayName(context)}';
     }
   }
@@ -1163,6 +1167,7 @@ class _QRFormScreenState extends ConsumerState<QRFormScreen> {
       case QRType.wifi:
       case QRType.email:
       case QRType.location:
+      case QRType.event:
         return _buildComingSoonForm(qrType);
     }
   }

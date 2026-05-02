@@ -1066,6 +1066,16 @@
     "description": "Location QR type description"
   },
 
+  "qrTypeEvent": "Event",
+  "@qrTypeEvent": {
+    "description": "Event QR type name"
+  },
+
+  "qrTypeEventDesc": "Calendar event with date,\ntime, and location",
+  "@qrTypeEventDesc": {
+    "description": "Event QR type description"
+  },
+
   "styleColors": "Colors",
   "@styleColors": {
     "description": "Style section colors title"

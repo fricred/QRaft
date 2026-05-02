@@ -181,6 +181,58 @@ class LocationData extends QRDataModel {
   List<Object?> get props => [latitude, longitude, name];
 }
 
+class EventData extends QRDataModel {
+  final String title;
+  final String location;
+  final DateTime startDateTime;
+  final DateTime? endDateTime;
+  final String? description;
+
+  EventData({
+    required this.title,
+    required this.location,
+    required this.startDateTime,
+    this.endDateTime,
+    this.description,
+  });
+
+  String _formatDt(DateTime dt) {
+    // Format as YYYYMMDDTHHMMSS (local, no Z suffix — avoids timezone complexity for v1)
+    final y = dt.year.toString().padLeft(4, '0');
+    final mo = dt.month.toString().padLeft(2, '0');
+    final d = dt.day.toString().padLeft(2, '0');
+    final h = dt.hour.toString().padLeft(2, '0');
+    final mi = dt.minute.toString().padLeft(2, '0');
+    final s = dt.second.toString().padLeft(2, '0');
+    return '$y$mo${d}T$h$mi$s';
+  }
+
+  @override
+  String get qrData {
+    final buf = StringBuffer('BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\n');
+    buf.write('SUMMARY:$title\n');
+    buf.write('DTSTART:${_formatDt(startDateTime)}\n');
+    if (endDateTime != null) {
+      buf.write('DTEND:${_formatDt(endDateTime!)}\n');
+    }
+    if (location.isNotEmpty) buf.write('LOCATION:$location\n');
+    if (description != null && description!.isNotEmpty) {
+      buf.write('DESCRIPTION:$description\n');
+    }
+    buf.write('END:VEVENT\nEND:VCALENDAR');
+    return buf.toString();
+  }
+
+  @override
+  String get displayText {
+    final date = '${startDateTime.day}/${startDateTime.month}/${startDateTime.year}';
+    return '$title — $date${location.isNotEmpty ? ', $location' : ''}';
+  }
+
+  @override
+  List<Object?> get props => [title, location, startDateTime, endDateTime, description];
+}
+
 /// Colombian Tax Information for Electronic Billing
 class ColombianTaxInfoData extends QRDataModel {
   final String documentType;      // CC, NIT, TI, CE, PP

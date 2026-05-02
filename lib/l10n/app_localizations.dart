@@ -1256,6 +1256,18 @@ abstract class AppLocalizations {
   /// **'GPS coordinates\nand map points'**
   String get qrTypeLocationDesc;
 
+  /// Event QR type name
+  ///
+  /// In en, this message translates to:
+  /// **'Event'**
+  String get qrTypeEvent;
+
+  /// Event QR type description
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar event with date,\ntime, and location'**
+  String get qrTypeEventDesc;
+
   /// Style section colors title
   ///
   /// In en, this message translates to:
