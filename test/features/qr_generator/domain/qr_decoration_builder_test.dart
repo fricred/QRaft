@@ -131,6 +131,43 @@ void main() {
   });
 
   // ---------------------------------------------------------------------------
+  // buildShape tests (Task 1 — Plan 05-04)
+  // ---------------------------------------------------------------------------
+
+  group('QrDecorationBuilder.buildShape', () {
+    test('modulePreset=0 (Classic Squares) does not throw', () {
+      const customization = QRCustomization(modulePreset: 0, eyePreset: 0);
+      expect(
+        () => QrDecorationBuilder.buildShape(customization),
+        returnsNormally,
+      );
+    });
+
+    test('modulePreset=5 (Dense Dots) does not throw', () {
+      const customization = QRCustomization(modulePreset: 5, eyePreset: 0);
+      expect(
+        () => QrDecorationBuilder.buildShape(customization),
+        returnsNormally,
+      );
+    });
+
+    test('eyePreset=2 (Circle Eye — high risk) does not throw due to try-catch', () {
+      const customization = QRCustomization(modulePreset: 0, eyePreset: 2);
+      expect(
+        () => QrDecorationBuilder.buildShape(customization),
+        returnsNormally,
+      );
+    });
+
+    test('out-of-range preset (modulePreset=99) returns non-null PrettyQrShape (fallback)', () {
+      const customization = QRCustomization(modulePreset: 99, eyePreset: 99);
+      final shape = QrDecorationBuilder.buildShape(customization);
+      expect(shape, isNotNull);
+      expect(shape, isA<PrettyQrShape>());
+    });
+  });
+
+  // ---------------------------------------------------------------------------
   // buildBrush tests (Task 1 — Plan 05-03)
   // ---------------------------------------------------------------------------
 
