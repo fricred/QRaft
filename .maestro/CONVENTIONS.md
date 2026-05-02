@@ -66,3 +66,31 @@ MAESTRO_PLATFORM=ios maestro test .maestro/launch/ump-accept.yaml
 ## CI
 
 CI integration is **deferred** (D-16). Phase 1 keeps Maestro local-only on developer machines. CI runner setup belongs in a later phase (likely Phase 12 OPT-03 observability or a dedicated infra phase).
+
+## Phase 1 status (D-16 — local only)
+
+**Phase 1 closure run (2026-05-01, Medium_Phone AVD, app commit b52d28f):**
+
+| Flow | Status | Note |
+|------|--------|------|
+| launch/splash-happy | PASS | 8s |
+| launch/ump-accept | PASS | 7s — UMP form not shown in non-GDPR region; conditional skip path validated |
+| launch/ump-deny-npa | PASS | 9s |
+| auth/login-valid | PASS | 27s |
+| auth/login-invalid | PASS | 24s |
+| auth/forgot-password | PASS | 24s |
+| auth/session-persistence | PASS | 37s |
+| auth/logout | RESIDUAL | Hangs on `Cerrando sesión...` loading dialog; signOut() does not complete within 30s. Real product bug surfaced by Maestro — tracked as Phase 1 follow-up. Selector wiring + popUntil fix already in place; flow will pass once the underlying signOut hang is investigated. |
+| scanner/scanner-tab-launch | PASS | 37s — validates SCAN-01 (mobile_scanner 7.2.0 boots without crash) |
+
+**iOS** (iPhone 17 Pro): selectors and YAML iterations apply equally; full iOS re-run after the Semantics(identifier:) and scrollUntilVisible/pressKey fixes is recommended in the next session before declaring iOS-side coverage complete.
+
+**Maestro suite gate is local for now (D-16).** Run with:
+
+```bash
+export MAESTRO_TEST_EMAIL='<your-test-user>'
+export MAESTRO_TEST_PASSWORD='<your-test-pass>'
+maestro --device <UDID|emulator-id> test .maestro/
+```
+
+The suite filter (`flows: ['**']` + `includeTags: [phase1]` in `config.yaml`) keeps helpers out of the run set automatically.
