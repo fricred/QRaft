@@ -1,0 +1,20 @@
+appId: io.gothcorp.qraft
+name: scanner/scanner-tab-launch
+tags:
+  - scanner
+  - phase1
+  - SCAN-01
+---
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/dismiss-permissions.yaml
+- runFlow: ../launch/ump-accept.yaml
+- runFlow: ../helpers/login.yaml
+- tapOn:
+    id: "main_scaffold_scanner_tab"
+# Camera permission dialog appears — dismiss-permissions helper grants it.
+- runFlow: ../helpers/dismiss-permissions.yaml
+- extendedWaitUntil:
+    visible:
+      id: "qr_scanner_screen_root"
+    timeout: 15000

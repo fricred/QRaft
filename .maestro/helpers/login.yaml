@@ -1,21 +1,31 @@
 # Helper: login.yaml
-# Purpose: authenticate as a known test user. Reused by Phases 2–12 to land in authenticated state.
-# Selectors: text-based today (existing labels); plan 07 tightens to id-based once plan 06 adds Keys.
-# Env vars required: MAESTRO_TEST_EMAIL, MAESTRO_TEST_PASSWORD.
+# Purpose: authenticate as a known test user. Reused by Phases 1-12 to land in authenticated state.
+# Selectors: id-based (Keys added by plan 06).
+# Env vars required: MAESTRO_TEST_EMAIL, MAESTRO_TEST_PASSWORD
+#
+# Tightened from text-matchers (plan 02 scaffold) to id-matchers (plan 07) once
+# plan 06 added stable Keys to lib/features/auth/.
 
 appId: io.gothcorp.qraft
 ---
-# NOTE: this scaffold uses text matchers because Keys are added in plan 06.
-# Plan 07 should switch the matchers below to:
-#   - tapOn: { id: login_email_field }
-#   - tapOn: { id: login_password_field }
-#   - tapOn: { id: login_submit_button }
+- runFlow: ../helpers/dismiss-permissions.yaml
+- assertVisible:
+    id: "welcome_screen_root"
 - tapOn:
-    text: "Email"
+    id: "welcome_login_cta"
+- assertVisible:
+    id: "login_screen_root"
+- tapOn:
+    id: "login_email_field"
 - inputText: ${MAESTRO_TEST_EMAIL}
 - tapOn:
-    text: "Password"
+    id: "login_password_field"
 - inputText: ${MAESTRO_TEST_PASSWORD}
 - hideKeyboard
 - tapOn:
-    text: "Sign In"
+    id: "login_submit_button"
+# Wait for post-login transition; main scaffold home tab is the canonical landed state.
+- extendedWaitUntil:
+    visible:
+      id: "main_scaffold_dashboard_tab"
+    timeout: 15000

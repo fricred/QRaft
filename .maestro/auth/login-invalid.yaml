@@ -1,0 +1,34 @@
+appId: io.gothcorp.qraft
+name: auth/login-invalid
+tags:
+  - auth
+  - phase1
+---
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/dismiss-permissions.yaml
+- runFlow: ../launch/ump-accept.yaml
+- assertVisible:
+    id: "welcome_screen_root"
+- tapOn:
+    id: "welcome_login_cta"
+- assertVisible:
+    id: "login_screen_root"
+- tapOn:
+    id: "login_email_field"
+- inputText: invalid@example.com
+- tapOn:
+    id: "login_password_field"
+- inputText: wrong-password-123
+- hideKeyboard
+- tapOn:
+    id: "login_submit_button"
+# Error UI must surface — assert error text appears AND login screen still visible.
+# `extendedWaitUntil` is the only command that accepts a custom timeout (verified
+# at https://docs.maestro.dev/reference/commands-available/extendedwaituntil).
+- assertVisible:
+    id: "login_screen_root"
+- extendedWaitUntil:
+    visible:
+      text: ".*(invalid|incorrect|failed|error|Invalid|Incorrect|Failed|Error).*"
+    timeout: 10000
