@@ -362,9 +362,13 @@ class ProfileScreen extends ConsumerWidget {
                       // Perform sign out
                       await authProvider.signOut();
 
-                      // Close loading dialog - AuthWrapper will handle navigation automatically
+                      // Pop loading dialog AND any pushed routes back to root.
+                      // AuthWrapper switches its home from MainScaffold to AuthFlow
+                      // when currentUser becomes null, but pushed routes (ProfileScreen,
+                      // dialogs) sit on top of that switch and would occlude the auth
+                      // flow. popUntil(isFirst) clears the stack so AuthFlow renders.
                       if (context.mounted) {
-                        Navigator.pop(context);
+                        Navigator.of(context).popUntil((route) => route.isFirst);
                       }
                     } catch (e) {
                       // Close loading dialog if it's still open
