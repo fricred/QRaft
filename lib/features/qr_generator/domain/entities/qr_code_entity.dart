@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'qr_type.dart';
+import '../value_objects/qr_profile.dart';
 
 class QRCodeEntity extends Equatable {
   final String id;
@@ -68,17 +69,29 @@ class QRCodeEntity extends Equatable {
 }
 
 class QRCustomization extends Equatable {
+  // --- Legacy / preserved fields ---
   final int foregroundColor;
   final int backgroundColor;
   final int eyeColor;
   final double size;
-  final int errorCorrectionLevel;
+  final int errorCorrectionLevel; // 0=L, 1=M, 2=Q, 3=H
   final String? logoPath;
   final bool hasLogo;
-  final int eyeShape; // 0: square, 1: circle
-  final int dataShape; // 0: square, 1: circle
+  final int eyeShape; // 0: square, 1: circle — backward compat, superseded by eyePreset
+  final int dataShape; // 0: square, 1: circle — backward compat, superseded by modulePreset
   final bool roundedCorners;
-  final double logoSize;
+  final double logoSize; // backward compat — superseded by logoCoverage
+
+  // --- Phase 5 new fields ---
+  final bool hasGradient;
+  final int? gradientStart; // ARGB int; null when solid
+  final int? gradientEnd; // ARGB int; null when solid
+  final GradientType gradientType; // default: solid
+  final int modulePreset; // 0-7; default 0 (Classic)
+  final int eyePreset; // 0-7; default 0 (Classic Square)
+  final int profile; // 0=printSafe, 1=digitalOnly, 2=tattooSafe; default 0
+  final String? frameText; // null = no frame
+  final double logoCoverage; // 0.0-0.20 scale; default 0.0
 
   const QRCustomization({
     this.foregroundColor = 0xFF000000,
@@ -92,6 +105,16 @@ class QRCustomization extends Equatable {
     this.dataShape = 0,
     this.roundedCorners = false,
     this.logoSize = 40.0,
+    // Phase 5 defaults — preserve existing behavior
+    this.hasGradient = false,
+    this.gradientStart,
+    this.gradientEnd,
+    this.gradientType = GradientType.solid,
+    this.modulePreset = 0,
+    this.eyePreset = 0,
+    this.profile = 0,
+    this.frameText,
+    this.logoCoverage = 0.0,
   });
 
   QRCustomization copyWith({
@@ -100,12 +123,23 @@ class QRCustomization extends Equatable {
     int? eyeColor,
     double? size,
     int? errorCorrectionLevel,
-    String? logoPath,
+    // Nullable clearance sentinel pattern
+    Object? logoPath = _sentinelRef,
     bool? hasLogo,
     int? eyeShape,
     int? dataShape,
     bool? roundedCorners,
     double? logoSize,
+    // Phase 5 fields
+    bool? hasGradient,
+    Object? gradientStart = _sentinelRef,
+    Object? gradientEnd = _sentinelRef,
+    GradientType? gradientType,
+    int? modulePreset,
+    int? eyePreset,
+    int? profile,
+    Object? frameText = _sentinelRef,
+    double? logoCoverage,
   }) {
     return QRCustomization(
       foregroundColor: foregroundColor ?? this.foregroundColor,
@@ -113,12 +147,29 @@ class QRCustomization extends Equatable {
       eyeColor: eyeColor ?? this.eyeColor,
       size: size ?? this.size,
       errorCorrectionLevel: errorCorrectionLevel ?? this.errorCorrectionLevel,
-      logoPath: logoPath ?? this.logoPath,
+      logoPath: identical(logoPath, _sentinelRef)
+          ? this.logoPath
+          : logoPath as String?,
       hasLogo: hasLogo ?? this.hasLogo,
       eyeShape: eyeShape ?? this.eyeShape,
       dataShape: dataShape ?? this.dataShape,
       roundedCorners: roundedCorners ?? this.roundedCorners,
       logoSize: logoSize ?? this.logoSize,
+      hasGradient: hasGradient ?? this.hasGradient,
+      gradientStart: identical(gradientStart, _sentinelRef)
+          ? this.gradientStart
+          : gradientStart as int?,
+      gradientEnd: identical(gradientEnd, _sentinelRef)
+          ? this.gradientEnd
+          : gradientEnd as int?,
+      gradientType: gradientType ?? this.gradientType,
+      modulePreset: modulePreset ?? this.modulePreset,
+      eyePreset: eyePreset ?? this.eyePreset,
+      profile: profile ?? this.profile,
+      frameText: identical(frameText, _sentinelRef)
+          ? this.frameText
+          : frameText as String?,
+      logoCoverage: logoCoverage ?? this.logoCoverage,
     );
   }
 
@@ -135,5 +186,18 @@ class QRCustomization extends Equatable {
         dataShape,
         roundedCorners,
         logoSize,
+        hasGradient,
+        gradientStart,
+        gradientEnd,
+        gradientType,
+        modulePreset,
+        eyePreset,
+        profile,
+        frameText,
+        logoCoverage,
       ];
 }
+
+// Module-level sentinel constant for copyWith nullable clearance.
+// ignore: prefer_const_declarations
+const _sentinelRef = Object();
