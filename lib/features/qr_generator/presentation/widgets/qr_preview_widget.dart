@@ -1,32 +1,88 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
-import '../../domain/entities/qr_type.dart';
 
-class QRPreviewWidget extends StatelessWidget {
+import '../../domain/entities/qr_code_entity.dart';
+import '../../domain/entities/qr_type.dart';
+import '../../domain/services/qr_decoration_builder.dart';
+
+/// A widget that renders a live QR code preview using [PrettyQrView].
+///
+/// [QrImage] is created in [initState] / [didUpdateWidget] — never in [build] —
+/// to avoid regenerating the QR on every frame repaint.
+///
+/// TODO(05-03): Add 500 ms debounce in didUpdateWidget to avoid thrashing
+/// QrImage on rapid user input (typing in text fields, slider drags).
+class QRPreviewWidget extends ConsumerStatefulWidget {
   final QRType qrType;
   final String? qrData;
-  // kept for API compatibility — unused in Phase 2 (Phase 5 will wire color customization)
+
+  /// Full customization state. Replaces the legacy color params for rendering.
+  final QRCustomization customization;
+
+  /// Kept for API compatibility — ignored in rendering (Phase 5 wires
+  /// color customization through [customization] instead).
+  @Deprecated('Use customization field instead')
   final Color? foregroundColor;
-  // kept for API compatibility — IGNORED, always white per PROJECT.md dark-on-light constraint
+
+  /// Kept for API compatibility — IGNORED, always white per dark-on-light
+  /// constraint (T-02-04 mitigation). Use [customization.backgroundColor] if
+  /// programmatic control is ever needed.
+  @Deprecated('Use customization field instead')
   final Color? backgroundColor;
+
   final double size;
-  // NEW: GlobalKey for RepaintBoundary — enables PNG export in Plan 05
+
+  /// GlobalKey for [RepaintBoundary] — enables PNG export in Plan 05.
   final GlobalKey? repaintKey;
 
   const QRPreviewWidget({
     super.key,
     required this.qrType,
     this.qrData,
+    this.customization = const QRCustomization(),
+    // ignore: deprecated_member_use_from_same_package
     this.foregroundColor,
+    // ignore: deprecated_member_use_from_same_package
     this.backgroundColor,
     this.size = 200.0,
     this.repaintKey,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final previewData = qrData ?? _getSampleData(qrType);
+  ConsumerState<QRPreviewWidget> createState() => _QRPreviewWidgetState();
+}
 
+class _QRPreviewWidgetState extends ConsumerState<QRPreviewWidget> {
+  QrImage? _qrImage;
+
+  @override
+  void initState() {
+    super.initState();
+    _buildQrImage();
+  }
+
+  @override
+  void didUpdateWidget(QRPreviewWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.customization != oldWidget.customization ||
+        widget.qrData != oldWidget.qrData) {
+      _buildQrImage();
+    }
+  }
+
+  void _buildQrImage() {
+    final data = _previewData;
+    setState(() {
+      _qrImage =
+          QrDecorationBuilder.buildQrImage(data, widget.customization);
+    });
+  }
+
+  String get _previewData => widget.qrData ?? _getSampleData(widget.qrType);
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -40,23 +96,20 @@ class QRPreviewWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // QR Code with RepaintBoundary for Plan 05 PNG export
-          _buildQrContainer(previewData),
+          // QR Code with optional RepaintBoundary for Plan 05 PNG export
+          _buildQrContainer(),
 
           const SizedBox(height: 16),
 
           // QR type badge
-          _TypeBadge(qrType: qrType),
+          _TypeBadge(qrType: widget.qrType),
 
           const SizedBox(height: 12),
 
           // Preview text
           Text(
-            _getPreviewText(qrType, previewData),
-            style: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 12,
-            ),
+            _getPreviewText(widget.qrType, _previewData),
+            style: TextStyle(color: Colors.grey[400], fontSize: 12),
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -66,14 +119,12 @@ class QRPreviewWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildQrContainer(String data) {
-    // White background enforced per PROJECT.md dark-on-light constraint (T-02-04)
+  Widget _buildQrContainer() {
     final qrContainer = Container(
-      width: size,
-      height: size,
+      width: widget.size,
+      height: widget.size,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        // Always white — reject backgroundColor param at Phase 2 (T-02-04 mitigation)
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
@@ -84,25 +135,25 @@ class QRPreviewWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: data.isEmpty
-          ? Container(color: Colors.grey[200])
-          : PrettyQrView.data(
-              data: data,
-              errorCorrectLevel: QrErrorCorrectLevel.M,
-              // Phase 2: default decoration (black squares on white)
-              // Phase 5 will customize: shape, eyes, gradient, logo
-              decoration: const PrettyQrDecoration(),
-            ),
+      child: _buildQrView(),
     );
 
-    // Wrap with RepaintBoundary only when key provided — backward compat for callers
-    if (repaintKey != null) {
-      return RepaintBoundary(
-        key: repaintKey,
-        child: qrContainer,
-      );
+    if (widget.repaintKey != null) {
+      return RepaintBoundary(key: widget.repaintKey, child: qrContainer);
     }
     return qrContainer;
+  }
+
+  Widget _buildQrView() {
+    // Null guard while QrImage is being built (should only be one frame)
+    if (_qrImage == null) {
+      return Container(color: Colors.grey[200]);
+    }
+    return PrettyQrView(
+      qrImage: _qrImage!,
+      decoration:
+          QrDecorationBuilder.buildDecoration(widget.customization),
+    );
   }
 
   String _getSampleData(QRType qrType) {
