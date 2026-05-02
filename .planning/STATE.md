@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-02T10:40:15Z"
+last_updated: "2026-05-02T11:22:00Z"
 progress:
   total_phases: 12
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 11
-  completed_plans: 10
-  percent: 91
+  completed_plans: 11
+  percent: 100
 ---
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-02 (post plan 02-03)
+**Last updated:** 2026-05-02 (post plan 02-04)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 2 — QR Generation Core, **COMPLETE** ✓ 2026-05-02 (all 3 plans done)
+**Current focus**: Phase 2 — QR Generation Core, **COMPLETE** ✓ 2026-05-02 (all 4 plans done)
 
 **Strategic anchors**:
 
@@ -34,7 +34,7 @@ progress:
 
 **Milestone:** v1.0
 **Phase:** 2 of 12 — QR Generation Core
-**Plan:** Phase 2 COMPLETE — 3/3 plans complete (02-01 ✓, 02-02 ✓, 02-03 ✓)
+**Plan:** Phase 2 COMPLETE — 4/4 plans complete (02-01 ✓, 02-02 ✓, 02-03 ✓, 02-04 ✓)
 **Status:** Phase 2 complete 2026-05-02
 **Last session:** 2026-05-01 — Plan 01-07 (Maestro flows + controller tests) executed cross-session on `feature/adds`. Tasks 1+3 autonomous (commits `bd39494` 14 Flutter tests, `7eeae6d` 9 flow YAMLs); semantics rollout `627859d`; manual close-out commits `41908d0` (remove legacy SupabaseForgotPasswordDialog from main.dart, freeing 215 lines of dead code), `cb1663c` (Semantics(identifier:) on dashboard_profile_button + profile_sign_out_button + profile_sign_out_confirm_button), `3cf599d` (Maestro YAML iterations: suite recursion config, scrollUntilVisible for off-fold welcome CTA, pressKey:Enter for keyboard-occluded login_submit_button), `b52d28f` (Navigator.popUntil(isFirst) after signOut + 30s timeout on logout assertion), `3c29309` (CONVENTIONS.md Phase 1 status section). Android Medium_Phone suite: **8/9 flows PASS** (splash-happy 8s, ump-accept 7s, ump-deny-npa 9s, login-valid 27s, login-invalid 24s, forgot-password 24s, session-persistence 37s, scanner-tab-launch 37s) — auth/logout RESIDUAL with the loading dialog "Cerrando sesión..." stuck visible past 30s, signOut() hangs at the SupabaseClient call (likely interaction with subscription realtime listener teardown in AuthWrapper). iOS suite ran on iPhone 17 Pro pre-Semantics (4/7 pass, expected); not re-run after Semantics+popUntil fixes — recommended at start of next session. Real product bugs surfaced and fixed by Maestro E2E (legacy dialog dead code, Navigator stack occlusion). Plan 01-07 deviations: 6 auto-fixed (4 Rule 3 blocking, 2 Rule 4 functionally required). flutter analyze: 0 issues. Whole-suite test delta from `+83 ~1 -91` to `+97 ~1 -85` (the 6 broken-by-design dialog tests from plan 01-06 are now sane; +8 controller tests added). Earlier session: Plan 01-05 (UMP consent + AdMob gating) executed sequentially on `feature/adds`, 3 tasks, ~7 minutes. Commits `cd834ff` (consent module: ConsentState + UmpService + 5 providers) + `b7ad68a` (UmpConsentScreen + UmpGate) + `8518f79` (main.dart bootstrap reorder + AdMobService 4 method signatures + BannerAdWidget + RewardedAdButton + ad_providers refactor). New `lib/features/consent/` feature module: `ConsentState` enum with 5 values (unknown/required/notRequired/obtained/denied) + `ConsentStateX` extension exposing `isResolved` + `isPersonalizedAllowed` booleans (37 lines); `UmpService` singleton (132 lines) wrapping `ConsentInformation.instance.requestConsentInfoUpdate` + `ConsentForm.loadAndShowConsentFormIfRequired` from google_mobile_ads ^5.1.0 — NO separate UMP package install per plan 04 D-01 — using Completer-to-Future bridge over the callback-based UMP API; accept-vs-deny disambiguation via `canRequestAds()` because `ConsentStatus.obtained` covers both; fail-open posture so app does not deadlock on UMP errors. 5 Riverpod providers (umpServiceProvider, umpInitProvider, consentStateProvider, umpConsentReadyProvider, consentGrantedProvider). UmpConsentScreen ConsumerStatefulWidget triggers Google's UMP form on first frame via `WidgetsBinding.instance.addPostFrameCallback`; Carden Pro design tokens (#1A1A1A scaffold + #2E2E2E 24-radius card) + PrimaryGlassButton CTA + 2 stable Maestro Keys (`ump_consent_screen_root`, `ump_continue_button`). UmpGate ConsumerWidget with `.when()` loading/error/data branches; explicit `consent_state.dart` import so `state.isResolved` extension getter resolves. main.dart bootstrap reordered per D-04: removed `MobileAds.instance.initialize()` from `initializeApp()` (now only env → Supabase → Firebase); added `ref.listen<bool>(umpConsentReadyProvider, ...)` in `_QRaftAppState.build` that fires `ref.read(adMobInitProvider.future)` exactly once on UMP-resolves transition (FutureProvider memoization + idempotent `AdMobService.initialize()` keep it safe); AuthWrapper wrapped in `UmpGate(child: AuthWrapper())`. AdMobService 4 ad-loading methods (loadBannerAd lines 33-69, showRewardedAd lines 70-118, showInterstitialAd lines 130-181, loadNativeAd lines 184-217) now accept `bool nonPersonalizedAds = false` and pass it into `AdRequest(nonPersonalizedAds: nonPersonalizedAds)` per D-06; 0 `const AdRequest()` remaining, 4 `AdRequest(nonPersonalizedAds:` sites. BannerAdWidget._loadAd() bails if `!umpConsentReadyProvider` (D-04) AND passes `nonPersonalizedAds: !consentGranted` (D-06); `build()` watches `umpConsentReadyProvider` + ref.listen re-triggers `_loadAd` when consent flips ready post-construction (re-entrancy guard `!_isLoaded && !_isLoading`) — handles widgets built before UMP resolves. RewardedAdButton._showRewardedAd() reads consentGrantedProvider and forwards `!personalizedAllowed`. ad_providers.dart `dashboardBannerAdProvider` + `libraryBannerAdProvider` both gate on `umpConsentReadyProvider` AND forward npa flag. Maestro selector deviation documented: `ump_settings_link` Key NOT added because the "manage settings" link is rendered by Google's UMP system overlay (not a Flutter widget); plan 07 will target it via text matcher. flutter analyze: 0 issues; flutter build apk --debug --target-platform android-arm64: Built in 9.5s; flutter build ios --debug --no-codesign: Built in 9.9s. Whole-suite test delta unchanged from plan 06 (`+83 ~1 -91` — 0 new test breakage from this plan). Closes ROADMAP success criterion #4 (UMP integrated, consent form on first launch before any ad request).
 
@@ -167,6 +167,8 @@ Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 - `.planning/phases/02-qr-generation-core/02-03-SUMMARY.md`
 - `.planning/STATE.md` (this file)
 - `.planning/ROADMAP.md` (plan 02-03 checkbox marked)
+
+**Last session (plan 02-04):** 2026-05-02 — QrShareButton widget created and wired to all 6 QR screens + library. Commits `8bba9fa` (QrShareButton + wiring + i18n) + `a0e4da1` (l10n regeneration). flutter analyze 0 issues, APK build success. Phase 2 COMPLETE (QR-09 implemented).
 
 **Last session (plan 02-03):** 2026-05-02 — EventQRScreen implemented (6th QR type, QR-01 complete). Tasks 1+2 autonomous. Commits `9b244f9` (EventFormController + EventForm + EventQRScreen) + `51cae1c` (generator wiring + library filter). flutter analyze 0 issues. Phase 2 COMPLETE.
 
