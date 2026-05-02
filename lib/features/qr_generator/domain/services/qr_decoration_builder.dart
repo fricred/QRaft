@@ -37,6 +37,36 @@ class QrDecorationBuilder {
     );
   }
 
+  /// Builds a brush (color or gradient) for QR module fill from [QRCustomization].
+  ///
+  /// Returns a plain [Color] for solid fills, or a [PrettyQrBrush.gradient]
+  /// for linear/radial gradient fills. Falls back to [Color] when gradient
+  /// colors are missing (null safety guard).
+  ///
+  /// The return type is [dynamic] because [PrettyQrBrush] extends [Color] but
+  /// the gradient factory produces a [PrettyQrGradientBrush] that is not
+  /// usable as a plain [Color] in shape constructors — callers cast to
+  /// [PrettyQrBrush] when wiring into [PrettyQrSmoothSymbol.color] (Plan 05-04).
+  static dynamic buildBrush(QRCustomization c) {
+    if (!c.hasGradient || c.gradientStart == null || c.gradientEnd == null) {
+      return Color(c.foregroundColor);
+    }
+    final colors = [Color(c.gradientStart!), Color(c.gradientEnd!)];
+    return switch (c.gradientType) {
+      GradientType.linear => PrettyQrBrush.gradient(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: colors,
+          ),
+        ),
+      GradientType.radial => PrettyQrBrush.gradient(
+          gradient: RadialGradient(center: Alignment.center, colors: colors),
+        ),
+      GradientType.solid => Color(c.foregroundColor),
+    };
+  }
+
   /// Builds a [QrImage] with the correct error-correction level.
   ///
   /// When [QRCustomization.hasLogo] is true, EC level H is forced regardless
