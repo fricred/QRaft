@@ -148,4 +148,28 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
       throw Exception('Failed to fetch favorite QR codes: $e');
     }
   }
+
+  @override
+  Future<List<QRCodeModel>> getUserQRCodesPaginated(
+    String userId,
+    int page,
+    int pageSize,
+  ) async {
+    try {
+      final from = page * pageSize;
+      final to = from + pageSize - 1;
+      final response = await client
+          .from('qr_codes')
+          .select()
+          .eq('user_id', userId)
+          .order('created_at', ascending: false)
+          .range(from, to);
+
+      return response
+          .map((json) => QRCodeModel.fromJson(json))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to fetch paginated QR codes: $e');
+    }
+  }
 }

@@ -9,4 +9,9 @@ abstract class QRRepository {
   Future<List<QRCodeEntity>> getQRCodesByType(String userId, String type);
   Future<QRCodeEntity> toggleFavorite(String qrCodeId, bool isFavorite);
   Future<List<QRCodeEntity>> getFavoriteQRCodes(String userId);
+  Future<List<QRCodeEntity>> getUserQRCodesPaginated(
+    String userId,
+    int page,
+    int pageSize,
+  );
 }

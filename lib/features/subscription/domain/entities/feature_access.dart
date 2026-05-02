@@ -12,6 +12,7 @@ enum FeatureType {
   qrTypeVcard,
   qrTypeEmail,
   qrTypeLocation,
+  qrTypeEvent,
 
   // Customization
   colorCustomization,
@@ -73,6 +74,8 @@ extension FeatureTypeExtension on FeatureType {
         return 'Email QR Code';
       case FeatureType.qrTypeLocation:
         return 'Location QR Code';
+      case FeatureType.qrTypeEvent:
+        return 'Event QR Code';
       case FeatureType.colorCustomization:
         return 'Color Customization';
       case FeatureType.templateClassic:

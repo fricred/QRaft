@@ -31,6 +31,8 @@ FeatureType _qrTypeToFeature(QRType type) {
       return FeatureType.qrTypeEmail;
     case QRType.location:
       return FeatureType.qrTypeLocation;
+    case QRType.event:
+      return FeatureType.qrTypeEvent;
   }
 }
 
@@ -48,6 +50,8 @@ String _qrTypeDisplayName(QRType type) {
       return 'Email';
     case QRType.location:
       return 'Location';
+    case QRType.event:
+      return 'Event';
   }
 }
 
