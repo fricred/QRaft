@@ -151,7 +151,7 @@ Plans:
 Plans:
 - [x] 06-01-PLAN.md — exportDigitalOnly() + Replicate Edge Function proxy + test scaffolds (Wave 1) ✓ 2026-05-03 (commits `8c0cda2` scaffolds+exportDigitalOnly + `52c9ce4` ai-stylize Edge Function+QrAnimationService stub; REPLICATE_API_KEY in Deno.env T-06-01; prompt sanitization T-06-02; 5/month gate T-06-03; 3 wave-0 sentinels; 0 analyzer issues)
 - [x] 06-02-PLAN.md — QRD-01 animated GIF: QrAnimationService + QrAnimatePage (Wave 2) ✓ 2026-05-03 (commits `32b3398` service+tests + `6286f54` controller+page; buildGif in compute() isolate; image 4.5.4 Image.addFrame() API; Share.shareXFiles v10; 5 unit tests; 0 analyzer issues)
-- [ ] 06-03-PLAN.md — QRD-02 AI stylized QR: QrAiStyleService + QrAiStylePage + scannability gate (Wave 2, parallel to 06-02)
+- [x] 06-03-PLAN.md — QRD-02 AI stylized QR: QrAiStyleService + QrAiStylePage + scannability gate (Wave 2, parallel to 06-02) ✓ 2026-05-03 (commits `d7848d1` RED tests + `69d3798` entity+service+deps + `f877e31` page+controller; domain whitelist T-06-09; profile guard T-06-11; scannability gate analyzeImageOverride; 7 unit tests; 0 analyzer issues)
 - [ ] 06-04-PLAN.md — QRD-03 home widget: home_widget 0.9.1 + Swift WidgetKit + Kotlin Glance + human checkpoint (Wave 3)
 **UI hint**: yes
 **Research needed before planning**: NO (research complete — 06-RESEARCH.md)
@@ -315,7 +315,7 @@ Phase 6    Phase 7           │
 | 3. QR Scanner | 2/3 | In progress | - |
 | 4. Redirect Service Foundation | 3/3 | Complete | 2026-05-01 |
 | 5. QR Customization (Print-Safe) | 3/5 | In progress | 2026-05-02 (plans 01-03) |
-| 6. QR Digital-Only Features | 0/4 | Planned | - |
+| 6. QR Digital-Only Features | 3/4 | In progress | 2026-05-03 (plans 01-03) |
 | 7. Marketplace Catalog + QR Export | 0/4 | Planned | - |
 | 8. Cart & Customization Snapshot | 0/? | Not started | - |
 | 9. Checkout, Wompi & Compliance | 0/? | Not started | - |
