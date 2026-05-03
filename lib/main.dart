@@ -87,6 +87,7 @@ class _QRaftAppState extends ConsumerState<QRaftApp> {
 
     return MaterialApp(
       title: 'QRaft',
+      navigatorKey: appNavigatorKey, // used by DeepLinkHandler for payment-result cold-launch
       debugShowCheckedModeBanner: false,
       locale: locale,
       localizationsDelegates: const [

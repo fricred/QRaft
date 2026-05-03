@@ -1,9 +1,16 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'supabase_service.dart';
+import '../../features/checkout/presentation/pages/payment_result_screen.dart';
+
+/// Global navigator key used by [DeepLinkHandler] to push payment result
+/// screens from cold-launch deep links (T-09-12 namespacing).
+/// Wire this into [MaterialApp.navigatorKey] in `main.dart`.
+final GlobalKey<NavigatorState> appNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'appNavigatorKey');
 
 // Deeplink service provider
 final deepLinkServiceProvider = Provider<DeepLinkService>((ref) {
@@ -104,6 +111,33 @@ class DeepLinkService {
     return parseSupabaseAuthLink(link);
   }
 
+  // ─── Payment result deep link helpers (T-09-12) ────────────────────────
+
+  /// Returns true when [link] is a Wompi payment-result deep link
+  /// (`qraft://payment-result[?...]`).
+  ///
+  /// Checked BEFORE any auth-related processing to prevent the auth state
+  /// machine from accidentally consuming payment-result URLs.
+  static bool isPaymentResultLink(String link) {
+    return link.startsWith('qraft://payment-result');
+  }
+
+  /// Extracts `order_id` and `ref` query parameters from a
+  /// `qraft://payment-result` link.
+  ///
+  /// Returns null when the URL is not a valid payment-result link or when
+  /// `order_id` is missing.
+  static Map<String, String>? parsePaymentResultLink(String link) {
+    if (!isPaymentResultLink(link)) return null;
+    final uri = Uri.parse(link);
+    final orderId = uri.queryParameters['order_id'];
+    if (orderId == null || orderId.isEmpty) return null;
+    return {
+      'order_id': orderId,
+      'ref': uri.queryParameters['ref'] ?? '',
+    };
+  }
+
   // Handle password reset deeplink (Supabase format)
   static bool isPasswordResetLink(String link) {
     final parsed = parseSupabaseAuthLink(link);
@@ -145,6 +179,14 @@ class DeepLinkHandler {
   void handleDeepLink(String link) {
     debugPrint('🔗 Received deeplink: $link');
 
+    // ── Payment result deep link (qraft://payment-result) ─────────────────
+    // Checked FIRST to prevent the auth state machine from consuming it
+    // (T-09-12: deep link collision guard).
+    if (DeepLinkService.isPaymentResultLink(link)) {
+      _handlePaymentResult(link);
+      return;
+    }
+
     // Handle Supabase Auth links
     if (DeepLinkService.isSignupConfirmationLink(link)) {
       _handleSignupConfirmation(link);
@@ -155,6 +197,29 @@ class DeepLinkHandler {
     } else {
       debugPrint('⚠️ Unhandled deeplink: $link');
     }
+  }
+
+  /// Handles cold-launch `qraft://payment-result?order_id=...` deep links.
+  ///
+  /// This covers the PSE flow where the user leaves the app and returns via
+  /// the system browser.  The WebView intercept handles the in-app case;
+  /// this method handles the rarer cold-launch path.
+  void _handlePaymentResult(String link) {
+    final params = DeepLinkService.parsePaymentResultLink(link);
+    if (params == null) {
+      debugPrint('⚠️ Payment result deep link missing order_id: $link');
+      return;
+    }
+    debugPrint('💳 Payment result deep link: order_id=${params['order_id']}');
+
+    appNavigatorKey.currentState?.push(
+      MaterialPageRoute<void>(
+        builder: (_) => PaymentResultScreen(
+          orderId: params['order_id']!,
+          transactionRef: params['ref'] ?? '',
+        ),
+      ),
+    );
   }
 
   void _handleSignupConfirmation(String link) async {
