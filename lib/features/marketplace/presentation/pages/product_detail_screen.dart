@@ -6,12 +6,16 @@ import '../../../../shared/widgets/glass_button.dart';
 import '../../domain/entities/product_variant_entity.dart';
 import '../widgets/material_preview_widget.dart';
 import '../../../qr_library/presentation/providers/qr_library_providers.dart';
+import '../../../cart/presentation/pages/cart_screen.dart';
+import '../../../cart/presentation/providers/cart_providers.dart';
+import '../../../cart/data/repositories/cart_repository_impl.dart';
+import '../../../auth/data/providers/supabase_auth_provider.dart';
 
 String _formatCop(int price) =>
     NumberFormat.currency(locale: 'es_CO', symbol: '\$', decimalDigits: 0)
         .format(price);
 
-class ProductDetailScreen extends ConsumerWidget {
+class ProductDetailScreen extends ConsumerStatefulWidget {
   final ProductVariantEntity variant;
 
   /// Optional QR code ID passed from the QR library "Engrabar" action.
@@ -25,7 +29,77 @@ class ProductDetailScreen extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProductDetailScreen> createState() =>
+      _ProductDetailScreenState();
+}
+
+class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
+  bool _isLoading = false;
+
+  Future<void> _addToCart() async {
+    // Guard: no QR selected
+    if (widget.qrCodeId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Selecciona un QR para agregar al carrito'),
+        ),
+      );
+      return;
+    }
+
+    // Guard: not authenticated
+    final user = ref.read(authStateProvider);
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Debes iniciar sesión')),
+      );
+      return;
+    }
+
+    // Resolve QRCodeEntity from library
+    final qrCodesAsync = ref.read(userQRCodesProvider);
+    final qrCodes = qrCodesAsync.value ?? [];
+    final matches = qrCodes.where((qr) => qr.id == widget.qrCodeId);
+    if (matches.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('QR no encontrado en tu biblioteca')),
+      );
+      return;
+    }
+
+    final qrCode = matches.first;
+    final customizationSnapshot = qrCode.customization.toJson();
+
+    setState(() => _isLoading = true);
+    try {
+      await ref.read(cartRepositoryProvider).addItem(
+            userId: user.id,
+            productVariantId: widget.variant.id,
+            qrCodeId: widget.qrCodeId!,
+            customizationSnapshot: customizationSnapshot,
+          );
+
+      if (!mounted) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const CartScreen()),
+      );
+    } on CartException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al agregar al carrito')),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
       appBar: AppBar(
@@ -33,7 +107,7 @@ class ProductDetailScreen extends ConsumerWidget {
         elevation: 0,
         foregroundColor: Colors.white,
         title: Text(
-          variant.productNameEs,
+          widget.variant.productNameEs,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -66,11 +140,11 @@ class ProductDetailScreen extends ConsumerWidget {
                         spacing: 8,
                         runSpacing: 8,
                         children: [
-                          _InfoChip(label: variant.material.displayNameEs),
-                          _InfoChip(label: variant.sizeLabel),
+                          _InfoChip(label: widget.variant.material.displayNameEs),
+                          _InfoChip(label: widget.variant.sizeLabel),
                           _InfoChip(
                             label:
-                                '${variant.widthMm}×${variant.heightMm} mm',
+                                '${widget.variant.widthMm}×${widget.variant.heightMm} mm',
                           ),
                         ],
                       ),
@@ -79,7 +153,7 @@ class ProductDetailScreen extends ConsumerWidget {
 
                       // 3. COP Price
                       Text(
-                        _formatCop(variant.priceCop),
+                        _formatCop(widget.variant.priceCop),
                         style: const TextStyle(
                           color: Color(0xFF00FF88),
                           fontSize: 28,
@@ -90,10 +164,10 @@ class ProductDetailScreen extends ConsumerWidget {
                       const SizedBox(height: 16),
 
                       // 4. Description
-                      if (variant.productDescriptionEs != null &&
-                          variant.productDescriptionEs!.isNotEmpty) ...[
+                      if (widget.variant.productDescriptionEs != null &&
+                          widget.variant.productDescriptionEs!.isNotEmpty) ...[
                         Text(
-                          variant.productDescriptionEs!,
+                          widget.variant.productDescriptionEs!,
                           style: TextStyle(
                             color: Colors.grey[400],
                             fontSize: 14,
@@ -141,19 +215,12 @@ class ProductDetailScreen extends ConsumerWidget {
 
                       const SizedBox(height: 32),
 
-                      // 6. CTA button (Phase 8 placeholder)
+                      // 6. CTA button — Phase 8 wired
                       PrimaryGlassButton(
                         text: 'Agregar al carrito',
                         width: double.infinity,
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Carrito disponible en la próxima actualización',
-                              ),
-                            ),
-                          );
-                        },
+                        isLoading: _isLoading,
+                        onPressed: _isLoading ? null : _addToCart,
                       ),
 
                       const SizedBox(height: 24),
@@ -169,8 +236,8 @@ class ProductDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildPreview(BuildContext context, WidgetRef ref) {
-    if (qrCodeId == null) {
-      return _SelectQrPrompt(variant: variant);
+    if (widget.qrCodeId == null) {
+      return _SelectQrPrompt(variant: widget.variant);
     }
 
     final qrCodesAsync = ref.watch(userQRCodesProvider);
@@ -179,14 +246,14 @@ class ProductDetailScreen extends ConsumerWidget {
       loading: () => const _PreviewShimmer(),
       error: (_, __) => const _PreviewError(),
       data: (qrCodes) {
-        final matches = qrCodes.where((qr) => qr.id == qrCodeId);
+        final matches = qrCodes.where((qr) => qr.id == widget.qrCodeId);
         if (matches.isEmpty) {
-          return _SelectQrPrompt(variant: variant);
+          return _SelectQrPrompt(variant: widget.variant);
         }
 
         return MaterialPreviewWidget(
           qrCode: matches.first,
-          material: variant.material,
+          material: widget.variant.material,
         );
       },
     );
