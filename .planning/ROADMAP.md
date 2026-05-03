@@ -236,7 +236,7 @@ Plans:
 **Plans**: 5 plans (1/5 complete)
 Plans:
 - [x] 10-01-PLAN.md — user_fcm_tokens + notifications migration + FcmService activation + token registration (Wave 1) ✓ 2026-05-03 (commits `c084a3d` migration + `554ee00` RED tests + `d50c4c2` FcmService + main.dart; 5/5 tests pass; flutter analyze 0 issues)
-- [ ] 10-02-PLAN.md — orders domain + data layer + OrdersListScreen + OrderDetailScreen + Realtime stream + OrderStatusTimeline (Wave 2)
+- [x] 10-02-PLAN.md — orders domain + data layer + OrdersListScreen + OrderDetailScreen + Realtime stream + OrderStatusTimeline (Wave 2) ✓ 2026-05-03 (commits `97caa89` RED tests + `4b51242` domain layer + `146491a` data+UI+nav; 10 tests pass; flutter analyze 0 issues; MKT-07+MKT-08 complete)
 - [ ] 10-03-PLAN.md — FCM foreground overlay (flutter_local_notifications) + background/killed-app notification handler + navigation (Wave 2, parallel to 10-02)
 - [ ] 10-04-PLAN.md — send-fcm Edge Function + transition_order RPC + apply_payment_event patch + DB webhook wiring (Wave 3)
 - [ ] 10-05-PLAN.md — phase verification (Wave 3)

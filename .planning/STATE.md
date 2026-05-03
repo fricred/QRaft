@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T17:58:00Z"
+last_updated: "2026-05-03T18:06:00Z"
 progress:
   total_phases: 12
   completed_phases: 8
@@ -14,13 +14,13 @@ progress:
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 10-01 — FCM activated; FcmService + user_fcm_tokens + notifications tables; firebase_messaging wired before runApp)
+**Last updated:** 2026-05-03 (post plan 10-02 — Orders domain + realtime UI; OrdersListScreen + OrderDetailScreen + OrderStatusTimeline + Orders tab in MainScaffold)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 10 in progress (1/5 plans done: 10-01 FCM activation + user_fcm_tokens + notifications tables). Phase 9 COMPLETE. Phase 8 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
+**Current focus**: Phase 10 in progress (2/5 plans done: 10-01 FCM + 10-02 orders realtime UI). Phase 9 COMPLETE. Phase 8 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
 
 **Strategic anchors**:
 
@@ -33,10 +33,10 @@ progress:
 ## Current Position
 
 **Milestone:** v1.0
-**Phase:** 10 of 12 — Orders, Realtime & FCM Notifications (next)
-**Plan:** 10-01 ~ 2026-05-03 (COMPLETE: FCM activated; FcmService + user_fcm_tokens + notifications tables; background handler wired in main.dart)
-**Status:** Phase 10 IN PROGRESS (1/5 plans); Phase 9 COMPLETE (5/5); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T17:58:00Z
+**Phase:** 10 of 12 — Orders, Realtime & FCM Notifications
+**Plan:** 10-02 ~ 2026-05-03 (COMPLETE: orders domain + Supabase Realtime stream + OrdersListScreen + OrderDetailScreen + OrderStatusTimeline + Orders tab in MainScaffold)
+**Status:** Phase 10 IN PROGRESS (2/5 plans); Phase 9 COMPLETE (5/5); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T18:06:00Z
 
 **Progress:** [█████████▊] 98%
 
@@ -50,7 +50,7 @@ Phase 6:  ▰ QR Digital-Only Features          ✓ COMPLETE 2026-05-03 (4/4 pla
 Phase 7:  ▰ Marketplace Catalog + QR Export   ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 8:  ▰ Cart & Customization Snapshot     ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 9:  ▰ Checkout, Wompi & Compliance      ✓ COMPLETE 2026-05-03 (5/5 plans)
-Phase 10: ▱ Orders, Realtime & FCM          IN PROGRESS (1/5 plans)
+Phase 10: ▱ Orders, Realtime & FCM          IN PROGRESS (2/5 plans)
 Phase 11: ▱ Operator Dashboard + Tattoo Line
 Phase 12: ▱ Premium, Polish & Observability (GA)
 ```
@@ -182,6 +182,10 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | Non-transaction.updated events recorded in payment_events but cause no FSM state change — logged as informational, no RPC call | plan 09-04 SUMMARY (`9fc5056`) |
 | Habeas data deletion is operator-manual until Phase 12; pqrs_submissions row provides Ley 1581 audit trail for SIC compliance | plan 09-05 SUMMARY (`747cd62`) |
 | FcmService uses injectable testInstance factory (messaging + currentUserIdResolver) to enable unit testing without real Firebase/Supabase | plan 10-01 SUMMARY (`d50c4c2`) |
+| Orders tab added as index 5 (sixth tab) in MainScaffold; MainNavigation Row extended to 5 side + 1 center to avoid displacing existing tabs | plan 10-02 SUMMARY (`146491a`) |
+| OrderStatusTimeline hides happy-path pending steps when current status is terminal (cancelled/refunded) — only completed + terminal node shown | plan 10-02 SUMMARY (`146491a`) |
+| orderDetailStreamProvider uses StreamProvider.family (not FutureProvider) to maintain Supabase Realtime subscription for detail screen lifetime | plan 10-02 SUMMARY (`146491a`) |
+| getUserOrders guards against null currentUser by returning empty list — avoids assert crash when provider mounts before auth resolves | plan 10-02 SUMMARY (`146491a`) |
 | firebaseBackgroundMessageHandler is a no-op stub in Phase 10 plan 01 — Plan 03 adds local notification display via flutter_local_notifications | plan 10-01 SUMMARY (`d50c4c2`) |
 | notifications table has NO INSERT/UPDATE/DELETE policy for authenticated role — only service_role (send-fcm Edge Function) may write (T-10-02) | plan 10-01 SUMMARY (`d50c4c2`) |
 | user_fcm_tokens UNIQUE(user_id, token) + upsert on conflict is the DoS guard (T-10-04); token never logged (T-10-03) | plan 10-01 SUMMARY (`d50c4c2`) |
@@ -231,6 +235,26 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 10-02 execution):**
+
+- `lib/features/orders/domain/entities/order_entity.dart` — OrderEntity, OrderStatus enum (11 values), OrderStatusX extension (label/isFinal/stepIndex/fromString)
+- `lib/features/orders/domain/entities/order_item_entity.dart` — OrderItemEntity with customization snapshot + qrPngUrl
+- `lib/features/orders/domain/repositories/order_repository.dart` — abstract OrderRepository interface
+- `lib/features/orders/data/datasources/order_supabase_data_source.dart` — getUserOrders (paginated), watchOrder (Realtime stream), getOrderItems
+- `lib/features/orders/data/repositories/order_repository_impl.dart` — maps raw maps to domain entities
+- `lib/features/orders/presentation/providers/orders_providers.dart` — ordersListProvider, orderDetailStreamProvider, orderItemsProvider
+- `lib/features/orders/presentation/pages/orders_list_screen.dart` — shimmer loading, pull-to-refresh, status chips, COP formatting
+- `lib/features/orders/presentation/pages/order_detail_screen.dart` — Realtime stream subscription, line items, totals, shipping address
+- `lib/features/orders/presentation/widgets/order_status_timeline.dart` — vertical FSM widget
+- `test/features/orders/domain/order_status_test.dart` — 10 unit tests (TDD RED/GREEN)
+- `lib/features/main/main_scaffold.dart` — Orders tab at index 5
+- `lib/shared/widgets/main_navigation.dart` — ordersTabKey param + 6th slot
+- `.planning/phases/10-orders-realtime-fcm/10-02-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+- `.planning/ROADMAP.md` (Phase 10 plan 02 marked)
+
+**Last session (plan 10-02):** 2026-05-03 — Complete orders module. Commits `97caa89` (TDD RED tests) + `4b51242` (domain layer GREEN) + `146491a` (data layer + UI + nav). flutter analyze 0 issues. 10/10 tests pass. MKT-07 + MKT-08 complete. NOTE: orders + order_items tables created by migration `20260505000000_orders_payments_schema.sql` (Phase 9 plan 01). Realtime subscription on orders table is active once migration is applied.
 
 **Files written this session (plan 10-01 execution):**
 
