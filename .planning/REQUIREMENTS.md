@@ -35,7 +35,7 @@
 
 - [ ] **MKT-01**: User puede navegar catálogo de productos por material × tamaño × precio con filtros y previews
 - [x] **MKT-02**: User puede ver preview compuesto de su QR aplicado sobre el material seleccionado (live render)
-- [ ] **MKT-03**: User puede mantener carrito persistente con cálculo de total (subtotal + IVA 19% + envío)
+- [x] **MKT-03**: User puede mantener carrito persistente con cálculo de total (subtotal + IVA 19% + envío)
 - [ ] **MKT-04**: User puede completar checkout con dirección Colombia (departamento/municipio/dirección) usando dataset DANE local
 - [ ] **MKT-05**: User puede pagar vía Wompi (tarjetas, PSE, Nequi, Daviplata) en WebView Checkout
 - [ ] **MKT-06**: Sistema valida y procesa webhooks de Wompi vía Supabase Edge Function con SHA256 X-Event-Checksum + idempotency lock
@@ -44,7 +44,7 @@
 - [ ] **MKT-09**: User recibe push notifications FCM de cambios de estado de orden
 - [ ] **MKT-10**: User puede suscribirse a tier premium vía RevenueCat (modelo freemium — quita ads + features avanzados)
 - [ ] **MKT-11**: Operator puede gestionar órdenes desde dashboard (Flutter Web o Supabase Studio) con transitions vía RPC
-- [ ] **MKT-12**: Sistema guarda customization snapshot (PNG 2160px + JSONB) en cart/order para que ediciones del library no afecten órdenes en vuelo
+- [x] **MKT-12**: Sistema guarda customization snapshot (PNG 2160px + JSONB) en cart/order para que ediciones del library no afecten órdenes en vuelo
 
 ### Redirect Service (foundation v2)
 
@@ -149,7 +149,7 @@ Populated by gsd-roadmapper agent on 2026-05-01.
 | SCAN-04 | Phase 3 | Pending |
 | MKT-01 | Phase 7 | In Progress (catalog+filter UI: 07-02 ✓; material preview: 07-03) |
 | MKT-02 | Phase 7 | Complete (07-03 ✓ 2026-05-03) |
-| MKT-03 | Phase 8 | In Progress (schema+domain: 08-01 ✓; cart UI: 08-02; totals: 08-04) |
+| MKT-03 | Phase 8 | Complete (08-04 ✓ 2026-05-03 — CartSummaryWidget + cartTotalsProvider RPC) |
 | MKT-04 | Phase 9 | Pending |
 | MKT-05 | Phase 9 | Pending |
 | MKT-06 | Phase 9 | Pending |
@@ -158,7 +158,7 @@ Populated by gsd-roadmapper agent on 2026-05-01.
 | MKT-09 | Phase 10 | Pending |
 | MKT-10 | Phase 12 | Pending |
 | MKT-11 | Phase 11 | Pending |
-| MKT-12 | Phase 8 | In Progress (JSONB schema + QRCustomization.toJson(): 08-01 ✓; PNG freeze: 08-03) |
+| MKT-12 | Phase 8 | Complete (08-03 ✓ 2026-05-03 — CustomizationSnapshotService + unawaited PNG upload) |
 | RDR-01 | Phase 4 | Pending |
 | RDR-02 | Phase 4 | Pending |
 | RDR-03 | Phase 4 | Pending |

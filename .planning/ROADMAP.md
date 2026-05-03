@@ -28,7 +28,7 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
 - [x] **Phase 5: QR Customization (Print-Safe)** — Users can personalize QRs with logos/colors/styles/frames/templates and select print/digital/tattoo profile ✓ 2026-05-03
 - [x] **Phase 6: QR Digital-Only Features** — Users can create animated, AI-stylized, and home-screen-widget QRs (digital-only flow) ✓ 2026-05-03
 - [x] **Phase 7: Marketplace Catalog + QR Export Pipeline** — Users can browse engraved-product catalog and see live preview of their customized QR on each material ✓ 2026-05-03
-- [ ] **Phase 8: Cart & Customization Snapshot** — Users can build a persistent cart with frozen customization snapshots and accurate totals (subtotal + IVA 19% + envío)
+- [x] **Phase 8: Cart & Customization Snapshot** — Users can build a persistent cart with frozen customization snapshots and accurate totals (subtotal + IVA 19% + envío) ✓ 2026-05-03
 - [ ] **Phase 9: Checkout, Wompi, Colombian Compliance** — Users can pay via Wompi (cards, PSE, Nequi, Daviplata) with verified webhooks; LGL-02..05 disclaimers and habeas data live
 - [ ] **Phase 10: Orders, Realtime & FCM Notifications** — Users can track order status with timeline, receive push notifications on every state change
 - [ ] **Phase 11: Operator Dashboard + Tattoo Line** — Operator can fulfill orders end-to-end; Tattoo category live in marketplace with TAT-safe profile
@@ -177,7 +177,7 @@ Plans:
 **Research needed before planning**: NO (research complete — 07-RESEARCH.md)
 **Parallel-eligible**: NO (gates Phase 8)
 
-### Phase 8: Cart & Customization Snapshot
+### Phase 8: Cart & Customization Snapshot ✓ COMPLETE 2026-05-03
 **Goal**: Users can add customized QR + product variant pairs to a persistent cart with frozen customization snapshots; totals are computed server-authoritatively (subtotal + IVA 19% + envío)
 **Depends on**: Phase 7 (catalog + PNG export pipeline)
 **Requirements**: MKT-03, MKT-12
@@ -187,12 +187,12 @@ Plans:
   3. `customization_snapshot` (JSONB) and pre-rasterized 2160px PNG are frozen at add-to-cart; subsequent edits to the QR in library do NOT affect the cart entry
   4. Cart total displays subtotal + IVA 19% + envío clearly broken down; values match server-computed `compute_order_totals()` function (NOT computed client-side as source of truth)
   5. User can update quantity, remove items, and clear cart; all operations are reflected in both local and remote stores
-**Plans**: 4 plans
+**Plans**: 4 plans (4/4 complete) ✓ 2026-05-03
 Plans:
-- [x] 08-01-PLAN.md — cart_items Supabase schema + server_compute_order_totals RPC + domain entities + CartRepository + Riverpod providers
-- [x] 08-02-PLAN.md — AddToCart button wired into ProductDetailScreen + CartScreen item list + remove action (2026-05-03)
+- [x] 08-01-PLAN.md — cart_items Supabase schema + server_compute_order_totals RPC + domain entities + CartRepository + Riverpod providers ✓ 2026-05-03
+- [x] 08-02-PLAN.md — AddToCart button wired into ProductDetailScreen + CartScreen item list + remove action ✓ 2026-05-03
 - [x] 08-03-PLAN.md — Customization snapshot capture: freeze QRCustomization JSON + export 2160px PNG → upload to order-assets/ ✓ 2026-05-03 (commits `8cc89db` + `acb0d0b` + `73ad8c0`; 4/4 tests pass; flutter analyze 0 issues)
-- [ ] 08-04-PLAN.md — CartSummaryWidget (server RPC totals: subtotal + IVA 19% + envío) + Proceder al pago button placeholder
+- [x] 08-04-PLAN.md — CartSummaryWidget (server RPC totals: subtotal + IVA 19% + envío) + Proceder al pago button placeholder ✓ 2026-05-03 (commits `0bee67d` RED + `20172ae` CartSummaryWidget + `082f488` CartScreen; 4/4 tests pass; flutter analyze lib/features/cart/ 0 issues)
 **UI hint**: yes
 **Research needed before planning**: NO
 **Parallel-eligible**: NO (gates Phase 9)

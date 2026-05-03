@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T16:46:52Z"
+last_updated: "2026-05-03T16:52:53Z"
 progress:
   total_phases: 12
-  completed_phases: 5
+  completed_phases: 7
   total_plans: 35
-  completed_plans: 32
-  percent: 91
+  completed_plans: 34
+  percent: 97
 ---
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 08-03 — Phase 8 in progress 3/4)
+**Last updated:** 2026-05-03 (post plan 08-04 — Phase 8 COMPLETE 4/4)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 8 IN PROGRESS (3/4 plans — 08-01 ✓ 08-02 ✓ 08-03 ✓ 2026-05-03). Phase 7 COMPLETE (4/4 plans). Phase 6 COMPLETE (4/4 plans). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 8 plan 08-04 (CartSummaryWidget + totals).
+**Current focus**: Phase 8 COMPLETE (4/4 plans 2026-05-03). Phase 7 COMPLETE (4/4 plans). Phase 6 COMPLETE (4/4 plans). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 9 (Checkout, Wompi & Compliance).
 
 **Strategic anchors**:
 
@@ -33,12 +33,12 @@ progress:
 ## Current Position
 
 **Milestone:** v1.0
-**Phase:** 8 of 12 — Cart & Customization Snapshot (in progress)
-**Plan:** 08-03 ✓ 2026-05-03 (3/4 plans — Phase 8 in progress)
-**Status:** Phase 8 IN PROGRESS (3/4 plans); Phase 7 COMPLETE; Phase 6 COMPLETE (4/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T16:46:52Z
+**Phase:** 9 of 12 — Checkout, Wompi & Compliance (pending)
+**Plan:** 08-04 ✓ 2026-05-03 (Phase 8 COMPLETE 4/4)
+**Status:** Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE (4/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T16:52:53Z
 
-**Progress:** [█████████░] 91%
+**Progress:** [█████████▌] 97%
 
 ```
 Phase 1:  ▰ Foundation Hardening              ✓ COMPLETE (passed-with-residuals 2026-05-01)
@@ -48,7 +48,7 @@ Phase 4:  ▰ Redirect Service Foundation       ✓ COMPLETE 2026-05-01 (3/3 pla
 Phase 5:  ▰ QR Customization (Print-Safe)     ✓ COMPLETE 2026-05-03 (5/5 plans)
 Phase 6:  ▰ QR Digital-Only Features          ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 7:  ▰ Marketplace Catalog + QR Export   ✓ COMPLETE 2026-05-03 (4/4 plans)
-Phase 8:  ▱ Cart & Customization Snapshot     IN PROGRESS (3/4 plans — 08-01 ✓ 08-02 ✓ 08-03 ✓)
+Phase 8:  ▰ Cart & Customization Snapshot     ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 9:  ▱ Checkout, Wompi & Compliance
 Phase 10: ▱ Orders, Realtime & FCM
 Phase 11: ▱ Operator Dashboard + Tattoo Line
@@ -163,6 +163,8 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | captureSnapshot forces EC-H by passing hasLogo=true override to QrDecorationBuilder.buildQrImage() — QrImage factory takes QrCode object not data string; EC-H ensures sufficient damage tolerance for all print-safe engraving | plan 08-03 SUMMARY (`acb0d0b`) |
 | unawaited() PNG upload: cart item lives even if order-assets/ Storage unavailable; JSONB snapshot is the canonical engraver input (MKT-12) | plan 08-03 SUMMARY (`73ad8c0`) |
 | _QrThumbnail uses CachedNetworkImage with icon fallback — handles null pngStorageUrl gracefully for items added before upload completed | plan 08-03 SUMMARY (`73ad8c0`) |
+| es_CO NumberFormat.currency places symbol AFTER number ('89.000 $'); test helpers must use same formatter to avoid hardcoded locale-format divergence | plan 08-04 SUMMARY (`20172ae`) |
+| _onProceedToCheckout() is an extracted replace-point method; Phase 9 replaces SnackBar body with navigation to CheckoutScreen + server-computed Wompi amount | plan 08-04 SUMMARY (`082f488`) |
 | Server-side `compute_order_totals()` for IVA + envío (NOT client-computed) | research ARCHITECTURE.md, PITFALLS.md |
 | Wompi secrets ONLY in Supabase Edge Function env (never in Flutter app) | research STACK.md, PITFALLS.md |
 
@@ -206,6 +208,17 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 08-04 execution):**
+
+- `lib/features/cart/presentation/widgets/cart_summary_widget.dart` — ConsumerWidget watching cartTotalsProvider; 4-row COP breakdown (subtotal/IVA 19%/envío/total); shimmer loading; Semantics identifiers
+- `lib/features/cart/presentation/pages/cart_screen.dart` — _CartSummaryPlaceholder removed; CartSummaryWidget + PrimaryGlassButton('Proceder al pago') wired; totalsReady guard disables button during loading; _onProceedToCheckout SnackBar placeholder
+- `test/features/cart/presentation/widgets/cart_summary_widget_test.dart` — 4 widget tests (TDD RED/GREEN)
+- `.planning/phases/08-cart-customization-snapshot/08-04-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+- `.planning/ROADMAP.md` (08-04 checkbox + Phase 8 COMPLETE marked)
+
+**Last session (plan 08-04):** 2026-05-03 — CartSummaryWidget + 'Proceder al pago' button wired. Commits `0bee67d` (RED tests) + `20172ae` (CartSummaryWidget GREEN) + `082f488` (CartScreen integration). flutter analyze lib/features/cart/ 0 issues. 4/4 CartSummaryWidget tests; 17/17 cart tests pass. Phase 8 COMPLETE (4/4 plans). Key decisions: es_CO locale outputs trailing symbol '89.000 $'; test _cop() helper mirrors implementation format; pending timer guard in loading test via tester.pump(11s).
 
 **Files written this session (plan 08-03 execution):**
 
