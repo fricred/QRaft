@@ -7,6 +7,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:qraft/l10n/app_localizations.dart';
 import '../../../../shared/widgets/glass_button.dart';
+import '../../../legal/presentation/pages/privacy_policy_screen.dart';
+import '../../../legal/presentation/pages/terms_screen.dart';
+import '../../../legal/presentation/pages/habeas_data_screen.dart';
+import '../../../legal/presentation/pages/garantia_screen.dart';
+import '../../../legal/presentation/pages/pqrs_screen.dart';
 import '../../../../shared/widgets/language_selector.dart';
 import '../controllers/profile_controller.dart';
 import '../widgets/profile_header.dart';
@@ -149,6 +154,15 @@ class ProfileScreen extends ConsumerWidget {
               // Profile actions
               ProfileActionsSection()
                   .animate(delay: 300.ms)
+                  .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart)
+                  .scale(begin: const Offset(0.95, 0.95), duration: 300.ms),
+
+              const SizedBox(height: 24),
+
+              // Legal y soporte section
+              _buildLegalSection(context)
+                  .animate(delay: 350.ms)
                   .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
                   .slideY(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart)
                   .scale(begin: const Offset(0.95, 0.95), duration: 300.ms),
@@ -474,6 +488,136 @@ class ProfileScreen extends ConsumerWidget {
     }
 
     return null;
+  }
+
+  Widget _buildLegalSection(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF2E2E2E),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF3A3A3A)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Text(
+              'Legal y soporte',
+              style: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+          const Divider(color: Color(0xFF3A3A3A), height: 1),
+          Semantics(
+            identifier: 'profile_privacy_policy_tile',
+            child: ListTile(
+              key: const Key('profile_privacy_policy_tile'),
+              leading: const Icon(
+                Icons.privacy_tip_outlined,
+                color: Color(0xFF00FF88),
+              ),
+              title: const Text(
+                'Política de privacidad',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              ),
+              trailing: Icon(Icons.chevron_right, color: Colors.grey[600]),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                    builder: (_) => const PrivacyPolicyScreen()),
+              ),
+            ),
+          ),
+          const Divider(color: Color(0xFF3A3A3A), height: 1, indent: 56),
+          Semantics(
+            identifier: 'profile_terms_tile',
+            child: ListTile(
+              key: const Key('profile_terms_tile'),
+              leading: const Icon(
+                Icons.policy_outlined,
+                color: Color(0xFF00FF88),
+              ),
+              title: const Text(
+                'Términos y condiciones',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              ),
+              trailing: Icon(Icons.chevron_right, color: Colors.grey[600]),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const TermsScreen()),
+              ),
+            ),
+          ),
+          const Divider(color: Color(0xFF3A3A3A), height: 1, indent: 56),
+          Semantics(
+            identifier: 'profile_habeas_data_tile',
+            child: ListTile(
+              key: const Key('profile_habeas_data_tile'),
+              leading: const Icon(
+                Icons.manage_accounts_outlined,
+                color: Color(0xFF00FF88),
+              ),
+              title: const Text(
+                'Mis datos personales',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              ),
+              trailing: Icon(Icons.chevron_right, color: Colors.grey[600]),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                    builder: (_) => const HabeasDataScreen()),
+              ),
+            ),
+          ),
+          const Divider(color: Color(0xFF3A3A3A), height: 1, indent: 56),
+          Semantics(
+            identifier: 'profile_garantia_tile',
+            child: ListTile(
+              key: const Key('profile_garantia_tile'),
+              leading: const Icon(
+                Icons.verified_user_outlined,
+                color: Color(0xFF00FF88),
+              ),
+              title: const Text(
+                'Garantía 3 meses',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              ),
+              trailing: Icon(Icons.chevron_right, color: Colors.grey[600]),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                    builder: (_) => const GarantiaScreen()),
+              ),
+            ),
+          ),
+          const Divider(color: Color(0xFF3A3A3A), height: 1, indent: 56),
+          Semantics(
+            identifier: 'profile_pqrs_tile',
+            child: ListTile(
+              key: const Key('profile_pqrs_tile'),
+              leading: const Icon(
+                Icons.feedback_outlined,
+                color: Color(0xFF00FF88),
+              ),
+              title: const Text(
+                'PQRS',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              ),
+              subtitle: Text(
+                'Peticiones, quejas, reclamos y sugerencias',
+                style: TextStyle(color: Colors.grey[500], fontSize: 12),
+              ),
+              trailing: Icon(Icons.chevron_right, color: Colors.grey[600]),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const PqrsScreen()),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
   }
 
   Widget _buildSubscriptionSection(BuildContext context, WidgetRef ref, AppLocalizations l10n) {

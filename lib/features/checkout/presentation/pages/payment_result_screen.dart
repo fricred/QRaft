@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/widgets/glass_button.dart';
+import '../../../legal/presentation/pages/terms_screen.dart';
+import '../widgets/retracto_disclaimer_widget.dart';
 
 /// Server-authoritative order status enum used by [PaymentResultScreen].
 ///
@@ -287,43 +289,29 @@ class _PaymentResultScreenState extends ConsumerState<PaymentResultScreen>
 
               const SizedBox(height: 32),
 
-              // ─── Ley 1480 retracto disclaimer (LGL-02 partial) ───────────
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.amber.shade600,
-                    width: 1.5,
+              // ─── Ley 1480 retracto disclaimer (LGL-02) ───────────────────
+              const RetractoDisclaimerWidget(),
+
+              const SizedBox(height: 8),
+
+              TextButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const TermsScreen(),
                   ),
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.amber.withValues(alpha: 0.05),
                 ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: Colors.amber.shade500,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Productos personalizados (QR grabado) están '
-                        'excluidos del derecho de retracto conforme al '
-                        'Art. 47 num. 3 de la Ley 1480 de 2011.',
-                        style: TextStyle(
-                          color: Colors.amber.shade300,
-                          fontSize: 12,
-                          height: 1.4,
-                        ),
-                      ),
-                    ),
-                  ],
+                child: const Text(
+                  'Ver términos y condiciones',
+                  style: TextStyle(
+                    color: Color(0xFFFFB300),
+                    fontSize: 12,
+                    decoration: TextDecoration.underline,
+                    decorationColor: Color(0xFFFFB300),
+                  ),
                 ),
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 20),
 
               Semantics(
                 identifier: 'view_order_button',

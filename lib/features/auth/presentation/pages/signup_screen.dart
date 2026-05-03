@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/widgets/qraft_logo.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
+import '../../../legal/presentation/pages/privacy_policy_screen.dart';
 import 'package:qraft/l10n/app_localizations.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
@@ -402,9 +403,48 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     ).animate()
                             .fadeIn(duration: 400.ms, delay: 200.ms, curve: Curves.easeOutCubic)
                             .slideY(begin: 0.15, duration: 400.ms, delay: 200.ms, curve: Curves.easeOutQuart),
-                          
-                          const SizedBox(height: 24),
-                          
+
+                          const SizedBox(height: 12),
+
+                          // Privacy policy link (Ley 1581 — LGL-03)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Al registrarte aceptas nuestros',
+                                style: TextStyle(
+                                  color: Colors.grey[500],
+                                  fontSize: 12,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute<void>(
+                                    builder: (_) => const PrivacyPolicyScreen(),
+                                  ),
+                                ),
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 4, vertical: 0),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: const Text(
+                                  'Términos y política de privacidad',
+                                  style: TextStyle(
+                                    color: Color(0xFF00FF88),
+                                    fontSize: 12,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Color(0xFF00FF88),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 12),
+
                           // Login link
                           TextButton(
                             onPressed: widget.onLoginPressed,
