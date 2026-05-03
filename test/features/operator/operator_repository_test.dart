@@ -4,7 +4,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:qraft/features/operator/data/datasources/operator_supabase_datasource.dart';
 import 'package:qraft/features/operator/data/repositories/operator_repository_impl.dart';
-import 'package:qraft/features/operator/domain/entities/operator_order_row.dart';
 
 // ---------------------------------------------------------------------------
 // Mocks
