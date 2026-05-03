@@ -5,6 +5,7 @@ import '../../../../shared/widgets/glass_button.dart';
 import '../providers/cart_providers.dart';
 import '../widgets/cart_item_tile.dart';
 import '../widgets/cart_summary_widget.dart';
+import '../../../checkout/presentation/pages/shipping_screen.dart';
 
 /// Full cart screen showing the current user's cart items with quantity
 /// controls, remove action, empty state, and a loading shimmer.
@@ -88,13 +89,9 @@ class CartScreen extends ConsumerWidget {
   }
 
   void _onProceedToCheckout(BuildContext context) {
-    // Placeholder — Phase 9 will replace this SnackBar with navigation
-    // to CheckoutScreen, passing the server-computed order total.
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Checkout disponible en la proxima actualizacion',
-        ),
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => const ShippingScreen(),
       ),
     );
   }
