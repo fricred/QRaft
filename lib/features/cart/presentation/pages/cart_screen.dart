@@ -1,0 +1,194 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shimmer/shimmer.dart';
+import '../../../../shared/widgets/glass_button.dart';
+import '../providers/cart_providers.dart';
+import '../widgets/cart_item_tile.dart';
+
+/// Full cart screen showing the current user's cart items with quantity
+/// controls, remove action, empty state, and a loading shimmer.
+///
+/// The "Proceed to Checkout" placeholder button will be replaced by Phase 9.
+class CartScreen extends ConsumerWidget {
+  const CartScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cartAsync = ref.watch(cartItemsProvider);
+
+    return Scaffold(
+      backgroundColor: const Color(0xFF1A1A1A),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.white,
+        title: const Text(
+          'Mi Carrito',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      body: cartAsync.when(
+        loading: () => _buildShimmer(),
+        error: (error, _) => _buildError(context, ref, error),
+        data: (items) {
+          if (items.isEmpty) {
+            return _buildEmptyState(context);
+          }
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: items.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (_, index) =>
+                      CartItemTile(item: items[index]),
+                ),
+              ),
+              _CartSummaryPlaceholder(),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  /// Three shimmer rectangles mimicking cart item tiles.
+  Widget _buildShimmer() {
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: 3,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (_, __) => Shimmer.fromColors(
+        baseColor: const Color(0xFF2E2E2E),
+        highlightColor: const Color(0xFF3E3E3E),
+        child: Container(
+          height: 80,
+          decoration: BoxDecoration(
+            color: const Color(0xFF2E2E2E),
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildError(BuildContext context, WidgetRef ref, Object error) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline, color: Colors.grey[600], size: 48),
+            const SizedBox(height: 16),
+            const Text(
+              'Error al cargar el carrito',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => ref.refresh(cartItemsProvider),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF00FF88),
+                foregroundColor: Colors.black,
+              ),
+              child: const Text('Reintentar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.shopping_cart_outlined,
+              color: Colors.grey[600],
+              size: 64,
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Tu carrito está vacío',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Agrega productos desde el catálogo',
+              style: TextStyle(color: Colors.grey[400], fontSize: 14),
+            ),
+            const SizedBox(height: 28),
+            PrimaryGlassButton(
+              text: 'Ver catálogo',
+              width: 200,
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Placeholder cart summary card.
+///
+/// Phase 9 will replace this with the real RPC-powered total (server_compute_order_totals).
+class _CartSummaryPlaceholder extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      identifier: 'cart_summary_placeholder',
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF2E2E2E),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.08),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Calculando total...',
+              style: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 14,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            PrimaryGlassButton(
+              text: 'Proceder al pago',
+              width: double.infinity,
+              // Placeholder — Phase 9 checkout flow wires this button.
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Checkout disponible en la próxima actualización'),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
