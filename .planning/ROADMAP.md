@@ -233,12 +233,13 @@ Plans:
   4. Detail screen subscribes to Supabase Realtime on `orders` filtered by user_id; status changes update in <2s without manual refresh
   5. User receives FCM push on EVERY state transition; tapping notification deep-links to order detail; foreground notifications display via `flutter_local_notifications`
   6. FCM tokens are registered in `user_fcm_tokens` table; per-device token rotation is handled
-**Plans**: 4 plans
+**Plans**: 5 plans (1/5 complete)
 Plans:
-- [ ] 10-01-PLAN.md — user_fcm_tokens + notifications migration + FcmService activation + token registration (Wave 1)
+- [x] 10-01-PLAN.md — user_fcm_tokens + notifications migration + FcmService activation + token registration (Wave 1) ✓ 2026-05-03 (commits `c084a3d` migration + `554ee00` RED tests + `d50c4c2` FcmService + main.dart; 5/5 tests pass; flutter analyze 0 issues)
 - [ ] 10-02-PLAN.md — orders domain + data layer + OrdersListScreen + OrderDetailScreen + Realtime stream + OrderStatusTimeline (Wave 2)
 - [ ] 10-03-PLAN.md — FCM foreground overlay (flutter_local_notifications) + background/killed-app notification handler + navigation (Wave 2, parallel to 10-02)
 - [ ] 10-04-PLAN.md — send-fcm Edge Function + transition_order RPC + apply_payment_event patch + DB webhook wiring (Wave 3)
+- [ ] 10-05-PLAN.md — phase verification (Wave 3)
 **UI hint**: yes
 **Research needed before planning**: NO
 **Parallel-eligible**: NO (gates Phase 11)

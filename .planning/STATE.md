@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T17:38:40Z"
+last_updated: "2026-05-03T17:58:00Z"
 progress:
   total_phases: 12
   completed_phases: 8
   total_plans: 35
-  completed_plans: 35
+  completed_plans: 36
   percent: 98
 ---
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 09-05 — Phase 9 COMPLETE; LGL-02..LGL-05 Colombian compliance screens live; RetractoDisclaimerWidget, PrivacyPolicyScreen, HabeasDataScreen, GarantiaScreen, PqrsScreen, TermsScreen, pqrs_submissions migration)
+**Last updated:** 2026-05-03 (post plan 10-01 — FCM activated; FcmService + user_fcm_tokens + notifications tables; firebase_messaging wired before runApp)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 9 COMPLETE (5/5 plans done: 09-01 SQL schema, 09-02 Edge Function + ShippingScreen, 09-03 WompiWebViewScreen + PaymentResultScreen + deeplinks, 09-04 wompi-webhook deployed, 09-05 legal compliance). Phase 10 next: Orders, Realtime & FCM Notifications. Phase 8 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
+**Current focus**: Phase 10 in progress (1/5 plans done: 10-01 FCM activation + user_fcm_tokens + notifications tables). Phase 9 COMPLETE. Phase 8 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
 
 **Strategic anchors**:
 
@@ -34,9 +34,9 @@ progress:
 
 **Milestone:** v1.0
 **Phase:** 10 of 12 — Orders, Realtime & FCM Notifications (next)
-**Plan:** 09-05 ~ 2026-05-03 (COMPLETE: LGL-02..LGL-05 Colombian legal compliance — 5 screens + RetractoDisclaimerWidget + pqrs_submissions migration + profile legal section wired)
-**Status:** Phase 9 COMPLETE (5/5 plans); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T17:38:40Z
+**Plan:** 10-01 ~ 2026-05-03 (COMPLETE: FCM activated; FcmService + user_fcm_tokens + notifications tables; background handler wired in main.dart)
+**Status:** Phase 10 IN PROGRESS (1/5 plans); Phase 9 COMPLETE (5/5); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T17:58:00Z
 
 **Progress:** [█████████▊] 98%
 
@@ -50,7 +50,7 @@ Phase 6:  ▰ QR Digital-Only Features          ✓ COMPLETE 2026-05-03 (4/4 pla
 Phase 7:  ▰ Marketplace Catalog + QR Export   ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 8:  ▰ Cart & Customization Snapshot     ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 9:  ▰ Checkout, Wompi & Compliance      ✓ COMPLETE 2026-05-03 (5/5 plans)
-Phase 10: ▱ Orders, Realtime & FCM
+Phase 10: ▱ Orders, Realtime & FCM          IN PROGRESS (1/5 plans)
 Phase 11: ▱ Operator Dashboard + Tattoo Line
 Phase 12: ▱ Premium, Polish & Observability (GA)
 ```
@@ -181,6 +181,10 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | wompi-webhook checks both X-Event-Checksum header AND signature.checksum body field; header takes priority per Wompi spec; body fallback for compatibility | plan 09-04 SUMMARY (`9fc5056`) |
 | Non-transaction.updated events recorded in payment_events but cause no FSM state change — logged as informational, no RPC call | plan 09-04 SUMMARY (`9fc5056`) |
 | Habeas data deletion is operator-manual until Phase 12; pqrs_submissions row provides Ley 1581 audit trail for SIC compliance | plan 09-05 SUMMARY (`747cd62`) |
+| FcmService uses injectable testInstance factory (messaging + currentUserIdResolver) to enable unit testing without real Firebase/Supabase | plan 10-01 SUMMARY (`d50c4c2`) |
+| firebaseBackgroundMessageHandler is a no-op stub in Phase 10 plan 01 — Plan 03 adds local notification display via flutter_local_notifications | plan 10-01 SUMMARY (`d50c4c2`) |
+| notifications table has NO INSERT/UPDATE/DELETE policy for authenticated role — only service_role (send-fcm Edge Function) may write (T-10-02) | plan 10-01 SUMMARY (`d50c4c2`) |
+| user_fcm_tokens UNIQUE(user_id, token) + upsert on conflict is the DoS guard (T-10-04); token never logged (T-10-03) | plan 10-01 SUMMARY (`d50c4c2`) |
 | order_id FK in garantia/pqrs uses display number in subject/body; UUID lookup deferred to Phase 10 when OrderDetailScreen lands | plan 09-05 SUMMARY (`747cd62`) |
 | RetractoDisclaimerWidget replaces inline amber Container from Plan 09-03 — single source of truth for Ley 1480 Art. 47 text | plan 09-05 SUMMARY (`747cd62`) |
 | Amount in cents fetched from orders.total_cop after create_order RPC; client has no amount field in the Edge Function request body (T-09-07) | plan 09-02 SUMMARY (`dfb7e90`) |
@@ -227,6 +231,18 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 10-01 execution):**
+
+- `supabase/migrations/20260510000000_notifications_fcm_schema.sql` — user_fcm_tokens + notifications DDL + RLS; manual apply via Supabase Dashboard SQL Editor
+- `lib/core/services/fcm_service.dart` — FcmService (requestPermission, initialize, _registerToken via upsert) + FcmService.testInstance injectable factory + fcmServiceProvider
+- `test/core/services/fcm_service_test.dart` — 5 unit tests (TDD RED/GREEN)
+- `lib/main.dart` — firebase_messaging import + onBackgroundMessage before runApp + FCM init on sign-in
+- `.planning/phases/10-orders-realtime-fcm/10-01-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+- `.planning/ROADMAP.md` (Phase 10 plan 01 marked)
+
+**Last session (plan 10-01):** 2026-05-03 — FCM activated from dormant state. Commits `c084a3d` (migration) + `554ee00` (RED tests) + `d50c4c2` (FcmService GREEN + main.dart wiring). flutter analyze 0 issues. 5/5 tests pass. NOTE: user_fcm_tokens + notifications migration requires manual apply via Supabase Dashboard SQL Editor before FCM token registration will succeed.
 
 **Files written this session (plan 09-05 execution):**
 
