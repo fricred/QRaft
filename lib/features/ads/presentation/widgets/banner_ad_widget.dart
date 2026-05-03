@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:qraft/features/ads/presentation/providers/ad_providers.dart';
 import '../../../consent/presentation/providers/consent_providers.dart';
+import '../../../subscription/presentation/providers/subscription_providers.dart';
 
 /// A widget that displays a banner ad
 /// Only shows for free tier users
@@ -86,6 +87,9 @@ class _BannerAdWidgetState extends ConsumerState<BannerAdWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // Premium users never see ads (Phase 12 — MKT-10 ad suppression).
+    if (ref.watch(isPremiumProvider)) return const SizedBox.shrink();
+
     final shouldShow = ref.watch(shouldShowAdsProvider);
     final consentReady = ref.watch(umpConsentReadyProvider);
 

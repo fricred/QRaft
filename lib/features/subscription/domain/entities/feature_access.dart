@@ -25,6 +25,11 @@ enum FeatureType {
 
   // History
   unlimitedScanHistory,
+
+  // Premium entitlements (Phase 12 — MKT-10)
+  unlimitedQrs,
+  aiStylePremium,
+  bulkImport,
 }
 
 /// Represents access status for a feature
@@ -92,6 +97,12 @@ extension FeatureTypeExtension on FeatureType {
         return 'Advanced Shapes';
       case FeatureType.unlimitedScanHistory:
         return 'Unlimited Scan History';
+      case FeatureType.unlimitedQrs:
+        return 'QRs Ilimitados';
+      case FeatureType.aiStylePremium:
+        return 'Estilos con IA Premium';
+      case FeatureType.bulkImport:
+        return 'Importación Masiva CSV';
     }
   }
 }

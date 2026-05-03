@@ -116,6 +116,23 @@ final limitedScanHistoryProvider = Provider<List<ScanResult>>((ref) {
   return fullHistory.take(limit).toList();
 });
 
+/// Provider that returns true when the user has an active Pro subscription.
+/// Used as the primary gate for premium features (Phase 12 — MKT-10).
+final isPremiumProvider = Provider<bool>((ref) {
+  final subscriptionAsync = ref.watch(subscriptionPlanProvider);
+  return subscriptionAsync.when(
+    data: (subscription) => subscription.hasProAccess,
+    loading: () => false,
+    error: (_, __) => false,
+  );
+});
+
+/// Provider for the effective QR creation limit.
+/// Returns null (unlimited) for premium users, 5 for free users.
+final qrLimitProvider = Provider<int?>((ref) {
+  return ref.watch(isPremiumProvider) ? null : 5;
+});
+
 /// Provider to check if there are hidden scan history items (for free users)
 final hasHiddenScanHistoryProvider = Provider<bool>((ref) {
   final fullHistory = ref.watch(scanHistoryProvider);
