@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T13:18:34Z"
+last_updated: "2026-05-03T13:34:36Z"
 progress:
   total_phases: 12
   completed_phases: 3
@@ -20,7 +20,7 @@ progress:
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 7 IN PROGRESS (1/4 plans — 07-01 ✓ 2026-05-03). Phase 6 IN PROGRESS (1/4 plans — 06-01 ✓ 2026-05-03). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 7 plans 07-02 (MaterialFilterBar + ProductVariantCard UI).
+**Current focus**: Phase 7 IN PROGRESS (1/4 plans — 07-01 ✓ 2026-05-03). Phase 6 IN PROGRESS (2/4 plans — 06-01 ✓, 06-02 ✓ 2026-05-03). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 6 plans 06-03 (QR scannability gate) or Phase 7 plans 07-02 (MaterialFilterBar + ProductVariantCard UI).
 
 **Strategic anchors**:
 
@@ -33,9 +33,9 @@ progress:
 ## Current Position
 
 **Milestone:** v1.0
-**Phase:** 7 of 12 — Marketplace Catalog + QR Export Pipeline, IN PROGRESS
-**Plan:** 07-01 ✓ 2026-05-03 (1/4 plans)
-**Status:** Phase 7 in progress (1/4 plans); Phase 6 in progress (1/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Phase:** 6 of 12 — QR Digital-Only Features, IN PROGRESS
+**Plan:** 06-02 ✓ 2026-05-03 (2/4 plans)
+**Status:** Phase 7 in progress (1/4 plans); Phase 6 in progress (2/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
 **Last session:** 2026-05-03 — Plan 07-01 (Marketplace catalog schema + data/domain/provider stack) executed on `feature/adds`. Tasks 1+3 autonomous (commits `bd39494` 14 Flutter tests, `7eeae6d` 9 flow YAMLs); semantics rollout `627859d`; manual close-out commits `41908d0` (remove legacy SupabaseForgotPasswordDialog from main.dart, freeing 215 lines of dead code), `cb1663c` (Semantics(identifier:) on dashboard_profile_button + profile_sign_out_button + profile_sign_out_confirm_button), `3cf599d` (Maestro YAML iterations: suite recursion config, scrollUntilVisible for off-fold welcome CTA, pressKey:Enter for keyboard-occluded login_submit_button), `b52d28f` (Navigator.popUntil(isFirst) after signOut + 30s timeout on logout assertion), `3c29309` (CONVENTIONS.md Phase 1 status section). Android Medium_Phone suite: **8/9 flows PASS** (splash-happy 8s, ump-accept 7s, ump-deny-npa 9s, login-valid 27s, login-invalid 24s, forgot-password 24s, session-persistence 37s, scanner-tab-launch 37s) — auth/logout RESIDUAL with the loading dialog "Cerrando sesión..." stuck visible past 30s, signOut() hangs at the SupabaseClient call (likely interaction with subscription realtime listener teardown in AuthWrapper). iOS suite ran on iPhone 17 Pro pre-Semantics (4/7 pass, expected); not re-run after Semantics+popUntil fixes — recommended at start of next session. Real product bugs surfaced and fixed by Maestro E2E (legacy dialog dead code, Navigator stack occlusion). Plan 01-07 deviations: 6 auto-fixed (4 Rule 3 blocking, 2 Rule 4 functionally required). flutter analyze: 0 issues. Whole-suite test delta from `+83 ~1 -91` to `+97 ~1 -85` (the 6 broken-by-design dialog tests from plan 01-06 are now sane; +8 controller tests added). Earlier session: Plan 01-05 (UMP consent + AdMob gating) executed sequentially on `feature/adds`, 3 tasks, ~7 minutes. Commits `cd834ff` (consent module: ConsentState + UmpService + 5 providers) + `b7ad68a` (UmpConsentScreen + UmpGate) + `8518f79` (main.dart bootstrap reorder + AdMobService 4 method signatures + BannerAdWidget + RewardedAdButton + ad_providers refactor). New `lib/features/consent/` feature module: `ConsentState` enum with 5 values (unknown/required/notRequired/obtained/denied) + `ConsentStateX` extension exposing `isResolved` + `isPersonalizedAllowed` booleans (37 lines); `UmpService` singleton (132 lines) wrapping `ConsentInformation.instance.requestConsentInfoUpdate` + `ConsentForm.loadAndShowConsentFormIfRequired` from google_mobile_ads ^5.1.0 — NO separate UMP package install per plan 04 D-01 — using Completer-to-Future bridge over the callback-based UMP API; accept-vs-deny disambiguation via `canRequestAds()` because `ConsentStatus.obtained` covers both; fail-open posture so app does not deadlock on UMP errors. 5 Riverpod providers (umpServiceProvider, umpInitProvider, consentStateProvider, umpConsentReadyProvider, consentGrantedProvider). UmpConsentScreen ConsumerStatefulWidget triggers Google's UMP form on first frame via `WidgetsBinding.instance.addPostFrameCallback`; Carden Pro design tokens (#1A1A1A scaffold + #2E2E2E 24-radius card) + PrimaryGlassButton CTA + 2 stable Maestro Keys (`ump_consent_screen_root`, `ump_continue_button`). UmpGate ConsumerWidget with `.when()` loading/error/data branches; explicit `consent_state.dart` import so `state.isResolved` extension getter resolves. main.dart bootstrap reordered per D-04: removed `MobileAds.instance.initialize()` from `initializeApp()` (now only env → Supabase → Firebase); added `ref.listen<bool>(umpConsentReadyProvider, ...)` in `_QRaftAppState.build` that fires `ref.read(adMobInitProvider.future)` exactly once on UMP-resolves transition (FutureProvider memoization + idempotent `AdMobService.initialize()` keep it safe); AuthWrapper wrapped in `UmpGate(child: AuthWrapper())`. AdMobService 4 ad-loading methods (loadBannerAd lines 33-69, showRewardedAd lines 70-118, showInterstitialAd lines 130-181, loadNativeAd lines 184-217) now accept `bool nonPersonalizedAds = false` and pass it into `AdRequest(nonPersonalizedAds: nonPersonalizedAds)` per D-06; 0 `const AdRequest()` remaining, 4 `AdRequest(nonPersonalizedAds:` sites. BannerAdWidget._loadAd() bails if `!umpConsentReadyProvider` (D-04) AND passes `nonPersonalizedAds: !consentGranted` (D-06); `build()` watches `umpConsentReadyProvider` + ref.listen re-triggers `_loadAd` when consent flips ready post-construction (re-entrancy guard `!_isLoaded && !_isLoading`) — handles widgets built before UMP resolves. RewardedAdButton._showRewardedAd() reads consentGrantedProvider and forwards `!personalizedAllowed`. ad_providers.dart `dashboardBannerAdProvider` + `libraryBannerAdProvider` both gate on `umpConsentReadyProvider` AND forward npa flag. Maestro selector deviation documented: `ump_settings_link` Key NOT added because the "manage settings" link is rendered by Google's UMP system overlay (not a Flutter widget); plan 07 will target it via text matcher. flutter analyze: 0 issues; flutter build apk --debug --target-platform android-arm64: Built in 9.5s; flutter build ios --debug --no-codesign: Built in 9.9s. Whole-suite test delta unchanged from plan 06 (`+83 ~1 -91` — 0 new test breakage from this plan). Closes ROADMAP success criterion #4 (UMP integrated, consent form on first launch before any ad request).
 
 **Progress:** [▰▰▰▰▰▱▱▱▱▱▱▱] 5/12 phases complete (41.7%) — Phase 3 in progress (2/3 plans); Phase 5 COMPLETE; Phase 7 in progress (1/4 plans)
@@ -46,7 +46,7 @@ Phase 2:  ▰ QR Generation Core                ✓ COMPLETE 2026-05-02 (4/4 pla
 Phase 3:  ▱ QR Scanner                        IN PROGRESS (2/3 plans — 03-03 pending)
 Phase 4:  ▰ Redirect Service Foundation       ✓ COMPLETE 2026-05-01 (3/3 plans)
 Phase 5:  ▰ QR Customization (Print-Safe)     ✓ COMPLETE 2026-05-03 (5/5 plans)
-Phase 6:  ▱ QR Digital-Only Features          IN PROGRESS (1/4 plans — 06-01 ✓ 2026-05-03)
+Phase 6:  ▱ QR Digital-Only Features          IN PROGRESS (2/4 plans — 06-01 ✓, 06-02 ✓ 2026-05-03)
 Phase 7:  ▱ Marketplace Catalog + QR Export   IN PROGRESS (1/4 plans — 07-01 ✓ 2026-05-03)
 Phase 8:  ▱ Cart & Customization Snapshot
 Phase 9:  ▱ Checkout, Wompi & Compliance
@@ -126,6 +126,10 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | exportDigitalOnly passes decoration through as-is (no white bg override) — QrProfile.digitalOnly allows inverted colors | plan 06-01 SUMMARY (`8c0cda2`) |
 | ai-stylize Edge Function reads REPLICATE_API_KEY from Deno.env (T-06-01); prompt sanitized server-side with /[^\w\s.,!?-]/g + 200-char cap (T-06-02); 5/month gate via ai_style_usage upsert (T-06-03) | plan 06-01 SUMMARY (`52c9ce4`) |
 | mobile_scanner 7.2.0 analyzeImage(String imagePath) → Future<BarcodeCapture?> API documented in QrAnimationService stub as code comment — plan 06-03 builds against this signature | plan 06-01 SUMMARY (`52c9ce4`) |
+| image 4.5.4 animated GIF uses Image.addFrame() pattern (not removed Animation class); Image.loopCount=0 + FrameType.animation; delay in centiseconds (delayMs ~/10) | plan 06-02 SUMMARY (`32b3398`) |
+| QrAnimationService opacity-pulse modulates background alpha via copyWith(background:) — foreground color lives inside shape symbols not on PrettyQrDecoration directly | plan 06-02 SUMMARY (`32b3398`) |
+| share_plus v10 uses Share.shareXFiles(List<XFile>) not SharePlus.instance.share(ShareParams()) | plan 06-02 SUMMARY (`6286f54`) |
+| _encodeGifIsolate is a top-level function (not closure/method) — compute() isolate boundary requirement | plan 06-02 SUMMARY (`32b3398`) |
 | Color equality uses toARGB32() not .value — .value is deprecated in current Flutter SDK | plan 05-03 SUMMARY (`14ccacc`) |
 | Export size fixed at 2160px (not user-controllable) — DoS via size parameter impossible (T-05-03-02 accepted) | plan 05-03 SUMMARY (`23cebed`) |
 | PrettyQrShape is abstract — buildShape() catch fallback uses PrettyQrSquaresSymbol() not PrettyQrShape() (which fails to compile) | plan 05-04 SUMMARY (`2ae992c`) |
@@ -203,6 +207,17 @@ Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 - `.planning/ROADMAP.md` (07-01 checkbox marked)
 
 **Last session (plan 07-01):** 2026-05-03 — Marketplace catalog SQL migration + full Dart domain/data/provider stack. Commits `5fce44c` (migration) + `92435e2` (8 Dart files) + `bbace05` (T-07-02 texture_url https-only). flutter analyze lib/features/marketplace/: 0 issues. Phase 7 in progress (1/4 plans).
+
+**Files written this session (plan 06-02 execution):**
+
+- `lib/features/qr_digital/domain/services/qr_animation_service.dart` — full implementation: captureFrames() sine-curve pulse + buildGif() in compute() isolate using image 4.5.4 Image.addFrame() API
+- `lib/features/qr_digital/presentation/controllers/qr_digital_controller.dart` — QrDigitalState + QrDigitalController + qrDigitalControllerProvider (autoDispose.family)
+- `lib/features/qr_digital/presentation/pages/qr_animate_page.dart` — QrAnimatePage with flutter_animate opacity-pulse preview, GlassButton export, profile guard banner, SnackBar error
+- `test/features/qr_digital/services/qr_animation_service_test.dart` — 5 real unit tests replacing wave-0 sentinel; GIF magic bytes, ArgumentError, delayMs
+- `.planning/phases/06-qr-digital-features/06-02-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+
+**Last session (plan 06-02):** 2026-05-03 — QrAnimationService full impl + QrDigitalController + QrAnimatePage. Commits `32b3398` (service + tests) + `6286f54` (controller + page). flutter analyze 0 issues. 5/5 tests pass. Phase 6 in progress (2/4 plans). Key deviations: image v4 API (Image.addFrame not Animation class), share_plus v10 API (Share.shareXFiles not SharePlus.instance.share), background-alpha pulse (foreground in shape symbols).
 
 **Files written this session (plan 06-01 execution):**
 
