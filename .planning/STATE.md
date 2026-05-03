@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T18:10:45Z"
+last_updated: "2026-05-03T18:20:00Z"
 progress:
   total_phases: 12
-  completed_phases: 8
+  completed_phases: 9
   total_plans: 35
-  completed_plans: 37
-  percent: 98
+  completed_plans: 38
+  percent: 99
 ---
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 10-03 — FCM foreground overlay handler + background/killed-app navigation via notificationHandlerProvider + checkInitialFcmMessage + FcmOverlayHandler wrapping MainScaffold body)
+**Last updated:** 2026-05-03 (post plan 10-04 — send-fcm Edge Function + transition_order RPC + apply_payment_event FCM patch. Phase 10 COMPLETE.)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 10 in progress (3/5 plans done: 10-01 FCM + 10-02 orders realtime UI + 10-03 foreground overlay). Phase 9 COMPLETE. Phase 8 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
+**Current focus**: Phase 10 COMPLETE (4/4 plans executed: 10-01 FCM tokens + 10-02 orders UI + 10-03 foreground overlay + 10-04 send-fcm Edge Function). Phase 11 next (Operator Dashboard + Tattoo Line — requires research before planning). Phase 3 in parallel (2/3 plans done, 03-03 pending).
 
 **Strategic anchors**:
 
@@ -33,12 +33,12 @@ progress:
 ## Current Position
 
 **Milestone:** v1.0
-**Phase:** 10 of 12 — Orders, Realtime & FCM Notifications
-**Plan:** 10-03 ~ 2026-05-03 (COMPLETE: FCM foreground overlay (FcmOverlayHandler) + background/killed-app navigation (notificationHandlerProvider + checkInitialFcmMessage) wired in MainScaffold)
-**Status:** Phase 10 IN PROGRESS (3/5 plans); Phase 9 COMPLETE (5/5); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T18:10:45Z
+**Phase:** 10 of 12 — Orders, Realtime & FCM Notifications — COMPLETE
+**Plan:** 10-04 ~ 2026-05-03 (COMPLETE: send-fcm Edge Function + transition_order RPC + apply_payment_event notification patch)
+**Status:** Phase 10 COMPLETE (4/4 plans); Phase 9 COMPLETE (5/5); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T18:20:00Z
 
-**Progress:** [█████████▊] 98%
+**Progress:** [█████████▉] 99%
 
 ```
 Phase 1:  ▰ Foundation Hardening              ✓ COMPLETE (passed-with-residuals 2026-05-01)
@@ -50,7 +50,7 @@ Phase 6:  ▰ QR Digital-Only Features          ✓ COMPLETE 2026-05-03 (4/4 pla
 Phase 7:  ▰ Marketplace Catalog + QR Export   ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 8:  ▰ Cart & Customization Snapshot     ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 9:  ▰ Checkout, Wompi & Compliance      ✓ COMPLETE 2026-05-03 (5/5 plans)
-Phase 10: ▱ Orders, Realtime & FCM          IN PROGRESS (3/5 plans)
+Phase 10: ▰ Orders, Realtime & FCM          ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 11: ▱ Operator Dashboard + Tattoo Line
 Phase 12: ▱ Premium, Polish & Observability (GA)
 ```
@@ -193,6 +193,12 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | MainScaffold converted ConsumerWidget → ConsumerStatefulWidget to gain initState for one-time FCM wiring | plan 10-03 SUMMARY (`59e3d7e`) |
 | notifications table has NO INSERT/UPDATE/DELETE policy for authenticated role — only service_role (send-fcm Edge Function) may write (T-10-02) | plan 10-01 SUMMARY (`d50c4c2`) |
 | user_fcm_tokens UNIQUE(user_id, token) + upsert on conflict is the DoS guard (T-10-04); token never logged (T-10-03) | plan 10-01 SUMMARY (`d50c4c2`) |
+| transition_order GRANT EXECUTE restricted to service_role only (T-10-15); authenticated client cannot drive FSM via direct RPC call; FSM trigger validate_order_transition is independent enforcement layer | plan 10-04 SUMMARY (`b5b0636`) |
+| send-fcm returns HTTP 200 for all outcomes (success, partial failure, no tokens): DB Webhook retry-on-5xx would cause duplicate sends; notifications.fcm_state provides per-row audit trail | plan 10-04 SUMMARY (`fc0b437`) |
+| Unregistered FCM tokens auto-deleted on FCM 404/UNREGISTERED response — prevents stale token accumulation (T-10-16 cleanup) | plan 10-04 SUMMARY (`fc0b437`) |
+| FCM service account private key accessed only via Deno.env.get; error logs use generic messages only — key and access token never logged (T-10-14) | plan 10-04 SUMMARY (`fc0b437`) |
+| insert_order_notification is a shared SECURITY DEFINER helper called by both transition_order and apply_payment_event — single INSERT point for notifications audit trail | plan 10-04 SUMMARY (`b5b0636`) |
+| apply_payment_event patched via CREATE OR REPLACE (idempotent) — wompi-webhook Edge Function requires no changes since it already calls this RPC | plan 10-04 SUMMARY (`b5b0636`) |
 | order_id FK in garantia/pqrs uses display number in subject/body; UUID lookup deferred to Phase 10 when OrderDetailScreen lands | plan 09-05 SUMMARY (`747cd62`) |
 | RetractoDisclaimerWidget replaces inline amber Container from Plan 09-03 — single source of truth for Ley 1480 Art. 47 text | plan 09-05 SUMMARY (`747cd62`) |
 | Amount in cents fetched from orders.total_cop after create_order RPC; client has no amount field in the Edge Function request body (T-09-07) | plan 09-02 SUMMARY (`dfb7e90`) |
@@ -239,6 +245,16 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 10-04 execution):**
+
+- `supabase/migrations/20260510000001_notify_on_order_transition.sql` — insert_order_notification SECURITY DEFINER helper + transition_order RPC (operator FSM driver, Phase 11) + apply_payment_event CREATE OR REPLACE with notification INSERT on APPROVED
+- `supabase/functions/send-fcm/index.ts` — Deno Edge Function: Authorization header validation, OAuth2 RS256 JWT service account exchange, FCM HTTP v1 multi-token dispatch, UNREGISTERED token auto-cleanup, notifications.fcm_state update
+- `.planning/phases/10-orders-realtime-fcm/10-04-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+- `.planning/ROADMAP.md` (Phase 10 marked COMPLETE)
+
+**Last session (plan 10-04):** 2026-05-03 — send-fcm Edge Function + transition_order RPC + apply_payment_event notification patch. Commits `b5b0636` (migration) + `fc0b437` (Edge Function). flutter analyze not applicable (Deno TS files). Phase 10 COMPLETE (4/4 plans). NOTE: Phase 10 complete but requires user to apply migrations + set FCM_SERVICE_ACCOUNT_JSON secret + deploy send-fcm + configure DB Webhook before end-to-end FCM push is live.
 
 **Files written this session (plan 10-03 execution):**
 

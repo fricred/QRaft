@@ -30,7 +30,7 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
 - [x] **Phase 7: Marketplace Catalog + QR Export Pipeline** — Users can browse engraved-product catalog and see live preview of their customized QR on each material ✓ 2026-05-03
 - [x] **Phase 8: Cart & Customization Snapshot** — Users can build a persistent cart with frozen customization snapshots and accurate totals (subtotal + IVA 19% + envío) ✓ 2026-05-03
 - [x] **Phase 9: Checkout, Wompi, Colombian Compliance** — Users can pay via Wompi (cards, PSE, Nequi, Daviplata) with verified webhooks; LGL-02..05 disclaimers and habeas data live ✓ 2026-05-03
-- [ ] **Phase 10: Orders, Realtime & FCM Notifications** — Users can track order status with timeline, receive push notifications on every state change
+- [x] **Phase 10: Orders, Realtime & FCM Notifications** — Users can track order status with timeline, receive push notifications on every state change ✓ 2026-05-03
 - [ ] **Phase 11: Operator Dashboard + Tattoo Line** — Operator can fulfill orders end-to-end; Tattoo category live in marketplace with TAT-safe profile
 - [ ] **Phase 12: Premium Subscription, Polish & Observability (GA)** — RevenueCat premium, performance polish, Crashlytics + Analytics + Performance, ready for launch
 
@@ -222,7 +222,7 @@ Plans:
 **Research needed before planning**: NO (Wompi spec verified in research; Colombian lawyer engagement happens during plan, not before)
 **Parallel-eligible**: NO (critical-path centerpiece; gates Phase 10)
 
-### Phase 10: Orders, Realtime & FCM Notifications
+### Phase 10: Orders, Realtime & FCM Notifications ✓ COMPLETE 2026-05-03
 **Goal**: Users can view their orders, track status timeline live, and receive push notifications on every state change; Supabase Realtime + FCM HTTP v1 wired end-to-end
 **Depends on**: Phase 9 (orders must exist to be tracked)
 **Requirements**: MKT-07, MKT-08, MKT-09
@@ -233,13 +233,12 @@ Plans:
   4. Detail screen subscribes to Supabase Realtime on `orders` filtered by user_id; status changes update in <2s without manual refresh
   5. User receives FCM push on EVERY state transition; tapping notification deep-links to order detail; foreground notifications display via `flutter_local_notifications`
   6. FCM tokens are registered in `user_fcm_tokens` table; per-device token rotation is handled
-**Plans**: 5 plans (3/5 complete)
+**Plans**: 4 plans (4/4 complete) ✓ 2026-05-03
 Plans:
 - [x] 10-01-PLAN.md — user_fcm_tokens + notifications migration + FcmService activation + token registration (Wave 1) ✓ 2026-05-03 (commits `c084a3d` migration + `554ee00` RED tests + `d50c4c2` FcmService + main.dart; 5/5 tests pass; flutter analyze 0 issues)
 - [x] 10-02-PLAN.md — orders domain + data layer + OrdersListScreen + OrderDetailScreen + Realtime stream + OrderStatusTimeline (Wave 2) ✓ 2026-05-03 (commits `97caa89` RED tests + `4b51242` domain layer + `146491a` data+UI+nav; 10 tests pass; flutter analyze 0 issues; MKT-07+MKT-08 complete)
 - [x] 10-03-PLAN.md — FCM foreground overlay (flutter_local_notifications) + background/killed-app notification handler + navigation (Wave 2, parallel to 10-02) ✓ 2026-05-03 (commit `59e3d7e`; FcmOverlayHandler + notificationHandlerProvider + checkInitialFcmMessage; MainScaffold → ConsumerStatefulWidget; flutter analyze 0 issues; MKT-09 complete)
-- [ ] 10-04-PLAN.md — send-fcm Edge Function + transition_order RPC + apply_payment_event patch + DB webhook wiring (Wave 3)
-- [ ] 10-05-PLAN.md — phase verification (Wave 3)
+- [x] 10-04-PLAN.md — send-fcm Edge Function + transition_order RPC + apply_payment_event patch + DB webhook wiring (Wave 3) ✓ 2026-05-03 (commits `b5b0636` migration + `fc0b437` Edge Function; transition_order GRANT service_role only T-10-15; send-fcm OAuth2 JWT + FCM HTTP v1 multi-token dispatch; UNREGISTERED token cleanup; DB Webhook setup documented; MKT-09 complete)
 **UI hint**: yes
 **Research needed before planning**: NO
 **Parallel-eligible**: NO (gates Phase 11)
@@ -336,7 +335,7 @@ Phase 6    Phase 7           │
 | 7. Marketplace Catalog + QR Export | 4/4 | Complete | 2026-05-03 |
 | 8. Cart & Customization Snapshot | 4/4 | Complete | 2026-05-03 |
 | 9. Checkout, Wompi & Compliance | 5/5 | Complete | 2026-05-03 |
-| 10. Orders, Realtime & FCM | 0/4 | Not started | - |
+| 10. Orders, Realtime & FCM | 4/4 | Complete | 2026-05-03 |
 | 11. Operator Dashboard + Tattoo | 0/? | Not started | - |
 | 12. Premium, Polish & Observability | 0/? | Not started | - |
 
