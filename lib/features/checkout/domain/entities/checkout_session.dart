@@ -20,6 +20,21 @@ class CheckoutSession extends Equatable {
   /// Order total in whole Colombian pesos (COP).
   final int amountCop;
 
+  factory CheckoutSession.fromJson(Map<String, dynamic> json) =>
+      CheckoutSession(
+        orderId: json['order_id'] as String,
+        transactionRef: json['transaction_ref'] as String,
+        wompiCheckoutUrl: json['wompi_checkout_url'] as String,
+        amountCop: json['amount_cop'] as int,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'order_id': orderId,
+        'transaction_ref': transactionRef,
+        'wompi_checkout_url': wompiCheckoutUrl,
+        'amount_cop': amountCop,
+      };
+
   @override
   List<Object?> get props => [orderId, transactionRef, wompiCheckoutUrl, amountCop];
 }
