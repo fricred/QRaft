@@ -211,7 +211,13 @@ Plans:
   7. Privacy policy in Spanish covering Ley 1581 elements is hosted, linked from checkout, signup, and profile; in-app habeas data flow allows user to export/delete their data
   8. PQRS module is accessible from profile; user can submit Petición/Queja/Reclamo/Sugerencia which lands in operator inbox
   9. Garantía 3-month claim flow (Ley 1480) is documented and reachable separately from retracto path
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+- [ ] 09-01-PLAN.md — orders + payment_events Supabase schema + FSM trigger + create_order RPC (Wave 1; CHECKPOINT — migration + Wompi sandbox keys required before Wave 2)
+- [ ] 09-02-PLAN.md — create-payment-intent Edge Function + ShippingScreen (DANE dropdowns) + checkout domain layer (Wave 2)
+- [ ] 09-03-PLAN.md — WompiWebViewScreen + PaymentResultScreen + deeplink handler (Wave 2, parallel to 09-02)
+- [ ] 09-04-PLAN.md — wompi-webhook Edge Function: SHA256 verification + idempotent payment_events + FSM transitions (Wave 3)
+- [ ] 09-05-PLAN.md — LGL-02..05: retracto disclaimer, privacy policy, habeas data, garantia, PQRS (Wave 4)
 **UI hint**: yes
 **Research needed before planning**: NO (Wompi spec verified in research; Colombian lawyer engagement happens during plan, not before)
 **Parallel-eligible**: NO (critical-path centerpiece; gates Phase 10)
@@ -323,7 +329,7 @@ Phase 6    Phase 7           │
 | 6. QR Digital-Only Features | 3/4 | In progress | 2026-05-03 (plans 01-03) |
 | 7. Marketplace Catalog + QR Export | 4/4 | Complete | 2026-05-03 |
 | 8. Cart & Customization Snapshot | 0/4 | Planned | - |
-| 9. Checkout, Wompi & Compliance | 0/? | Not started | - |
+| 9. Checkout, Wompi & Compliance | 0/5 | Planned | - |
 | 10. Orders, Realtime & FCM | 0/? | Not started | - |
 | 11. Operator Dashboard + Tattoo | 0/? | Not started | - |
 | 12. Premium, Polish & Observability | 0/? | Not started | - |
@@ -384,4 +390,4 @@ Update on phase transitions:
 
 ---
 *Roadmap created: 2026-05-01*
-*Last updated: 2026-05-01 — Phase 8 plans created (4 plans, 3 waves)*
+*Last updated: 2026-05-01 — Phase 9 plans created (5 plans, 4 waves)*
