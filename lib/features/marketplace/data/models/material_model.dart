@@ -15,13 +15,20 @@ class MaterialModel {
     this.laserCompatible = true,
   });
 
-  factory MaterialModel.fromJson(Map<String, dynamic> json) => MaterialModel(
-        id: json['id'] as String,
-        displayNameEs: json['display_name_es'] as String,
-        displayNameEn: json['display_name_en'] as String,
-        textureUrl: json['texture_url'] as String? ?? '',
-        laserCompatible: json['laser_compatible'] as bool? ?? true,
-      );
+  factory MaterialModel.fromJson(Map<String, dynamic> json) {
+    final rawUrl = json['texture_url'] as String? ?? '';
+    // T-07-02: Accept only empty string or https:// URLs.
+    // Non-empty values that are not https are sanitized to '' (fail-safe).
+    final safeUrl =
+        rawUrl.isEmpty || rawUrl.startsWith('https://') ? rawUrl : '';
+    return MaterialModel(
+      id: json['id'] as String,
+      displayNameEs: json['display_name_es'] as String,
+      displayNameEn: json['display_name_en'] as String,
+      textureUrl: safeUrl,
+      laserCompatible: json['laser_compatible'] as bool? ?? true,
+    );
+  }
 
   MaterialEntity toEntity() => MaterialEntity(
         id: id,
