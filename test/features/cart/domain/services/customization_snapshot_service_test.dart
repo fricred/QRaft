@@ -44,6 +44,12 @@ QRCodeEntity _buildQrCode() => QRCodeEntity(
     );
 
 void main() {
+  setUpAll(() {
+    // Uint8List is a final class and cannot be faked — register a real instance.
+    registerFallbackValue(Uint8List(0));
+    registerFallbackValue(const FileOptions());
+  });
+
   // -------------------------------------------------------------------------
   // Group 1: CustomizationSnapshotService.buildSnapshotJson
   // -------------------------------------------------------------------------
@@ -96,7 +102,7 @@ void main() {
       'Test 3: storagePath(userId, qrCodeId, variantId) returns '
       '"userId/qrCodeId/variantId.png" (no leading slash, no bucket prefix)',
       () {
-        const path = OrderAssetsStorageDataSource.storagePath(
+        final path = OrderAssetsStorageDataSource.storagePath(
           'user-abc',
           'qr-xyz',
           'variant-123',
