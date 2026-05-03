@@ -64,10 +64,10 @@
 
 ### Compliance Colombia
 
-- [ ] **LGL-02**: Disclaimer Ley 1480 Art. 47 visible en checkout y post-orden — productos personalizados (grabados) están exentos del retracto 5 días
-- [ ] **LGL-03**: Política de privacidad en español + flujo de habeas data (Ley 1581) — consentimiento, derecho al olvido, in-app data export/deletion
-- [ ] **LGL-04**: Garantía 3 meses por defectos (Ley 1480) — flujo de reclamo separado del retracto
-- [ ] **LGL-05**: Módulo PQRS (Peticiones/Quejas/Reclamos/Sugerencias) accesible desde profile
+- [x] **LGL-02**: Disclaimer Ley 1480 Art. 47 visible en checkout y post-orden — productos personalizados (grabados) están exentos del retracto 5 días ✓ 2026-05-03 (plan 09-05)
+- [x] **LGL-03**: Política de privacidad en español + flujo de habeas data (Ley 1581) — consentimiento, derecho al olvido, in-app data export/deletion ✓ 2026-05-03 (plan 09-05)
+- [x] **LGL-04**: Garantía 3 meses por defectos (Ley 1480) — flujo de reclamo separado del retracto ✓ 2026-05-03 (plan 09-05)
+- [x] **LGL-05**: Módulo PQRS (Peticiones/Quejas/Reclamos/Sugerencias) accesible desde profile ✓ 2026-05-03 (plan 09-05)
 
 ### Optimización
 
@@ -169,10 +169,10 @@ Populated by gsd-roadmapper agent on 2026-05-01.
 | TAT-02 | Phase 11 | Pending |
 | TAT-03 | Phase 11 | Pending |
 | TAT-04 | Phase 11 | Pending |
-| LGL-02 | Phase 9 | Pending |
-| LGL-03 | Phase 9 | Pending |
-| LGL-04 | Phase 9 | Pending |
-| LGL-05 | Phase 9 | Pending |
+| LGL-02 | Phase 9 | Complete ✓ 2026-05-03 |
+| LGL-03 | Phase 9 | Complete ✓ 2026-05-03 |
+| LGL-04 | Phase 9 | Complete ✓ 2026-05-03 |
+| LGL-05 | Phase 9 | Complete ✓ 2026-05-03 |
 | OPT-01 | Phase 12 | Pending |
 | OPT-02 | Phase 12 | Pending |
 | OPT-03 | Phase 12 | Pending |

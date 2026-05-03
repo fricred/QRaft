@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T17:38:00Z"
+last_updated: "2026-05-03T17:38:40Z"
 progress:
   total_phases: 12
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 35
   completed_plans: 35
-  percent: 97
+  percent: 98
 ---
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 09-04 — wompi-webhook Edge Function deployed ACTIVE; SHA256 signature verification live (forged events → 401); idempotent payment_events + apply_payment_event RPC wired; stopped at checkpoint:human-verify Task 2)
+**Last updated:** 2026-05-03 (post plan 09-05 — Phase 9 COMPLETE; LGL-02..LGL-05 Colombian compliance screens live; RetractoDisclaimerWidget, PrivacyPolicyScreen, HabeasDataScreen, GarantiaScreen, PqrsScreen, TermsScreen, pqrs_submissions migration)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 9 in progress (Plans 09-01 SQL + 09-02 Edge Function + ShippingScreen + 09-03 Flutter UI + 09-04 wompi-webhook done; checkpoint:human-verify Task 2 awaiting user Wompi dashboard webhook registration). Phase 8 COMPLETE. Phase 7 COMPLETE. Phase 6 COMPLETE. Phase 5 COMPLETE. Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
+**Current focus**: Phase 9 COMPLETE (5/5 plans done: 09-01 SQL schema, 09-02 Edge Function + ShippingScreen, 09-03 WompiWebViewScreen + PaymentResultScreen + deeplinks, 09-04 wompi-webhook deployed, 09-05 legal compliance). Phase 10 next: Orders, Realtime & FCM Notifications. Phase 8 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
 
 **Strategic anchors**:
 
@@ -33,12 +33,12 @@ progress:
 ## Current Position
 
 **Milestone:** v1.0
-**Phase:** 9 of 12 — Checkout, Wompi & Compliance (in progress)
-**Plan:** 09-04 ~ 2026-05-03 (COMPLETE task 1: wompi-webhook Edge Function deployed ACTIVE, SHA256 verification smoke-tested 401; stopped at checkpoint:human-verify Task 2 — Wompi dashboard webhook URL registration)
-**Status:** Phase 9 in progress (09-01 SQL done, 09-02 Edge Function + Flutter done, 09-03 Flutter UI done, 09-04 wompi-webhook deployed; checkpoint:human-verify Task 2 awaiting Wompi registration; 09-05 pending); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T17:38:00Z
+**Phase:** 10 of 12 — Orders, Realtime & FCM Notifications (next)
+**Plan:** 09-05 ~ 2026-05-03 (COMPLETE: LGL-02..LGL-05 Colombian legal compliance — 5 screens + RetractoDisclaimerWidget + pqrs_submissions migration + profile legal section wired)
+**Status:** Phase 9 COMPLETE (5/5 plans); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T17:38:40Z
 
-**Progress:** [█████████▌] 97%
+**Progress:** [█████████▊] 98%
 
 ```
 Phase 1:  ▰ Foundation Hardening              ✓ COMPLETE (passed-with-residuals 2026-05-01)
@@ -49,7 +49,7 @@ Phase 5:  ▰ QR Customization (Print-Safe)     ✓ COMPLETE 2026-05-03 (5/5 pla
 Phase 6:  ▰ QR Digital-Only Features          ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 7:  ▰ Marketplace Catalog + QR Export   ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 8:  ▰ Cart & Customization Snapshot     ✓ COMPLETE 2026-05-03 (4/4 plans)
-Phase 9:  ▱ Checkout, Wompi & Compliance
+Phase 9:  ▰ Checkout, Wompi & Compliance      ✓ COMPLETE 2026-05-03 (5/5 plans)
 Phase 10: ▱ Orders, Realtime & FCM
 Phase 11: ▱ Operator Dashboard + Tattoo Line
 Phase 12: ▱ Premium, Polish & Observability (GA)
@@ -180,6 +180,9 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | wompi-webhook returns 200 on apply_payment_event RPC errors (not 500) to prevent Wompi retry storms; event already idempotently in payment_events for reconciliation | plan 09-04 SUMMARY (`9fc5056`) |
 | wompi-webhook checks both X-Event-Checksum header AND signature.checksum body field; header takes priority per Wompi spec; body fallback for compatibility | plan 09-04 SUMMARY (`9fc5056`) |
 | Non-transaction.updated events recorded in payment_events but cause no FSM state change — logged as informational, no RPC call | plan 09-04 SUMMARY (`9fc5056`) |
+| Habeas data deletion is operator-manual until Phase 12; pqrs_submissions row provides Ley 1581 audit trail for SIC compliance | plan 09-05 SUMMARY (`747cd62`) |
+| order_id FK in garantia/pqrs uses display number in subject/body; UUID lookup deferred to Phase 10 when OrderDetailScreen lands | plan 09-05 SUMMARY (`747cd62`) |
+| RetractoDisclaimerWidget replaces inline amber Container from Plan 09-03 — single source of truth for Ley 1480 Art. 47 text | plan 09-05 SUMMARY (`747cd62`) |
 | Amount in cents fetched from orders.total_cop after create_order RPC; client has no amount field in the Edge Function request body (T-09-07) | plan 09-02 SUMMARY (`dfb7e90`) |
 | DANE departamento/municipio dataset bundled as assets/data/colombia_dane.json (offline-capable, no API calls, <100KB) | plan 09-02 SUMMARY (`6552b94`) |
 | CartScreen._onProceedToCheckout: SnackBar stub replaced with MaterialPageRoute push to ShippingScreen | plan 09-02 SUMMARY (`6552b94`) |
@@ -224,6 +227,24 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 09-05 execution):**
+
+- `supabase/migrations/20260505000001_pqrs_schema.sql` — pqrs_submissions DDL + RLS (INSERT/SELECT own) + indexes; apply via Supabase Dashboard SQL Editor
+- `lib/features/legal/presentation/pages/privacy_policy_screen.dart` — 8-section Ley 1581 policy (StatelessWidget)
+- `lib/features/legal/presentation/pages/habeas_data_screen.dart` — export + deletion flows, pqrs audit trail (ConsumerWidget)
+- `lib/features/legal/presentation/pages/pqrs_screen.dart` — PQRS FormBuilder form → pqrs_submissions (ConsumerStatefulWidget)
+- `lib/features/legal/presentation/pages/garantia_screen.dart` — 3-month warranty claim (ConsumerStatefulWidget)
+- `lib/features/legal/presentation/pages/terms_screen.dart` — T&C with retracto exclusion (StatelessWidget)
+- `lib/features/checkout/presentation/widgets/retracto_disclaimer_widget.dart` — canonical Ley 1480 Art. 47 amber card
+- `lib/features/checkout/presentation/pages/payment_result_screen.dart` — replaced inline amber Container with RetractoDisclaimerWidget; added "Ver términos y condiciones" link
+- `lib/features/profile/presentation/pages/profile_screen.dart` — added "Legal y soporte" section with 5 tiles + Semantics identifiers
+- `lib/features/auth/presentation/pages/signup_screen.dart` — added privacy policy link below register button
+- `.planning/phases/09-checkout-wompi-compliance/09-05-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+- `.planning/ROADMAP.md` (Phase 9 marked COMPLETE)
+
+**Last session (plan 09-05):** 2026-05-03 — Full Colombian legal compliance (LGL-02..LGL-05). Commits `cf05f56` (legal screens + migration) + `747cd62` (RetractoDisclaimerWidget + wiring). flutter analyze 0 issues project-wide. Phase 9 COMPLETE (5/5 plans). NOTE: pqrs_submissions migration (`20260505000001_pqrs_schema.sql`) requires manual application via Supabase Dashboard SQL Editor before PQRS/HabeasData/Garantia forms can submit successfully.
 
 **Files written this session (plan 09-04 execution):**
 

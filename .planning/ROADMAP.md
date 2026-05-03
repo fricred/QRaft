@@ -29,7 +29,7 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
 - [x] **Phase 6: QR Digital-Only Features** — Users can create animated, AI-stylized, and home-screen-widget QRs (digital-only flow) ✓ 2026-05-03
 - [x] **Phase 7: Marketplace Catalog + QR Export Pipeline** — Users can browse engraved-product catalog and see live preview of their customized QR on each material ✓ 2026-05-03
 - [x] **Phase 8: Cart & Customization Snapshot** — Users can build a persistent cart with frozen customization snapshots and accurate totals (subtotal + IVA 19% + envío) ✓ 2026-05-03
-- [ ] **Phase 9: Checkout, Wompi, Colombian Compliance** — Users can pay via Wompi (cards, PSE, Nequi, Daviplata) with verified webhooks; LGL-02..05 disclaimers and habeas data live
+- [x] **Phase 9: Checkout, Wompi, Colombian Compliance** — Users can pay via Wompi (cards, PSE, Nequi, Daviplata) with verified webhooks; LGL-02..05 disclaimers and habeas data live ✓ 2026-05-03
 - [ ] **Phase 10: Orders, Realtime & FCM Notifications** — Users can track order status with timeline, receive push notifications on every state change
 - [ ] **Phase 11: Operator Dashboard + Tattoo Line** — Operator can fulfill orders end-to-end; Tattoo category live in marketplace with TAT-safe profile
 - [ ] **Phase 12: Premium Subscription, Polish & Observability (GA)** — RevenueCat premium, performance polish, Crashlytics + Analytics + Performance, ready for launch
@@ -197,7 +197,7 @@ Plans:
 **Research needed before planning**: NO
 **Parallel-eligible**: NO (gates Phase 9)
 
-### Phase 9: Checkout, Wompi & Colombian Compliance
+### Phase 9: Checkout, Wompi & Colombian Compliance ✓ COMPLETE 2026-05-03
 **Goal**: Users can complete purchase with a Colombian shipping address, pay via Wompi (cards, PSE, Nequi, Daviplata), and the system validates webhooks securely; LGL-02..05 disclaimers and habeas data are live before first paid transaction
 **Depends on**: Phase 8 (cart) + Phase 4 (redirect slugs needed at order creation)
 **Requirements**: MKT-04, MKT-05, MKT-06, LGL-02, LGL-03, LGL-04, LGL-05
@@ -216,8 +216,8 @@ Plans:
 - [~] 09-01-PLAN.md — orders + payment_events Supabase schema + FSM trigger + create_order RPC (Wave 1; CHECKPOINT — migration + Wompi sandbox keys required before Wave 2) — SQL written + committed `63dd0e3`; BLOCKED at checkpoint: migration not yet applied, Wompi secrets not set
 - [x] 09-02-PLAN.md — create-payment-intent Edge Function + ShippingScreen (DANE dropdowns) + checkout domain layer (Wave 2) — COMPLETE `dfb7e90` + `6552b94`; WOMPI_EVENTS_SECRET set; create-payment-intent deployed ACTIVE
 - [x] 09-03-PLAN.md — WompiWebViewScreen + PaymentResultScreen + deeplink handler (Wave 2, parallel to 09-02) — COMPLETE `0249a69` + `56488a3`; MKT-05 partial
-- [~] 09-04-PLAN.md — wompi-webhook Edge Function: SHA256 verification + idempotent payment_events + FSM transitions (Wave 3) — Task 1 COMPLETE `9fc5056`; wompi-webhook deployed ACTIVE; forged event → 401 verified; STOPPED at checkpoint:human-verify Task 2 (Wompi Sandbox webhook registration)
-- [ ] 09-05-PLAN.md — LGL-02..05: retracto disclaimer, privacy policy, habeas data, garantia, PQRS (Wave 4)
+- [x] 09-04-PLAN.md — wompi-webhook Edge Function: SHA256 verification + idempotent payment_events + FSM transitions (Wave 3) — Task 1 COMPLETE `9fc5056`; wompi-webhook deployed ACTIVE; forged event → 401 verified; STOPPED at checkpoint:human-verify Task 2 (Wompi Sandbox webhook registration)
+- [x] 09-05-PLAN.md — LGL-02..05: retracto disclaimer, privacy policy, habeas data, garantia, PQRS (Wave 4) ✓ 2026-05-03 (commits `cf05f56` legal screens + `747cd62` wiring; 5 screens + RetractoDisclaimerWidget + pqrs_submissions migration; flutter analyze 0 issues)
 **UI hint**: yes
 **Research needed before planning**: NO (Wompi spec verified in research; Colombian lawyer engagement happens during plan, not before)
 **Parallel-eligible**: NO (critical-path centerpiece; gates Phase 10)
@@ -328,8 +328,8 @@ Phase 6    Phase 7           │
 | 5. QR Customization (Print-Safe) | 5/5 | Complete | 2026-05-03 |
 | 6. QR Digital-Only Features | 3/4 | In progress | 2026-05-03 (plans 01-03) |
 | 7. Marketplace Catalog + QR Export | 4/4 | Complete | 2026-05-03 |
-| 8. Cart & Customization Snapshot | 0/4 | Planned | - |
-| 9. Checkout, Wompi & Compliance | 0/5 | Planned | - |
+| 8. Cart & Customization Snapshot | 4/4 | Complete | 2026-05-03 |
+| 9. Checkout, Wompi & Compliance | 5/5 | Complete | 2026-05-03 |
 | 10. Orders, Realtime & FCM | 0/? | Not started | - |
 | 11. Operator Dashboard + Tattoo | 0/? | Not started | - |
 | 12. Premium, Polish & Observability | 0/? | Not started | - |
