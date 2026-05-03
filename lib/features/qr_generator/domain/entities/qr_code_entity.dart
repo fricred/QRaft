@@ -173,6 +173,73 @@ class QRCustomization extends Equatable {
     );
   }
 
+  /// Serializes all customization fields to a JSON-safe map.
+  ///
+  /// Used to freeze a snapshot into [cart_items.customization_snapshot] JSONB
+  /// and later into [order_items.customization_snapshot] at checkout.
+  /// All values are primitives (int, double, bool, String?) so the map is
+  /// directly compatible with Supabase JSONB encoding.
+  Map<String, dynamic> toJson() => {
+        'foreground_color': foregroundColor,
+        'background_color': backgroundColor,
+        'eye_color': eyeColor,
+        'size': size,
+        'error_correction_level': errorCorrectionLevel,
+        'logo_path': logoPath,
+        'has_logo': hasLogo,
+        'eye_shape': eyeShape,
+        'data_shape': dataShape,
+        'rounded_corners': roundedCorners,
+        'logo_size': logoSize,
+        'has_gradient': hasGradient,
+        'gradient_start': gradientStart,
+        'gradient_end': gradientEnd,
+        'gradient_type': gradientType.name,
+        'module_preset': modulePreset,
+        'eye_preset': eyePreset,
+        'profile': profile,
+        'frame_text': frameText,
+        'logo_coverage': logoCoverage,
+      };
+
+  /// Deserializes a [QRCustomization] from a JSON map (e.g., from Supabase JSONB).
+  ///
+  /// Unknown [gradient_type] values fall back to [GradientType.solid] so that
+  /// future enum additions do not crash older app versions reading old snapshots.
+  factory QRCustomization.fromJson(Map<String, dynamic> json) {
+    final gradientTypeName = json['gradient_type'] as String?;
+    final resolvedGradientType = gradientTypeName != null
+        ? GradientType.values.firstWhere(
+            (e) => e.name == gradientTypeName,
+            orElse: () => GradientType.solid,
+          )
+        : GradientType.solid;
+
+    return QRCustomization(
+      foregroundColor: (json['foreground_color'] as num?)?.toInt() ?? 0xFF000000,
+      backgroundColor: (json['background_color'] as num?)?.toInt() ?? 0xFFFFFFFF,
+      eyeColor: (json['eye_color'] as num?)?.toInt() ?? 0xFF000000,
+      size: (json['size'] as num?)?.toDouble() ?? 200.0,
+      errorCorrectionLevel:
+          (json['error_correction_level'] as num?)?.toInt() ?? 1,
+      logoPath: json['logo_path'] as String?,
+      hasLogo: json['has_logo'] as bool? ?? false,
+      eyeShape: (json['eye_shape'] as num?)?.toInt() ?? 0,
+      dataShape: (json['data_shape'] as num?)?.toInt() ?? 0,
+      roundedCorners: json['rounded_corners'] as bool? ?? false,
+      logoSize: (json['logo_size'] as num?)?.toDouble() ?? 40.0,
+      hasGradient: json['has_gradient'] as bool? ?? false,
+      gradientStart: (json['gradient_start'] as num?)?.toInt(),
+      gradientEnd: (json['gradient_end'] as num?)?.toInt(),
+      gradientType: resolvedGradientType,
+      modulePreset: (json['module_preset'] as num?)?.toInt() ?? 0,
+      eyePreset: (json['eye_preset'] as num?)?.toInt() ?? 0,
+      profile: (json['profile'] as num?)?.toInt() ?? 0,
+      frameText: json['frame_text'] as String?,
+      logoCoverage: (json['logo_coverage'] as num?)?.toDouble() ?? 0.0,
+    );
+  }
+
   @override
   List<Object?> get props => [
         foregroundColor,
