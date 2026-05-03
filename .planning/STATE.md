@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T17:21:04Z"
+last_updated: "2026-05-03T17:25:33Z"
 progress:
   total_phases: 12
   completed_phases: 7
@@ -14,13 +14,13 @@ progress:
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 09-03 — WompiWebViewScreen + PaymentResultScreen + DeepLinkService extension complete)
+**Last updated:** 2026-05-03 (post plan 09-02 — create-payment-intent Edge Function + ShippingScreen + CartScreen wiring complete; stopped at checkpoint:human-verify)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 9 in progress (Plans 09-01 SQL + 09-03 Flutter UI done; Plan 09-02 still blocked awaiting Wompi keys). Phase 8 COMPLETE. Phase 7 COMPLETE. Phase 6 COMPLETE. Phase 5 COMPLETE. Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
+**Current focus**: Phase 9 in progress (Plans 09-01 SQL + 09-02 Edge Function + ShippingScreen + 09-03 Flutter UI done; checkpoint:human-verify awaiting user). Phase 8 COMPLETE. Phase 7 COMPLETE. Phase 6 COMPLETE. Phase 5 COMPLETE. Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
 
 **Strategic anchors**:
 
@@ -34,9 +34,9 @@ progress:
 
 **Milestone:** v1.0
 **Phase:** 9 of 12 — Checkout, Wompi & Compliance (in progress)
-**Plan:** 09-03 ~ 2026-05-03 (COMPLETE: WompiWebViewScreen + PaymentResultScreen + deeplink extension)
-**Status:** Phase 9 in progress (09-01 SQL done, 09-03 Flutter UI done; 09-02 blocked on Wompi keys; 09-04/09-05 pending); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T17:21:04Z
+**Plan:** 09-02 ~ 2026-05-03 (COMPLETE: create-payment-intent Edge Function + ShippingScreen + CartScreen wiring; stopped at checkpoint:human-verify)
+**Status:** Phase 9 in progress (09-01 SQL done, 09-02 Edge Function + Flutter done, 09-03 Flutter UI done; checkpoint:human-verify awaiting deployment verification; 09-04/09-05 pending); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T17:25:33Z
 
 **Progress:** [█████████▌] 97%
 
@@ -176,6 +176,10 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | PaymentResultScreen uses Supabase query orders.status (server-authoritative); URL params from qraft://payment-result are never trusted (T-09-11) | plan 09-03 SUMMARY (`56488a3`) |
 | isPaymentResultLink checked BEFORE auth deep link processing in DeepLinkHandler.handleDeepLink — prevents auth state machine from consuming payment-result URLs (T-09-12) | plan 09-03 SUMMARY (`56488a3`) |
 | PSE retry: 5 attempts × 2s = 10s before switching to pendingPSE UI state; PSE users instructed to return and verify later | plan 09-03 SUMMARY (`56488a3`) |
+| Integrity signature computed in Edge Function via crypto.subtle (Deno built-in); Flutter binary never sees WOMPI_INTEGRITY_SECRET (T-09-06) | plan 09-02 SUMMARY (`dfb7e90`) |
+| Amount in cents fetched from orders.total_cop after create_order RPC; client has no amount field in the Edge Function request body (T-09-07) | plan 09-02 SUMMARY (`dfb7e90`) |
+| DANE departamento/municipio dataset bundled as assets/data/colombia_dane.json (offline-capable, no API calls, <100KB) | plan 09-02 SUMMARY (`6552b94`) |
+| CartScreen._onProceedToCheckout: SnackBar stub replaced with MaterialPageRoute push to ShippingScreen | plan 09-02 SUMMARY (`6552b94`) |
 
 ### Decisions to Revisit
 
@@ -217,6 +221,25 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 09-02 execution):**
+
+- `supabase/functions/create-payment-intent/index.ts` — Deno Edge Function: JWT extraction, create_order RPC, order total fetch, SHA-256 integrity hash, Wompi URL builder
+- `lib/core/config/wompi_config.dart` — WompiPaymentConfig
+- `lib/core/services/payments_service.dart` — PaymentsService + PaymentServiceException
+- `lib/features/checkout/domain/entities/shipping_address.dart` — ShippingAddress entity
+- `lib/features/checkout/domain/entities/checkout_session.dart` — Added fromJson()/toJson()
+- `lib/features/checkout/domain/use_cases/create_order_use_case.dart` — CreateOrderUseCase
+- `lib/features/checkout/data/repositories/checkout_repository_impl.dart` — CheckoutRepositoryImpl
+- `lib/features/checkout/presentation/providers/checkout_providers.dart` — shippingAddressProvider + createOrderProvider.family
+- `lib/features/checkout/presentation/pages/shipping_screen.dart` — ShippingScreen with DANE cascading dropdowns
+- `lib/features/cart/presentation/pages/cart_screen.dart` — _onProceedToCheckout wired to ShippingScreen
+- `assets/data/colombia_dane.json` — 33 DANE departments + municipalities
+- `pubspec.yaml` — assets/data/ bundle added
+- `.planning/phases/09-checkout-wompi-compliance/09-02-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+
+**Last session (plan 09-02):** 2026-05-03 — create-payment-intent Edge Function + ShippingScreen + CartScreen wiring complete. Commits `dfb7e90` (Edge Function + domain) + `6552b94` (ShippingScreen + CartScreen). flutter analyze 0 issues. STOPPED at checkpoint:human-verify — user must deploy Edge Function and verify order creation in Supabase. Resume signal: "shipping form works, order created in Supabase".
 
 **Files written this session (plan 09-03 execution):**
 
