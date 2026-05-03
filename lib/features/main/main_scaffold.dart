@@ -6,6 +6,7 @@ import '../qr_generator/qr_generator_screen.dart';
 import '../qr_scanner/qr_scanner_screen.dart';
 import '../qr_library/qr_library_screen.dart';
 import '../marketplace/marketplace_screen.dart';
+import '../orders/presentation/pages/orders_list_screen.dart';
 
 // Provider for the current navigation index
 final navigationIndexProvider = StateProvider<int>((ref) => 0);
@@ -26,6 +27,8 @@ class MainScaffoldKeys {
   static const scannerTab = Key('main_scaffold_scanner_tab');
   static const libraryTab = Key('main_scaffold_library_tab');
   static const marketplaceTab = Key('main_scaffold_marketplace_tab');
+  // Phase 10 plan 02: Orders tab (index 5).
+  static const ordersTab = Key('main_scaffold_orders_tab');
 }
 
 class MainScaffold extends ConsumerWidget {
@@ -36,13 +39,15 @@ class MainScaffold extends ConsumerWidget {
     final currentIndex = ref.watch(navigationIndexProvider);
 
     // List of screens corresponding to navigation items
-    // 0: Dashboard, 1: Generate, 2: Scanner (Center), 3: Library, 4: Marketplace
+    // 0: Dashboard, 1: Generate, 2: Scanner (Center), 3: Library,
+    // 4: Marketplace, 5: Orders
     final screens = [
-      const DashboardScreen(),   // Dashboard - User overview and stats
-      const QRGeneratorScreen(), // Generate - QR creation tools
-      const QRScannerScreen(),   // Scanner (Center focal) - Main scanning feature
-      const QRLibraryScreen(),   // Library - QR collection management
-      const MarketplaceScreen(), // Marketplace - Laser engraving marketplace
+      const DashboardScreen(),    // Dashboard - User overview and stats
+      const QRGeneratorScreen(),  // Generate - QR creation tools
+      const QRScannerScreen(),    // Scanner (Center focal) - Main scanning feature
+      const QRLibraryScreen(),    // Library - QR collection management
+      const MarketplaceScreen(),  // Marketplace - Laser engraving marketplace
+      const OrdersListScreen(),   // Orders - User order tracking (Phase 10-02)
     ];
 
     return Scaffold(
@@ -64,6 +69,8 @@ class MainScaffold extends ConsumerWidget {
         scannerTabKey: MainScaffoldKeys.scannerTab,
         libraryTabKey: MainScaffoldKeys.libraryTab,
         marketplaceTabKey: MainScaffoldKeys.marketplaceTab,
+        // Phase 10 plan 02: Orders tab key (index 5).
+        ordersTabKey: MainScaffoldKeys.ordersTab,
       ),
     );
   }
