@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T18:06:00Z"
+last_updated: "2026-05-03T18:10:45Z"
 progress:
   total_phases: 12
   completed_phases: 8
   total_plans: 35
-  completed_plans: 36
+  completed_plans: 37
   percent: 98
 ---
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 10-02 — Orders domain + realtime UI; OrdersListScreen + OrderDetailScreen + OrderStatusTimeline + Orders tab in MainScaffold)
+**Last updated:** 2026-05-03 (post plan 10-03 — FCM foreground overlay handler + background/killed-app navigation via notificationHandlerProvider + checkInitialFcmMessage + FcmOverlayHandler wrapping MainScaffold body)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 10 in progress (2/5 plans done: 10-01 FCM + 10-02 orders realtime UI). Phase 9 COMPLETE. Phase 8 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
+**Current focus**: Phase 10 in progress (3/5 plans done: 10-01 FCM + 10-02 orders realtime UI + 10-03 foreground overlay). Phase 9 COMPLETE. Phase 8 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
 
 **Strategic anchors**:
 
@@ -34,9 +34,9 @@ progress:
 
 **Milestone:** v1.0
 **Phase:** 10 of 12 — Orders, Realtime & FCM Notifications
-**Plan:** 10-02 ~ 2026-05-03 (COMPLETE: orders domain + Supabase Realtime stream + OrdersListScreen + OrderDetailScreen + OrderStatusTimeline + Orders tab in MainScaffold)
-**Status:** Phase 10 IN PROGRESS (2/5 plans); Phase 9 COMPLETE (5/5); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T18:06:00Z
+**Plan:** 10-03 ~ 2026-05-03 (COMPLETE: FCM foreground overlay (FcmOverlayHandler) + background/killed-app navigation (notificationHandlerProvider + checkInitialFcmMessage) wired in MainScaffold)
+**Status:** Phase 10 IN PROGRESS (3/5 plans); Phase 9 COMPLETE (5/5); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T18:10:45Z
 
 **Progress:** [█████████▊] 98%
 
@@ -50,7 +50,7 @@ Phase 6:  ▰ QR Digital-Only Features          ✓ COMPLETE 2026-05-03 (4/4 pla
 Phase 7:  ▰ Marketplace Catalog + QR Export   ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 8:  ▰ Cart & Customization Snapshot     ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 9:  ▰ Checkout, Wompi & Compliance      ✓ COMPLETE 2026-05-03 (5/5 plans)
-Phase 10: ▱ Orders, Realtime & FCM          IN PROGRESS (2/5 plans)
+Phase 10: ▱ Orders, Realtime & FCM          IN PROGRESS (3/5 plans)
 Phase 11: ▱ Operator Dashboard + Tattoo Line
 Phase 12: ▱ Premium, Polish & Observability (GA)
 ```
@@ -187,6 +187,10 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | orderDetailStreamProvider uses StreamProvider.family (not FutureProvider) to maintain Supabase Realtime subscription for detail screen lifetime | plan 10-02 SUMMARY (`146491a`) |
 | getUserOrders guards against null currentUser by returning empty list — avoids assert crash when provider mounts before auth resolves | plan 10-02 SUMMARY (`146491a`) |
 | firebaseBackgroundMessageHandler is a no-op stub in Phase 10 plan 01 — Plan 03 adds local notification display via flutter_local_notifications | plan 10-01 SUMMARY (`d50c4c2`) |
+| notificationHandlerProvider is a Provider<void> side-effect; reading it in initState activates onMessageOpenedApp listener without exposing state to the widget tree | plan 10-03 SUMMARY (`59e3d7e`) |
+| checkInitialFcmMessage is a standalone async function (not provider) because getInitialMessage is async and Riverpod providers must be synchronous | plan 10-03 SUMMARY (`59e3d7e`) |
+| FcmOverlayHandler uses message.hashCode as notification ID — unique per message without persistent counter state; DarwinInitializationSettings suppresses permission re-request (FcmService already handles it) | plan 10-03 SUMMARY (`59e3d7e`) |
+| MainScaffold converted ConsumerWidget → ConsumerStatefulWidget to gain initState for one-time FCM wiring | plan 10-03 SUMMARY (`59e3d7e`) |
 | notifications table has NO INSERT/UPDATE/DELETE policy for authenticated role — only service_role (send-fcm Edge Function) may write (T-10-02) | plan 10-01 SUMMARY (`d50c4c2`) |
 | user_fcm_tokens UNIQUE(user_id, token) + upsert on conflict is the DoS guard (T-10-04); token never logged (T-10-03) | plan 10-01 SUMMARY (`d50c4c2`) |
 | order_id FK in garantia/pqrs uses display number in subject/body; UUID lookup deferred to Phase 10 when OrderDetailScreen lands | plan 09-05 SUMMARY (`747cd62`) |
@@ -235,6 +239,17 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 10-03 execution):**
+
+- `lib/features/notifications/presentation/providers/notification_providers.dart` — notificationHandlerProvider (side-effect Provider<void>) + checkInitialFcmMessage() async function
+- `lib/features/notifications/presentation/widgets/fcm_overlay_handler.dart` — StatefulWidget wrapper: initializes flutter_local_notifications, creates Android channel 'qraft_orders', shows heads-up banner on FirebaseMessaging.onMessage
+- `lib/features/main/main_scaffold.dart` — ConsumerWidget → ConsumerStatefulWidget; initState reads notificationHandlerProvider + calls checkInitialFcmMessage; body wrapped with FcmOverlayHandler
+- `.planning/phases/10-orders-realtime-fcm/10-03-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+- `.planning/ROADMAP.md` (Phase 10 plan 03 marked)
+
+**Last session (plan 10-03):** 2026-05-03 — FCM notification pipeline closed for all 3 lifecycle states. Commit `59e3d7e` (Task 1: FcmOverlayHandler + notificationHandlerProvider + MainScaffold update). flutter analyze 0 issues. No new pubspec deps. Checkpoint auto-approved (autonomous mode, analyzer clean). MKT-09 requirements confirmed.
 
 **Files written this session (plan 10-02 execution):**
 
