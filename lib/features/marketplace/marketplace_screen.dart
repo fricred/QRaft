@@ -1,34 +1,31 @@
-import 'dart:math' show log;
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../shared/widgets/glass_button.dart';
-import 'domain/entities/product_entity.dart';
-import 'presentation/pages/product_details_screen.dart';
-import 'presentation/widgets/coming_soon_overlay.dart';
+import 'presentation/providers/marketplace_providers.dart';
+import 'presentation/widgets/material_filter_bar.dart';
+import 'presentation/widgets/product_variant_card.dart';
+import 'presentation/pages/product_detail_screen.dart';
 
-class MarketplaceScreen extends StatefulWidget {
+class MarketplaceScreen extends ConsumerStatefulWidget {
   const MarketplaceScreen({super.key});
 
   @override
-  State<MarketplaceScreen> createState() => _MarketplaceScreenState();
+  ConsumerState<MarketplaceScreen> createState() => _MarketplaceScreenState();
 }
 
-class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProviderStateMixin {
-  int _selectedCategory = 0;
-  final PageController _pageController = PageController();
-
+class _MarketplaceScreenState extends ConsumerState<MarketplaceScreen> {
   @override
   Widget build(BuildContext context) {
+    final filteredCatalog = ref.watch(filteredCatalogProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
-      body: Stack(
-        children: [
-          // Main content (visible but blurred behind overlay)
-          SafeArea(
-            child: Column(
-              children: [
-            // Header
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header row
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
@@ -42,19 +39,25 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
                           children: [
                             Text(
                               'Marketplace',
-                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 28,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 28,
+                                  ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               'Laser engrave your QR codes',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.grey[400],
-                                fontSize: 16,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: Colors.grey[400],
+                                    fontSize: 16,
+                                  ),
                             ),
                           ],
                         ),
@@ -74,10 +77,10 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
-                  // Featured promotion banner
+
+                  // Featured promotion banner (kept exactly as original)
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
@@ -102,7 +105,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              const Text(
                                 'XTool F1 Ultra Laser',
                                 style: TextStyle(
                                   color: Colors.white,
@@ -121,331 +124,96 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
                             ],
                           ),
                         ),
-                        Icon(
+                        const Icon(
                           Icons.precision_manufacturing_rounded,
                           color: Colors.white,
                           size: 32,
                         ),
                       ],
                     ),
-                  ).animate()
-                    .fadeIn(duration: 400.ms, delay: 100.ms, curve: Curves.easeOutCubic)
-                    .slideX(begin: 0.15, duration: 400.ms, delay: 100.ms, curve: Curves.easeOutQuart),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Category tabs
-                  Container(
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2E2E2E),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.1),
-                        width: 1,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        _buildCategoryTab('All', 0),
-                        _buildCategoryTab('Wood', 1),
-                        _buildCategoryTab('Metal', 2),
-                        _buildCategoryTab('Acrylic', 3),
-                      ],
-                    ),
-                  ),
-                ],
-              ).animate()
-                .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
-                .slideY(begin: 0.15, duration: 300.ms, curve: Curves.easeOutQuart),
-            ),
-            
-            // Products grid
-            Expanded(
-              child: PageView(
-                controller: _pageController,
-                onPageChanged: (index) {
-                  setState(() {
-                    _selectedCategory = index;
-                  });
-                },
-                children: [
-                  _buildProductsGrid(_getAllProducts()),
-                  _buildProductsGrid(_getWoodProducts()),
-                  _buildProductsGrid(_getMetalProducts()),
-                  _buildProductsGrid(_getAcrylicProducts()),
-                ],
-              ),
-            ),
-              ],
-            ),
-          ),
-
-          // Coming Soon overlay
-          const Positioned.fill(
-            child: ComingSoonOverlay(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryTab(String text, int index) {
-    final isSelected = _selectedCategory == index;
-    
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _selectedCategory = index;
-          });
-          _pageController.animateToPage(
-            index,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        },
-        child: Container(
-          height: double.infinity,
-          decoration: BoxDecoration(
-            gradient: isSelected 
-                ? const LinearGradient(
-                    colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
                   )
-                : null,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Center(
-            child: Text(
-              text,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.grey[400],
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                fontSize: 14,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProductsGrid(List<Map<String, dynamic>> products) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: 0.75,
-        ),
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          final delay = (100 + (40.0 * log(index + 2))).toInt();
-          return _buildProductCard(products[index], index).animate()
-            .fadeIn(duration: 300.ms, delay: delay.ms, curve: Curves.easeOutCubic)
-            .slideY(begin: 0.15, duration: 300.ms, delay: delay.ms, curve: Curves.easeOutQuart)
-            .scale(begin: const Offset(0.95, 0.95), duration: 300.ms, delay: delay.ms);
-        },
-      ),
-    );
-  }
-
-  Widget _buildProductCard(Map<String, dynamic> product, int index) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF00FF88).withValues(alpha: 0.1),
-            blurRadius: 12,
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  const Color(0xFF2E2E2E).withValues(alpha: 0.8),
-                  const Color(0xFF1A1A1A).withValues(alpha: 0.9),
+                      .animate()
+                      .fadeIn(
+                          duration: 400.ms,
+                          delay: 100.ms,
+                          curve: Curves.easeOutCubic)
+                      .slideX(
+                          begin: 0.15,
+                          duration: 400.ms,
+                          delay: 100.ms,
+                          curve: Curves.easeOutQuart),
                 ],
-              ),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.12),
-                width: 1,
-              ),
+              )
+                  .animate()
+                  .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                  .slideY(
+                      begin: 0.15,
+                      duration: 300.ms,
+                      curve: Curves.easeOutQuart),
             ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(16),
-                onTap: () => _showProductDetails(product),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Product image placeholder
-                      Container(
-                        width: double.infinity,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          gradient: product['gradient'] as LinearGradient,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          product['icon'] as IconData,
-                          color: Colors.white,
-                          size: 48,
-                        ),
-                      ),
 
-                      const SizedBox(height: 10),
+            // Material filter bar
+            const MaterialFilterBar(),
 
-                      // Product title
-                      Text(
-                        product['name'] as String,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+            const SizedBox(height: 16),
 
-                      const SizedBox(height: 2),
-
-                      // Material
-                      Text(
-                        product['material'] as String,
-                        style: TextStyle(
-                          color: Colors.grey[400],
-                          fontSize: 13,
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      // Price and add button
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            product['price'] as String,
-                            style: const TextStyle(
-                              color: Color(0xFF00FF88),
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Container(
-                            width: 36,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.add_rounded,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+            // Products grid — Expanded
+            Expanded(
+              child: filteredCatalog.when(
+                loading: () => GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  gridDelegate:
+                      const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 0.72,
+                  ),
+                  itemCount: 6,
+                  itemBuilder: (_, __) => const ProductVariantCardShimmer(),
+                ),
+                error: (e, _) => Center(
+                  child: Text(
+                    'Error al cargar catálogo',
+                    style: TextStyle(color: Colors.grey[400]),
                   ),
                 ),
+                data: (variants) {
+                  if (variants.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'Sin productos para este material',
+                        style: TextStyle(color: Colors.grey[400]),
+                      ),
+                    );
+                  }
+                  return GridView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 0.72,
+                    ),
+                    itemCount: variants.length,
+                    itemBuilder: (ctx, i) => ProductVariantCard(
+                      variant: variants[i],
+                      onTap: () => Navigator.of(ctx).push(
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              ProductDetailScreen(variant: variants[i]),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
-  }
-
-  List<Map<String, dynamic>> _getAllProducts() {
-    return [
-      ..._getWoodProducts(),
-      ..._getMetalProducts(),
-      ..._getAcrylicProducts(),
-    ];
-  }
-
-  List<Map<String, dynamic>> _getWoodProducts() {
-    return [
-      {
-        'name': 'Wood Keychain',
-        'material': 'Oak Wood',
-        'price': '\$12.99',
-        'icon': Icons.key_rounded,
-        'gradient': const LinearGradient(colors: [Color(0xFF8B4513), Color(0xFFD2691E)]),
-      },
-      {
-        'name': 'Wood Coaster',
-        'material': 'Walnut Wood',
-        'price': '\$8.99',
-        'icon': Icons.circle_rounded,
-        'gradient': const LinearGradient(colors: [Color(0xFF654321), Color(0xFF8B4513)]),
-      },
-      {
-        'name': 'Wood Plaque',
-        'material': 'Pine Wood',
-        'price': '\$24.99',
-        'icon': Icons.rectangle_rounded,
-        'gradient': const LinearGradient(colors: [Color(0xFFDEB887), Color(0xFFD2691E)]),
-      },
-    ];
-  }
-
-  List<Map<String, dynamic>> _getMetalProducts() {
-    return [
-      {
-        'name': 'Metal Tag',
-        'material': 'Stainless Steel',
-        'price': '\$15.99',
-        'icon': Icons.badge_rounded,
-        'gradient': const LinearGradient(colors: [Color(0xFF708090), Color(0xFF2F4F4F)]),
-      },
-      {
-        'name': 'Metal Plate',
-        'material': 'Aluminum',
-        'price': '\$19.99',
-        'icon': Icons.rectangle_rounded,
-        'gradient': const LinearGradient(colors: [Color(0xFFC0C0C0), Color(0xFF708090)]),
-      },
-    ];
-  }
-
-  List<Map<String, dynamic>> _getAcrylicProducts() {
-    return [
-      {
-        'name': 'Acrylic Stand',
-        'material': 'Clear Acrylic',
-        'price': '\$9.99',
-        'icon': Icons.phone_android_rounded,
-        'gradient': const LinearGradient(colors: [Color(0xFF87CEEB), Color(0xFF4682B4)]),
-      },
-      {
-        'name': 'Acrylic Sign',
-        'material': 'Colored Acrylic',
-        'price': '\$16.99',
-        'icon': Icons.signpost_rounded,
-        'gradient': const LinearGradient(colors: [Color(0xFF00CED1), Color(0xFF4682B4)]),
-      },
-    ];
   }
 
   void _showCartDialog() {
@@ -478,7 +246,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(
+                const Text(
                   'Shopping Cart',
                   style: TextStyle(
                     color: Colors.white,
@@ -537,15 +305,4 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
       },
     );
   }
-
-  void _showProductDetails(Map<String, dynamic> product) {
-    // Convert Map to ProductEntity and navigate to details screen
-    final productEntity = ProductEntity.fromMap(product);
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ProductDetailsScreen(product: productEntity),
-      ),
-    );
-  }
-
 }
