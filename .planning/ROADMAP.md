@@ -255,9 +255,13 @@ Plans:
   5. Marketplace catalog includes "Tattoo Stencil/Transfer" category with at least 1 SKU; product detail enforces tattoo-safe QR profile (15% logo cap, EC-H, larger modules)
   6. App contains educational FAQ screen on tatuar QRs (tamaño mínimo, ubicación corporal, healing, scan-survival)
   7. "Próximamente: Tattoo Studios Partner" CTA is visible in tattoo flow; signups land in `tattoo_studio_waitlist` table for v2 outreach
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 11-01-PLAN.md — Operator Flutter Web dashboard: order queue with status-filter tabs, stale-order alerting, order detail with customer info + status action buttons calling transition_order RPC (Wave 1)
+- [ ] 11-02-PLAN.md — Tattoo line: tattoo_transfer material + product seed migration, TattooProfileEnforcementWidget, TattooFaqScreen (6 FAQ entries), TattooWaitlistCta → tattoo_studio_waitlist (Wave 2)
+- [ ] 11-03-PLAN.md — Operator role + RLS: operator_profiles table + is_operator() function + service_role client + GoRouter guard on /operator/** (Wave 3, includes human checkpoint)
 **UI hint**: yes
-**Research needed before planning**: YES — operator tech decision (Flutter Web build vs Supabase Studio + RPC) per research SUMMARY.md "Phase 8 operator tech"; tattoo-safe QR validation requires empirical testing on skin samples
+**Research needed before planning**: Resolved in plan — Flutter Web build target (already supported in pubspec); tattooSafe profile already exists from Phase 5
 **Parallel-eligible**: NO (final feature phase before polish)
 
 ### Phase 12: Premium Subscription, Polish & Observability (GA)
@@ -271,7 +275,12 @@ Plans:
   4. Firebase Crashlytics + Analytics + Performance integrated; non-fatal errors are recorded; analytics breadcrumbs surface in crash reports
   5. Payment flow has structured logging in Edge Functions; reconciliation job (compare Wompi balance vs internal `payments.status='approved'` total) runs nightly with alert on drift >0.1%
   6. AdMob UMP consent persists across launches; no ad request fires before consent; ads do NOT appear during checkout, payment, or order detail flows
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 12-01-PLAN.md — RevenueCat premium: FeatureType extended with unlimitedQrs/aiStylePremium/bulkImport, PaywallScreen, isPremiumProvider, ad suppression for premium users (Wave 1)
+- [ ] 12-02-PLAN.md — Crashlytics + Analytics activation: ObservabilityService facade, FlutterError.onError + PlatformDispatcher.onError, analytics events in payment + QR creation flows (Wave 2)
+- [ ] 12-03-PLAN.md — Performance polish: GlassButton scale(0.95) + haptic + neon glow, RepaintBoundary on marketplace cards, shimmer skeletons in orders list, print sweep (Wave 2, parallel to 12-02)
+- [ ] 12-04-PLAN.md — GA readiness: CHANGELOG.md, App Store + Play Store metadata in Spanish, release build smoke tests, human checkpoint (Wave 3)
 **UI hint**: yes
 **Research needed before planning**: NO
 **Parallel-eligible**: NO (terminal phase)
@@ -336,8 +345,8 @@ Phase 6    Phase 7           │
 | 8. Cart & Customization Snapshot | 4/4 | Complete | 2026-05-03 |
 | 9. Checkout, Wompi & Compliance | 5/5 | Complete | 2026-05-03 |
 | 10. Orders, Realtime & FCM | 4/4 | Complete | 2026-05-03 |
-| 11. Operator Dashboard + Tattoo | 0/? | Not started | - |
-| 12. Premium, Polish & Observability | 0/? | Not started | - |
+| 11. Operator Dashboard + Tattoo | 0/3 | Not started | - |
+| 12. Premium, Polish & Observability | 0/4 | Not started | - |
 
 ## Coverage Validation
 
@@ -366,7 +375,7 @@ Per research SUMMARY.md flags + dependency analysis:
 | Phase 3 | Scanner-matrix CI test setup, full-screen overlay UX confirmation |
 | Phase 6 | AI provider selection (Replicate/Stability/OpenAI), animated export libs, native widget impl per platform |
 | Phase 7 | Real photographed product samples per material |
-| Phase 11 | Operator tech decision (Flutter Web vs Supabase Studio); tattoo-safe QR validation on skin samples |
+| Phase 11 | Resolved: Flutter Web (already in pubspec); tattooSafe profile exists from Phase 5 — planning complete |
 
 Phases 1, 2, 4, 5, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase` without prior `/gsd-research-phase`.
 
@@ -395,4 +404,4 @@ Update on phase transitions:
 
 ---
 *Roadmap created: 2026-05-01*
-*Last updated: 2026-05-01 — Phase 10 plans created (4 plans, 3 waves)*
+*Last updated: 2026-05-01 — Phase 11 plans created (3 plans, 3 waves); Phase 12 plans created (4 plans, 3 waves)*
