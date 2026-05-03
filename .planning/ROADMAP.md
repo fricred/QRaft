@@ -31,7 +31,7 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
 - [x] **Phase 8: Cart & Customization Snapshot** — Users can build a persistent cart with frozen customization snapshots and accurate totals (subtotal + IVA 19% + envío) ✓ 2026-05-03
 - [x] **Phase 9: Checkout, Wompi, Colombian Compliance** — Users can pay via Wompi (cards, PSE, Nequi, Daviplata) with verified webhooks; LGL-02..05 disclaimers and habeas data live ✓ 2026-05-03
 - [x] **Phase 10: Orders, Realtime & FCM Notifications** — Users can track order status with timeline, receive push notifications on every state change ✓ 2026-05-03
-- [ ] **Phase 11: Operator Dashboard + Tattoo Line** — Operator can fulfill orders end-to-end; Tattoo category live in marketplace with TAT-safe profile
+- [x] **Phase 11: Operator Dashboard + Tattoo Line** — Operator can fulfill orders end-to-end; Tattoo category live in marketplace with TAT-safe profile ✓ COMPLETE 2026-05-03 (3/3 plans)
 - [ ] **Phase 12: Premium Subscription, Polish & Observability (GA)** — RevenueCat premium, performance polish, Crashlytics + Analytics + Performance, ready for launch
 
 ## Phase Details
@@ -257,9 +257,9 @@ Plans:
   7. "Próximamente: Tattoo Studios Partner" CTA is visible in tattoo flow; signups land in `tattoo_studio_waitlist` table for v2 outreach
 **Plans**: 3 plans
 Plans:
-- [ ] 11-01-PLAN.md — Operator Flutter Web dashboard: order queue with status-filter tabs, stale-order alerting, order detail with customer info + status action buttons calling transition_order RPC (Wave 1)
-- [ ] 11-02-PLAN.md — Tattoo line: tattoo_transfer material + product seed migration, TattooProfileEnforcementWidget, TattooFaqScreen (6 FAQ entries), TattooWaitlistCta → tattoo_studio_waitlist (Wave 2)
-- [ ] 11-03-PLAN.md — Operator role + RLS: operator_profiles table + is_operator() function + service_role client + GoRouter guard on /operator/** (Wave 3, includes human checkpoint)
+- [x] 11-01-PLAN.md — Operator Flutter Web dashboard: order queue with status-filter tabs, stale-order alerting, order detail with customer info + status action buttons calling transition_order RPC (Wave 1) ✓ COMPLETE 2026-05-03
+- [x] 11-02-PLAN.md — Tattoo line: tattoo_transfer material + product seed migration, TattooProfileEnforcementWidget, TattooFaqScreen (6 FAQ entries), TattooWaitlistCta → tattoo_studio_waitlist (Wave 2) ✓ COMPLETE 2026-05-03
+- [x] 11-03-PLAN.md — Operator role + RLS: operator_profiles table + is_operator() function + service_role client + GoRouter guard on /operator/** (Wave 3, includes human checkpoint) ✓ COMPLETE 2026-05-03
 **UI hint**: yes
 **Research needed before planning**: Resolved in plan — Flutter Web build target (already supported in pubspec); tattooSafe profile already exists from Phase 5
 **Parallel-eligible**: NO (final feature phase before polish)

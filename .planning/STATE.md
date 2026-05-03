@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T18:36:53Z"
+last_updated: "2026-05-03T18:55:00Z"
 progress:
   total_phases: 12
-  completed_phases: 9
+  completed_phases: 10
   total_plans: 35
-  completed_plans: 38
+  completed_plans: 40
   percent: 99
 ---
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 11-01 — Operator order queue + detail screen with transition_order RPC calls. Phase 11 IN PROGRESS.)
+**Last updated:** 2026-05-03 (Phase 11 COMPLETE — plans 11-01, 11-02, 11-03 all done: operator order queue + tattoo marketplace + operator RLS/auth guard)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 11 IN PROGRESS (1/N plans executed: 11-01 operator order queue + detail screens). Phase 10 COMPLETE (4/4 plans). Phase 3 in parallel (2/3 plans done, 03-03 pending).
+**Current focus**: Phase 11 COMPLETE (3/3 plans: 11-01 operator queue, 11-02 tattoo marketplace, 11-03 operator RLS/auth guard). Phase 10 COMPLETE (4/4 plans). Phase 3 in parallel (2/3 plans done, 03-03 pending).
 
 **Strategic anchors**:
 
@@ -33,10 +33,10 @@ progress:
 ## Current Position
 
 **Milestone:** v1.0
-**Phase:** 11 of 12 — Operator Dashboard + Tattoo Line — IN PROGRESS
-**Plan:** 11-01 ~ 2026-05-03 (COMPLETE: operator order queue + detail screen + FSM transition RPC calls)
-**Status:** Phase 11 IN PROGRESS (1 plan complete); Phase 10 COMPLETE (4/4 plans); Phase 9 COMPLETE (5/5); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T18:36:53Z
+**Phase:** 11 of 12 — Operator Dashboard + Tattoo Line — COMPLETE
+**Plan:** 11-03 ~ 2026-05-03 (COMPLETE: operator RLS, service_role client, auth guard, login screen)
+**Status:** Phase 11 COMPLETE (3/3 plans); Phase 10 COMPLETE (4/4 plans); Phase 9 COMPLETE (5/5); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T18:55:00Z
 
 **Progress:** [█████████▉] 99%
 
@@ -50,8 +50,8 @@ Phase 6:  ▰ QR Digital-Only Features          ✓ COMPLETE 2026-05-03 (4/4 pla
 Phase 7:  ▰ Marketplace Catalog + QR Export   ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 8:  ▰ Cart & Customization Snapshot     ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 9:  ▰ Checkout, Wompi & Compliance      ✓ COMPLETE 2026-05-03 (5/5 plans)
-Phase 10: ▰ Orders, Realtime & FCM          ✓ COMPLETE 2026-05-03 (4/4 plans)
-Phase 11: ▱ Operator Dashboard + Tattoo Line  IN PROGRESS (11-01 complete: order queue + detail screens)
+Phase 10: ▰ Orders, Realtime & FCM            ✓ COMPLETE 2026-05-03 (4/4 plans)
+Phase 11: ▰ Operator Dashboard + Tattoo Line  ✓ COMPLETE 2026-05-03 (3/3 plans)
 Phase 12: ▱ Premium, Polish & Observability (GA)
 ```
 
