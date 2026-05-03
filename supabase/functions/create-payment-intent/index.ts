@@ -214,12 +214,19 @@ serve(async (req: Request) => {
   const totalCop = orderRow.total_cop as number;
   const amountInCents = totalCop * 100; // COP pesos → centavos
 
-  // ---- 6. Read Wompi secrets -----------------------------------------------
-  const integritySecret = Deno.env.get("WOMPI_INTEGRITY_SECRET");
-  const publicKey = Deno.env.get("WOMPI_PUBLIC_KEY");
+  // ---- 6. Read Wompi secrets (env-aware) -------------------------------------
+  // WOMPI_ENV=test → uses *_TEST secrets (sandbox, no real charges)
+  // WOMPI_ENV=prod → uses *_PROD secrets (production)
+  // Switch by updating the WOMPI_ENV Supabase secret without code changes.
+  const wompiEnv = (Deno.env.get("WOMPI_ENV") ?? "test").toLowerCase();
+  const envSuffix = wompiEnv === "prod" ? "_PROD" : "_TEST";
+  const integritySecret = Deno.env.get(`WOMPI_INTEGRITY_SECRET${envSuffix}`);
+  const publicKey = Deno.env.get(`WOMPI_PUBLIC_KEY${envSuffix}`);
 
   if (!integritySecret || !publicKey) {
-    return corsJson({ error: "Wompi secrets not configured in Edge Function environment" }, 500);
+    return corsJson({
+      error: `Wompi secrets not configured: WOMPI_INTEGRITY_SECRET${envSuffix} / WOMPI_PUBLIC_KEY${envSuffix}`,
+    }, 500);
   }
 
   // ---- 7. Compute integrity signature (T-09-06: never in Flutter binary) --

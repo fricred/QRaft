@@ -71,10 +71,13 @@ Deno.serve(async (req: Request) => {
   // NEVER process an event without verifying the signature first.
   // T-09-15: Prevents forged APPROVED events from triggering order fulfillment.
 
-  const eventsSecret = Deno.env.get('WOMPI_EVENTS_SECRET');
+  // WOMPI_ENV=test|prod selects the correct events secret automatically.
+  const wompiEnv = (Deno.env.get('WOMPI_ENV') ?? 'test').toLowerCase();
+  const eventsSecret = Deno.env.get(
+    wompiEnv === 'prod' ? 'WOMPI_EVENTS_SECRET_PROD' : 'WOMPI_EVENTS_SECRET_TEST'
+  );
   if (!eventsSecret) {
-    // Misconfiguration — server error, not a client error.
-    console.error('WOMPI_EVENTS_SECRET not set; rejecting request');
+    console.error(`WOMPI_EVENTS_SECRET_${wompiEnv.toUpperCase()} not set`);
     return new Response('server misconfigured', { status: 500 });
   }
 
