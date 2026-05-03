@@ -189,6 +189,7 @@ class _MarketplaceScreenState extends ConsumerState<MarketplaceScreen> {
                   }
                   return GridView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
+                    cacheExtent: 300.0,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
@@ -197,14 +198,16 @@ class _MarketplaceScreenState extends ConsumerState<MarketplaceScreen> {
                       childAspectRatio: 0.72,
                     ),
                     itemCount: variants.length,
-                    itemBuilder: (ctx, i) => ProductVariantCard(
-                      variant: variants[i],
-                      onTap: () => Navigator.of(ctx).push(
-                        MaterialPageRoute(
-                          builder: (_) => ProductDetailScreen(
-                            variant: variants[i],
-                            qrCodeId: ref
-                                .read(selectedQrForMarketplaceProvider),
+                    itemBuilder: (ctx, i) => RepaintBoundary(
+                      child: ProductVariantCard(
+                        variant: variants[i],
+                        onTap: () => Navigator.of(ctx).push(
+                          MaterialPageRoute(
+                            builder: (_) => ProductDetailScreen(
+                              variant: variants[i],
+                              qrCodeId: ref
+                                  .read(selectedQrForMarketplaceProvider),
+                            ),
                           ),
                         ),
                       ),
