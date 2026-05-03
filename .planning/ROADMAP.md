@@ -147,9 +147,14 @@ Plans:
   2. User can stylize a QR with AI (Replicate or Stability provider — selected during phase research); save is BLOCKED until headless scan-validation passes
   3. User can pin a favorite QR from their library to iOS home screen via WidgetKit and Android home screen via Glance, tap-to-open the QR full-screen
   4. AI-stylized QRs are programmatically prevented from being added to cart (print-safe profile blocks AI styles)
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 06-01-PLAN.md — exportDigitalOnly() + Replicate Edge Function proxy + test scaffolds (Wave 1)
+- [ ] 06-02-PLAN.md — QRD-01 animated GIF: QrAnimationService + QrAnimatePage (Wave 2)
+- [ ] 06-03-PLAN.md — QRD-02 AI stylized QR: QrAiStyleService + QrAiStylePage + scannability gate (Wave 2, parallel to 06-02)
+- [ ] 06-04-PLAN.md — QRD-03 home widget: home_widget 0.9.1 + Swift WidgetKit + Kotlin Glance + human checkpoint (Wave 3)
 **UI hint**: yes
-**Research needed before planning**: YES — AI provider selection (Replicate vs Stability vs OpenAI), animated export library choice (lottie vs flutter_gif vs canvas record), native widget implementation specifics per platform
+**Research needed before planning**: NO (research complete — 06-RESEARCH.md)
 **Parallel-eligible**: YES (can run alongside Phase 7 since it doesn't touch marketplace)
 
 ### Phase 7: Marketplace Catalog + QR Export Pipeline
@@ -160,11 +165,16 @@ Plans:
   1. User can browse products filtered by material (madera, acrílico, metal, cuero, vidrio, piedra) and size with realistic preview thumbnails
   2. User selects a product variant and sees a live composite preview of their selected QR rendered on the chosen material texture
   3. System can rasterize any QR to a 2160px PNG via `RepaintBoundary.toImage(pixelRatio: 12.0)` and upload to Supabase Storage `order-assets/`
-  4. Catalog data lives in `products` + `product_variants` + `materials` tables with RLS for read; prices stored in COP integer cents
+  4. Catalog data lives in `products` + `product_variants` + `materials` tables with RLS for read; prices stored in COP whole pesos (INT)
   5. Material preview composition runs at 60fps on Android low-end (lazy material textures, RepaintBoundary isolation)
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 07-01-PLAN.md — Supabase migration (materials + products + product_variants DDL + seed) + domain entities + catalogProvider
+- [ ] 07-02-PLAN.md — MaterialFilterBar + ProductVariantCard widgets + replace MarketplaceScreen stub + ProductDetailScreen skeleton
+- [ ] 07-03-PLAN.md — MaterialPreviewWidget (Stack: texture + white QR label via PrettyQrView) + widget tests
+- [ ] 07-04-PLAN.md — Wire QR library Engrave action → marketplace; inject qrCodeId into ProductDetailScreen; visual verification checkpoint
 **UI hint**: yes
-**Research needed before planning**: YES — real photographed product samples per material (per research SUMMARY.md "Phase 6 product photography")
+**Research needed before planning**: NO (research complete — 07-RESEARCH.md)
 **Parallel-eligible**: NO (gates Phase 8)
 
 ### Phase 8: Cart & Customization Snapshot
@@ -305,8 +315,8 @@ Phase 6    Phase 7           │
 | 3. QR Scanner | 2/3 | In progress | - |
 | 4. Redirect Service Foundation | 3/3 | Complete | 2026-05-01 |
 | 5. QR Customization (Print-Safe) | 3/5 | In progress | 2026-05-02 (plans 01-03) |
-| 6. QR Digital-Only Features | 0/? | Not started | - |
-| 7. Marketplace Catalog + QR Export | 0/? | Not started | - |
+| 6. QR Digital-Only Features | 0/4 | Planned | - |
+| 7. Marketplace Catalog + QR Export | 0/4 | Planned | - |
 | 8. Cart & Customization Snapshot | 0/? | Not started | - |
 | 9. Checkout, Wompi & Compliance | 0/? | Not started | - |
 | 10. Orders, Realtime & FCM | 0/? | Not started | - |
@@ -369,4 +379,4 @@ Update on phase transitions:
 
 ---
 *Roadmap created: 2026-05-01*
-*Last updated: 2026-05-01 — Phase 5 plans created (5 plans, 3 waves)*
+*Last updated: 2026-05-01 — Phase 6 plans created (4 plans, 3 waves)*
