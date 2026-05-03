@@ -4,7 +4,7 @@ import 'package:qraft/features/qr_generator/domain/services/qr_bulk_import_servi
 void main() {
   group('QrBulkImportService.parseCsv', () {
     // Helper: build a CSV string with a header + N data rows
-    String _buildCsv(int dataRowCount) {
+    String buildCsv(int dataRowCount) {
       final buf = StringBuffer('name;type;content\n');
       for (var i = 1; i <= dataRowCount; i++) {
         buf.writeln('Row$i;url;https://example.com/$i');
@@ -41,7 +41,7 @@ void main() {
     });
 
     test('throws too_many_rows when 501 data rows are provided', () {
-      final csv = _buildCsv(501);
+      final csv = buildCsv(501);
 
       expect(
         () => QrBulkImportService.parseCsv(csv),
