@@ -32,6 +32,12 @@ class ProductVariantEntity extends Equatable {
     this.isActive = true,
   });
 
+  /// Returns true when this variant's material is `tattoo_transfer`.
+  ///
+  /// Used by [ProductDetailScreen] to conditionally show the
+  /// [TattooProfileEnforcementWidget] banner (TAT-02).
+  bool get isTattooCategory => material.id == 'tattoo_transfer';
+
   @override
   List<Object?> get props =>
       [id, productId, material.id, sizeLabel, priceCop];

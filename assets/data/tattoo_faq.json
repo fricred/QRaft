@@ -1,0 +1,26 @@
+[
+  {
+    "q": "¿Cuál es el tamaño mínimo del QR para que sea escaneable en piel?",
+    "a": "Recomendamos mínimo 2cm × 2cm en posición plana. En zonas curvas (brazo, hombro) mínimo 2.5cm × 2.5cm para compensar distorsión."
+  },
+  {
+    "q": "¿Dónde en el cuerpo funciona mejor?",
+    "a": "Zonas planas y de baja distorsión: antebrazo interior, muslo, espalda alta. Evita codos, rodillas y articulaciones (mucha curvatura)."
+  },
+  {
+    "q": "¿Cuánto dura el tatuaje temporal?",
+    "a": "5-7 días con cuidado normal. Evitar frotar, jabón directo y mucho sudor alarga la duración."
+  },
+  {
+    "q": "¿El QR sobrevive al proceso de cicatrización de un tatuaje permanente?",
+    "a": "QRaft no recomienda QRs en tatuajes permanentes en esta etapa. El transfer temporal permite probar antes. Consulta a tu tatuador."
+  },
+  {
+    "q": "¿Por qué el perfil Tattoo-Safe usa módulos más grandes y restricciones extra?",
+    "a": "La piel deforma la tinta. Módulos más grandes y corrección de errores nivel H garantizan escaneo incluso con distorsión del 30%."
+  },
+  {
+    "q": "¿Puedo poner logo en un QR para tatuaje?",
+    "a": "Sí, pero el logo no puede superar el 15% del área del QR (vs 20% en impresión) para mantener la corrección de errores suficiente."
+  }
+]

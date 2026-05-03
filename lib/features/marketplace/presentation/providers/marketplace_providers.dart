@@ -36,3 +36,17 @@ final filteredCatalogProvider =
     (variants) => variants.where((v) => v.material.id == filter).toList(),
   );
 });
+
+/// Derived: all tattoo_transfer variants from the catalog (TAT-01).
+///
+/// Used to check availability of the tattoo category and power any
+/// tattoo-specific UI components. Returns empty list while loading.
+final tattooProductsProvider =
+    Provider.autoDispose<List<ProductVariantEntity>>((ref) {
+  final catalog = ref.watch(catalogProvider);
+  return catalog.whenOrNull(
+        data: (variants) =>
+            variants.where((v) => v.isTattooCategory).toList(),
+      ) ??
+      [];
+});

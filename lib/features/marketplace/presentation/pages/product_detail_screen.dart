@@ -9,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../domain/entities/product_variant_entity.dart';
 import '../widgets/material_preview_widget.dart';
+import '../widgets/tattoo_profile_enforcement_widget.dart';
 import '../../../qr_library/presentation/providers/qr_library_providers.dart';
 import '../../../cart/presentation/pages/cart_screen.dart';
 import '../../../cart/presentation/providers/cart_providers.dart';
@@ -207,6 +208,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     child: _buildPreview(context, ref),
                   ),
                 ),
+
+                // 1b. Tattoo-Safe enforcement banner (TAT-02)
+                if (widget.variant.isTattooCategory)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      children: const [
+                        TattooProfileEnforcementWidget(),
+                        SizedBox(height: 8),
+                      ],
+                    ),
+                  ),
 
                 Padding(
                   padding: const EdgeInsets.all(24),
