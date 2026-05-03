@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T13:57:17Z"
+last_updated: "2026-05-03T14:06:16Z"
 progress:
   total_phases: 12
   completed_phases: 3
@@ -14,13 +14,13 @@ progress:
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 07-03)
+**Last updated:** 2026-05-03 (post plan 07-04 — Phase 7 COMPLETE)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 7 IN PROGRESS (3/4 plans — 07-01 ✓, 07-02 ✓, 07-03 ✓ 2026-05-03). Phase 6 IN PROGRESS (3/4 plans — 06-01 ✓, 06-02 ✓, 06-03 ✓ 2026-05-03). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 7 plan 07-04 (ProductDetailScreen) or Phase 6 plan 06-04 (QrWidgetService).
+**Current focus**: Phase 7 COMPLETE (4/4 plans — 07-01 ✓, 07-02 ✓, 07-03 ✓, 07-04 ✓ 2026-05-03). Phase 6 IN PROGRESS (3/4 plans — 06-01 ✓, 06-02 ✓, 06-03 ✓ 2026-05-03). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 8 (Cart & Customization Snapshot) or Phase 6 plan 06-04 (QrWidgetService).
 
 **Strategic anchors**:
 
@@ -33,12 +33,12 @@ progress:
 ## Current Position
 
 **Milestone:** v1.0
-**Phase:** 7 of 12 — Marketplace Catalog + QR Export, IN PROGRESS
-**Plan:** 07-03 ✓ 2026-05-03 (3/4 plans — Phase 7)
-**Status:** Phase 7 in progress (3/4 plans); Phase 6 in progress (3/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T13:57:17Z
+**Phase:** 7 of 12 — Marketplace Catalog + QR Export, COMPLETE
+**Plan:** 07-04 ✓ 2026-05-03 (4/4 plans — Phase 7 COMPLETE)
+**Status:** Phase 7 COMPLETE; Phase 6 in progress (3/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T14:06:16Z
 
-**Progress:** [████████░░] 84%
+**Progress:** [████████░░] 87%
 
 ```
 Phase 1:  ▰ Foundation Hardening              ✓ COMPLETE (passed-with-residuals 2026-05-01)
@@ -47,7 +47,7 @@ Phase 3:  ▱ QR Scanner                        IN PROGRESS (2/3 plans — 03-03
 Phase 4:  ▰ Redirect Service Foundation       ✓ COMPLETE 2026-05-01 (3/3 plans)
 Phase 5:  ▰ QR Customization (Print-Safe)     ✓ COMPLETE 2026-05-03 (5/5 plans)
 Phase 6:  ▱ QR Digital-Only Features          IN PROGRESS (3/4 plans — 06-01 ✓, 06-02 ✓, 06-03 ✓ 2026-05-03)
-Phase 7:  ▱ Marketplace Catalog + QR Export   IN PROGRESS (3/4 plans — 07-01 ✓, 07-02 ✓, 07-03 ✓ 2026-05-03)
+Phase 7:  ▰ Marketplace Catalog + QR Export   ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 8:  ▱ Cart & Customization Snapshot
 Phase 9:  ▱ Checkout, Wompi & Compliance
 Phase 10: ▱ Orders, Realtime & FCM
@@ -195,6 +195,18 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 07-04 execution — close-out):**
+
+- `lib/features/marketplace/presentation/pages/product_detail_screen.dart` — replaced `Key('qr_preview_placeholder')` stub with `MaterialPreviewWidget`; added `_SelectQrPrompt`, `_PreviewShimmer`, `_PreviewError` private widgets; `userQRCodesProvider.when()` for async QR entity lookup by id
+- `lib/features/marketplace/presentation/providers/marketplace_providers.dart` — added `selectedQrForMarketplaceProvider` (`StateProvider<String?>`) as library→marketplace loose-coupling bridge
+- `lib/features/marketplace/marketplace_screen.dart` — reads `selectedQrForMarketplaceProvider` at card-tap to pass `qrCodeId` into `ProductDetailScreen`
+- `lib/features/qr_library/qr_library_screen.dart` — added "Engrabar" `PopupMenuItem` (sets provider, pushes `MarketplaceScreen`)
+- `.planning/phases/07-marketplace-catalog/07-04-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+- `.planning/ROADMAP.md` (Phase 7 checkbox marked complete)
+
+**Last session (plan 07-04):** 2026-05-03 — QR library → marketplace wiring; selectedQrForMarketplaceProvider bridge; MaterialPreviewWidget replacing placeholder in ProductDetailScreen. Commit `d0484a2`. flutter analyze 0 issues. 4/4 marketplace tests pass. Phase 7 COMPLETE (4/4 plans).
 
 **Files written this session (plan 07-03 execution):**
 

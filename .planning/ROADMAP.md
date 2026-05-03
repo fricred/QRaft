@@ -27,7 +27,7 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
 - [x] **Phase 4: Redirect Service Foundation** — `qraft.link/{slug}` infrastructure live, foundation for v2 dynamic monetization (parallel to Phases 2-3) ✓ 2026-05-01
 - [x] **Phase 5: QR Customization (Print-Safe)** — Users can personalize QRs with logos/colors/styles/frames/templates and select print/digital/tattoo profile ✓ 2026-05-03
 - [ ] **Phase 6: QR Digital-Only Features** — Users can create animated, AI-stylized, and home-screen-widget QRs (digital-only flow)
-- [ ] **Phase 7: Marketplace Catalog + QR Export Pipeline** — Users can browse engraved-product catalog and see live preview of their customized QR on each material
+- [x] **Phase 7: Marketplace Catalog + QR Export Pipeline** — Users can browse engraved-product catalog and see live preview of their customized QR on each material ✓ 2026-05-03
 - [ ] **Phase 8: Cart & Customization Snapshot** — Users can build a persistent cart with frozen customization snapshots and accurate totals (subtotal + IVA 19% + envío)
 - [ ] **Phase 9: Checkout, Wompi, Colombian Compliance** — Users can pay via Wompi (cards, PSE, Nequi, Daviplata) with verified webhooks; LGL-02..05 disclaimers and habeas data live
 - [ ] **Phase 10: Orders, Realtime & FCM Notifications** — Users can track order status with timeline, receive push notifications on every state change
@@ -157,7 +157,7 @@ Plans:
 **Research needed before planning**: NO (research complete — 06-RESEARCH.md)
 **Parallel-eligible**: YES (can run alongside Phase 7 since it doesn't touch marketplace)
 
-### Phase 7: Marketplace Catalog + QR Export Pipeline
+### Phase 7: Marketplace Catalog + QR Export Pipeline ✓ COMPLETE 2026-05-03
 **Goal**: Users can browse the engraved-product catalog (material × size × price) and see a live composite preview of their customized QR rendered on each material; system can rasterize engraver-quality 2160px PNGs
 **Depends on**: Phase 5 (customized QR data is the input to material preview + PNG export)
 **Requirements**: MKT-01, MKT-02
@@ -172,7 +172,7 @@ Plans:
 - [x] 07-01-PLAN.md — Supabase migration (materials + products + product_variants DDL + seed) + domain entities + catalogProvider ✓ 2026-05-03 (commits `5fce44c` migration SQL + `92435e2` 8 Dart files + `bbace05` T-07-02 security fix; 3 tables + 3 RLS policies + 6-material + 2-product + 12-variant seed; MaterialEntity + ProductVariantEntity (int priceCop) + catalogProvider/activeMaterialFilterProvider/filteredCatalogProvider; texture_url https-only validation; 0 analyzer issues)
 - [x] 07-02-PLAN.md — MaterialFilterBar + ProductVariantCard widgets + replace MarketplaceScreen stub + ProductDetailScreen skeleton ✓ 2026-05-03 (commits `97f4909` widgets + `79c9d4a` screen+detail; MaterialFilterBar chips from catalogProvider + shimmer; ProductVariantCard glassmorphism + COP intl price + shimmer skeleton; MarketplaceScreen ConsumerStatefulWidget + filteredCatalogProvider + ComingSoonOverlay removed; ProductDetailScreen qrCodeId hook + Key('qr_preview_placeholder') + qraft.link banner; 0 analyzer issues)
 - [x] 07-03-PLAN.md — MaterialPreviewWidget (Stack: texture + white QR label via PrettyQrView) + widget tests ✓ 2026-05-03 (commits `59096c7` widget + `89bf471` tests; MaterialPreviewWidget StatelessWidget: CachedNetworkImage texture + shimmer placeholder + MaterialGradients.forCategory fallback (empty/non-https guard) + white-bg PrettyQrView label 72% of previewSize; 4/4 widget tests pass; 0 analyzer issues)
-- [ ] 07-04-PLAN.md — Wire QR library Engrave action → marketplace; inject qrCodeId into ProductDetailScreen; visual verification checkpoint
+- [x] 07-04-PLAN.md — Wire QR library Engrave action → marketplace; inject qrCodeId into ProductDetailScreen; visual verification checkpoint ✓ 2026-05-03 (commit `d0484a2`; selectedQrForMarketplaceProvider bridge; MaterialPreviewWidget wired; _SelectQrPrompt/Shimmer/Error fallbacks; "Engrabar" library action; 0 analyzer issues)
 **UI hint**: yes
 **Research needed before planning**: NO (research complete — 07-RESEARCH.md)
 **Parallel-eligible**: NO (gates Phase 8)
@@ -314,9 +314,9 @@ Phase 6    Phase 7           │
 | 2. QR Generation Core | 4/4 | Complete | 2026-05-02 |
 | 3. QR Scanner | 2/3 | In progress | - |
 | 4. Redirect Service Foundation | 3/3 | Complete | 2026-05-01 |
-| 5. QR Customization (Print-Safe) | 3/5 | In progress | 2026-05-02 (plans 01-03) |
+| 5. QR Customization (Print-Safe) | 5/5 | Complete | 2026-05-03 |
 | 6. QR Digital-Only Features | 3/4 | In progress | 2026-05-03 (plans 01-03) |
-| 7. Marketplace Catalog + QR Export | 0/4 | Planned | - |
+| 7. Marketplace Catalog + QR Export | 4/4 | Complete | 2026-05-03 |
 | 8. Cart & Customization Snapshot | 0/? | Not started | - |
 | 9. Checkout, Wompi & Compliance | 0/? | Not started | - |
 | 10. Orders, Realtime & FCM | 0/? | Not started | - |
