@@ -93,6 +93,9 @@ dependencies:
   home_widget: ^0.9.1
   url_launcher: ^6.2.4
 
+  # WebView (Wompi Web Checkout — Phase 9 plan 03)
+  webview_flutter: ^4.13.1
+
   # HTTP client (direct dependency — used in QrAiStyleService for Replicate CDN downloads)
   http: ^1.2.0
 
