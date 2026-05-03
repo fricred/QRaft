@@ -279,6 +279,19 @@ class QRCustomizationController extends StateNotifier<QRCustomizationState> {
   }
 
   // --------------------------------------------------------------------------
+  // Phase 5 — Template system
+  // --------------------------------------------------------------------------
+
+  /// Applies a full curated template, replacing all 9 Phase 5 customization
+  /// fields (profile, colors, gradients, module/eye presets, framText, etc.)
+  /// with the template's [QRCustomization].
+  ///
+  /// The legacy [applyTemplate] method is kept for backward compatibility.
+  void applyFullTemplate(QrFullTemplate template) {
+    state = state.copyWith(customization: template.customization);
+  }
+
+  // --------------------------------------------------------------------------
   // Private helpers
   // --------------------------------------------------------------------------
 
@@ -344,3 +357,159 @@ final qrCustomizationControllerProvider =
         (ref) {
   return QRCustomizationController();
 });
+
+// ---------------------------------------------------------------------------
+// Full Template system (Phase 5 — QR-06)
+// ---------------------------------------------------------------------------
+
+/// A curated QR template that pre-configures all Phase 5 customization fields.
+///
+/// Templates are defined as compile-time constants in [kQrTemplates] and cannot
+/// be modified at runtime — [QrFullTemplate] objects may only be selected from
+/// the curated list (T-05-05-04).
+class QrFullTemplate {
+  /// Unique machine-readable identifier (kebab-case).
+  final String id;
+
+  /// Human-readable display name shown in the template gallery.
+  final String name;
+
+  /// The complete [QRCustomization] configuration for this template.
+  final QRCustomization customization;
+
+  const QrFullTemplate({
+    required this.id,
+    required this.name,
+    required this.customization,
+  });
+}
+
+/// Eight curated templates matching the Phase 5 Research Template Gallery table.
+///
+/// Template index — Name — Profile:
+/// 0  Classic         printSafe   black on white, standard squares
+/// 1  Ocean Blue      printSafe   blue on light grey, smooth modules
+/// 2  Neon Green      digitalOnly neon on dark, dots with circle eye
+/// 3  Elegant Purple  printSafe   purple on near-white, rounded
+/// 4  Charcoal        printSafe   dark grey on white, dense modules
+/// 5  Sunset Gradient digitalOnly linear gradient (coral → teal) on black
+/// 6  Corporate       printSafe   near-black on white, slight rounding
+/// 7  Tattoo Safe     tattooSafe  pure black on white, no logo, high EC
+const List<QrFullTemplate> kQrTemplates = [
+  // 0 — Classic
+  QrFullTemplate(
+    id: 'classic',
+    name: 'Classic',
+    customization: QRCustomization(
+      foregroundColor: 0xFF000000,
+      backgroundColor: 0xFFFFFFFF,
+      profile: 0, // printSafe
+      modulePreset: 0,
+      eyePreset: 0,
+      errorCorrectionLevel: 3,
+    ),
+  ),
+
+  // 1 — Ocean Blue
+  QrFullTemplate(
+    id: 'ocean_blue',
+    name: 'Ocean Blue',
+    customization: QRCustomization(
+      foregroundColor: 0xFF1A73E8,
+      backgroundColor: 0xFFF5F7FA,
+      profile: 0, // printSafe
+      modulePreset: 3,
+      eyePreset: 1,
+      errorCorrectionLevel: 3,
+    ),
+  ),
+
+  // 2 — Neon Green (profile=digitalOnly, fg=#00FF88, bg=#1A1A1A)
+  QrFullTemplate(
+    id: 'neon_green',
+    name: 'Neon Green',
+    customization: QRCustomization(
+      foregroundColor: 0xFF00FF88,
+      backgroundColor: 0xFF1A1A1A,
+      profile: 1, // digitalOnly
+      modulePreset: 5,
+      eyePreset: 2,
+      errorCorrectionLevel: 2,
+    ),
+  ),
+
+  // 3 — Elegant Purple
+  QrFullTemplate(
+    id: 'elegant_purple',
+    name: 'Elegant Purple',
+    customization: QRCustomization(
+      foregroundColor: 0xFF6366F1,
+      backgroundColor: 0xFFFAFAFA,
+      profile: 0, // printSafe
+      modulePreset: 1,
+      eyePreset: 1,
+      errorCorrectionLevel: 3,
+    ),
+  ),
+
+  // 4 — Charcoal
+  QrFullTemplate(
+    id: 'charcoal',
+    name: 'Charcoal',
+    customization: QRCustomization(
+      foregroundColor: 0xFF2E2E2E,
+      backgroundColor: 0xFFFFFFFF,
+      profile: 0, // printSafe
+      modulePreset: 7,
+      eyePreset: 5,
+      errorCorrectionLevel: 3,
+    ),
+  ),
+
+  // 5 — Sunset Gradient (hasGradient=true, linear coral→teal)
+  QrFullTemplate(
+    id: 'sunset_gradient',
+    name: 'Sunset Gradient',
+    customization: QRCustomization(
+      foregroundColor: 0xFFFF6B6B,
+      backgroundColor: 0xFF000000,
+      hasGradient: true,
+      gradientStart: 0xFFFF6B6B,
+      gradientEnd: 0xFF4ECDC4,
+      gradientType: GradientType.linear,
+      profile: 1, // digitalOnly
+      modulePreset: 3,
+      eyePreset: 7,
+      errorCorrectionLevel: 2,
+    ),
+  ),
+
+  // 6 — Corporate
+  QrFullTemplate(
+    id: 'corporate',
+    name: 'Corporate',
+    customization: QRCustomization(
+      foregroundColor: 0xFF1A1A1A,
+      backgroundColor: 0xFFFFFFFF,
+      profile: 0, // printSafe
+      modulePreset: 2,
+      eyePreset: 0,
+      errorCorrectionLevel: 3,
+    ),
+  ),
+
+  // 7 — Tattoo Safe (profile=tattooSafe, logoCoverage=0.0)
+  QrFullTemplate(
+    id: 'tattoo_safe',
+    name: 'Tattoo Safe',
+    customization: QRCustomization(
+      foregroundColor: 0xFF000000,
+      backgroundColor: 0xFFFFFFFF,
+      profile: 2, // tattooSafe
+      modulePreset: 0,
+      eyePreset: 0,
+      errorCorrectionLevel: 3,
+      logoCoverage: 0.0,
+    ),
+  ),
+];
