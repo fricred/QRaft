@@ -34,7 +34,7 @@
 ### Marketplace
 
 - [ ] **MKT-01**: User puede navegar catálogo de productos por material × tamaño × precio con filtros y previews
-- [ ] **MKT-02**: User puede ver preview compuesto de su QR aplicado sobre el material seleccionado (live render)
+- [x] **MKT-02**: User puede ver preview compuesto de su QR aplicado sobre el material seleccionado (live render)
 - [ ] **MKT-03**: User puede mantener carrito persistente con cálculo de total (subtotal + IVA 19% + envío)
 - [ ] **MKT-04**: User puede completar checkout con dirección Colombia (departamento/municipio/dirección) usando dataset DANE local
 - [ ] **MKT-05**: User puede pagar vía Wompi (tarjetas, PSE, Nequi, Daviplata) en WebView Checkout
@@ -148,7 +148,7 @@ Populated by gsd-roadmapper agent on 2026-05-01.
 | SCAN-03 | Phase 3 | Pending |
 | SCAN-04 | Phase 3 | Pending |
 | MKT-01 | Phase 7 | In Progress (catalog+filter UI: 07-02 ✓; material preview: 07-03) |
-| MKT-02 | Phase 7 | Pending |
+| MKT-02 | Phase 7 | Complete (07-03 ✓ 2026-05-03) |
 | MKT-03 | Phase 8 | Pending |
 | MKT-04 | Phase 9 | Pending |
 | MKT-05 | Phase 9 | Pending |

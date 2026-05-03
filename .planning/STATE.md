@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T13:53:23.307Z"
+last_updated: "2026-05-03T13:57:17Z"
 progress:
   total_phases: 12
   completed_phases: 3
   total_plans: 31
-  completed_plans: 26
-  percent: 84
+  completed_plans: 27
+  percent: 87
 ---
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 05-05)
+**Last updated:** 2026-05-03 (post plan 07-03)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 7 IN PROGRESS (2/4 plans — 07-01 ✓, 07-02 ✓ 2026-05-03). Phase 6 IN PROGRESS (3/4 plans — 06-01 ✓, 06-02 ✓, 06-03 ✓ 2026-05-03). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 6 plan 06-04 (QrWidgetService) or Phase 7 plan 07-03 (MaterialPreviewWidget).
+**Current focus**: Phase 7 IN PROGRESS (3/4 plans — 07-01 ✓, 07-02 ✓, 07-03 ✓ 2026-05-03). Phase 6 IN PROGRESS (3/4 plans — 06-01 ✓, 06-02 ✓, 06-03 ✓ 2026-05-03). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 7 plan 07-04 (ProductDetailScreen) or Phase 6 plan 06-04 (QrWidgetService).
 
 **Strategic anchors**:
 
@@ -33,10 +33,10 @@ progress:
 ## Current Position
 
 **Milestone:** v1.0
-**Phase:** 6 of 12 — QR Digital-Only Features, IN PROGRESS
-**Plan:** 06-03 ✓ 2026-05-03 (3/4 plans — Phase 6)
-**Status:** Phase 7 in progress (2/4 plans); Phase 6 in progress (3/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T13:53:23.303Z
+**Phase:** 7 of 12 — Marketplace Catalog + QR Export, IN PROGRESS
+**Plan:** 07-03 ✓ 2026-05-03 (3/4 plans — Phase 7)
+**Status:** Phase 7 in progress (3/4 plans); Phase 6 in progress (3/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T13:57:17Z
 
 **Progress:** [████████░░] 84%
 
@@ -47,7 +47,7 @@ Phase 3:  ▱ QR Scanner                        IN PROGRESS (2/3 plans — 03-03
 Phase 4:  ▰ Redirect Service Foundation       ✓ COMPLETE 2026-05-01 (3/3 plans)
 Phase 5:  ▰ QR Customization (Print-Safe)     ✓ COMPLETE 2026-05-03 (5/5 plans)
 Phase 6:  ▱ QR Digital-Only Features          IN PROGRESS (3/4 plans — 06-01 ✓, 06-02 ✓, 06-03 ✓ 2026-05-03)
-Phase 7:  ▱ Marketplace Catalog + QR Export   IN PROGRESS (2/4 plans — 07-01 ✓, 07-02 ✓ 2026-05-03)
+Phase 7:  ▱ Marketplace Catalog + QR Export   IN PROGRESS (3/4 plans — 07-01 ✓, 07-02 ✓, 07-03 ✓ 2026-05-03)
 Phase 8:  ▱ Cart & Customization Snapshot
 Phase 9:  ▱ Checkout, Wompi & Compliance
 Phase 10: ▱ Orders, Realtime & FCM
@@ -146,6 +146,8 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | materials.id is TEXT PK ('wood','acrylic','metal','leather','glass','stone') — stable FK reference, not UUID | plan 07-01 SUMMARY |
 | texture_url defaults to empty string until PNGs uploaded to Supabase Storage bucket `material-textures/`; callers guard `.isEmpty` and fall back to `MaterialGradients.forCategory()` | plan 07-01 SUMMARY |
 | texture_url validated to https:// only in MaterialModel.fromJson (T-07-02 mitigated); fail-safe: non-https sanitized to empty string | plan 07-01 SUMMARY (`bbace05`) |
+| MaterialPreviewWidget URL guard `textureUrl.isEmpty \|\| !textureUrl.startsWith('https://')` provides a second-layer T-07-08 defense at the widget render level (first layer is MaterialModel.fromJson sanitization) | plan 07-03 SUMMARY (`59096c7`) |
+| MaterialPreviewWidget white-bg rule: decoration.copyWith(background: Colors.white) called even though QrDecorationBuilder.buildDecoration already sets white — explicit call mirrors QrExportService contract and makes the invariant obvious at the call site | plan 07-03 SUMMARY (`59096c7`) |
 | catalogProvider uses `FutureProvider.autoDispose` + nested SELECT (single denormalized JOIN query, no N+1) | plan 07-01 SUMMARY |
 | Server-authoritative order FSM (Postgres CHECK + RPC); client read-only | research ARCHITECTURE.md |
 | Idempotent webhook via `payment_events.event_id PRIMARY KEY` | research ARCHITECTURE.md |
@@ -193,6 +195,15 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 07-03 execution):**
+
+- `lib/features/marketplace/presentation/widgets/material_preview_widget.dart` — MaterialPreviewWidget: Stack(CachedNetworkImage texture + white QR label PrettyQrView); textureUrl isEmpty/non-https guard → MaterialGradients fallback; shimmer placeholder; copyWith(background: Colors.white) white-bg enforcement
+- `test/features/marketplace/presentation/material_preview_test.dart` — 4 widget tests: gradient fallback on empty/non-https URL; PrettyQrView always present; QR label 72% of previewSize via RenderBox assertion
+- `.planning/phases/07-marketplace-catalog/07-03-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+
+**Last session (plan 07-03):** 2026-05-03 — MaterialPreviewWidget self-contained Stack widget. Commits `59096c7` (widget) + `89bf471` (tests). flutter analyze 0 issues. 4/4 tests pass. Phase 7 in progress (3/4 plans).
 
 **Files written this session (plan 07-02 execution):**
 
