@@ -70,7 +70,7 @@ void main() {
     });
 
     test('scanOk is false when imageBytes is empty (zero-length)', () {
-      const result = QrAiStyleResult(
+      final result = QrAiStyleResult(
         imageBytes: Uint8List(0),
         scanOk: false,
       );
