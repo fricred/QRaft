@@ -12,8 +12,8 @@
 - [ ] **QR-03**: User puede personalizar colores y gradientes (lineales/radiales) con paletas pre-definidas
 - [ ] **QR-04**: User puede elegir estilos de módulos y "eyes" desde galería curada (bordes redondeados, puntos circulares, formas validadas con scanner-matrix)
 - [ ] **QR-05**: User puede agregar frames con call-to-action ("Scan me", "Visit", etc.) respetando quiet zone de 4 módulos
-- [ ] **QR-06**: User puede elegir templates de QR pre-diseñados desde galería curada (8-12 templates iniciales)
-- [ ] **QR-07**: User puede generar QRs en bulk importando un CSV (separador `;` para Excel-ES)
+- [x] **QR-06**: User puede elegir templates de QR pre-diseñados desde galería curada (8-12 templates iniciales) ✓ 2026-05-03 (plan 05-05)
+- [x] **QR-07**: User puede generar QRs en bulk importando un CSV (separador `;` para Excel-ES) ✓ 2026-05-03 (plan 05-05)
 - [ ] **QR-08**: User puede guardar, editar y duplicar QRs en su library personal
 - [ ] **QR-09**: User puede compartir/exportar QR (link, imagen PNG, redes sociales)
 - [x] **QR-10**: User selecciona perfil "Print-safe / Digital-only / Tattoo-safe" en el editor con validaciones específicas por perfil ✓ 2026-05-01 (plan 05-01)
@@ -135,8 +135,8 @@ Populated by gsd-roadmapper agent on 2026-05-01.
 | QR-03 | Phase 5 | Pending |
 | QR-04 | Phase 5 | Pending |
 | QR-05 | Phase 5 | Pending |
-| QR-06 | Phase 5 | Pending |
-| QR-07 | Phase 5 | Pending |
+| QR-06 | Phase 5 | Complete ✓ 2026-05-03 |
+| QR-07 | Phase 5 | Complete ✓ 2026-05-03 |
 | QR-08 | Phase 2 | Pending |
 | QR-09 | Phase 2 | Pending |
 | QR-10 | Phase 5 | Complete ✓ 2026-05-01 |

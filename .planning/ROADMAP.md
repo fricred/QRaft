@@ -25,7 +25,7 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
 - [x] **Phase 2: QR Generation Core** — Users can generate QR codes for all 6 data types and save/share them from a personal library ✓ 2026-05-02
 - [ ] **Phase 3: QR Scanner** — Users can scan QRs full-screen with type-aware actions and persistent history (parallel to Phase 2)
 - [x] **Phase 4: Redirect Service Foundation** — `qraft.link/{slug}` infrastructure live, foundation for v2 dynamic monetization (parallel to Phases 2-3) ✓ 2026-05-01
-- [ ] **Phase 5: QR Customization (Print-Safe)** — Users can personalize QRs with logos/colors/styles/frames/templates and select print/digital/tattoo profile
+- [x] **Phase 5: QR Customization (Print-Safe)** — Users can personalize QRs with logos/colors/styles/frames/templates and select print/digital/tattoo profile ✓ 2026-05-03
 - [ ] **Phase 6: QR Digital-Only Features** — Users can create animated, AI-stylized, and home-screen-widget QRs (digital-only flow)
 - [ ] **Phase 7: Marketplace Catalog + QR Export Pipeline** — Users can browse engraved-product catalog and see live preview of their customized QR on each material
 - [ ] **Phase 8: Cart & Customization Snapshot** — Users can build a persistent cart with frozen customization snapshots and accurate totals (subtotal + IVA 19% + envío)
@@ -127,13 +127,13 @@ Plans:
   5. User can browse 8-12 curated templates and apply one to a QR with a single tap
   6. User selects "Print-safe / Digital-only / Tattoo-safe" profile in the editor and validations differ correctly per profile
   7. User can bulk-import a CSV (`;`-delimited for Excel-ES) and generate N QRs at once with a default template applied
-**Plans**: 5 plans (4/5 complete)
+**Plans**: 5 plans (5/5 complete) ✓ 2026-05-03
 Plans:
 - [x] 05-01-PLAN.md — QrProfile enum + QrProfileValidator + 9 new QRCustomization fields + controller methods + QrProfileToggle widget (Wave 1) ✓ 2026-05-01 (commits `c2f992b` + `19bdca9` + `d61a72f` + `f34f456`; QrProfile+GradientType+QrProfileConstraints extension; QrProfileValidator 8 unit tests; QRCustomization 9 new fields backward-compat; controller 6 new methods; QrProfileToggle SegmentedButton; 0 analyzer issues)
 - [x] 05-02-PLAN.md — QrDecorationBuilder factory + logo embed + EC-H enforcement + QrLogoPickerWidget + QRPreviewWidget upgrade (Wave 2) ✓ 2026-05-02 (commits `5254012` RED + `36c7873` GREEN + `37b0327` widget; QrDecorationBuilder static service buildDecoration+buildQrImage; logo coverage clamped to profile.maxLogoScale; EC-H forced when hasLogo; PrettyQrQuietZone.standard; QrLogoPickerWidget PNG/JPG whitelist + 2MB gate; QRPreviewWidget ConsumerStatefulWidget QrImage in initState; 11 tests pass; 0 analyzer issues; APK debug build success)
 - [x] 05-03-PLAN.md — Gradient brush (linear/radial) + QrExportService print-safe PNG + QrColorPickerWidget 8 presets (Wave 2, parallel to 05-02) ✓ 2026-05-02 (commits `ae4e1a5` RED + `23cebed` GREEN + `14ccacc` widget; buildBrush returns Color/PrettyQrBrush.gradient; QrExportService.exportPrintSafe 2160px toImageAsBytes white background forced; QrColorPickerWidget 8 swatches + hex validation; 15 tests pass; 0 analyzer issues)
 - [x] 05-04-PLAN.md — buildShape() 8 module + 8 eye presets + PrettyQrShape.custom + QrPresetGalleryWidget + QrFrameWidget (Wave 3) ✓ 2026-05-02 (commits `29ebda1` RED + `2ae992c` GREEN + `9492b35` widgets; buildShape PrettyQrShape.custom try-catch fallback; _moduleSymbol/_eyeSymbol switch factories; QrPresetGalleryWidget 2 scrollable rows; QrFrameWidget CTA frame quiet zone invariant; 19+3 tests pass; 0 analyzer issues)
-- [ ] 05-05-PLAN.md — 8 curated QrFullTemplate objects + applyFullTemplate() + QrTemplateGalleryWidget + QrBulkImportService CSV + QrBulkImportSheet (Wave 3, parallel to 05-04)
+- [x] 05-05-PLAN.md — 8 curated QrFullTemplate objects + applyFullTemplate() + QrTemplateGalleryWidget + QrBulkImportService CSV + QrBulkImportSheet (Wave 3, parallel to 05-04) ✓ 2026-05-03 (commits `64f2deb` RED + `9575e8e` GREEN + `2a41954` templates+gallery+sheet; Csv(fieldDelimiter:';', autoDetect:false) csv 8.0.0 API; 1MB + 500-row caps; kQrTemplates 8 const entries; applyFullTemplate; QrTemplateGalleryWidget 2-col grid profile badges; QrBulkImportSheet CSV paste flow; 7 tests pass; 0 analyzer issues)
 **UI hint**: yes
 **Research needed before planning**: NO (research complete — 05-RESEARCH.md)
 **Parallel-eligible**: NO (gates Phase 6, Phase 7)
