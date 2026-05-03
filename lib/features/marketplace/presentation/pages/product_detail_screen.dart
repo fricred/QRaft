@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../../shared/widgets/glass_button.dart';
-import '../../domain/entities/product_entity.dart';
 import '../../domain/entities/product_variant_entity.dart';
+import '../widgets/material_preview_widget.dart';
+import '../../../qr_library/presentation/providers/qr_library_providers.dart';
 
 String _formatCop(int price) =>
     NumberFormat.currency(locale: 'es_CO', symbol: '\$', decimalDigits: 0)
@@ -12,7 +14,8 @@ String _formatCop(int price) =>
 class ProductDetailScreen extends ConsumerWidget {
   final ProductVariantEntity variant;
 
-  /// Optional QR code ID — wired in plan 07-04; null shows placeholder prompt.
+  /// Optional QR code ID passed from the QR library "Engrabar" action.
+  /// null = show "Selecciona tu QR" prompt.
   final String? qrCodeId;
 
   const ProductDetailScreen({
@@ -45,36 +48,12 @@ class ProductDetailScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1. QR Preview placeholder — plan 07-03 will replace this
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      height: 280,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        gradient: MaterialGradients.forCategory(
-                            variant.material.id),
-                      ),
-                      alignment: Alignment.center,
-                      child: const Text(
-                        'Vista previa del QR',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black54,
-                              blurRadius: 6,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    // Anchor key for plan 07-03 to locate and replace this widget
-                    const SizedBox.shrink(key: Key('qr_preview_placeholder')),
-                  ],
+                // 1. QR Preview — wired in plan 07-04
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: _buildPreview(context, ref),
+                  ),
                 ),
 
                 Padding(
@@ -183,6 +162,135 @@ class ProductDetailScreen extends ConsumerWidget {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreview(BuildContext context, WidgetRef ref) {
+    if (qrCodeId == null) {
+      return _SelectQrPrompt(variant: variant);
+    }
+
+    final qrCodesAsync = ref.watch(userQRCodesProvider);
+
+    return qrCodesAsync.when(
+      loading: () => const _PreviewShimmer(),
+      error: (_, __) => const _PreviewError(),
+      data: (qrCodes) {
+        final matches = qrCodes.where((qr) => qr.id == qrCodeId);
+        if (matches.isEmpty) {
+          return _SelectQrPrompt(variant: variant);
+        }
+
+        return MaterialPreviewWidget(
+          qrCode: matches.first,
+          material: variant.material,
+        );
+      },
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Private helper widgets
+// ---------------------------------------------------------------------------
+
+class _PreviewShimmer extends StatelessWidget {
+  const _PreviewShimmer();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: const Color(0xFF2E2E2E),
+      highlightColor: const Color(0xFF3E3E3E),
+      child: Container(
+        width: 280,
+        height: 280,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: const Color(0xFF2E2E2E),
+        ),
+      ),
+    );
+  }
+}
+
+class _PreviewError extends StatelessWidget {
+  const _PreviewError();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 280,
+      height: 280,
+      decoration: BoxDecoration(
+        color: const Color(0xFF2E2E2E),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.broken_image_outlined,
+          color: Colors.grey[400],
+          size: 48,
+        ),
+      ),
+    );
+  }
+}
+
+class _SelectQrPrompt extends StatelessWidget {
+  final ProductVariantEntity variant;
+
+  const _SelectQrPrompt({required this.variant});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 280,
+      height: 280,
+      decoration: BoxDecoration(
+        color: const Color(0xFF2E2E2E),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.qr_code_2_rounded,
+            color: Color(0xFF00FF88),
+            size: 48,
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Selecciona tu QR',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Elige un QR de tu biblioteca\npara ver la vista previa',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF00FF88),
+              foregroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: const Text('Ir a mi biblioteca'),
           ),
         ],
       ),

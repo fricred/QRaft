@@ -17,6 +17,11 @@ final catalogProvider =
   return repo.getActiveCatalog();
 });
 
+/// Holds the QR code id selected in the QR library for marketplace preview.
+/// Set to null when user navigates to marketplace without coming from library.
+/// Used as a bridge so the two features remain loosely coupled.
+final selectedQrForMarketplaceProvider = StateProvider<String?>((ref) => null);
+
 /// Active material filter chip. Empty string = show all materials.
 final activeMaterialFilterProvider =
     StateProvider.autoDispose<String>((ref) => '');

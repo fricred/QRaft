@@ -24,6 +24,8 @@ import '../qr_generator/presentation/pages/location_qr_screen.dart';
 import 'presentation/pages/qr_code_details_screen.dart';
 import '../auth/data/providers/supabase_auth_provider.dart';
 import '../redirect/presentation/screens/redirect_edit_screen.dart';
+import '../marketplace/marketplace_screen.dart';
+import '../marketplace/presentation/providers/marketplace_providers.dart';
 import '../../l10n/app_localizations.dart';
 
 class QRLibraryScreen extends ConsumerStatefulWidget {
@@ -1519,6 +1521,16 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
                       ),
                     ),
                     PopupMenuItem<String>(
+                      value: 'engrave',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.precision_manufacturing_rounded, color: Color(0xFF00FF88), size: 16),
+                          const SizedBox(width: 8),
+                          const Text('Engrabar', style: TextStyle(color: Color(0xFF00FF88), fontSize: 14)),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
                       value: 'delete',
                       child: Row(
                         children: [
@@ -1694,10 +1706,25 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
       case 'share':
         _shareQRCode(qrEntity);
         break;
+      case 'engrave':
+        _engraveQRCode(qrEntity);
+        break;
       case 'delete':
         _confirmDeleteQR(qrEntity);
         break;
     }
+  }
+
+  /// Sets [selectedQrForMarketplaceProvider] to the given QR's id, then
+  /// navigates to [MarketplaceScreen] so the user can pick a material/variant
+  /// and see a live MaterialPreviewWidget for this QR code.
+  void _engraveQRCode(QRCodeEntity qrEntity) {
+    ref.read(selectedQrForMarketplaceProvider.notifier).state = qrEntity.id;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const MarketplaceScreen(),
+      ),
+    );
   }
 
   /// Navigate to [RedirectEditScreen] for URL-type QR codes.

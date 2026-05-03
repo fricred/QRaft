@@ -201,8 +201,11 @@ class _MarketplaceScreenState extends ConsumerState<MarketplaceScreen> {
                       variant: variants[i],
                       onTap: () => Navigator.of(ctx).push(
                         MaterialPageRoute(
-                          builder: (_) =>
-                              ProductDetailScreen(variant: variants[i]),
+                          builder: (_) => ProductDetailScreen(
+                            variant: variants[i],
+                            qrCodeId: ref
+                                .read(selectedQrForMarketplaceProvider),
+                          ),
                         ),
                       ),
                     ),
