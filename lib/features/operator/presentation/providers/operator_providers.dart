@@ -15,10 +15,32 @@ import '../../domain/repositories/operator_repository.dart';
 // Repository providers
 // ---------------------------------------------------------------------------
 
-/// Provides the [OperatorSupabaseDatasource] using the standard Supabase
-/// client. Plan 11-03 will replace this with a service_role client.
+/// Provides the [OperatorSupabaseDatasource] using the service_role client.
+///
+/// The datasource now uses [SupabaseService.operatorClient] internally, so
+/// no client is passed at construction time. Accessing this provider in a
+/// consumer build without OPERATOR_SERVICE_ROLE_KEY will throw [StateError].
 final operatorDatasourceProvider = Provider<OperatorSupabaseDatasource>((ref) {
-  return OperatorSupabaseDatasource(SupabaseService.client);
+  return const OperatorSupabaseDatasource();
+});
+
+// ---------------------------------------------------------------------------
+// Operator auth provider
+// ---------------------------------------------------------------------------
+
+/// Returns true if the currently authenticated user is in `operator_profiles`.
+///
+/// Calls the `is_operator()` SECURITY DEFINER RPC via the operatorClient.
+/// Returns false on any error (including unconfigured operator client or
+/// unauthenticated users) — safe default for route guard checks (T-11-10).
+final isOperatorProvider = FutureProvider<bool>((ref) async {
+  try {
+    final result =
+        await SupabaseService.operatorClient.rpc('is_operator');
+    return result == true;
+  } catch (_) {
+    return false;
+  }
 });
 
 /// Provides the [OperatorRepository] implementation.

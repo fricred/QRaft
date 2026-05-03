@@ -1,19 +1,24 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/services/supabase_service.dart';
 
 /// Low-level Supabase data access for operator order management.
 ///
-/// Security note: uses the standard authenticated client for now.
-/// Plan 11-03 will swap to a service_role client for operator routes,
-/// which is required to bypass user-scoped RLS on the `orders` table
-/// and to execute the `transition_order` RPC (GRANT EXECUTE to service_role only).
+/// Uses [SupabaseService.operatorClient] (service_role key) to bypass
+/// user-scoped RLS on `orders`, `order_items`, and `shipments` tables.
+/// This allows operators to see ALL orders, not just their own.
+///
+/// Requires `OPERATOR_SERVICE_ROLE_KEY` to be set via
+/// `--dart-define-from-file=env.json` at build time. Accessing this
+/// datasource in a consumer build without the key will throw [StateError].
 class OperatorSupabaseDatasource {
-  final SupabaseClient _client;
+  SupabaseClient get _client => SupabaseService.operatorClient;
 
-  const OperatorSupabaseDatasource(this._client);
+  const OperatorSupabaseDatasource();
 
   /// Fetches all orders in [statuses], joined with first order_item for qr_png_url.
   ///
   /// Sorted by created_at ASC so oldest (highest-priority) orders appear first.
+  /// Uses operatorClient to bypass user-scoped RLS (sees all users' orders).
   Future<List<Map<String, dynamic>>> fetchOrdersByStatuses(
     List<String> statuses,
   ) async {
@@ -27,6 +32,7 @@ class OperatorSupabaseDatasource {
 
   /// Calls the `transition_order` RPC.
   ///
+  /// Requires service_role credential (GRANT EXECUTE to service_role only).
   /// Throws [PostgrestException] if the FSM rejects the transition or the
   /// order is not found. The repository wraps this in [OperatorException].
   Future<void> transitionOrder(String orderId, String newStatus) async {
@@ -40,6 +46,8 @@ class OperatorSupabaseDatasource {
   }
 
   /// Fetches a single order with all items for the detail screen.
+  ///
+  /// Uses operatorClient to bypass user-scoped RLS.
   Future<Map<String, dynamic>?> fetchOrderDetail(String orderId) async {
     final response = await _client
         .from('orders')

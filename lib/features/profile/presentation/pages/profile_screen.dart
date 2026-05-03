@@ -25,6 +25,8 @@ import '../../../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
 import '../../../subscription/presentation/widgets/pro_badge.dart';
 import '../../../subscription/domain/entities/subscription_plan.dart';
 import '../../../../core/providers/locale_provider.dart';
+import '../../../operator/presentation/providers/operator_providers.dart';
+import '../../../operator/presentation/pages/operator_orders_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -154,6 +156,15 @@ class ProfileScreen extends ConsumerWidget {
               // Profile actions
               ProfileActionsSection()
                   .animate(delay: 300.ms)
+                  .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart)
+                  .scale(begin: const Offset(0.95, 0.95), duration: 300.ms),
+
+              const SizedBox(height: 24),
+
+              // Operator dashboard link (only shown to operator-role users)
+              _buildOperatorSection(context, ref)
+                  .animate(delay: 325.ms)
                   .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
                   .slideY(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart)
                   .scale(begin: const Offset(0.95, 0.95), duration: 300.ms),
@@ -488,6 +499,100 @@ class ProfileScreen extends ConsumerWidget {
     }
 
     return null;
+  }
+
+  /// Operator dashboard section — only visible to users with operator_profiles row.
+  ///
+  /// Checks [isOperatorProvider] and renders nothing for consumer users (T-11-10).
+  Widget _buildOperatorSection(BuildContext context, WidgetRef ref) {
+    final isOperatorAsync = ref.watch(isOperatorProvider);
+
+    return isOperatorAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (isOperator) {
+        if (!isOperator) return const SizedBox.shrink();
+
+        return Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF2E2E2E),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: const Color(0xFF1A73E8).withValues(alpha: 0.4),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF1A73E8), Color(0xFF00FF88)],
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.admin_panel_settings_rounded,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Operador',
+                      style: TextStyle(
+                        color: Colors.grey[400],
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(color: Color(0xFF3A3A3A), height: 1),
+              ListTile(
+                key: const Key('profile_operator_dashboard_tile'),
+                leading: const Icon(
+                  Icons.dashboard_rounded,
+                  color: Color(0xFF1A73E8),
+                ),
+                title: const Text(
+                  'Panel de Operador',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                subtitle: Text(
+                  'Gestionar pedidos',
+                  style: TextStyle(
+                    color: Colors.grey[500],
+                    fontSize: 12,
+                  ),
+                ),
+                trailing: Icon(
+                  Icons.chevron_right,
+                  color: Colors.grey[600],
+                ),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const OperatorOrdersScreen(),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildLegalSection(BuildContext context) {

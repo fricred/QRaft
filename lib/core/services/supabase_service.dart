@@ -4,14 +4,46 @@ import '../config/supabase_config.dart';
 
 class SupabaseService {
   static SupabaseClient? _client;
-  
+
+  /// Secondary Supabase client using the service_role key.
+  ///
+  /// Used exclusively by the operator dashboard datasource to bypass user-scoped
+  /// RLS on `orders`, `order_items`, and `shipments` tables, and to execute
+  /// the `transition_order` RPC (GRANT EXECUTE service_role only).
+  ///
+  /// The key is injected via `--dart-define-from-file=env.json` at build time
+  /// as `OPERATOR_SERVICE_ROLE_KEY`. Consumer app builds that omit this key
+  /// will receive a [StateError] on first access — fail loudly rather than
+  /// silently using the anon key with insufficient privileges.
+  ///
+  /// Security: the service_role key is never embedded in consumer release
+  /// builds. The operator dashboard is a separate `flutter build web` invocation
+  /// with an operator-specific env.json (T-11-09 mitigated).
+  static SupabaseClient? _operatorClient;
+
+  static SupabaseClient get operatorClient {
+    const serviceRoleKey = String.fromEnvironment('OPERATOR_SERVICE_ROLE_KEY');
+    if (serviceRoleKey.isEmpty) {
+      throw StateError(
+        'Operator client not configured. '
+        'Add OPERATOR_SERVICE_ROLE_KEY to env.json and run with '
+        '--dart-define-from-file=env.json',
+      );
+    }
+    _operatorClient ??= SupabaseClient(
+      const String.fromEnvironment('SUPABASE_URL'),
+      serviceRoleKey,
+    );
+    return _operatorClient!;
+  }
+
   static SupabaseClient get client {
     if (_client == null) {
       throw Exception('Supabase has not been initialized or configured. Check your environment variables.');
     }
     return _client!;
   }
-  
+
   static bool get isInitialized => _client != null;
   
   static Future<void> initialize() async {
