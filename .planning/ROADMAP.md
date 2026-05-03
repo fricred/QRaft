@@ -187,7 +187,12 @@ Plans:
   3. `customization_snapshot` (JSONB) and pre-rasterized 2160px PNG are frozen at add-to-cart; subsequent edits to the QR in library do NOT affect the cart entry
   4. Cart total displays subtotal + IVA 19% + envío clearly broken down; values match server-computed `compute_order_totals()` function (NOT computed client-side as source of truth)
   5. User can update quantity, remove items, and clear cart; all operations are reflected in both local and remote stores
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 08-01-PLAN.md — cart_items Supabase schema + server_compute_order_totals RPC + domain entities + CartRepository + Riverpod providers
+- [ ] 08-02-PLAN.md — AddToCart button wired into ProductDetailScreen + CartScreen item list + remove action
+- [ ] 08-03-PLAN.md — Customization snapshot capture: freeze QRCustomization JSON + export 2160px PNG → upload to order-assets/
+- [ ] 08-04-PLAN.md — CartSummaryWidget (server RPC totals: subtotal + IVA 19% + envío) + Proceder al pago button placeholder
 **UI hint**: yes
 **Research needed before planning**: NO
 **Parallel-eligible**: NO (gates Phase 9)
@@ -317,7 +322,7 @@ Phase 6    Phase 7           │
 | 5. QR Customization (Print-Safe) | 5/5 | Complete | 2026-05-03 |
 | 6. QR Digital-Only Features | 3/4 | In progress | 2026-05-03 (plans 01-03) |
 | 7. Marketplace Catalog + QR Export | 4/4 | Complete | 2026-05-03 |
-| 8. Cart & Customization Snapshot | 0/? | Not started | - |
+| 8. Cart & Customization Snapshot | 0/4 | Planned | - |
 | 9. Checkout, Wompi & Compliance | 0/? | Not started | - |
 | 10. Orders, Realtime & FCM | 0/? | Not started | - |
 | 11. Operator Dashboard + Tattoo | 0/? | Not started | - |
@@ -379,4 +384,4 @@ Update on phase transitions:
 
 ---
 *Roadmap created: 2026-05-01*
-*Last updated: 2026-05-01 — Phase 6 plans created (4 plans, 3 waves)*
+*Last updated: 2026-05-01 — Phase 8 plans created (4 plans, 3 waves)*
