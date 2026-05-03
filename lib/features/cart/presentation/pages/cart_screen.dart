@@ -4,6 +4,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../providers/cart_providers.dart';
 import '../widgets/cart_item_tile.dart';
+import '../widgets/cart_summary_widget.dart';
 
 /// Full cart screen showing the current user's cart items with quantity
 /// controls, remove action, empty state, and a loading shimmer.
@@ -15,6 +16,7 @@ class CartScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cartAsync = ref.watch(cartItemsProvider);
+    final totalsAsync = ref.watch(cartTotalsProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
@@ -38,6 +40,12 @@ class CartScreen extends ConsumerWidget {
           if (items.isEmpty) {
             return _buildEmptyState(context);
           }
+
+          // Determine if the checkout button should be enabled:
+          // disabled while totals are still loading to prevent tapping
+          // before server-computed amounts are confirmed.
+          final totalsReady = totalsAsync.hasValue && !totalsAsync.isLoading;
+
           return Column(
             children: [
               Expanded(
@@ -49,10 +57,44 @@ class CartScreen extends ConsumerWidget {
                       CartItemTile(item: items[index]),
                 ),
               ),
-              _CartSummaryPlaceholder(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CartSummaryWidget(),
+                    const SizedBox(height: 12),
+                    Semantics(
+                      identifier: 'cart_proceed_to_checkout_button',
+                      child: PrimaryGlassButton(
+                        text: 'Proceder al pago',
+                        width: double.infinity,
+                        isLoading: false,
+                        // Disabled when totals not yet loaded or cart is empty.
+                        onPressed: totalsReady
+                            ? () => _onProceedToCheckout(context)
+                            : null,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           );
         },
+      ),
+    );
+  }
+
+  void _onProceedToCheckout(BuildContext context) {
+    // Placeholder — Phase 9 will replace this SnackBar with navigation
+    // to CheckoutScreen, passing the server-computed order total.
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Checkout disponible en la proxima actualizacion',
+        ),
       ),
     );
   }
@@ -119,7 +161,7 @@ class CartScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Tu carrito está vacío',
+              'Tu carrito está vacio',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -128,12 +170,12 @@ class CartScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Agrega productos desde el catálogo',
+              'Agrega productos desde el catalogo',
               style: TextStyle(color: Colors.grey[400], fontSize: 14),
             ),
             const SizedBox(height: 28),
             PrimaryGlassButton(
-              text: 'Ver catálogo',
+              text: 'Ver catalogo',
               width: 200,
               onPressed: () => Navigator.of(context).pop(),
             ),
@@ -144,51 +186,3 @@ class CartScreen extends ConsumerWidget {
   }
 }
 
-/// Placeholder cart summary card.
-///
-/// Phase 9 will replace this with the real RPC-powered total (server_compute_order_totals).
-class _CartSummaryPlaceholder extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      identifier: 'cart_summary_placeholder',
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: const Color(0xFF2E2E2E),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.08),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Calculando total...',
-              style: TextStyle(
-                color: Colors.grey[400],
-                fontSize: 14,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            PrimaryGlassButton(
-              text: 'Proceder al pago',
-              width: double.infinity,
-              // Placeholder — Phase 9 checkout flow wires this button.
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Checkout disponible en la próxima actualización'),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
