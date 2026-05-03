@@ -213,7 +213,7 @@ Plans:
   9. Garantía 3-month claim flow (Ley 1480) is documented and reachable separately from retracto path
 **Plans**: 5 plans
 Plans:
-- [ ] 09-01-PLAN.md — orders + payment_events Supabase schema + FSM trigger + create_order RPC (Wave 1; CHECKPOINT — migration + Wompi sandbox keys required before Wave 2)
+- [~] 09-01-PLAN.md — orders + payment_events Supabase schema + FSM trigger + create_order RPC (Wave 1; CHECKPOINT — migration + Wompi sandbox keys required before Wave 2) — SQL written + committed `63dd0e3`; BLOCKED at checkpoint: migration not yet applied, Wompi secrets not set
 - [ ] 09-02-PLAN.md — create-payment-intent Edge Function + ShippingScreen (DANE dropdowns) + checkout domain layer (Wave 2)
 - [ ] 09-03-PLAN.md — WompiWebViewScreen + PaymentResultScreen + deeplink handler (Wave 2, parallel to 09-02)
 - [ ] 09-04-PLAN.md — wompi-webhook Edge Function: SHA256 verification + idempotent payment_events + FSM transitions (Wave 3)

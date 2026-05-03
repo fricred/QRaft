@@ -14,13 +14,13 @@ progress:
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 08-04 — Phase 8 COMPLETE 4/4)
+**Last updated:** 2026-05-03 (post plan 09-01 — stopped at checkpoint; SQL committed)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 8 COMPLETE (4/4 plans 2026-05-03). Phase 7 COMPLETE (4/4 plans). Phase 6 COMPLETE (4/4 plans). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 9 (Checkout, Wompi & Compliance).
+**Current focus**: Phase 9 in progress (Plan 09-01 SQL written; stopped at checkpoint awaiting migration apply + Wompi secrets). Phase 8 COMPLETE (4/4 plans 2026-05-03). Phase 7 COMPLETE. Phase 6 COMPLETE. Phase 5 COMPLETE. Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
 
 **Strategic anchors**:
 
@@ -33,10 +33,10 @@ progress:
 ## Current Position
 
 **Milestone:** v1.0
-**Phase:** 9 of 12 — Checkout, Wompi & Compliance (pending)
-**Plan:** 08-04 ✓ 2026-05-03 (Phase 8 COMPLETE 4/4)
-**Status:** Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE (4/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T16:52:53Z
+**Phase:** 9 of 12 — Checkout, Wompi & Compliance (in progress)
+**Plan:** 09-01 ~ 2026-05-03 (CHECKPOINT: awaiting migration apply + Wompi secrets)
+**Status:** Phase 9 in progress (1/5 plans stopped at checkpoint); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE (4/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T17:12:53Z
 
 **Progress:** [█████████▌] 97%
 
@@ -167,6 +167,11 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | _onProceedToCheckout() is an extracted replace-point method; Phase 9 replaces SnackBar body with navigation to CheckoutScreen + server-computed Wompi amount | plan 08-04 SUMMARY (`082f488`) |
 | Server-side `compute_order_totals()` for IVA + envío (NOT client-computed) | research ARCHITECTURE.md, PITFALLS.md |
 | Wompi secrets ONLY in Supabase Edge Function env (never in Flutter app) | research STACK.md, PITFALLS.md |
+| orders migration `20260505000000_orders_payments_schema.sql` requires manual apply via Supabase Dashboard → SQL Editor before Plan 02 can run | plan 09-01 SUMMARY (`63dd0e3`) |
+| payment_events.event_id TEXT PRIMARY KEY is the idempotency cornerstone for Wompi webhook replay safety — insert-or-fail pattern | plan 09-01 SUMMARY (`63dd0e3`) |
+| validate_order_transition BEFORE UPDATE trigger enforces FSM at DB level; RPC and operator code just call UPDATE — trigger catches invalid transitions | plan 09-01 SUMMARY (`63dd0e3`) |
+| create_order RPC uses empty string '' as order_number placeholder so WHEN condition fires the BEFORE INSERT trigger | plan 09-01 SUMMARY (`63dd0e3`) |
+| apply_payment_event maps all non-APPROVED Wompi statuses (DECLINED/VOIDED/ERROR) to payment_failed order status — retryable via payment_pending reset in FSM | plan 09-01 SUMMARY (`63dd0e3`) |
 
 ### Decisions to Revisit
 
@@ -208,6 +213,15 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 09-01 execution):**
+
+- `supabase/migrations/20260505000000_orders_payments_schema.sql` — Full DDL: order_status (11 vals) + payment_status (6 vals) enums, orders/order_items/payments/payment_events tables, validate_order_transition BEFORE UPDATE FSM trigger, generate_order_number BEFORE INSERT trigger, create_order + apply_payment_event SECURITY DEFINER RPCs, RLS policies, GRANTs
+- `.planning/phases/09-checkout-wompi-compliance/09-01-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+- `.planning/ROADMAP.md` (09-01 marked in-progress at checkpoint)
+
+**Last session (plan 09-01):** 2026-05-03 — Orders + payments schema DDL written and committed. Commit `63dd0e3`. STOPPED at checkpoint:human-action — migration not yet applied, Wompi secrets not yet set. Plan 02 cannot proceed until both steps are complete. Resume signal: "migration applied, secrets set".
 
 **Files written this session (plan 08-04 execution):**
 
