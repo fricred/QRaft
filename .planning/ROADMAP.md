@@ -32,7 +32,7 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
 - [x] **Phase 9: Checkout, Wompi, Colombian Compliance** — Users can pay via Wompi (cards, PSE, Nequi, Daviplata) with verified webhooks; LGL-02..05 disclaimers and habeas data live ✓ 2026-05-03
 - [x] **Phase 10: Orders, Realtime & FCM Notifications** — Users can track order status with timeline, receive push notifications on every state change ✓ 2026-05-03
 - [x] **Phase 11: Operator Dashboard + Tattoo Line** — Operator can fulfill orders end-to-end; Tattoo category live in marketplace with TAT-safe profile ✓ COMPLETE 2026-05-03 (3/3 plans)
-- [ ] **Phase 12: Premium Subscription, Polish & Observability (GA)** — RevenueCat premium, performance polish, Crashlytics + Analytics + Performance, ready for launch
+- [x] **Phase 12: Premium Subscription, Polish & Observability (GA)** — RevenueCat premium, performance polish, Crashlytics + Analytics + Performance, ready for launch ✓ COMPLETE 2026-05-03 (4/4 plans)
 
 ## Phase Details
 
@@ -275,12 +275,12 @@ Plans:
   4. Firebase Crashlytics + Analytics + Performance integrated; non-fatal errors are recorded; analytics breadcrumbs surface in crash reports
   5. Payment flow has structured logging in Edge Functions; reconciliation job (compare Wompi balance vs internal `payments.status='approved'` total) runs nightly with alert on drift >0.1%
   6. AdMob UMP consent persists across launches; no ad request fires before consent; ads do NOT appear during checkout, payment, or order detail flows
-**Plans**: 4 plans
+**Plans**: 4 plans (4/4 complete) ✓ COMPLETE 2026-05-03
 Plans:
-- [ ] 12-01-PLAN.md — RevenueCat premium: FeatureType extended with unlimitedQrs/aiStylePremium/bulkImport, PaywallScreen, isPremiumProvider, ad suppression for premium users (Wave 1)
-- [ ] 12-02-PLAN.md — Crashlytics + Analytics activation: ObservabilityService facade, FlutterError.onError + PlatformDispatcher.onError, analytics events in payment + QR creation flows (Wave 2)
-- [ ] 12-03-PLAN.md — Performance polish: GlassButton scale(0.95) + haptic + neon glow, RepaintBoundary on marketplace cards, shimmer skeletons in orders list, print sweep (Wave 2, parallel to 12-02)
-- [ ] 12-04-PLAN.md — GA readiness: CHANGELOG.md, App Store + Play Store metadata in Spanish, release build smoke tests, human checkpoint (Wave 3)
+- [x] 12-01-PLAN.md — RevenueCat premium: FeatureType extended with unlimitedQrs/aiStylePremium/bulkImport, PaywallScreen, isPremiumProvider, ad suppression for premium users (Wave 1) ✓ commit 2cd0a24
+- [x] 12-02-PLAN.md — Crashlytics + Analytics activation: ObservabilityService facade, FlutterError.onError + PlatformDispatcher.onError, analytics events in payment + QR creation flows (Wave 2) ✓ commit 0597a96
+- [x] 12-03-PLAN.md — Performance polish: GlassButton scale(0.95) + haptic + neon glow, RepaintBoundary on marketplace cards, shimmer skeletons in orders list, print sweep (Wave 2, parallel to 12-02) ✓ commit 291a451
+- [x] 12-04-PLAN.md — GA readiness: CHANGELOG.md, App Store + Play Store metadata in Spanish, release build smoke tests, human checkpoint (Wave 3) ✓ commit 8a86b1b
 **UI hint**: yes
 **Research needed before planning**: NO
 **Parallel-eligible**: NO (terminal phase)
@@ -404,4 +404,4 @@ Update on phase transitions:
 
 ---
 *Roadmap created: 2026-05-01*
-*Last updated: 2026-05-01 — Phase 11 plans created (3 plans, 3 waves); Phase 12 plans created (4 plans, 3 waves)*
+*Last updated: 2026-05-03 — Phase 12 COMPLETE (4/4 plans). QRaft v1.0 GA declared. ALL 12 PHASES COMPLETE.*

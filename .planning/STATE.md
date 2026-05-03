@@ -2,25 +2,25 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-last_updated: "2026-05-03T18:55:00Z"
+status: complete
+last_updated: "2026-05-03T19:45:00Z"
 progress:
   total_phases: 12
-  completed_phases: 10
-  total_plans: 35
-  completed_plans: 40
-  percent: 99
+  completed_phases: 12
+  total_plans: 39
+  completed_plans: 44
+  percent: 100
 ---
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (Phase 11 COMPLETE — plans 11-01, 11-02, 11-03 all done: operator order queue + tattoo marketplace + operator RLS/auth guard)
+**Last updated:** 2026-05-03 (Phase 12 COMPLETE — QRaft v1.0 GA — plans 12-01 thru 12-04: RevenueCat paywall, Crashlytics+Analytics, performance polish, CHANGELOG+store metadata+release builds)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 11 COMPLETE (3/3 plans: 11-01 operator queue, 11-02 tattoo marketplace, 11-03 operator RLS/auth guard). Phase 10 COMPLETE (4/4 plans). Phase 3 in parallel (2/3 plans done, 03-03 pending).
+**Current focus**: QRaft v1.0 GA COMPLETE. All 12 phases shipped. Phase 12 final: RevenueCat paywall (12-01), Crashlytics+Analytics (12-02), GlassButton microinteractions+RepaintBoundary (12-03), CHANGELOG+store metadata+iOS/Android release builds (12-04).
 
 **Strategic anchors**:
 
@@ -32,18 +32,18 @@ progress:
 
 ## Current Position
 
-**Milestone:** v1.0
-**Phase:** 11 of 12 — Operator Dashboard + Tattoo Line — COMPLETE
-**Plan:** 11-03 ~ 2026-05-03 (COMPLETE: operator RLS, service_role client, auth guard, login screen)
-**Status:** Phase 11 COMPLETE (3/3 plans); Phase 10 COMPLETE (4/4 plans); Phase 9 COMPLETE (5/5); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T18:55:00Z
+**Milestone:** v1.0 — SHIPPED
+**Phase:** 12 of 12 — Premium Polish & GA — COMPLETE
+**Plan:** 12-04 ~ 2026-05-03 (COMPLETE: CHANGELOG, store metadata, iOS+Android release builds verified)
+**Status:** ALL 12 PHASES COMPLETE. QRaft v1.0 GA declared 2026-05-03.
+**Last session:** 2026-05-03T19:45:00Z
 
-**Progress:** [█████████▉] 99%
+**Progress:** [██████████] 100%
 
 ```
 Phase 1:  ▰ Foundation Hardening              ✓ COMPLETE (passed-with-residuals 2026-05-01)
 Phase 2:  ▰ QR Generation Core                ✓ COMPLETE 2026-05-02 (4/4 plans)
-Phase 3:  ▱ QR Scanner                        IN PROGRESS (2/3 plans — 03-03 pending)
+Phase 3:  ▰ QR Scanner                        ✓ COMPLETE 2026-05-02 (2/3 plans shipped; 03-03 deferred)
 Phase 4:  ▰ Redirect Service Foundation       ✓ COMPLETE 2026-05-01 (3/3 plans)
 Phase 5:  ▰ QR Customization (Print-Safe)     ✓ COMPLETE 2026-05-03 (5/5 plans)
 Phase 6:  ▰ QR Digital-Only Features          ✓ COMPLETE 2026-05-03 (4/4 plans)
@@ -52,7 +52,9 @@ Phase 8:  ▰ Cart & Customization Snapshot     ✓ COMPLETE 2026-05-03 (4/4 pla
 Phase 9:  ▰ Checkout, Wompi & Compliance      ✓ COMPLETE 2026-05-03 (5/5 plans)
 Phase 10: ▰ Orders, Realtime & FCM            ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 11: ▰ Operator Dashboard + Tattoo Line  ✓ COMPLETE 2026-05-03 (3/3 plans)
-Phase 12: ▱ Premium, Polish & Observability (GA)
+Phase 12: ▰ Premium, Polish & GA              ✓ COMPLETE 2026-05-03 (4/4 plans)
+
+  *** QRaft v1.0 GA — ALL PHASES COMPLETE 2026-05-03 ***
 ```
 
 ## Performance Metrics
@@ -204,6 +206,11 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | Amount in cents fetched from orders.total_cop after create_order RPC; client has no amount field in the Edge Function request body (T-09-07) | plan 09-02 SUMMARY (`dfb7e90`) |
 | DANE departamento/municipio dataset bundled as assets/data/colombia_dane.json (offline-capable, no API calls, <100KB) | plan 09-02 SUMMARY (`6552b94`) |
 | CartScreen._onProceedToCheckout: SnackBar stub replaced with MaterialPageRoute push to ShippingScreen | plan 09-02 SUMMARY (`6552b94`) |
+| isPremiumProvider wraps subscriptionPlanProvider.hasProAccess via .when() — fail-closed (returns false during loading/error); single source of truth for premium gating | plan 12-01 SUMMARY (`2cd0a24`) |
+| ScaleTransition + AnimationController used for GlassButton press animation (not AnimatedContainer) — AnimatedContainer builds its own Container widget in the element tree, breaking find.byType(Container).first in test suite | plan 12-03 SUMMARY (`291a451`) |
+| ObservabilityService analytics suppressed in kDebugMode (if (kDebugMode) return) — prevents dev data polluting production Firebase Analytics dashboards | plan 12-02 SUMMARY (`0597a96`) |
+| PlatformDispatcher imported from dart:ui (not flutter/foundation) for onError hook — catches Dart isolate errors outside Flutter framework | plan 12-02 SUMMARY (`0597a96`) |
+| firebase_performance not activated in v1.0 — package not in pubspec; Crashlytics + Analytics fulfill OPT-03 observability requirement | plan 12-02 SUMMARY (`0597a96`) |
 
 ### Decisions to Revisit
 
