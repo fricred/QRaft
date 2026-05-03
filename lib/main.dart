@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 import 'features/splash/splash_screen.dart';
 import 'features/auth/presentation/pages/auth_flow.dart';
@@ -13,6 +14,7 @@ import 'features/ads/presentation/providers/ad_providers.dart';
 import 'features/consent/presentation/providers/consent_providers.dart';
 import 'features/consent/presentation/widgets/ump_gate.dart';
 import 'core/services/deeplink_service.dart';
+import 'core/services/fcm_service.dart';
 import 'core/services/supabase_service.dart';
 import 'core/config/env_config.dart';
 import 'core/providers/locale_provider.dart';
@@ -20,10 +22,15 @@ import 'package:qraft/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Supabase before starting the app
   await initializeApp();
-  
+
+  // Register background message handler BEFORE runApp.
+  // FCM requires this to be called as early as possible so the background
+  // isolate can be attached before the app is fully started.
+  FirebaseMessaging.onBackgroundMessage(firebaseBackgroundMessageHandler);
+
   runApp(const ProviderScope(child: QRaftApp()));
 }
 
@@ -149,12 +156,14 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
     // Initialize deeplink handler
     ref.watch(deepLinkHandlerProvider);
 
-    // Initialize RevenueCat and Subscription Realtime when user authenticates
+    // Initialize RevenueCat, Subscription Realtime, and FCM when user authenticates
     if (currentUser != null && _lastUserId != currentUser.id) {
       _lastUserId = currentUser.id;
       Future.microtask(() {
         initializeRevenueCat(ref, currentUser.id);
         startSubscriptionRealtime(ref, currentUser.id);
+        // Register FCM token now that a user is signed in (Phase 10 plan 01).
+        ref.read(fcmServiceProvider).initialize();
       });
     }
 
