@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T16:52:53Z"
+last_updated: "2026-05-03T17:21:04Z"
 progress:
   total_phases: 12
   completed_phases: 7
   total_plans: 35
-  completed_plans: 34
+  completed_plans: 35
   percent: 97
 ---
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 09-01 — stopped at checkpoint; SQL committed)
+**Last updated:** 2026-05-03 (post plan 09-03 — WompiWebViewScreen + PaymentResultScreen + DeepLinkService extension complete)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 9 in progress (Plan 09-01 SQL written; stopped at checkpoint awaiting migration apply + Wompi secrets). Phase 8 COMPLETE (4/4 plans 2026-05-03). Phase 7 COMPLETE. Phase 6 COMPLETE. Phase 5 COMPLETE. Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
+**Current focus**: Phase 9 in progress (Plans 09-01 SQL + 09-03 Flutter UI done; Plan 09-02 still blocked awaiting Wompi keys). Phase 8 COMPLETE. Phase 7 COMPLETE. Phase 6 COMPLETE. Phase 5 COMPLETE. Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
 
 **Strategic anchors**:
 
@@ -34,9 +34,9 @@ progress:
 
 **Milestone:** v1.0
 **Phase:** 9 of 12 — Checkout, Wompi & Compliance (in progress)
-**Plan:** 09-01 ~ 2026-05-03 (CHECKPOINT: awaiting migration apply + Wompi secrets)
-**Status:** Phase 9 in progress (1/5 plans stopped at checkpoint); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE (4/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T17:12:53Z
+**Plan:** 09-03 ~ 2026-05-03 (COMPLETE: WompiWebViewScreen + PaymentResultScreen + deeplink extension)
+**Status:** Phase 9 in progress (09-01 SQL done, 09-03 Flutter UI done; 09-02 blocked on Wompi keys; 09-04/09-05 pending); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T17:21:04Z
 
 **Progress:** [█████████▌] 97%
 
@@ -172,6 +172,10 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | validate_order_transition BEFORE UPDATE trigger enforces FSM at DB level; RPC and operator code just call UPDATE — trigger catches invalid transitions | plan 09-01 SUMMARY (`63dd0e3`) |
 | create_order RPC uses empty string '' as order_number placeholder so WHEN condition fires the BEFORE INSERT trigger | plan 09-01 SUMMARY (`63dd0e3`) |
 | apply_payment_event maps all non-APPROVED Wompi statuses (DECLINED/VOIDED/ERROR) to payment_failed order status — retryable via payment_pending reset in FSM | plan 09-01 SUMMARY (`63dd0e3`) |
+| appNavigatorKey declared in deeplink_service.dart (not main.dart) to avoid circular import; wired to MaterialApp.navigatorKey for cold-launch payment result deep links | plan 09-03 SUMMARY (`56488a3`) |
+| PaymentResultScreen uses Supabase query orders.status (server-authoritative); URL params from qraft://payment-result are never trusted (T-09-11) | plan 09-03 SUMMARY (`56488a3`) |
+| isPaymentResultLink checked BEFORE auth deep link processing in DeepLinkHandler.handleDeepLink — prevents auth state machine from consuming payment-result URLs (T-09-12) | plan 09-03 SUMMARY (`56488a3`) |
+| PSE retry: 5 attempts × 2s = 10s before switching to pendingPSE UI state; PSE users instructed to return and verify later | plan 09-03 SUMMARY (`56488a3`) |
 
 ### Decisions to Revisit
 
@@ -213,6 +217,16 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 09-03 execution):**
+
+- `lib/features/checkout/presentation/pages/payment_result_screen.dart` — Full Supabase-polling payment result screen; 4-state machine (polling/paid/failed/pendingPSE); neon animated checkmark; Ley 1480 disclaimer; PSE retry loop; _OrderDetailPlaceholder stub
+- `lib/core/services/deeplink_service.dart` — Added `appNavigatorKey`, `isPaymentResultLink`, `parsePaymentResultLink`, `_handlePaymentResult` in DeepLinkHandler before auth checks
+- `lib/main.dart` — Wire `appNavigatorKey` into `MaterialApp.navigatorKey`
+- `.planning/phases/09-checkout-wompi-compliance/09-03-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+
+**Last session (plan 09-03):** 2026-05-03 — WompiWebViewScreen + PaymentResultScreen + DeepLinkService extension complete. Commits `0249a69` (WompiWebViewScreen + PaymentResultScreen initial) + `56488a3` (deeplink extension + navigatorKey). flutter analyze 0 issues. MKT-05 marked complete.
 
 **Files written this session (plan 09-01 execution):**
 

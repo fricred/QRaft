@@ -215,7 +215,7 @@ Plans:
 Plans:
 - [~] 09-01-PLAN.md — orders + payment_events Supabase schema + FSM trigger + create_order RPC (Wave 1; CHECKPOINT — migration + Wompi sandbox keys required before Wave 2) — SQL written + committed `63dd0e3`; BLOCKED at checkpoint: migration not yet applied, Wompi secrets not set
 - [ ] 09-02-PLAN.md — create-payment-intent Edge Function + ShippingScreen (DANE dropdowns) + checkout domain layer (Wave 2)
-- [ ] 09-03-PLAN.md — WompiWebViewScreen + PaymentResultScreen + deeplink handler (Wave 2, parallel to 09-02)
+- [x] 09-03-PLAN.md — WompiWebViewScreen + PaymentResultScreen + deeplink handler (Wave 2, parallel to 09-02) — COMPLETE `0249a69` + `56488a3`; MKT-05 partial
 - [ ] 09-04-PLAN.md — wompi-webhook Edge Function: SHA256 verification + idempotent payment_events + FSM transitions (Wave 3)
 - [ ] 09-05-PLAN.md — LGL-02..05: retracto disclaimer, privacy policy, habeas data, garantia, PQRS (Wave 4)
 **UI hint**: yes
