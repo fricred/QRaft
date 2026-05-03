@@ -169,7 +169,7 @@ Plans:
   5. Material preview composition runs at 60fps on Android low-end (lazy material textures, RepaintBoundary isolation)
 **Plans**: 4 plans
 Plans:
-- [ ] 07-01-PLAN.md — Supabase migration (materials + products + product_variants DDL + seed) + domain entities + catalogProvider
+- [x] 07-01-PLAN.md — Supabase migration (materials + products + product_variants DDL + seed) + domain entities + catalogProvider ✓ 2026-05-03 (commits `5fce44c` migration SQL + `92435e2` 8 Dart files + `bbace05` T-07-02 security fix; 3 tables + 3 RLS policies + 6-material + 2-product + 12-variant seed; MaterialEntity + ProductVariantEntity (int priceCop) + catalogProvider/activeMaterialFilterProvider/filteredCatalogProvider; texture_url https-only validation; 0 analyzer issues)
 - [ ] 07-02-PLAN.md — MaterialFilterBar + ProductVariantCard widgets + replace MarketplaceScreen stub + ProductDetailScreen skeleton
 - [ ] 07-03-PLAN.md — MaterialPreviewWidget (Stack: texture + white QR label via PrettyQrView) + widget tests
 - [ ] 07-04-PLAN.md — Wire QR library Engrave action → marketplace; inject qrCodeId into ProductDetailScreen; visual verification checkpoint
