@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T17:25:33Z"
+last_updated: "2026-05-03T17:38:00Z"
 progress:
   total_phases: 12
   completed_phases: 7
@@ -14,13 +14,13 @@ progress:
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 09-02 — create-payment-intent Edge Function + ShippingScreen + CartScreen wiring complete; stopped at checkpoint:human-verify)
+**Last updated:** 2026-05-03 (post plan 09-04 — wompi-webhook Edge Function deployed ACTIVE; SHA256 signature verification live (forged events → 401); idempotent payment_events + apply_payment_event RPC wired; stopped at checkpoint:human-verify Task 2)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 9 in progress (Plans 09-01 SQL + 09-02 Edge Function + ShippingScreen + 09-03 Flutter UI done; checkpoint:human-verify awaiting user). Phase 8 COMPLETE. Phase 7 COMPLETE. Phase 6 COMPLETE. Phase 5 COMPLETE. Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
+**Current focus**: Phase 9 in progress (Plans 09-01 SQL + 09-02 Edge Function + ShippingScreen + 09-03 Flutter UI + 09-04 wompi-webhook done; checkpoint:human-verify Task 2 awaiting user Wompi dashboard webhook registration). Phase 8 COMPLETE. Phase 7 COMPLETE. Phase 6 COMPLETE. Phase 5 COMPLETE. Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending).
 
 **Strategic anchors**:
 
@@ -34,9 +34,9 @@ progress:
 
 **Milestone:** v1.0
 **Phase:** 9 of 12 — Checkout, Wompi & Compliance (in progress)
-**Plan:** 09-02 ~ 2026-05-03 (COMPLETE: create-payment-intent Edge Function + ShippingScreen + CartScreen wiring; stopped at checkpoint:human-verify)
-**Status:** Phase 9 in progress (09-01 SQL done, 09-02 Edge Function + Flutter done, 09-03 Flutter UI done; checkpoint:human-verify awaiting deployment verification; 09-04/09-05 pending); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T17:25:33Z
+**Plan:** 09-04 ~ 2026-05-03 (COMPLETE task 1: wompi-webhook Edge Function deployed ACTIVE, SHA256 verification smoke-tested 401; stopped at checkpoint:human-verify Task 2 — Wompi dashboard webhook URL registration)
+**Status:** Phase 9 in progress (09-01 SQL done, 09-02 Edge Function + Flutter done, 09-03 Flutter UI done, 09-04 wompi-webhook deployed; checkpoint:human-verify Task 2 awaiting Wompi registration; 09-05 pending); Phase 8 COMPLETE; Phase 7 COMPLETE; Phase 6 COMPLETE; Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T17:38:00Z
 
 **Progress:** [█████████▌] 97%
 
@@ -177,6 +177,9 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | isPaymentResultLink checked BEFORE auth deep link processing in DeepLinkHandler.handleDeepLink — prevents auth state machine from consuming payment-result URLs (T-09-12) | plan 09-03 SUMMARY (`56488a3`) |
 | PSE retry: 5 attempts × 2s = 10s before switching to pendingPSE UI state; PSE users instructed to return and verify later | plan 09-03 SUMMARY (`56488a3`) |
 | Integrity signature computed in Edge Function via crypto.subtle (Deno built-in); Flutter binary never sees WOMPI_INTEGRITY_SECRET (T-09-06) | plan 09-02 SUMMARY (`dfb7e90`) |
+| wompi-webhook returns 200 on apply_payment_event RPC errors (not 500) to prevent Wompi retry storms; event already idempotently in payment_events for reconciliation | plan 09-04 SUMMARY (`9fc5056`) |
+| wompi-webhook checks both X-Event-Checksum header AND signature.checksum body field; header takes priority per Wompi spec; body fallback for compatibility | plan 09-04 SUMMARY (`9fc5056`) |
+| Non-transaction.updated events recorded in payment_events but cause no FSM state change — logged as informational, no RPC call | plan 09-04 SUMMARY (`9fc5056`) |
 | Amount in cents fetched from orders.total_cop after create_order RPC; client has no amount field in the Edge Function request body (T-09-07) | plan 09-02 SUMMARY (`dfb7e90`) |
 | DANE departamento/municipio dataset bundled as assets/data/colombia_dane.json (offline-capable, no API calls, <100KB) | plan 09-02 SUMMARY (`6552b94`) |
 | CartScreen._onProceedToCheckout: SnackBar stub replaced with MaterialPageRoute push to ShippingScreen | plan 09-02 SUMMARY (`6552b94`) |
@@ -221,6 +224,15 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 09-04 execution):**
+
+- `supabase/functions/wompi-webhook/index.ts` — Deno Edge Function: SHA256 X-Event-Checksum verification, idempotent payment_events insert (PK collision → 200), apply_payment_event RPC call for order FSM transitions
+- `supabase/functions/wompi-webhook/deno.json` — Import map + lint config
+- `.planning/phases/09-checkout-wompi-compliance/09-04-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+
+**Last session (plan 09-04):** 2026-05-03 — wompi-webhook Edge Function created and deployed ACTIVE. Commit `9fc5056`. Forged-event test confirmed 401 rejection. WOMPI_EVENTS_SECRET set in Supabase secrets. STOPPED at checkpoint:human-verify Task 2 — user must register webhook URL in Wompi Sandbox dashboard. Resume signal: "webhook verified: forged event rejected, valid payment approved order".
 
 **Files written this session (plan 09-02 execution):**
 

@@ -38,7 +38,7 @@
 - [x] **MKT-03**: User puede mantener carrito persistente con cálculo de total (subtotal + IVA 19% + envío)
 - [ ] **MKT-04**: User puede completar checkout con dirección Colombia (departamento/municipio/dirección) usando dataset DANE local
 - [ ] **MKT-05**: User puede pagar vía Wompi (tarjetas, PSE, Nequi, Daviplata) en WebView Checkout
-- [ ] **MKT-06**: Sistema valida y procesa webhooks de Wompi vía Supabase Edge Function con SHA256 X-Event-Checksum + idempotency lock
+- [x] **MKT-06**: Sistema valida y procesa webhooks de Wompi vía Supabase Edge Function con SHA256 X-Event-Checksum + idempotency lock
 - [ ] **MKT-07**: User puede ver su lista de órdenes y detalle individual
 - [ ] **MKT-08**: User puede ver timeline de estados de cada orden (recibido → en producción → grabando → listo → enviado → entregado) con server-authoritative state machine
 - [ ] **MKT-09**: User recibe push notifications FCM de cambios de estado de orden
@@ -152,7 +152,7 @@ Populated by gsd-roadmapper agent on 2026-05-01.
 | MKT-03 | Phase 8 | Complete (08-04 ✓ 2026-05-03 — CartSummaryWidget + cartTotalsProvider RPC) |
 | MKT-04 | Phase 9 | Pending |
 | MKT-05 | Phase 9 | Pending |
-| MKT-06 | Phase 9 | Pending |
+| MKT-06 | Phase 9 | Complete (09-04 ✓ 2026-05-03 — wompi-webhook Edge Function deployed ACTIVE; SHA256 X-Event-Checksum verification; idempotent payment_events PK; apply_payment_event RPC integration) |
 | MKT-07 | Phase 10 | Pending |
 | MKT-08 | Phase 10 | Pending |
 | MKT-09 | Phase 10 | Pending |
