@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T14:06:16Z"
+last_updated: "2026-05-03T16:35:00Z"
 progress:
   total_phases: 12
   completed_phases: 3
   total_plans: 31
-  completed_plans: 27
-  percent: 87
+  completed_plans: 28
+  percent: 90
 ---
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 07-04 — Phase 7 COMPLETE)
+**Last updated:** 2026-05-03 (post plan 08-01 — Phase 8 in progress 1/4)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 7 COMPLETE (4/4 plans — 07-01 ✓, 07-02 ✓, 07-03 ✓, 07-04 ✓ 2026-05-03). Phase 6 COMPLETE (4/4 plans — 06-01 ✓, 06-02 ✓, 06-03 ✓, 06-04 ✓ 2026-05-03). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 8 (Cart & Customization Snapshot) or Phase 3 plan 03-03 (QR scanner Maestro + verification).
+**Current focus**: Phase 8 IN PROGRESS (1/4 plans — 08-01 ✓ 2026-05-03). Phase 7 COMPLETE (4/4 plans). Phase 6 COMPLETE (4/4 plans). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 8 plans 08-02 (CartScreen + AddToCart), 08-03 (snapshot freeze + PNG upload), 08-04 (CartSummaryWidget + totals).
 
 **Strategic anchors**:
 
@@ -33,12 +33,12 @@ progress:
 ## Current Position
 
 **Milestone:** v1.0
-**Phase:** 8 of 12 — Cart & Customization Snapshot (next)
-**Plan:** 06-04 ✓ 2026-05-03 (4/4 plans — Phase 6 COMPLETE)
-**Status:** Phase 7 COMPLETE; Phase 6 COMPLETE (4/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T14:55:00Z
+**Phase:** 8 of 12 — Cart & Customization Snapshot (in progress)
+**Plan:** 08-01 ✓ 2026-05-03 (1/4 plans — Phase 8 in progress)
+**Status:** Phase 8 IN PROGRESS (1/4 plans); Phase 7 COMPLETE; Phase 6 COMPLETE (4/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T16:35:00Z
 
-**Progress:** [████████░░] 90%
+**Progress:** [█████████░] 90%
 
 ```
 Phase 1:  ▰ Foundation Hardening              ✓ COMPLETE (passed-with-residuals 2026-05-01)
@@ -48,7 +48,7 @@ Phase 4:  ▰ Redirect Service Foundation       ✓ COMPLETE 2026-05-01 (3/3 pla
 Phase 5:  ▰ QR Customization (Print-Safe)     ✓ COMPLETE 2026-05-03 (5/5 plans)
 Phase 6:  ▰ QR Digital-Only Features          ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 7:  ▰ Marketplace Catalog + QR Export   ✓ COMPLETE 2026-05-03 (4/4 plans)
-Phase 8:  ▱ Cart & Customization Snapshot
+Phase 8:  ▱ Cart & Customization Snapshot     IN PROGRESS (1/4 plans — 08-01 ✓)
 Phase 9:  ▱ Checkout, Wompi & Compliance
 Phase 10: ▱ Orders, Realtime & FCM
 Phase 11: ▱ Operator Dashboard + Tattoo Line
@@ -110,6 +110,10 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | `supabaseClientProvider` introduced as overridable Riverpod Provider so tests can inject mock SupabaseClient without global Supabase.instance dependency | plan 04-01 SUMMARY (`8122624`) |
 | auto-update trigger `trg_redirects_updated_at` added to redirects migration for server-side updated_at management | plan 04-01 SUMMARY (`8122624`) |
 | redirects migration `20260502000000_redirects_table.sql` requires manual application via Supabase Dashboard → SQL Editor; NOT auto-applied | plan 04-01 SUMMARY (`8122624`) |
+| cart_items migration `20260504000000_cart_items_and_compute_totals.sql` requires manual application via Supabase Dashboard; `price_cop` stays whole COP pesos in cart_items; Wompi ×100 deferred to Phase 9 | plan 08-01 SUMMARY (`b25d5f7`) |
+| cartItemsProvider returns Stream.empty() for unauthenticated users (not error) so StreamProvider yields AsyncValue.data([]) not AsyncValue.error | plan 08-01 SUMMARY (`3da36fb`) |
+| cartTotalsProvider short-circuits to CartTotalsEntity.zero on empty cart to avoid unnecessary RPC round-trip | plan 08-01 SUMMARY (`3da36fb`) |
+| QRCustomization.fromJson uses .firstWhere(orElse: () => GradientType.solid) for GradientType resolution — forward-compatible with future enum additions | plan 08-01 SUMMARY (`3da36fb`) |
 | RedirectEditScreen takes slug → loads redirect entity id → calls updateDestinationUrl(id:, destinationUrl:); empty slug shows "no redirect linked" gracefully (QRCodeEntity has no slug field yet) | plan 04-03 SUMMARY (`6f3a055`) |
 | Follow-up required: add `slug` column to qr_codes table + expose on QRCodeEntity so `_editRedirectDestination` can pass real slug instead of `''` | plan 04-03 SUMMARY (`6f3a055`) |
 | `pretty_qr_code` 3.6.0 for advanced customization (replaces qr_flutter for QR-02..06) | research SUMMARY.md |
@@ -199,6 +203,24 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 08-01 execution):**
+
+- `supabase/migrations/20260504000000_cart_items_and_compute_totals.sql` — cart_items table DDL + RLS (4 policies: SELECT/INSERT/UPDATE/DELETE all scoped to user_id = auth.uid()) + server_compute_order_totals() SECURITY DEFINER RPC (IVA 19% + flat 15000 COP envio)
+- `lib/features/cart/domain/entities/cart_item_entity.dart` — CartItemEntity with fromJson/toJson + Equatable; customizationSnapshot as Map; pngStorageUrl nullable
+- `lib/features/cart/domain/entities/cart_totals_entity.dart` — CartTotalsEntity with zero sentinel + fromRpcRow factory
+- `lib/features/cart/domain/repositories/cart_repository.dart` — abstract CartRepository (watchCart, addItem, updateQuantity, removeItem, clearCart, computeTotals)
+- `lib/features/cart/data/models/cart_item_model.dart` — CartItemModel extends CartItemEntity; fromSupabaseRow constructor
+- `lib/features/cart/data/datasources/cart_supabase_data_source.dart` — watchCart via .stream(primaryKey) + upsert + computeTotals RPC call
+- `lib/features/cart/data/repositories/cart_repository_impl.dart` — CartRepositoryImpl + CartException; quantity clamp 1..99
+- `lib/features/cart/presentation/providers/cart_providers.dart` — cartRepositoryProvider + cartItemsProvider (StreamProvider) + cartTotalsProvider (FutureProvider)
+- `lib/features/qr_generator/domain/entities/qr_code_entity.dart` — QRCustomization.toJson() + QRCustomization.fromJson() for JSONB snapshot serialization
+- `test/features/cart/domain/cart_entities_test.dart` — 9 unit tests (entities, model, totals, JSON serialization)
+- `.planning/phases/08-cart-customization-snapshot/08-01-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+- `.planning/ROADMAP.md` (08-01 checkbox marked)
+
+**Last session (plan 08-01):** 2026-05-03 — Supabase cart_items DDL + RLS + server_compute_order_totals RPC + full Dart cart domain/data/providers + QRCustomization JSON serialization. Commits `b25d5f7` (migration) + `3da36fb` (Dart layer). flutter analyze lib/features/cart/ 0 issues. 9/9 tests pass. Phase 8 in progress (1/4 plans). Key decision: migration manual-apply only (same pattern as 04-01/07-01); price_cop stays whole COP pesos; cartItemsProvider returns Stream.empty() for unauthenticated (not error).
 
 **Files written this session (plan 06-04 execution):**
 

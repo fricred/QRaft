@@ -149,7 +149,7 @@ Populated by gsd-roadmapper agent on 2026-05-01.
 | SCAN-04 | Phase 3 | Pending |
 | MKT-01 | Phase 7 | In Progress (catalog+filter UI: 07-02 ✓; material preview: 07-03) |
 | MKT-02 | Phase 7 | Complete (07-03 ✓ 2026-05-03) |
-| MKT-03 | Phase 8 | Pending |
+| MKT-03 | Phase 8 | In Progress (schema+domain: 08-01 ✓; cart UI: 08-02; totals: 08-04) |
 | MKT-04 | Phase 9 | Pending |
 | MKT-05 | Phase 9 | Pending |
 | MKT-06 | Phase 9 | Pending |
@@ -158,7 +158,7 @@ Populated by gsd-roadmapper agent on 2026-05-01.
 | MKT-09 | Phase 10 | Pending |
 | MKT-10 | Phase 12 | Pending |
 | MKT-11 | Phase 11 | Pending |
-| MKT-12 | Phase 8 | Pending |
+| MKT-12 | Phase 8 | In Progress (JSONB schema + QRCustomization.toJson(): 08-01 ✓; PNG freeze: 08-03) |
 | RDR-01 | Phase 4 | Pending |
 | RDR-02 | Phase 4 | Pending |
 | RDR-03 | Phase 4 | Pending |

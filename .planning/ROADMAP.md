@@ -189,7 +189,7 @@ Plans:
   5. User can update quantity, remove items, and clear cart; all operations are reflected in both local and remote stores
 **Plans**: 4 plans
 Plans:
-- [ ] 08-01-PLAN.md — cart_items Supabase schema + server_compute_order_totals RPC + domain entities + CartRepository + Riverpod providers
+- [x] 08-01-PLAN.md — cart_items Supabase schema + server_compute_order_totals RPC + domain entities + CartRepository + Riverpod providers
 - [ ] 08-02-PLAN.md — AddToCart button wired into ProductDetailScreen + CartScreen item list + remove action
 - [ ] 08-03-PLAN.md — Customization snapshot capture: freeze QRCustomization JSON + export 2160px PNG → upload to order-assets/
 - [ ] 08-04-PLAN.md — CartSummaryWidget (server RPC totals: subtotal + IVA 19% + envío) + Proceder al pago button placeholder
