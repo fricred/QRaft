@@ -1,18 +1,22 @@
 package io.gothcorp.qraft
 
-import es.antonborri.home_widget.HomeWidgetGlanceWidgetReceiver
+import android.appwidget.AppWidgetManager
+import android.content.Context
+import android.content.SharedPreferences
+import es.antonborri.home_widget.HomeWidgetProvider
 
 /**
- * BroadcastReceiver that triggers widget updates.
- *
- * The class name must match the `androidName` passed to
- * `HomeWidget.updateWidget(androidName: 'QrWidgetReceiver')` in
- * `QrWidgetService.pinQrToWidget()`.
- *
- * It must also be declared in `AndroidManifest.xml` with the
- * `android.appwidget.action.APPWIDGET_UPDATE` intent filter and
- * an `@xml/qr_widget_info` provider metadata entry.
+ * BroadcastReceiver for QRaft home-screen widget updates.
+ * HomeWidgetProvider bridges Flutter's HomeWidget.updateWidget() call
+ * to a standard APPWIDGET_UPDATE broadcast that QrWidget.onUpdate() handles.
  */
-class QrWidgetReceiver : HomeWidgetGlanceWidgetReceiver<QrWidget>() {
-    override val glanceAppWidget = QrWidget()
+class QrWidgetReceiver : HomeWidgetProvider() {
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray,
+        widgetData: SharedPreferences,
+    ) {
+        QrWidget().onUpdate(context, appWidgetManager, appWidgetIds)
+    }
 }

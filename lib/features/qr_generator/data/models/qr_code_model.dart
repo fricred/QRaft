@@ -92,6 +92,7 @@ class QRCustomizationModel extends QRCustomization {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'foreground_color': foregroundColor,

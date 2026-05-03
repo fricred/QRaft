@@ -12,6 +12,6 @@
     android:targetCellWidth="2"
     android:targetCellHeight="2"
     android:updatePeriodMillis="0"
-    android:initialLayout="@layout/glance_default_loading_layout"
+    android:initialLayout="@layout/qr_widget_layout"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen" />

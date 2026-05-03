@@ -1,78 +1,52 @@
 package io.gothcorp.qraft
 
+import android.appwidget.AppWidgetManager
+import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.graphics.BitmapFactory
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
-import androidx.glance.GlanceId
-import androidx.glance.GlanceModifier
-import androidx.glance.GlanceTheme
-import androidx.glance.Image
-import androidx.glance.ImageProvider
-import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.provideContent
-import androidx.glance.currentState
-import androidx.glance.layout.Alignment
-import androidx.glance.layout.Box
-import androidx.glance.layout.fillMaxSize
-import androidx.glance.layout.padding
-import androidx.glance.text.Text
-import es.antonborri.home_widget.HomeWidgetGlanceState
-import es.antonborri.home_widget.HomeWidgetGlanceStateDefinition
+import android.widget.RemoteViews
+import io.gothcorp.qraft.R
 
 /**
  * QRaft home-screen widget (Android).
  *
- * Reads the PNG file path written by the Flutter `home_widget` plugin under
- * the key `qr_widget_image`, then renders the image using Jetpack Glance.
+ * Uses classic AppWidgetProvider + RemoteViews to avoid Kotlin JVM inline
+ * compilation issues with Jetpack Glance's CompositionLocal.current accessors.
  *
- * The state definition uses [HomeWidgetGlanceStateDefinition] provided by the
- * `home_widget` plugin — this ensures the shared-preference data written by
- * Dart is readable by the Glance composition.
+ * Reads the PNG file path written by the Flutter `home_widget` plugin from
+ * SharedPreferences under the key `qr_widget_image`.
+ *
+ * To activate this widget:
+ * 1. The Flutter side calls HomeWidget.updateWidget(androidName: 'QrWidget')
+ *    after saving the image path via HomeWidget.saveWidgetData.
+ * 2. The user adds the widget from the home screen widget picker.
  */
-class QrWidget : GlanceAppWidget() {
+class QrWidget : AppWidgetProvider() {
 
-    override val stateDefinition = HomeWidgetGlanceStateDefinition()
-
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
-        provideContent {
-            GlanceTheme {
-                QrWidgetContent()
-            }
-        }
-    }
-
-    @Composable
-    private fun QrWidgetContent() {
-        val prefs = currentState<HomeWidgetGlanceState>().preferences
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray,
+    ) {
+        val prefs = context.getSharedPreferences("HomeWidgetPreferences", Context.MODE_PRIVATE)
         val imagePath = prefs.getString("qr_widget_image", null)
 
-        Box(
-            modifier = GlanceModifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
+        for (id in appWidgetIds) {
+            val views = RemoteViews(context.packageName, R.layout.qr_widget_layout)
+
             if (imagePath != null) {
                 val bitmap = BitmapFactory.decodeFile(imagePath)
                 if (bitmap != null) {
-                    Image(
-                        provider = ImageProvider(bitmap),
-                        contentDescription = "QR Code",
-                        modifier = GlanceModifier
-                            .fillMaxSize()
-                            .padding(8.dp),
-                    )
+                    views.setImageViewBitmap(R.id.qr_widget_image_view, bitmap)
+                    views.setTextViewText(R.id.qr_widget_label, "")
                 } else {
-                    // File exists in prefs but couldn't be decoded
-                    FallbackText("Open QRaft to pin a QR")
+                    views.setTextViewText(R.id.qr_widget_label, "Open QRaft to pin a QR")
                 }
             } else {
-                FallbackText("Open QRaft to pin a QR")
+                views.setTextViewText(R.id.qr_widget_label, "Open QRaft to pin a QR")
             }
-        }
-    }
 
-    @Composable
-    private fun FallbackText(message: String) {
-        Text(text = message)
+            appWidgetManager.updateAppWidget(id, views)
+        }
     }
 }
