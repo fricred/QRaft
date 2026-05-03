@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../../core/services/observability_service.dart';
 import '../../domain/entities/order_entity.dart';
 import '../providers/orders_providers.dart';
 import 'order_detail_screen.dart';
@@ -26,7 +27,6 @@ class _OrdersListScreenState extends ConsumerState<OrdersListScreen> {
 
   Future<void> _refresh() async {
     ref.invalidate(ordersListProvider(0));
-    // Wait for provider to settle after invalidation
     await ref
         .read(ordersListProvider(0).future)
         .catchError((_) => <OrderEntity>[]);
@@ -57,7 +57,16 @@ class _OrdersListScreenState extends ConsumerState<OrdersListScreen> {
         onRefresh: _refresh,
         child: ordersAsync.when(
           loading: () => _buildShimmerList(),
-          error: (e, _) => _buildError(e),
+          error: (e, s) {
+            // Record non-fatal so order fetch failures are visible in Crashlytics
+            // without crashing the app (Phase 12 — OPT-03).
+            ObservabilityService.recordNonFatal(
+              e,
+              s,
+              context: {'screen': 'orders_list'},
+            );
+            return _buildError(e);
+          },
           data: (orders) => orders.isEmpty
               ? _buildEmptyState()
               : _buildOrderList(orders),
@@ -127,9 +136,9 @@ class _OrdersListScreenState extends ConsumerState<OrdersListScreen> {
           children: [
             const Icon(Icons.error_outline, color: Color(0xFFFF6B6B), size: 48),
             const SizedBox(height: 12),
-            Text(
+            const Text(
               'No se pudieron cargar las órdenes',
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(color: Colors.white, fontSize: 16),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),

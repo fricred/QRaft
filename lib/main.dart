@@ -1,9 +1,13 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
+import 'core/services/observability_service.dart';
 import 'features/splash/splash_screen.dart';
 import 'features/auth/presentation/pages/auth_flow.dart';
 import 'features/auth/presentation/widgets/forgot_password_dialog.dart';
@@ -48,6 +52,13 @@ Future<void> initializeApp() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     debugPrint('✅ Firebase initialized');
+
+    // Wire Crashlytics + Analytics error handlers (D-01: activated Phase 12).
+    FlutterError.onError = ObservabilityService.onFlutterError;
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
 
     // NOTE: AdMob SDK init is intentionally NOT called here (D-04). UMP
     // consent must resolve first; AdMob init is triggered via
@@ -164,6 +175,8 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
         startSubscriptionRealtime(ref, currentUser.id);
         // Register FCM token now that a user is signed in (Phase 10 plan 01).
         ref.read(fcmServiceProvider).initialize();
+        // Identify user in Crashlytics + Analytics (D-01, Phase 12).
+        ObservabilityService.setUserId(currentUser.id);
       });
     }
 
@@ -172,6 +185,8 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
       _lastUserId = null;
       Future.microtask(() {
         stopSubscriptionRealtime(ref);
+        // Clear observability user identity on sign-out.
+        ObservabilityService.clearUserId();
       });
     }
 

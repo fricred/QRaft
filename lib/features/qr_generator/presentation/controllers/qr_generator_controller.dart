@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/services/observability_service.dart';
 import '../../domain/entities/qr_code_entity.dart';
 import '../../domain/entities/qr_data_models.dart';
 import '../../domain/entities/qr_type.dart';
@@ -68,12 +69,22 @@ class QRGeneratorController extends StateNotifier<QRGeneratorState> {
         customization: customization,
       );
 
+      // Log QR creation analytics event (Phase 12 — OPT-03).
+      ObservabilityService.logEvent('qr_created', parameters: {
+        'qr_type': type.name,
+        'has_logo': (customization?.hasLogo ?? false) ? 1 : 0,
+        'profile': (customization?.profile ?? 0).toString(),
+      });
+
       state = state.copyWith(
         isLoading: false,
         generatedQR: qrCode,
         userQRCodes: [qrCode, ...state.userQRCodes],
       );
-    } catch (e) {
+    } catch (e, s) {
+      // Record non-fatal for QR generation failures (Phase 12 — OPT-03).
+      ObservabilityService.recordNonFatal(e, s,
+          context: {'qr_type': type.name});
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/services/observability_service.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../legal/presentation/pages/terms_screen.dart';
 import '../widgets/retracto_disclaimer_widget.dart';
@@ -107,6 +108,14 @@ class _PaymentResultScreenState extends ConsumerState<PaymentResultScreen>
       if (!mounted) return;
 
       if (dbStatus == 'paid') {
+        // Log payment completion analytics event (Phase 12 — OPT-03).
+        final totalCop = (response['total_cop'] as num?)?.toInt() ?? 0;
+        ObservabilityService.logEvent('payment_complete', parameters: {
+          'order_id': widget.orderId,
+          'amount_cop': totalCop,
+          'payment_method': 'wompi',
+        });
+
         setState(() {
           _status = _OrderStatus.paid;
           _orderNumber = orderNumber;
@@ -117,6 +126,15 @@ class _PaymentResultScreenState extends ConsumerState<PaymentResultScreen>
       }
 
       if (dbStatus == 'payment_failed') {
+        // Record non-fatal for payment failures (Phase 12 — OPT-03).
+        ObservabilityService.recordNonFatal(
+          Exception('Payment failed: $dbStatus'),
+          null,
+          context: {
+            'order_id': widget.orderId,
+            'wompi_status': dbStatus,
+          },
+        );
         setState(() {
           _status = _OrderStatus.failed;
           _isPolling = false;
