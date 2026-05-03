@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/cart_item_entity.dart';
@@ -32,20 +33,9 @@ class CartItemTile extends ConsumerWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // QR icon placeholder (png_storage_url is null until Plan 03)
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: const Color(0xFF1A1A1A),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.qr_code_2_rounded,
-                color: Color(0xFF00FF88),
-                size: 32,
-              ),
-            ),
+            // QR thumbnail: CachedNetworkImage when pngStorageUrl is set,
+            // fallback icon otherwise.
+            _QrThumbnail(pngStorageUrl: item.pngStorageUrl),
 
             const SizedBox(width: 12),
 
@@ -189,6 +179,56 @@ class CartItemTile extends ConsumerWidget {
         const SnackBar(content: Text('Error al actualizar el carrito')),
       );
     }
+  }
+}
+
+/// Shows a 56×56 thumbnail of the cart item's QR code.
+///
+/// Uses [CachedNetworkImage] when [pngStorageUrl] is populated (Plan 03 and
+/// later), falls back to the QR icon placeholder for items added before the
+/// snapshot upload completed.
+class _QrThumbnail extends StatelessWidget {
+  final String? pngStorageUrl;
+
+  const _QrThumbnail({this.pngStorageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1A1A),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: pngStorageUrl != null
+          ? CachedNetworkImage(
+              imageUrl: pngStorageUrl!,
+              fit: BoxFit.cover,
+              placeholder: (_, __) => const Center(
+                child: Icon(
+                  Icons.qr_code_2_rounded,
+                  color: Color(0xFF00FF88),
+                  size: 32,
+                ),
+              ),
+              errorWidget: (_, __, ___) => const Center(
+                child: Icon(
+                  Icons.qr_code_2_rounded,
+                  color: Color(0xFF00FF88),
+                  size: 32,
+                ),
+              ),
+            )
+          : const Center(
+              child: Icon(
+                Icons.qr_code_2_rounded,
+                color: Color(0xFF00FF88),
+                size: 32,
+              ),
+            ),
+    );
   }
 }
 

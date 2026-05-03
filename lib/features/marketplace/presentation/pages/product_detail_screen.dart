@@ -1,7 +1,11 @@
+import 'dart:async' show unawaited;
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../domain/entities/product_variant_entity.dart';
 import '../widgets/material_preview_widget.dart';
@@ -9,6 +13,8 @@ import '../../../qr_library/presentation/providers/qr_library_providers.dart';
 import '../../../cart/presentation/pages/cart_screen.dart';
 import '../../../cart/presentation/providers/cart_providers.dart';
 import '../../../cart/data/repositories/cart_repository_impl.dart';
+import '../../../cart/data/datasources/order_assets_storage_data_source.dart';
+import '../../../cart/domain/services/customization_snapshot_service.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
 
 String _formatCop(int price) =>
@@ -56,7 +62,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       return;
     }
 
-    // Resolve QRCodeEntity from library
+    // Resolve QRCodeEntity from already-loaded provider
     final qrCodesAsync = ref.read(userQRCodesProvider);
     final qrCodes = qrCodesAsync.value ?? [];
     final matches = qrCodes.where((qr) => qr.id == widget.qrCodeId);
@@ -68,16 +74,32 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     }
 
     final qrCode = matches.first;
-    final customizationSnapshot = qrCode.customization.toJson();
 
     setState(() => _isLoading = true);
     try {
+      // 1. Capture frozen snapshot (JSON + 2160px PNG bytes)
+      final snapshot =
+          await CustomizationSnapshotService.captureSnapshot(qrCode);
+
+      // 2. Add item to cart (pngStorageUrl initially null — patched below)
       await ref.read(cartRepositoryProvider).addItem(
             userId: user.id,
             productVariantId: widget.variant.id,
             qrCodeId: widget.qrCodeId!,
-            customizationSnapshot: customizationSnapshot,
+            customizationSnapshot: snapshot.customizationJson,
           );
+
+      // 3. Upload PNG to order-assets/ and patch the cart item's pngStorageUrl.
+      //    Runs in background — cart item is already live; PNG is belt-and-suspenders.
+      //    Failure here is non-fatal: JSONB snapshot is sufficient for the engraver.
+      unawaited(
+        _uploadSnapshotPng(
+          userId: user.id,
+          qrCodeId: widget.qrCodeId!,
+          variantId: widget.variant.id,
+          pngBytes: snapshot.pngBytes,
+        ),
+      );
 
       if (!mounted) return;
       await Navigator.of(context).push(
@@ -96,6 +118,62 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  /// Uploads the pre-rasterized PNG to Supabase Storage order-assets/ bucket,
+  /// then patches the cart item's png_storage_url column.
+  ///
+  /// Non-blocking: called via [unawaited] — failures are logged in debug mode
+  /// only. The JSONB customization_snapshot is the canonical engraver input.
+  Future<void> _uploadSnapshotPng({
+    required String userId,
+    required String qrCodeId,
+    required String variantId,
+    required Uint8List pngBytes,
+  }) async {
+    try {
+      final storageDs =
+          OrderAssetsStorageDataSource(Supabase.instance.client);
+      final pngUrl = await storageDs.upload(
+        userId: userId,
+        qrCodeId: qrCodeId,
+        variantId: variantId,
+        pngBytes: pngBytes,
+      );
+
+      // Resolve the cart item id by (user_id, product_variant_id, qr_code_id)
+      // unique constraint — avoids exposing updatePngUrl in CartRepository.
+      final cartItemId =
+          await _resolveCartItemId(userId, variantId, qrCodeId);
+      await storageDs.patchPngUrl(cartItemId, pngUrl);
+    } catch (e) {
+      // Non-fatal: JSONB snapshot is the source of truth.
+      // Log in debug mode only (never in release).
+      assert(() {
+        // ignore: avoid_print
+        print('[CartSnapshot] PNG upload failed: $e');
+        return true;
+      }());
+    }
+  }
+
+  /// Resolves the cart item id from the (userId, variantId, qrCodeId) triple.
+  ///
+  /// Uses a direct Supabase query rather than going through CartRepository to
+  /// keep the repository interface minimal (single-responsibility principle).
+  Future<String> _resolveCartItemId(
+    String userId,
+    String variantId,
+    String qrCodeId,
+  ) async {
+    final row = await Supabase.instance.client
+        .from('cart_items')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('product_variant_id', variantId)
+        .eq('qr_code_id', qrCodeId)
+        .single();
+    return row['id'] as String;
   }
 
   @override

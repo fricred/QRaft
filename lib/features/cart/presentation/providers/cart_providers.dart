@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../features/auth/data/providers/supabase_auth_provider.dart';
 import '../../data/datasources/cart_supabase_data_source.dart';
+import '../../data/datasources/order_assets_storage_data_source.dart';
 import '../../data/repositories/cart_repository_impl.dart';
 import '../../domain/entities/cart_item_entity.dart';
 import '../../domain/entities/cart_totals_entity.dart';
@@ -26,6 +27,15 @@ final cartItemsProvider = StreamProvider<List<CartItemEntity>>((ref) {
   final user = ref.watch(authStateProvider);
   if (user == null) return const Stream.empty();
   return ref.read(cartRepositoryProvider).watchCart(user.id);
+});
+
+/// Provides [OrderAssetsStorageDataSource] backed by the Supabase singleton.
+///
+/// Separated from [cartRepositoryProvider] so callers that only need Storage
+/// access do not need the full cart data-source.
+final orderAssetsStorageDsProvider =
+    Provider<OrderAssetsStorageDataSource>((ref) {
+  return OrderAssetsStorageDataSource(Supabase.instance.client);
 });
 
 /// Calls [server_compute_order_totals] RPC whenever [cartItemsProvider] emits.
