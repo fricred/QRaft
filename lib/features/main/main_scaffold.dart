@@ -7,6 +7,8 @@ import '../qr_scanner/qr_scanner_screen.dart';
 import '../qr_library/qr_library_screen.dart';
 import '../marketplace/marketplace_screen.dart';
 import '../orders/presentation/pages/orders_list_screen.dart';
+import '../notifications/presentation/providers/notification_providers.dart';
+import '../notifications/presentation/widgets/fcm_overlay_handler.dart';
 
 // Provider for the current navigation index
 final navigationIndexProvider = StateProvider<int>((ref) => 0);
@@ -31,11 +33,38 @@ class MainScaffoldKeys {
   static const ordersTab = Key('main_scaffold_orders_tab');
 }
 
-class MainScaffold extends ConsumerWidget {
+// ---------------------------------------------------------------------------
+// MainScaffold
+//
+// Converted to ConsumerStatefulWidget (Phase 10 plan 03) so that:
+//   1. notificationHandlerProvider is read once in initState to wire the
+//      FCM onMessageOpenedApp listener (background-tap → OrderDetailScreen).
+//   2. checkInitialFcmMessage() is called once in initState to handle the
+//      killed-app cold-launch tap path.
+//   3. FcmOverlayHandler wraps the scaffold body to show local notification
+//      banners when FCM messages arrive in the foreground.
+// ---------------------------------------------------------------------------
+
+class MainScaffold extends ConsumerStatefulWidget {
   const MainScaffold({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MainScaffold> createState() => _MainScaffoldState();
+}
+
+class _MainScaffoldState extends ConsumerState<MainScaffold> {
+  @override
+  void initState() {
+    super.initState();
+    // Wire FCM background-tap listener (onMessageOpenedApp).
+    // The provider is a side-effect provider; reading it activates it.
+    ref.read(notificationHandlerProvider);
+    // Check if the app was cold-launched by a killed-app notification tap.
+    checkInitialFcmMessage();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final currentIndex = ref.watch(navigationIndexProvider);
 
     // List of screens corresponding to navigation items
@@ -53,9 +82,11 @@ class MainScaffold extends ConsumerWidget {
     return Scaffold(
       key: const Key('main_scaffold_root'),
       backgroundColor: const Color(0xFF1A1A1A),
-      body: IndexedStack(
-        index: currentIndex,
-        children: screens,
+      body: FcmOverlayHandler(
+        child: IndexedStack(
+          index: currentIndex,
+          children: screens,
+        ),
       ),
       bottomNavigationBar: MainNavigation(
         currentIndex: currentIndex,
