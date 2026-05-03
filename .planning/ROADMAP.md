@@ -233,7 +233,12 @@ Plans:
   4. Detail screen subscribes to Supabase Realtime on `orders` filtered by user_id; status changes update in <2s without manual refresh
   5. User receives FCM push on EVERY state transition; tapping notification deep-links to order detail; foreground notifications display via `flutter_local_notifications`
   6. FCM tokens are registered in `user_fcm_tokens` table; per-device token rotation is handled
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 10-01-PLAN.md — user_fcm_tokens + notifications migration + FcmService activation + token registration (Wave 1)
+- [ ] 10-02-PLAN.md — orders domain + data layer + OrdersListScreen + OrderDetailScreen + Realtime stream + OrderStatusTimeline (Wave 2)
+- [ ] 10-03-PLAN.md — FCM foreground overlay (flutter_local_notifications) + background/killed-app notification handler + navigation (Wave 2, parallel to 10-02)
+- [ ] 10-04-PLAN.md — send-fcm Edge Function + transition_order RPC + apply_payment_event patch + DB webhook wiring (Wave 3)
 **UI hint**: yes
 **Research needed before planning**: NO
 **Parallel-eligible**: NO (gates Phase 11)
@@ -330,7 +335,7 @@ Phase 6    Phase 7           │
 | 7. Marketplace Catalog + QR Export | 4/4 | Complete | 2026-05-03 |
 | 8. Cart & Customization Snapshot | 4/4 | Complete | 2026-05-03 |
 | 9. Checkout, Wompi & Compliance | 5/5 | Complete | 2026-05-03 |
-| 10. Orders, Realtime & FCM | 0/? | Not started | - |
+| 10. Orders, Realtime & FCM | 0/4 | Not started | - |
 | 11. Operator Dashboard + Tattoo | 0/? | Not started | - |
 | 12. Premium, Polish & Observability | 0/? | Not started | - |
 
@@ -390,4 +395,4 @@ Update on phase transitions:
 
 ---
 *Roadmap created: 2026-05-01*
-*Last updated: 2026-05-01 — Phase 9 plans created (5 plans, 4 waves)*
+*Last updated: 2026-05-01 — Phase 10 plans created (4 plans, 3 waves)*
