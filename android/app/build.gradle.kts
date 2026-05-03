@@ -74,4 +74,7 @@ dependencies {
     // Core library desugaring runtime — required by flutter_local_notifications 17.x
     // when isCoreLibraryDesugaringEnabled = true.
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+
+    // Jetpack Glance — required by QrWidget (home-screen widget, QRD-03)
+    implementation("androidx.glance:glance-appwidget:1.1.1")
 }
