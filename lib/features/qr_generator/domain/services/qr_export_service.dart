@@ -53,4 +53,29 @@ class QrExportService {
     if (byteData == null) throw const QrExportException('export_failed');
     return byteData.buffer.asUint8List();
   }
+
+  /// Exports [qrImage] as a PNG at [size] × [size] px for digital-only use.
+  ///
+  /// For digital-only QRs. Does NOT force white background. Use size=400 for
+  /// animated GIF frames; size=2160 for single-frame digital exports.
+  ///
+  /// Unlike [exportPrintSafe], the caller's [decoration] is passed through
+  /// as-is — inverted colors and dark backgrounds are permitted.
+  ///
+  /// Throws [QrExportException] with code `'export_failed'` if
+  /// [QrImage.toImageAsBytes] returns null (should not occur for valid QR data).
+  static Future<Uint8List> exportDigitalOnly(
+    QrImage qrImage,
+    PrettyQrDecoration decoration, {
+    int size = 400,
+  }) async {
+    final byteData = await qrImage.toImageAsBytes(
+      size: size,
+      format: ui.ImageByteFormat.png,
+      decoration: decoration,
+    );
+
+    if (byteData == null) throw const QrExportException('export_failed');
+    return byteData.buffer.asUint8List();
+  }
 }
