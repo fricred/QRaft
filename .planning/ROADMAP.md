@@ -190,7 +190,7 @@ Plans:
 **Plans**: 4 plans
 Plans:
 - [x] 08-01-PLAN.md — cart_items Supabase schema + server_compute_order_totals RPC + domain entities + CartRepository + Riverpod providers
-- [ ] 08-02-PLAN.md — AddToCart button wired into ProductDetailScreen + CartScreen item list + remove action
+- [x] 08-02-PLAN.md — AddToCart button wired into ProductDetailScreen + CartScreen item list + remove action (2026-05-03)
 - [ ] 08-03-PLAN.md — Customization snapshot capture: freeze QRCustomization JSON + export 2160px PNG → upload to order-assets/
 - [ ] 08-04-PLAN.md — CartSummaryWidget (server RPC totals: subtotal + IVA 19% + envío) + Proceder al pago button placeholder
 **UI hint**: yes

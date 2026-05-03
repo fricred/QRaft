@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T16:35:00Z"
+last_updated: "2026-05-03T16:39:27Z"
 progress:
   total_phases: 12
-  completed_phases: 3
-  total_plans: 31
-  completed_plans: 28
-  percent: 90
+  completed_phases: 5
+  total_plans: 35
+  completed_plans: 31
+  percent: 89
 ---
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 08-01 — Phase 8 in progress 1/4)
+**Last updated:** 2026-05-03 (post plan 08-02 — Phase 8 in progress 2/4)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 8 IN PROGRESS (1/4 plans — 08-01 ✓ 2026-05-03). Phase 7 COMPLETE (4/4 plans). Phase 6 COMPLETE (4/4 plans). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 8 plans 08-02 (CartScreen + AddToCart), 08-03 (snapshot freeze + PNG upload), 08-04 (CartSummaryWidget + totals).
+**Current focus**: Phase 8 IN PROGRESS (2/4 plans — 08-01 ✓ 08-02 ✓ 2026-05-03). Phase 7 COMPLETE (4/4 plans). Phase 6 COMPLETE (4/4 plans). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 8 plans 08-03 (snapshot freeze + PNG upload), 08-04 (CartSummaryWidget + totals).
 
 **Strategic anchors**:
 
@@ -34,9 +34,9 @@ progress:
 
 **Milestone:** v1.0
 **Phase:** 8 of 12 — Cart & Customization Snapshot (in progress)
-**Plan:** 08-01 ✓ 2026-05-03 (1/4 plans — Phase 8 in progress)
-**Status:** Phase 8 IN PROGRESS (1/4 plans); Phase 7 COMPLETE; Phase 6 COMPLETE (4/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T16:35:00Z
+**Plan:** 08-02 ✓ 2026-05-03 (2/4 plans — Phase 8 in progress)
+**Status:** Phase 8 IN PROGRESS (2/4 plans); Phase 7 COMPLETE; Phase 6 COMPLETE (4/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T16:39:27Z
 
 **Progress:** [█████████░] 90%
 
@@ -48,7 +48,7 @@ Phase 4:  ▰ Redirect Service Foundation       ✓ COMPLETE 2026-05-01 (3/3 pla
 Phase 5:  ▰ QR Customization (Print-Safe)     ✓ COMPLETE 2026-05-03 (5/5 plans)
 Phase 6:  ▰ QR Digital-Only Features          ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 7:  ▰ Marketplace Catalog + QR Export   ✓ COMPLETE 2026-05-03 (4/4 plans)
-Phase 8:  ▱ Cart & Customization Snapshot     IN PROGRESS (1/4 plans — 08-01 ✓)
+Phase 8:  ▱ Cart & Customization Snapshot     IN PROGRESS (2/4 plans — 08-01 ✓ 08-02 ✓)
 Phase 9:  ▱ Checkout, Wompi & Compliance
 Phase 10: ▱ Orders, Realtime & FCM
 Phase 11: ▱ Operator Dashboard + Tattoo Line
@@ -203,6 +203,17 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 08-02 execution):**
+
+- `lib/features/marketplace/presentation/pages/product_detail_screen.dart` — ConsumerWidget → ConsumerStatefulWidget; _addToCart() with auth guard + QR-selection guard + cartRepositoryProvider.addItem() + CartScreen navigation; isLoading passed to PrimaryGlassButton
+- `lib/features/cart/presentation/pages/cart_screen.dart` — CartScreen: shimmer skeleton, error+retry, empty state, ListView.separated CartItemTile, _CartSummaryPlaceholder stub
+- `lib/features/cart/presentation/widgets/cart_item_tile.dart` — single item row: QR icon, product name, quantity ±(capped 99, decrement-to-zero = removeItem), delete button, Semantics identifiers
+- `.planning/phases/08-cart-customization-snapshot/08-02-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+- `.planning/ROADMAP.md` (08-02 checkbox marked)
+
+**Last session (plan 08-02):** 2026-05-03 — CartScreen + CartItemTile + wired AddToCart button. Commits `1a9ccce` (ProductDetailScreen) + `79aa86b` (CartScreen + CartItemTile). flutter analyze 0 issues. Phase 8 in progress (2/4 plans). Key decisions: ConsumerStatefulWidget pattern for _isLoading state; CartSummaryPlaceholder stub awaits Phase 9 checkout; QR thumbnail icon placeholder until Plan 03 populates pngStorageUrl.
 
 **Files written this session (plan 08-01 execution):**
 
