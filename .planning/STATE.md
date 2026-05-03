@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-03T16:39:27Z"
+last_updated: "2026-05-03T16:46:52Z"
 progress:
   total_phases: 12
   completed_phases: 5
   total_plans: 35
-  completed_plans: 31
-  percent: 89
+  completed_plans: 32
+  percent: 91
 ---
 
 # State: QRaft v1.0
 
-**Last updated:** 2026-05-03 (post plan 08-02 — Phase 8 in progress 2/4)
+**Last updated:** 2026-05-03 (post plan 08-03 — Phase 8 in progress 3/4)
 
 ## Project Reference
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 8 IN PROGRESS (2/4 plans — 08-01 ✓ 08-02 ✓ 2026-05-03). Phase 7 COMPLETE (4/4 plans). Phase 6 COMPLETE (4/4 plans). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 8 plans 08-03 (snapshot freeze + PNG upload), 08-04 (CartSummaryWidget + totals).
+**Current focus**: Phase 8 IN PROGRESS (3/4 plans — 08-01 ✓ 08-02 ✓ 08-03 ✓ 2026-05-03). Phase 7 COMPLETE (4/4 plans). Phase 6 COMPLETE (4/4 plans). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 8 plan 08-04 (CartSummaryWidget + totals).
 
 **Strategic anchors**:
 
@@ -34,11 +34,11 @@ progress:
 
 **Milestone:** v1.0
 **Phase:** 8 of 12 — Cart & Customization Snapshot (in progress)
-**Plan:** 08-02 ✓ 2026-05-03 (2/4 plans — Phase 8 in progress)
-**Status:** Phase 8 IN PROGRESS (2/4 plans); Phase 7 COMPLETE; Phase 6 COMPLETE (4/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T16:39:27Z
+**Plan:** 08-03 ✓ 2026-05-03 (3/4 plans — Phase 8 in progress)
+**Status:** Phase 8 IN PROGRESS (3/4 plans); Phase 7 COMPLETE; Phase 6 COMPLETE (4/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T16:46:52Z
 
-**Progress:** [█████████░] 90%
+**Progress:** [█████████░] 91%
 
 ```
 Phase 1:  ▰ Foundation Hardening              ✓ COMPLETE (passed-with-residuals 2026-05-01)
@@ -48,7 +48,7 @@ Phase 4:  ▰ Redirect Service Foundation       ✓ COMPLETE 2026-05-01 (3/3 pla
 Phase 5:  ▰ QR Customization (Print-Safe)     ✓ COMPLETE 2026-05-03 (5/5 plans)
 Phase 6:  ▰ QR Digital-Only Features          ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 7:  ▰ Marketplace Catalog + QR Export   ✓ COMPLETE 2026-05-03 (4/4 plans)
-Phase 8:  ▱ Cart & Customization Snapshot     IN PROGRESS (2/4 plans — 08-01 ✓ 08-02 ✓)
+Phase 8:  ▱ Cart & Customization Snapshot     IN PROGRESS (3/4 plans — 08-01 ✓ 08-02 ✓ 08-03 ✓)
 Phase 9:  ▱ Checkout, Wompi & Compliance
 Phase 10: ▱ Orders, Realtime & FCM
 Phase 11: ▱ Operator Dashboard + Tattoo Line
@@ -160,6 +160,9 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | Server-authoritative order FSM (Postgres CHECK + RPC); client read-only | research ARCHITECTURE.md |
 | Idempotent webhook via `payment_events.event_id PRIMARY KEY` | research ARCHITECTURE.md |
 | Customization snapshot pattern (JSONB + 2160px PNG) frozen at cart/order time | research ARCHITECTURE.md |
+| captureSnapshot forces EC-H by passing hasLogo=true override to QrDecorationBuilder.buildQrImage() — QrImage factory takes QrCode object not data string; EC-H ensures sufficient damage tolerance for all print-safe engraving | plan 08-03 SUMMARY (`acb0d0b`) |
+| unawaited() PNG upload: cart item lives even if order-assets/ Storage unavailable; JSONB snapshot is the canonical engraver input (MKT-12) | plan 08-03 SUMMARY (`73ad8c0`) |
+| _QrThumbnail uses CachedNetworkImage with icon fallback — handles null pngStorageUrl gracefully for items added before upload completed | plan 08-03 SUMMARY (`73ad8c0`) |
 | Server-side `compute_order_totals()` for IVA + envío (NOT client-computed) | research ARCHITECTURE.md, PITFALLS.md |
 | Wompi secrets ONLY in Supabase Edge Function env (never in Flutter app) | research STACK.md, PITFALLS.md |
 
@@ -203,6 +206,20 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 08-03 execution):**
+
+- `lib/features/cart/domain/services/customization_snapshot_service.dart` — SnapshotResult + CustomizationSnapshotService (buildSnapshotJson + captureSnapshot)
+- `lib/features/cart/data/datasources/order_assets_storage_data_source.dart` — Storage upload + patchPngUrl + storagePath
+- `lib/features/marketplace/presentation/pages/product_detail_screen.dart` — _addToCart wired with captureSnapshot + unawaited _uploadSnapshotPng
+- `lib/features/cart/presentation/providers/cart_providers.dart` — orderAssetsStorageDsProvider added
+- `lib/features/cart/presentation/widgets/cart_item_tile.dart` — _QrThumbnail replaces icon placeholder (CachedNetworkImage)
+- `test/features/cart/domain/services/customization_snapshot_service_test.dart` — 4 TDD unit tests
+- `.planning/phases/08-cart-customization-snapshot/08-03-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+- `.planning/ROADMAP.md` (08-03 checkbox marked)
+
+**Last session (plan 08-03):** 2026-05-03 — CustomizationSnapshotService + OrderAssetsStorageDataSource + wired add-to-cart pipeline + CartItemTile thumbnail. Commits `8cc89db` (RED tests) + `acb0d0b` (Task 1) + `73ad8c0` (Task 2). flutter analyze 0 issues. 4/4 new tests pass; 13/13 cart tests pass. Phase 8 in progress (3/4 plans). Key decisions: QrDecorationBuilder.buildQrImage() with hasLogo=true to force EC-H; unawaited PNG upload (JSONB is source of truth); _QrThumbnail with graceful icon fallback.
 
 **Files written this session (plan 08-02 execution):**
 

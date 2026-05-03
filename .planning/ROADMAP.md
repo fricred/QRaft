@@ -191,7 +191,7 @@ Plans:
 Plans:
 - [x] 08-01-PLAN.md — cart_items Supabase schema + server_compute_order_totals RPC + domain entities + CartRepository + Riverpod providers
 - [x] 08-02-PLAN.md — AddToCart button wired into ProductDetailScreen + CartScreen item list + remove action (2026-05-03)
-- [ ] 08-03-PLAN.md — Customization snapshot capture: freeze QRCustomization JSON + export 2160px PNG → upload to order-assets/
+- [x] 08-03-PLAN.md — Customization snapshot capture: freeze QRCustomization JSON + export 2160px PNG → upload to order-assets/ ✓ 2026-05-03 (commits `8cc89db` + `acb0d0b` + `73ad8c0`; 4/4 tests pass; flutter analyze 0 issues)
 - [ ] 08-04-PLAN.md — CartSummaryWidget (server RPC totals: subtotal + IVA 19% + envío) + Proceder al pago button placeholder
 **UI hint**: yes
 **Research needed before planning**: NO
