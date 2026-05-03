@@ -20,7 +20,7 @@ progress:
 
 **Core value**: Cerrar el loop digital→físico con un QR personalizado de calidad — diseñar → personalizar → comprar → recibir grabado, todo en pesos colombianos sin fricción.
 
-**Current focus**: Phase 7 COMPLETE (4/4 plans — 07-01 ✓, 07-02 ✓, 07-03 ✓, 07-04 ✓ 2026-05-03). Phase 6 IN PROGRESS (3/4 plans — 06-01 ✓, 06-02 ✓, 06-03 ✓ 2026-05-03). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 8 (Cart & Customization Snapshot) or Phase 6 plan 06-04 (QrWidgetService).
+**Current focus**: Phase 7 COMPLETE (4/4 plans — 07-01 ✓, 07-02 ✓, 07-03 ✓, 07-04 ✓ 2026-05-03). Phase 6 COMPLETE (4/4 plans — 06-01 ✓, 06-02 ✓, 06-03 ✓, 06-04 ✓ 2026-05-03). Phase 5 COMPLETE (5/5 plans). Phase 4 COMPLETE. Phase 3 in parallel (2/3 plans done, 03-03 pending). Next: Phase 8 (Cart & Customization Snapshot) or Phase 3 plan 03-03 (QR scanner Maestro + verification).
 
 **Strategic anchors**:
 
@@ -33,12 +33,12 @@ progress:
 ## Current Position
 
 **Milestone:** v1.0
-**Phase:** 7 of 12 — Marketplace Catalog + QR Export, COMPLETE
-**Plan:** 07-04 ✓ 2026-05-03 (4/4 plans — Phase 7 COMPLETE)
-**Status:** Phase 7 COMPLETE; Phase 6 in progress (3/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
-**Last session:** 2026-05-03T14:06:16Z
+**Phase:** 8 of 12 — Cart & Customization Snapshot (next)
+**Plan:** 06-04 ✓ 2026-05-03 (4/4 plans — Phase 6 COMPLETE)
+**Status:** Phase 7 COMPLETE; Phase 6 COMPLETE (4/4 plans); Phase 5 COMPLETE; Phase 4 COMPLETE; Phase 3 in progress (2/3 plans)
+**Last session:** 2026-05-03T14:55:00Z
 
-**Progress:** [████████░░] 87%
+**Progress:** [████████░░] 90%
 
 ```
 Phase 1:  ▰ Foundation Hardening              ✓ COMPLETE (passed-with-residuals 2026-05-01)
@@ -46,7 +46,7 @@ Phase 2:  ▰ QR Generation Core                ✓ COMPLETE 2026-05-02 (4/4 pla
 Phase 3:  ▱ QR Scanner                        IN PROGRESS (2/3 plans — 03-03 pending)
 Phase 4:  ▰ Redirect Service Foundation       ✓ COMPLETE 2026-05-01 (3/3 plans)
 Phase 5:  ▰ QR Customization (Print-Safe)     ✓ COMPLETE 2026-05-03 (5/5 plans)
-Phase 6:  ▱ QR Digital-Only Features          IN PROGRESS (3/4 plans — 06-01 ✓, 06-02 ✓, 06-03 ✓ 2026-05-03)
+Phase 6:  ▰ QR Digital-Only Features          ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 7:  ▰ Marketplace Catalog + QR Export   ✓ COMPLETE 2026-05-03 (4/4 plans)
 Phase 8:  ▱ Cart & Customization Snapshot
 Phase 9:  ▱ Checkout, Wompi & Compliance
@@ -130,6 +130,10 @@ Phase 12: ▱ Premium, Polish & Observability (GA)
 | QrAnimationService opacity-pulse modulates background alpha via copyWith(background:) — foreground color lives inside shape symbols not on PrettyQrDecoration directly | plan 06-02 SUMMARY (`32b3398`) |
 | share_plus v10 uses Share.shareXFiles(List<XFile>) not SharePlus.instance.share(ShareParams()) | plan 06-02 SUMMARY (`6286f54`) |
 | analyzeImageOverride + httpGetOverride callbacks injected into QrAiStyleService.stylize() for unit test isolation — avoids platform-native MobileScannerController and real HTTP calls in test environment | plan 06-03 SUMMARY (`69d3798`) |
+| home_widget 0.9.1 renderFlutterWidget returns Future<String> (the saved file path) NOT Future<bool?> — verified from pub cache source at ~/.pub-cache/hosted/pub.dev/home_widget-0.9.1/lib/src/home_widget.dart | plan 06-04 SUMMARY (`eb5f308`) |
+| HomeWidgetAdapter abstract interface + _DefaultHomeWidgetAdapter wraps real HomeWidget statics; optional adapter param in QrWidgetService.pinQrToWidget() for test injection | plan 06-04 SUMMARY (`eb5f308`) |
+| mocktail with abstract Widget parameter requires registerFallbackValue(_FakeWidget()) with _FakeWidget.toString({DiagnosticLevel}) override; also requires registerFallbackValue(const Size(...)) | plan 06-04 SUMMARY (`eb5f308`) |
+| logicalSize capped at Size(300,300) in QrWidgetService.pinQrToWidget — T-06-14 iOS WidgetKit memory limit (~30MB) guard | plan 06-04 SUMMARY (`eb5f308`) |
 | http ^1.2.0 and path_provider ^2.1.2 added as direct deps (were transitive) to satisfy depend_on_referenced_packages lint rule | plan 06-03 SUMMARY (`69d3798`) |
 | QrAiStylePage receives qrStorageUrl as constructor parameter — caller provides pre-uploaded URL to avoid storage upload logic in the page | plan 06-03 SUMMARY (`f877e31`) |
 | _encodeGifIsolate is a top-level function (not closure/method) — compute() isolate boundary requirement | plan 06-02 SUMMARY (`32b3398`) |
@@ -195,6 +199,25 @@ Per ROADMAP.md "Phases Needing /gsd-research-phase Before Planning":
 Phases 1, 2, 4, 8, 9, 10, 12 can proceed directly to `/gsd-plan-phase`.
 
 ## Session Continuity
+
+**Files written this session (plan 06-04 execution):**
+
+- `lib/features/qr_digital/domain/services/qr_widget_service.dart` — QrWidgetService.pinQrToWidget() + HomeWidgetAdapter interface + _DefaultHomeWidgetAdapter; logicalSize capped at Size(300,300) T-06-14; saves qr_label (40-char truncation) + updated_at before updateWidget
+- `lib/features/qr_digital/presentation/pages/qr_widget_pin_page.dart` — QrWidgetPinPage ConsumerStatefulWidget; QR preview card (200×200 PrettyQrView); platform instruction card (iOS/Android via Platform.isIOS, glassmorphism); neon gradient pin button (#00FF88); Semantics(identifier: 'widget_pin_button'); SnackBar success/error
+- `ios/QRaftWidgetExtension/QRaftWidget.swift` — WidgetKit TimelineProvider + QRaftEntry + QRaftWidgetEntryView + QRaftWidget; kind: "QRaftWidget"; App Group group.io.gothcorp.qraft; systemSmall + systemMedium; iOS 17 containerBackground compat
+- `ios/QRaftWidgetExtension/QRaftWidgetBundle.swift` — @main WidgetBundle entry point
+- `android/app/src/main/kotlin/io/gothcorp/qraft/QrWidget.kt` — GlanceAppWidget with HomeWidgetGlanceStateDefinition; reads qr_widget_image path; BitmapFactory.decodeFile; fallback Text
+- `android/app/src/main/kotlin/io/gothcorp/qraft/QrWidgetReceiver.kt` — HomeWidgetGlanceWidgetReceiver<QrWidget>
+- `android/app/src/main/res/xml/qr_widget_info.xml` — AppWidget provider metadata 110dp×110dp updatePeriodMillis=0
+- `test/features/qr_digital/services/qr_widget_service_test.dart` — 5 unit tests; MockHomeWidgetAdapter via mocktail; _FakeWidget fake with DiagnosticLevel override; registerFallbackValue(Widget) + registerFallbackValue(Size)
+- `pubspec.yaml` — home_widget: ^0.9.1
+- `android/app/build.gradle.kts` — glance-appwidget:1.1.1 dependency
+- `android/app/src/main/AndroidManifest.xml` — QrWidgetReceiver <receiver> with APPWIDGET_UPDATE + qr_widget_info metadata
+- `.planning/phases/06-qr-digital-features/06-04-SUMMARY.md`
+- `.planning/STATE.md` (this file)
+- `.planning/ROADMAP.md` (Phase 6 marked COMPLETE)
+
+**Last session (plan 06-04):** 2026-05-03 — home_widget QrWidgetService + native stubs + QrWidgetPinPage. Commits `eb5f308` (home_widget + service + tests + native stubs) + `b06451a` (QrWidgetPinPage). flutter analyze 0 issues. 5/5 tests pass. Phase 6 COMPLETE (4/4 plans). Key deviations: renderFlutterWidget returns Future<String> not Future<bool?> (real API verified from pub cache); HomeWidgetAdapter interface added for testability; mocktail Widget/Size fallback registration required.
 
 **Files written this session (plan 07-04 execution — close-out):**
 

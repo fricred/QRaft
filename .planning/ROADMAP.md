@@ -26,7 +26,7 @@ Cerrar el loop digital→físico con un QR personalizado de calidad: que el usua
 - [ ] **Phase 3: QR Scanner** — Users can scan QRs full-screen with type-aware actions and persistent history (parallel to Phase 2)
 - [x] **Phase 4: Redirect Service Foundation** — `qraft.link/{slug}` infrastructure live, foundation for v2 dynamic monetization (parallel to Phases 2-3) ✓ 2026-05-01
 - [x] **Phase 5: QR Customization (Print-Safe)** — Users can personalize QRs with logos/colors/styles/frames/templates and select print/digital/tattoo profile ✓ 2026-05-03
-- [ ] **Phase 6: QR Digital-Only Features** — Users can create animated, AI-stylized, and home-screen-widget QRs (digital-only flow)
+- [x] **Phase 6: QR Digital-Only Features** — Users can create animated, AI-stylized, and home-screen-widget QRs (digital-only flow) ✓ 2026-05-03
 - [x] **Phase 7: Marketplace Catalog + QR Export Pipeline** — Users can browse engraved-product catalog and see live preview of their customized QR on each material ✓ 2026-05-03
 - [ ] **Phase 8: Cart & Customization Snapshot** — Users can build a persistent cart with frozen customization snapshots and accurate totals (subtotal + IVA 19% + envío)
 - [ ] **Phase 9: Checkout, Wompi, Colombian Compliance** — Users can pay via Wompi (cards, PSE, Nequi, Daviplata) with verified webhooks; LGL-02..05 disclaimers and habeas data live
@@ -152,7 +152,7 @@ Plans:
 - [x] 06-01-PLAN.md — exportDigitalOnly() + Replicate Edge Function proxy + test scaffolds (Wave 1) ✓ 2026-05-03 (commits `8c0cda2` scaffolds+exportDigitalOnly + `52c9ce4` ai-stylize Edge Function+QrAnimationService stub; REPLICATE_API_KEY in Deno.env T-06-01; prompt sanitization T-06-02; 5/month gate T-06-03; 3 wave-0 sentinels; 0 analyzer issues)
 - [x] 06-02-PLAN.md — QRD-01 animated GIF: QrAnimationService + QrAnimatePage (Wave 2) ✓ 2026-05-03 (commits `32b3398` service+tests + `6286f54` controller+page; buildGif in compute() isolate; image 4.5.4 Image.addFrame() API; Share.shareXFiles v10; 5 unit tests; 0 analyzer issues)
 - [x] 06-03-PLAN.md — QRD-02 AI stylized QR: QrAiStyleService + QrAiStylePage + scannability gate (Wave 2, parallel to 06-02) ✓ 2026-05-03 (commits `d7848d1` RED tests + `69d3798` entity+service+deps + `f877e31` page+controller; domain whitelist T-06-09; profile guard T-06-11; scannability gate analyzeImageOverride; 7 unit tests; 0 analyzer issues)
-- [ ] 06-04-PLAN.md — QRD-03 home widget: home_widget 0.9.1 + Swift WidgetKit + Kotlin Glance + human checkpoint (Wave 3)
+- [x] 06-04-PLAN.md — QRD-03 home widget: home_widget 0.9.1 + Swift WidgetKit + Kotlin Glance + human checkpoint (Wave 3) ✓ 2026-05-03 (commits `eb5f308` QrWidgetService+tests+native stubs + `b06451a` QrWidgetPinPage; HomeWidgetAdapter for testability; 5 unit tests; flutter analyze 0 issues; checkpoint required for iOS App Group + Xcode Widget Extension target)
 **UI hint**: yes
 **Research needed before planning**: NO (research complete — 06-RESEARCH.md)
 **Parallel-eligible**: YES (can run alongside Phase 7 since it doesn't touch marketplace)
