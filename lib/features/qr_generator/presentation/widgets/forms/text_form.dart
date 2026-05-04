@@ -188,7 +188,9 @@ class _TextFormState extends ConsumerState<TextForm> {
   Widget build(BuildContext context) {
     final formState = ref.watch(textFormProvider);
 
-    return Padding(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,10 +233,11 @@ class _TextFormState extends ConsumerState<TextForm> {
                     showCharacterCount: true,
                     maxLength: TextFormController.maxTextLength,
                     delay: 200,
+                    semanticsId: 'text_content_field',
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   _buildInputField(
                     controller: _nameController,
                     focusNode: _nameFocusNode,
@@ -243,6 +246,7 @@ class _TextFormState extends ConsumerState<TextForm> {
                     icon: Icons.label_rounded,
                     maxLines: 1,
                     delay: 300,
+                    semanticsId: 'qr_code_name_field',
                   ),
                   
                   const SizedBox(height: 32),
@@ -342,7 +346,7 @@ class _TextFormState extends ConsumerState<TextForm> {
           ),
         ],
       ),
-    );
+    )); // GestureDetector + Padding
   }
 
   Widget _buildInputField({
@@ -356,6 +360,7 @@ class _TextFormState extends ConsumerState<TextForm> {
     bool showCharacterCount = false,
     int? maxLength,
     required int delay,
+    String? semanticsId,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -369,14 +374,17 @@ class _TextFormState extends ConsumerState<TextForm> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
+        Semantics(
+          identifier: semanticsId ?? label,
+          textField: true,
+          child: Container(
           decoration: BoxDecoration(
             color: const Color(0xFF2E2E2E),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: errorText != null
                   ? const Color(0xFFEF4444)
-                  : focusNode.hasFocus 
+                  : focusNode.hasFocus
                       ? const Color(0xFF1A73E8)
                       : Colors.white.withValues(alpha: 0.1),
               width: 1,
@@ -405,7 +413,7 @@ class _TextFormState extends ConsumerState<TextForm> {
               contentPadding: const EdgeInsets.all(16),
             ),
           ),
-        ),
+        )), // Semantics + Container
         if (errorText != null) ...[
           const SizedBox(height: 6),
           Text(
