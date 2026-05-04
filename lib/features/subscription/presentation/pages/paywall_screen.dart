@@ -8,14 +8,23 @@ import '../../../../shared/widgets/qraft_logo.dart';
 import '../providers/purchase_providers.dart';
 
 /// Resolves the current RevenueCat offering for the paywall.
+/// Waits for RevenueCat to be initialized before fetching offerings so the
+/// paywall never shows empty due to a race condition on first login.
 final _currentOfferingProvider = FutureProvider<Package?>((ref) async {
+  // Wait until SDK is initialized (max 10s)
+  int retries = 0;
+  while (!ref.read(isRevenueCatInitializedProvider) && retries < 20) {
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+    retries++;
+  }
   try {
     final offerings = await Purchases.getOfferings();
     final current = offerings.current;
     if (current == null) return null;
     // Prefer monthly; fall back to the first available package.
     return current.monthly ?? current.availablePackages.firstOrNull;
-  } catch (_) {
+  } catch (e) {
+    debugPrint('RevenueCat getOfferings failed: $e');
     return null;
   }
 });
