@@ -71,9 +71,15 @@ END$$;
 -- TABLE: orders
 -- Central order record. Status is ONLY mutated via apply_payment_event RPC or
 -- operator RPCs (Plan 11). Client has SELECT only via RLS — NO direct mutations.
+-- Drop and recreate to ensure schema is up-to-date (dev env, no real order data).
 -- =============================================================================
 
-CREATE TABLE IF NOT EXISTS orders (
+DROP TABLE IF EXISTS payment_events CASCADE;
+DROP TABLE IF EXISTS payments CASCADE;
+DROP TABLE IF EXISTS order_items CASCADE;
+DROP TABLE IF EXISTS orders CASCADE;
+
+CREATE TABLE orders (
   id                      UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
   order_number            TEXT        UNIQUE NOT NULL,   -- set by trg_generate_order_number
   user_id                 UUID        NOT NULL REFERENCES auth.users(id) ON DELETE RESTRICT,
@@ -119,7 +125,7 @@ CREATE INDEX IF NOT EXISTS idx_orders_ops_queue
 -- qr_png_url is the 2160px engraver-quality PNG pre-rasterized at checkout.
 -- =============================================================================
 
-CREATE TABLE IF NOT EXISTS order_items (
+CREATE TABLE order_items (
   id                      UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
   order_id                UUID        NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
   product_variant_id      UUID        NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
@@ -140,7 +146,7 @@ CREATE INDEX IF NOT EXISTS idx_order_items_order
 -- Wompi. wompi_transaction_id is Wompi's own ID set on first webhook event.
 -- =============================================================================
 
-CREATE TABLE IF NOT EXISTS payments (
+CREATE TABLE payments (
   id                      UUID            PRIMARY KEY DEFAULT gen_random_uuid(),
   order_id                UUID            NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
   transaction_ref         TEXT            UNIQUE NOT NULL,  -- our UUID4 sent to Wompi
@@ -166,7 +172,7 @@ CREATE INDEX IF NOT EXISTS idx_payments_transaction_ref
 -- returns 200 "already processed" without mutating any other table.
 -- =============================================================================
 
-CREATE TABLE IF NOT EXISTS payment_events (
+CREATE TABLE payment_events (
   event_id      TEXT        PRIMARY KEY,          -- Wompi's event id (globally unique per Wompi spec)
   payment_id    UUID        REFERENCES payments(id) ON DELETE SET NULL,
   kind          TEXT        NOT NULL,              -- 'transaction.updated', etc.

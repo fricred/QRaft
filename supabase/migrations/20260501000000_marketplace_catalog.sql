@@ -2,8 +2,14 @@
 -- Price unit: whole COP pesos (INT). E.g. 89000 = $89.000 COP.
 -- Wompi requires amountInCents — multiply ×100 at checkout time (Phase 9).
 
+-- Drop and recreate catalog tables to ensure correct schema.
+-- These tables contain only seed/catalog data (no user-generated content).
+DROP TABLE IF EXISTS product_variants CASCADE;
+DROP TABLE IF EXISTS products CASCADE;
+DROP TABLE IF EXISTS materials CASCADE;
+
 -- materials: static reference table (6 supported engraving materials)
-CREATE TABLE IF NOT EXISTS materials (
+CREATE TABLE materials (
   id TEXT PRIMARY KEY,              -- 'wood','acrylic','metal','leather','glass','stone'
   display_name_es TEXT NOT NULL,
   display_name_en TEXT NOT NULL,
@@ -13,7 +19,7 @@ CREATE TABLE IF NOT EXISTS materials (
 );
 
 -- products: base product catalog
-CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE products (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   slug TEXT UNIQUE NOT NULL,
   name_es TEXT NOT NULL,
@@ -26,7 +32,7 @@ CREATE TABLE IF NOT EXISTS products (
 );
 
 -- product_variants: size × material × price combinations
-CREATE TABLE IF NOT EXISTS product_variants (
+CREATE TABLE product_variants (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
   material_id TEXT NOT NULL REFERENCES materials(id),
