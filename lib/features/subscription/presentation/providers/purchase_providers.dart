@@ -52,7 +52,50 @@ final subscriptionRealtimeServiceProvider = Provider<SubscriptionRealtimeService
 /// Provider for available purchase products
 final purchaseProductsProvider = FutureProvider<List<PurchaseProduct>>((ref) async {
   final repository = ref.watch(purchaseRepositoryProvider);
-  return repository.getProducts();
+  try {
+    final products = await repository.getProducts();
+    if (products.isNotEmpty) return products;
+    // Fall through to mock if empty
+  } catch (_) {
+    // Fall through to mock in debug/simulator
+  }
+
+  // In debug mode (simulator/dev) return mock products so the paywall renders.
+  // Purchases are not real — StoreKit will intercept and show a sandbox prompt.
+  if (kDebugMode) {
+    return [
+      const PurchaseProduct(
+        id: 'qraft_pro_monthly',
+        title: 'QRaft Pro Mensual',
+        description: '7 días gratis, luego mensual',
+        priceString: '\$4.99',
+        price: 4.99,
+        currencyCode: 'USD',
+        type: ProductType.monthly,
+        trialDays: 7,
+      ),
+      const PurchaseProduct(
+        id: 'qraft_pro_yearly',
+        title: 'QRaft Pro Anual',
+        description: '7 días gratis, ahorra 33%',
+        priceString: '\$39.99',
+        price: 39.99,
+        currencyCode: 'USD',
+        type: ProductType.annual,
+        trialDays: 7,
+      ),
+      const PurchaseProduct(
+        id: 'qraft_pro_lifetime',
+        title: 'QRaft Pro Lifetime',
+        description: 'Acceso de por vida',
+        priceString: '\$9.99',
+        price: 9.99,
+        currencyCode: 'USD',
+        type: ProductType.lifetime,
+      ),
+    ];
+  }
+  return [];
 });
 
 /// Provider for monthly product
