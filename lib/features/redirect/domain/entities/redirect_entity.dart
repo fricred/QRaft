@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-/// Domain entity representing a qraft.link/{slug} redirect record.
+/// Domain entity representing a scanqraft.app/{slug} redirect record.
 ///
 /// Maps 1-to-1 with the `redirects` Supabase table.
 /// Immutable value object — use [copyWith] for derived mutations.

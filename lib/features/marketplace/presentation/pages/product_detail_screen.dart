@@ -268,7 +268,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         const SizedBox(height: 20),
                       ],
 
-                      // 5. qraft.link info banner
+                      // 5. scanqraft.app info banner
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
@@ -291,7 +291,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             Expanded(
                               child: Text(
                                 'Tu QR será grabado apuntando a: '
-                                'qraft.link/xxxxxx — podrás cambiar el destino '
+                                'scanqraft.app/xxxxxx — podrás cambiar el destino '
                                 'después de recibir tu producto.',
                                 style: TextStyle(
                                   color: Colors.grey[400],

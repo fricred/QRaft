@@ -1,5 +1,5 @@
 // Supabase Edge Function: redirect
-// Serves qraft.link/{slug} → 301 to destination_url
+// Serves scanqraft.app/{slug} → 301 to destination_url
 // Increments scan_count and updates last_scanned_at on every hit.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -31,8 +31,8 @@ serve(async (req: Request): Promise<Response> => {
   // Extract the slug from the path.
   // Supabase routes requests to this function as:
   //   https://<project>.supabase.co/functions/v1/redirect/<slug>
-  // When using a custom domain (qraft.link), the proxy is configured to strip
-  // the domain prefix, forwarding e.g. qraft.link/abc123 → this function.
+  // When using a custom domain (scanqraft.app), the proxy is configured to strip
+  // the domain prefix, forwarding e.g. scanqraft.app/abc123 → this function.
   const url = new URL(req.url);
   // pathname will be "/" or "/<slug>" or "/redirect/<slug>" depending on routing.
   // Strip any leading "/redirect" prefix that Supabase may inject.

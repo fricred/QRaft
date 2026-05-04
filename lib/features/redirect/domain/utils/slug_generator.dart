@@ -1,7 +1,7 @@
 import 'dart:math';
 
 /// Generates cryptographically secure 6-character alphanumeric slugs
-/// for use as qraft.link/{slug} identifiers.
+/// for use as scanqraft.app/{slug} identifiers.
 ///
 /// Character set: a-z + 0-9 (36 chars → 36^6 = ~2.1 billion combinations).
 /// Uses [Random.secure] to avoid predictable sequences.

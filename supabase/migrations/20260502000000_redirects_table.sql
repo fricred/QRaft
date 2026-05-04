@@ -1,5 +1,5 @@
 -- Migration: 20260502000000_redirects_table.sql
--- Description: Creates the redirects table for qraft.link/{slug} infrastructure
+-- Description: Creates the redirects table for scanqraft.app/{slug} infrastructure
 -- Manual application required: Run in Supabase Dashboard → SQL Editor
 
 CREATE TABLE redirects (

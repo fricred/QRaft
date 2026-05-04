@@ -199,7 +199,7 @@ class _RedirectEditScreenState extends ConsumerState<RedirectEditScreen> {
                   ),
                 ),
                 child: Text(
-                  'qraft.link/${widget.slug}',
+                  'scanqraft.app/${widget.slug}',
                   style: const TextStyle(
                     color: Color(0xFF00FF88),
                     fontSize: 13,
