@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../../domain/entities/purchase_product.dart';
@@ -25,6 +26,15 @@ class PurchaseRepositoryImpl implements PurchaseRepository {
 
   @override
   Future<PurchaseResult> purchaseProduct(PurchaseProduct product) async {
+    // In debug/simulator mode the mock products have no StoreKit Package.
+    // Simulate a successful purchase so the full paywall UX can be tested
+    // without App Store Connect products set up.
+    if (product.package == null && kDebugMode) {
+      debugPrint('RevenueCat: simulating purchase for ${product.id} (debug mode)');
+      await Future<void>.delayed(const Duration(seconds: 1));
+      return PurchaseResult.success(null);
+    }
+
     if (product.package == null) {
       return PurchaseResult.failure(
         const PurchaseError(

@@ -107,16 +107,6 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
                   itemKey: widget.marketplaceTabKey,
                   semanticIdentifier: 'main_scaffold_marketplace_tab',
                 ),
-                _buildNavItem(
-                  index: 5,
-                  icon: widget.currentIndex == 5
-                      ? Icons.receipt_long
-                      : Icons.receipt_long_outlined,
-                  label: 'Órdenes',
-                  isCenter: false,
-                  itemKey: widget.ordersTabKey,
-                  semanticIdentifier: 'orders_tab',
-                ),
               ],
             ),
           ),
