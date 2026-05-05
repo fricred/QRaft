@@ -816,10 +816,7 @@ class _LiveQRPreviewState extends State<_LiveQRPreview> {
       height: widget.size,
       child: PrettyQrView(
         qrImage: _qrImage,
-        decoration: QrDecorationBuilder.buildDecoration(
-          widget.customization,
-          quietZone: const PrettyQrQuietZone.pixels(4),
-        ),
+        decoration: QrDecorationBuilder.buildDecoration(widget.customization),
       ),
     );
   }

@@ -294,10 +294,7 @@ class _QRThumbnailState extends State<_QRThumbnail> {
     }
     return PrettyQrView(
       qrImage: _qrImage!,
-      decoration: QrDecorationBuilder.buildDecoration(
-        widget.customization,
-        quietZone: const PrettyQrQuietZone.pixels(2),
-      ),
+      decoration: QrDecorationBuilder.buildDecoration(widget.customization),
     );
   }
 }
