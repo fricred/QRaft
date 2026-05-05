@@ -53,11 +53,11 @@ const _kDotOptions = <(String, int)>[
   ('Square', 0), ('Rounded', 2), ('Smooth', 3), ('Dots', 5),
 ];
 
-// Eye options using what pretty_qr_code actually supports:
-// 0=PrettyQrSquaresSymbol(rounding:0)  1=PrettyQrSquaresSymbol(rounding:0.5, unified)
-// 2=PrettyQrDotsSymbol(unified)         4=PrettyQrSmoothSymbol(roundFactor:1)
+// All 4 eye options use unified finder pattern for a clean independent ring:
+// 0=Squares(rounding:0)  1=Squares(rounding:0.5,unified)
+// 3=Squares(rounding:0.8,unified)       2=DotsSymbol(unified)
 const _kEyeOptions = <(String, int)>[
-  ('Square', 0), ('Rounded', 1), ('Circle', 2), ('Smooth', 4),
+  ('Square', 0), ('Rounded', 1), ('Smooth', 3), ('Circle', 2),
 ];
 
 int _colorToArgb(Color c) =>
@@ -1060,49 +1060,35 @@ class _EyePreview extends StatelessWidget {
             ),
           ),
         ),
-      // Smooth — PrettyQrSmoothSymbol: neighbor-aware bezier blobs, no hard ring
-      _ => CustomPaint(
-          size: const Size(28, 28),
-          painter: _SmoothEyePainter(),
+      // Smooth (3) — Squares(rounding:0.8, unified): very rounded squircle ring + dot
+      3 => Container(
+          width: 28, height: 28,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.white, width: 3),
+            borderRadius: BorderRadius.circular(11),
+          ),
+          child: Center(
+            child: Container(
+              width: 10, height: 10,
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(5)),
+            ),
+          ),
+        ),
+      // Circle (2) — DotsSymbol(unified): concentric circular ring + dot
+      _ => Container(
+          width: 28, height: 28,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 3),
+          ),
+          child: Center(
+            child: Container(
+              width: 10, height: 10,
+              decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+            ),
+          ),
         ),
     };
-  }
-}
-
-class _SmoothEyePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.white..style = PaintingStyle.fill;
-    // Outer blob — rounded square that merges into smooth bezier curves
-    final outer = Path()
-      ..addRRect(RRect.fromRectAndRadius(
-        Rect.fromLTWH(0, 0, size.width, size.height),
-        const Radius.circular(8),
-      ));
-    // Inner cutout — slightly rounded square, clipped from outer
-    final inner = Path()
-      ..addRRect(RRect.fromRectAndRadius(
-        Rect.fromLTWH(5, 5, size.width - 10, size.height - 10),
-        const Radius.circular(4),
-      ));
-    // Ring shape
-    canvas.drawPath(
-      Path.combine(PathOperation.difference, outer, inner),
-      paint,
-    );
-    // Center dot
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(9, 9, size.width - 18, size.height - 18),
-        const Radius.circular(3),
-      ),
-      paint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_SmoothEyePainter _) => false;
-}
 
 class _LogoSheet extends StatelessWidget {
   final QRCustomization customization;
