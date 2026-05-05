@@ -7,12 +7,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../qr_generator/domain/entities/qr_code_entity.dart';
-import '../../../qr_generator/presentation/pages/url_qr_screen.dart';
-import '../../../qr_generator/presentation/pages/text_qr_screen.dart';
-import '../../../qr_generator/presentation/pages/personal_info_qr_screen.dart';
-import '../../../qr_generator/presentation/pages/wifi_qr_screen.dart';
-import '../../../qr_generator/presentation/pages/email_qr_screen.dart';
-import '../../../qr_generator/presentation/pages/location_qr_screen.dart';
+import '../../../qr_generator/presentation/controllers/qr_customization_controller.dart';
+import '../../../qr_generator/presentation/pages/qr_canvas_editor_screen.dart';
 import '../widgets/qr_code_display_widget.dart';
 import '../providers/qr_library_providers.dart';
 
@@ -439,47 +435,15 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
   }
 
   void _handleEdit() {
-    final l10n = AppLocalizations.of(context)!;
-    // Navigate to the appropriate QR screen based on type
-    Widget screen;
-
-    switch (widget.qrEntity.type.identifier) {
-      case 'url':
-        screen = URLQRScreen(editingQRCode: widget.qrEntity);
-        break;
-      case 'text':
-        screen = TextQRScreen(editingQRCode: widget.qrEntity);
-        break;
-      case 'vcard':
-        screen = PersonalInfoQRScreen(editingQRCode: widget.qrEntity);
-        break;
-      case 'wifi':
-        screen = WiFiQRScreen(editingQRCode: widget.qrEntity);
-        break;
-      case 'email':
-        screen = EmailQRScreen(editingQRCode: widget.qrEntity);
-        break;
-      case 'geo':
-        screen = LocationQRScreen(editingQRCode: widget.qrEntity);
-        break;
-      default:
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.editTypeNotSupported(widget.qrEntity.type.identifier)),
-            backgroundColor: const Color(0xFFEF4444),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-        return;
-    }
-
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => screen),
+      MaterialPageRoute(
+        builder: (_) => QRCanvasEditorScreen(
+          qrType: widget.qrEntity.type,
+          template: kQrTemplates.first,
+          editingQR: widget.qrEntity,
+        ),
+      ),
     ).then((updatedQR) {
-      // Pop back to library when returning from edit
       if (mounted && updatedQR != null) {
         Navigator.of(context).pop(updatedQR);
       }

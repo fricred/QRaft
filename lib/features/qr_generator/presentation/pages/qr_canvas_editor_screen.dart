@@ -71,11 +71,13 @@ int _colorToArgb(Color c) =>
 class QRCanvasEditorScreen extends ConsumerStatefulWidget {
   final QRType qrType;
   final QrFullTemplate template;
+  final QRCodeEntity? editingQR;
 
   const QRCanvasEditorScreen({
     super.key,
     required this.qrType,
     required this.template,
+    this.editingQR,
   });
 
   @override
@@ -216,8 +218,71 @@ class _QRCanvasEditorScreenState extends ConsumerState<QRCanvasEditorScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(qrCustomizationControllerProvider.notifier).applyFullTemplate(widget.template);
+      final notifier = ref.read(qrCustomizationControllerProvider.notifier);
+      if (widget.editingQR != null) {
+        notifier.loadFromEntity(widget.editingQR!);
+        setState(() {
+          _formData = _parseEntityData(widget.editingQR!);
+          _dirty = false;
+        });
+      } else {
+        notifier.applyFullTemplate(widget.template);
+      }
     });
+  }
+
+  Map<String, dynamic> _parseEntityData(QRCodeEntity entity) {
+    final data = entity.data;
+    final name = entity.name;
+    return switch (entity.type) {
+      QRType.url => {'name': name, 'url': data},
+      QRType.text => {'name': name, 'text': data},
+      QRType.wifi => () {
+          final ssid = RegExp(r'S:([^;]*)').firstMatch(data)?.group(1) ?? '';
+          final pw   = RegExp(r'P:([^;]*)').firstMatch(data)?.group(1) ?? '';
+          final sec  = RegExp(r'T:([^;]*)').firstMatch(data)?.group(1) ?? 'WPA';
+          return {'name': name, 'ssid': ssid, 'password': pw, 'security': sec};
+        }(),
+      QRType.email => () {
+          final withoutScheme = data.replaceFirst('mailto:', '');
+          final qIdx = withoutScheme.indexOf('?');
+          final email = qIdx == -1 ? withoutScheme : withoutScheme.substring(0, qIdx);
+          final subject = RegExp(r'[?&]subject=([^&]*)').firstMatch(data)?.group(1) ?? '';
+          return {'name': name, 'email': email, 'subject': Uri.decodeComponent(subject)};
+        }(),
+      QRType.location => () {
+          final coords = data.replaceFirst('geo:', '').split('?').first;
+          final parts  = coords.split(',');
+          return {
+            'name': name,
+            'lat': parts.isNotEmpty ? parts[0] : '',
+            'lng': parts.length > 1 ? parts[1] : '',
+          };
+        }(),
+      QRType.event => () {
+          String line(String key) =>
+              RegExp('$key:(.+)').firstMatch(data)?.group(1)?.trim() ?? '';
+          return {
+            'name': name,
+            'title': line('SUMMARY'),
+            'location': line('LOCATION'),
+          };
+        }(),
+      QRType.personalInfo => () {
+          String line(String key) =>
+              RegExp('$key:(.+)').firstMatch(data)?.group(1)?.trim() ?? '';
+          final nLine  = line('N');
+          final parts  = nLine.split(';');
+          return {
+            'name': name,
+            'firstName': parts.length > 1 ? parts[1] : line('FN').split(' ').first,
+            'lastName':  parts.isNotEmpty ? parts[0] : '',
+            'phone':     line('TEL'),
+            'email2':    line('EMAIL'),
+            'org':       line('ORG'),
+          };
+        }(),
+    };
   }
 
   void _markDirty() {
@@ -228,45 +293,59 @@ class _QRCanvasEditorScreenState extends ConsumerState<QRCanvasEditorScreen> {
     if (_saving) return;
     if (!_isDataFilled) { _openDataSheet(); return; }
 
-    final canCreate = ref.read(canCreateQRProvider);
-    if (!canCreate) { UpgradeBottomSheet.show(context); return; }
-
     final auth = ref.read(supabaseAuthProvider);
     if (auth.currentUser == null) return;
+
+    final isEdit = widget.editingQR != null;
+    if (!isEdit) {
+      final canCreate = ref.read(canCreateQRProvider);
+      if (!canCreate) { UpgradeBottomSheet.show(context); return; }
+    }
 
     setState(() { _saving = true; _saved = false; });
 
     try {
       final dataModel = _buildDataModel()!;
       final customization = ref.read(qrCustomizationControllerProvider).customization;
-      final useCase = ref.read(generateQRUseCaseProvider);
       final name = ((_formData['name'] as String?) ?? '').isNotEmpty
           ? _formData['name'] as String
           : '${widget.qrType.getDisplayName(context)} QR';
 
-      await useCase.execute(
-        name: name,
-        type: widget.qrType,
-        data: dataModel,
-        userId: auth.currentUser!.id,
-        customization: customization,
-      );
+      QRCodeEntity result;
+      if (isEdit) {
+        final updated = widget.editingQR!.copyWith(
+          name: name,
+          data: dataModel.qrData,
+          displayData: dataModel.displayText,
+          customization: customization,
+          updatedAt: DateTime.now(),
+        );
+        result = await ref.read(updateQRCodeUseCaseProvider).execute(updated);
+      } else {
+        result = await ref.read(generateQRUseCaseProvider).execute(
+          name: name,
+          type: widget.qrType,
+          data: dataModel,
+          userId: auth.currentUser!.id,
+          customization: customization,
+        );
+      }
 
       ref.invalidate(userQRCodesProvider);
 
       if (mounted) {
         setState(() { _dirty = false; _saving = false; _saved = true; });
         HapticFeedback.lightImpact();
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Row(children: [
-            Icon(Icons.check_circle, color: Colors.white),
-            SizedBox(width: 8),
-            Text('QR code saved!'),
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 8),
+            Text(isEdit ? 'QR code updated!' : 'QR code saved!'),
           ]),
           backgroundColor: _kNeon,
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ));
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(result);
       }
     } catch (e) {
       if (mounted) {
