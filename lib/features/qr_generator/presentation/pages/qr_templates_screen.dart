@@ -296,7 +296,7 @@ class _QRThumbnailState extends State<_QRThumbnail> {
       qrImage: _qrImage!,
       decoration: QrDecorationBuilder.buildDecoration(
         widget.customization,
-        quietZone: PrettyQrQuietZone.zero,
+        quietZone: const PrettyQrQuietZone.pixels(2),
       ),
     );
   }

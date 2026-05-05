@@ -818,7 +818,7 @@ class _LiveQRPreviewState extends State<_LiveQRPreview> {
         qrImage: _qrImage,
         decoration: QrDecorationBuilder.buildDecoration(
           widget.customization,
-          quietZone: PrettyQrQuietZone.zero,
+          quietZone: const PrettyQrQuietZone.pixels(4),
         ),
       ),
     );
