@@ -1089,6 +1089,8 @@ class _EyePreview extends StatelessWidget {
           ),
         ),
     };
+  }
+}
 
 class _LogoSheet extends StatelessWidget {
   final QRCustomization customization;
