@@ -51,9 +51,11 @@ const _kDotOptions = <(String, int)>[
   ('Square', 0), ('Soft', 1), ('Rounded', 2), ('Smooth', 3),
 ];
 
-// eyePreset 0=square, 1=rounded, 3=highly-rounded(leaf), 2=unified circle
+// Eye options using what pretty_qr_code actually supports:
+// 0=PrettyQrSquaresSymbol(rounding:0)  1=PrettyQrSquaresSymbol(rounding:0.5, unified)
+// 2=PrettyQrDotsSymbol(unified)         4=PrettyQrSmoothSymbol(roundFactor:1)
 const _kEyeOptions = <(String, int)>[
-  ('Square', 0), ('Rounded', 1), ('Leaf', 3), ('Circle', 2),
+  ('Square', 0), ('Rounded', 1), ('Circle', 2), ('Smooth', 4),
 ];
 
 int _colorToArgb(Color c) =>
@@ -1004,62 +1006,82 @@ class _EyePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (preset) {
-      // Square
+      // Square — PrettyQrSquaresSymbol(rounding:0, unified): sharp ring + sharp inner dot
       0 => Container(
           width: 28, height: 28,
           decoration: BoxDecoration(border: Border.all(color: Colors.white, width: 3)),
           child: Center(child: Container(width: 10, height: 10, color: Colors.white)),
         ),
-      // Rounded
+      // Rounded — PrettyQrSquaresSymbol(rounding:0.5, unified): rounded ring + rounded dot
       1 => Container(
           width: 28, height: 28,
           decoration: BoxDecoration(
             border: Border.all(color: Colors.white, width: 3),
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(7),
           ),
           child: Center(
             child: Container(
               width: 10, height: 10,
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(3)),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4)),
             ),
           ),
         ),
-      // Leaf — diagonal corners rounded (CSS border-radius: 50% 0)
-      3 => Container(
+      // Circle — PrettyQrDotsSymbol(unified): concentric circular ring + dot
+      2 => Container(
           width: 28, height: 28,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(14),
-              bottomRight: Radius.circular(14),
-            ),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 3),
           ),
           child: Center(
             child: Container(
               width: 10, height: 10,
-              decoration: const BoxDecoration(
-                color: Color(0xFF2E2E2E),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(5),
-                  bottomRight: Radius.circular(5),
-                ),
-              ),
+              decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
             ),
           ),
         ),
-      // Circle — unified circular finder pattern
-      _ => Container(
-          width: 28, height: 28,
-          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-          child: Center(
-            child: Container(
-              width: 10, height: 10,
-              decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFF2E2E2E)),
-            ),
-          ),
+      // Smooth — PrettyQrSmoothSymbol: neighbor-aware bezier blobs, no hard ring
+      _ => CustomPaint(
+          size: const Size(28, 28),
+          painter: _SmoothEyePainter(),
         ),
     };
   }
+}
+
+class _SmoothEyePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = Colors.white..style = PaintingStyle.fill;
+    // Outer blob — rounded square that merges into smooth bezier curves
+    final outer = Path()
+      ..addRRect(RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, 0, size.width, size.height),
+        const Radius.circular(8),
+      ));
+    // Inner cutout — slightly rounded square, clipped from outer
+    final inner = Path()
+      ..addRRect(RRect.fromRectAndRadius(
+        Rect.fromLTWH(5, 5, size.width - 10, size.height - 10),
+        const Radius.circular(4),
+      ));
+    // Ring shape
+    canvas.drawPath(
+      Path.combine(PathOperation.difference, outer, inner),
+      paint,
+    );
+    // Center dot
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(9, 9, size.width - 18, size.height - 18),
+        const Radius.circular(3),
+      ),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_SmoothEyePainter _) => false;
 }
 
 class _LogoSheet extends StatelessWidget {
