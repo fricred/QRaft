@@ -25,8 +25,8 @@ final subscriptionPlanProvider = FutureProvider<SubscriptionPlan>((ref) async {
 
 /// Provider for plan limits based on current subscription
 final planLimitsProvider = Provider<PlanLimits>((ref) {
+  if (kDebugMode && ref.watch(debugPremiumOverrideProvider)) return PlanLimits.pro;
   final subscriptionAsync = ref.watch(subscriptionPlanProvider);
-
   return subscriptionAsync.when(
     data: (subscription) => subscription.hasProAccess ? PlanLimits.pro : PlanLimits.free,
     loading: () => PlanLimits.free,
