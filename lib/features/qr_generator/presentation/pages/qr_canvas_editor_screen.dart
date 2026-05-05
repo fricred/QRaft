@@ -52,7 +52,7 @@ const _kDotOptions = <(String, int)>[
 ];
 
 const _kEyeOptions = <(String, int)>[
-  ('Square', 0), ('Rounded', 1), ('Circle', 4), ('Dots', 2),
+  ('Square', 0), ('Rounded', 1), ('Circle', 2), ('Dots', 4),
 ];
 
 int _colorToArgb(Color c) =>
@@ -1002,17 +1002,46 @@ class _EyePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // preset 2 = Circle: one unified circular finder pattern
+    if (preset == 2) {
+      return Container(
+        width: 28, height: 28,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+        ),
+        child: Center(
+          child: Container(
+            width: 10, height: 10,
+            decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFF2E2E2E)),
+          ),
+        ),
+      );
+    }
+    // preset 4 = Dots: finder pattern made of individual round elements
+    if (preset == 4) {
+      return Wrap(
+        spacing: 2, runSpacing: 2,
+        children: List.generate(9, (i) {
+          final isEdge = i == 0 || i == 2 || i == 6 || i == 8 || i == 4;
+          return Container(
+            width: 7, height: 7,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isEdge ? Colors.white : Colors.white.withValues(alpha: 0.3),
+            ),
+          );
+        }),
+      );
+    }
+    // Square / Rounded
     final outerBr = switch (preset) {
       0 => BorderRadius.zero,
-      1 => BorderRadius.circular(4),
-      4 => BorderRadius.circular(14),
-      _ => BorderRadius.circular(6),
+      _ => BorderRadius.circular(4),
     };
     final innerBr = switch (preset) {
       0 => BorderRadius.zero,
-      1 => BorderRadius.circular(2),
-      4 => BorderRadius.circular(7),
-      _ => BorderRadius.circular(3),
+      _ => BorderRadius.circular(2),
     };
     return Container(
       width: 28, height: 28,
