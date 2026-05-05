@@ -26,9 +26,12 @@ class QrDecorationBuilder {
   ///  - Always [PrettyQrQuietZone.standard] (ISO/IEC 18004 §7.3.1)
   ///  - Optional logo image clamped to the profile's [QrProfileConstraints.maxLogoScale]
   ///  - Shape assembled from module + eye presets via [buildShape]
-  static PrettyQrDecoration buildDecoration(QRCustomization c) {
+  static PrettyQrDecoration buildDecoration(
+    QRCustomization c, {
+    PrettyQrQuietZone quietZone = PrettyQrQuietZone.standard,
+  }) {
     return PrettyQrDecoration(
-      quietZone: PrettyQrQuietZone.standard,
+      quietZone: quietZone,
       background: Colors.white,
       image: _buildImage(c),
       shape: buildShape(c),

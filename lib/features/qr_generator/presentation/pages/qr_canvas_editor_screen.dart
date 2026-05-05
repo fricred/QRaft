@@ -512,7 +512,8 @@ class _QRCanvasEditorScreenState extends ConsumerState<QRCanvasEditorScreen> {
                       BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 24, offset: const Offset(0, 8)),
                     ],
                   ),
-                  padding: const EdgeInsets.all(6),
+                  padding: EdgeInsets.zero,
+                  clipBehavior: Clip.antiAlias,
                   child: _buildQrWithFrame(customization),
                 ),
               ).animate().scale(begin: const Offset(0.85, 0.85), duration: 400.ms, curve: Curves.easeOutBack),
@@ -815,7 +816,10 @@ class _LiveQRPreviewState extends State<_LiveQRPreview> {
       height: widget.size,
       child: PrettyQrView(
         qrImage: _qrImage,
-        decoration: QrDecorationBuilder.buildDecoration(widget.customization),
+        decoration: QrDecorationBuilder.buildDecoration(
+          widget.customization,
+          quietZone: const PrettyQrQuietZone.pixels(4),
+        ),
       ),
     );
   }
