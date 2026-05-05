@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/subscription_plan.dart';
 import '../../domain/entities/plan_limits.dart';
@@ -35,6 +36,7 @@ final planLimitsProvider = Provider<PlanLimits>((ref) {
 
 /// Provider to check if user has Pro access
 final hasProAccessProvider = Provider<bool>((ref) {
+  if (kDebugMode && ref.watch(debugPremiumOverrideProvider)) return true;
   final subscriptionAsync = ref.watch(subscriptionPlanProvider);
   return subscriptionAsync.when(
     data: (subscription) => subscription.hasProAccess,
@@ -116,9 +118,16 @@ final limitedScanHistoryProvider = Provider<List<ScanResult>>((ref) {
   return fullHistory.take(limit).toList();
 });
 
+/// Debug-only override: set to true after a simulated purchase in debug mode
+/// so premium features unlock without real App Store / RevenueCat integration.
+final debugPremiumOverrideProvider = StateProvider<bool>((ref) => false);
+
 /// Provider that returns true when the user has an active Pro subscription.
-/// Used as the primary gate for premium features (Phase 12 — MKT-10).
+/// In debug mode also respects debugPremiumOverrideProvider for simulator testing.
 final isPremiumProvider = Provider<bool>((ref) {
+  // In debug mode, a simulated purchase sets this override to true.
+  if (kDebugMode && ref.watch(debugPremiumOverrideProvider)) return true;
+
   final subscriptionAsync = ref.watch(subscriptionPlanProvider);
   return subscriptionAsync.when(
     data: (subscription) => subscription.hasProAccess,

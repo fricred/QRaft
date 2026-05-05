@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -6,6 +7,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../../shared/widgets/qraft_logo.dart';
 import '../providers/purchase_providers.dart';
+import '../providers/subscription_providers.dart' show debugPremiumOverrideProvider;
 
 /// Resolves the current RevenueCat offering for the paywall.
 /// Waits for RevenueCat to be initialized before fetching offerings so the
@@ -252,6 +254,25 @@ class _SubscribeButtonState extends ConsumerState<_SubscribeButton> {
 
   Future<void> _handleSubscribe() async {
     final package = widget.package;
+
+    // Debug mode: package is null (mock product) → simulate purchase + unlock.
+    if (kDebugMode && package == null) {
+      setState(() => _isPurchasing = true);
+      await Future<void>.delayed(const Duration(milliseconds: 800));
+      ref.read(debugPremiumOverrideProvider.notifier).state = true;
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✓ QRaft Pro activado (modo prueba)'),
+            backgroundColor: Color(0xFF00FF88),
+          ),
+        );
+        Navigator.of(context).pop();
+      }
+      if (mounted) setState(() => _isPurchasing = false);
+      return;
+    }
+
     if (package == null) return;
 
     setState(() => _isPurchasing = true);

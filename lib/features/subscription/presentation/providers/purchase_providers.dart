@@ -13,6 +13,7 @@ import '../../domain/entities/purchase_product.dart';
 import '../../domain/entities/purchase_error.dart';
 import '../../domain/repositories/purchase_repository.dart';
 import '../../../profile/data/providers/profile_stats_providers.dart';
+import 'subscription_providers.dart' show debugPremiumOverrideProvider;
 
 /// Provider for RevenueCat data source (singleton)
 final revenueCatDataSourceProvider = Provider<RevenueCatDataSource>((ref) {
@@ -157,14 +158,17 @@ class PurchaseController extends StateNotifier<PurchaseControllerState> {
   final PurchaseRepository _repository;
   final SubscriptionSyncService _syncService;
   final void Function()? _onSubscriptionChanged;
+  final void Function()? _onDebugPurchaseSuccess;
 
   PurchaseController({
     required PurchaseRepository repository,
     required SubscriptionSyncService syncService,
     void Function()? onSubscriptionChanged,
+    void Function()? onDebugPurchaseSuccess,
   })  : _repository = repository,
         _syncService = syncService,
         _onSubscriptionChanged = onSubscriptionChanged,
+        _onDebugPurchaseSuccess = onDebugPurchaseSuccess,
         super(const PurchaseControllerState());
 
   /// Purchase a product
@@ -177,8 +181,14 @@ class PurchaseController extends StateNotifier<PurchaseControllerState> {
     final result = await _repository.purchaseProduct(product);
 
     if (result.success) {
-      // Sync with Supabase
-      await _syncService.forceSync();
+      // In debug mode with a simulated purchase (package == null), activate the
+      // debug premium override so isPremiumProvider returns true immediately.
+      if (kDebugMode && product.package == null) {
+        _onDebugPurchaseSuccess?.call();
+      } else {
+        // Real purchase: sync entitlements from RevenueCat → Supabase.
+        await _syncService.forceSync();
+      }
 
       // Notify listeners to refresh subscription state
       _onSubscriptionChanged?.call();
@@ -277,6 +287,12 @@ final purchaseControllerProvider =
       ref.invalidate(userProfileProvider);
       debugPrint('PurchaseController: Invalidated userProfileProvider');
     },
+    onDebugPurchaseSuccess: kDebugMode
+        ? () {
+            ref.read(debugPremiumOverrideProvider.notifier).state = true;
+            debugPrint('PurchaseController: debug premium override activated');
+          }
+        : null,
   );
 });
 
