@@ -47,8 +47,10 @@ final _kGradients = <(String, Color, Color)>[
   ('Candy',  const Color(0xFF8B5CF6), const Color(0xFFEC4899)),
 ];
 
+// modulePreset 0=Squares(rounding:0)  2=Squares(rounding:0.8,density:0.9)
+//              3=SmoothSymbol(bezier merged) 5=DotsSymbol(circles)
 const _kDotOptions = <(String, int)>[
-  ('Square', 0), ('Soft', 1), ('Rounded', 2), ('Smooth', 3),
+  ('Square', 0), ('Rounded', 2), ('Smooth', 3), ('Dots', 5),
 ];
 
 // Eye options using what pretty_qr_code actually supports:
@@ -983,17 +985,35 @@ class _DotPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final br = switch (preset) {
-      0 => BorderRadius.zero,
-      1 => BorderRadius.circular(2),
-      2 => BorderRadius.circular(4),
-      _ => BorderRadius.circular(8),
-    };
-    return Wrap(
-      spacing: 2, runSpacing: 2,
-      children: List.generate(9, (_) => Container(
-        width: 8, height: 8,
-        decoration: BoxDecoration(color: Colors.white, borderRadius: br),
+    // Smooth (3) — PrettyQrSmoothSymbol: adjacent modules merge into one blob.
+    // Show as a single solid shape (no individual cells) to convey fusion.
+    if (preset == 3) {
+      return Container(
+        width: 27, height: 27,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(7),
+        ),
+      );
+    }
+
+    // Square/Rounded/Dots — 3×3 grid using Column+Row (not Wrap, which overflows)
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(3, (_) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(3, (_) {
+          final decoration = switch (preset) {
+            0 => const BoxDecoration(color: Colors.white),                        // Square: sharp
+            2 => BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(2)), // Rounded
+            _ => const BoxDecoration(color: Colors.white, shape: BoxShape.circle), // Dots (5)
+          };
+          return Container(
+            width: 7, height: 7,
+            margin: const EdgeInsets.all(1),
+            decoration: decoration,
+          );
+        }),
       )),
     );
   }
