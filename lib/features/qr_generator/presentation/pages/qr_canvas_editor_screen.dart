@@ -1020,18 +1020,25 @@ class _EyePreview extends StatelessWidget {
     }
     // preset 4 = Dots: finder pattern made of individual round elements
     if (preset == 4) {
-      return Wrap(
-        spacing: 2, runSpacing: 2,
-        children: List.generate(9, (i) {
-          final isEdge = i == 0 || i == 2 || i == 6 || i == 8 || i == 4;
-          return Container(
-            width: 7, height: 7,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isEdge ? Colors.white : Colors.white.withValues(alpha: 0.3),
-            ),
-          );
-        }),
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(3, (row) => Row(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(3, (col) {
+            final isOuter = (row == 0 || row == 2) && (col == 0 || col == 2);
+            final isCenter = row == 1 && col == 1;
+            return Container(
+              width: 7, height: 7,
+              margin: const EdgeInsets.all(1),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: (isOuter || isCenter)
+                    ? Colors.white
+                    : Colors.white.withValues(alpha: 0.35),
+              ),
+            );
+          }),
+        )),
       );
     }
     // Square / Rounded
