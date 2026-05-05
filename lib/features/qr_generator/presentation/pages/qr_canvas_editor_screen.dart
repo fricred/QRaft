@@ -51,8 +51,9 @@ const _kDotOptions = <(String, int)>[
   ('Square', 0), ('Soft', 1), ('Rounded', 2), ('Smooth', 3),
 ];
 
+// eyePreset 0=square, 1=rounded, 3=highly-rounded(leaf), 2=unified circle
 const _kEyeOptions = <(String, int)>[
-  ('Square', 0), ('Rounded', 1), ('Circle', 2), ('Dots', 4),
+  ('Square', 0), ('Rounded', 1), ('Leaf', 3), ('Circle', 2),
 ];
 
 int _colorToArgb(Color c) =>
@@ -1002,64 +1003,62 @@ class _EyePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // preset 2 = Circle: one unified circular finder pattern
-    if (preset == 2) {
-      return Container(
-        width: 28, height: 28,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white,
+    return switch (preset) {
+      // Square
+      0 => Container(
+          width: 28, height: 28,
+          decoration: BoxDecoration(border: Border.all(color: Colors.white, width: 3)),
+          child: Center(child: Container(width: 10, height: 10, color: Colors.white)),
         ),
-        child: Center(
-          child: Container(
-            width: 10, height: 10,
-            decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFF2E2E2E)),
+      // Rounded
+      1 => Container(
+          width: 28, height: 28,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.white, width: 3),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Center(
+            child: Container(
+              width: 10, height: 10,
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(3)),
+            ),
           ),
         ),
-      );
-    }
-    // preset 4 = Dots: finder pattern made of individual round elements
-    if (preset == 4) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: List.generate(3, (row) => Row(
-          mainAxisSize: MainAxisSize.min,
-          children: List.generate(3, (col) {
-            final isOuter = (row == 0 || row == 2) && (col == 0 || col == 2);
-            final isCenter = row == 1 && col == 1;
-            return Container(
-              width: 7, height: 7,
-              margin: const EdgeInsets.all(1),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: (isOuter || isCenter)
-                    ? Colors.white
-                    : Colors.white.withValues(alpha: 0.35),
+      // Leaf — diagonal corners rounded (CSS border-radius: 50% 0)
+      3 => Container(
+          width: 28, height: 28,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(14),
+              bottomRight: Radius.circular(14),
+            ),
+          ),
+          child: Center(
+            child: Container(
+              width: 10, height: 10,
+              decoration: const BoxDecoration(
+                color: Color(0xFF2E2E2E),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(5),
+                  bottomRight: Radius.circular(5),
+                ),
               ),
-            );
-          }),
-        )),
-      );
-    }
-    // Square / Rounded
-    final outerBr = switch (preset) {
-      0 => BorderRadius.zero,
-      _ => BorderRadius.circular(4),
-    };
-    final innerBr = switch (preset) {
-      0 => BorderRadius.zero,
-      _ => BorderRadius.circular(2),
-    };
-    return Container(
-      width: 28, height: 28,
-      decoration: BoxDecoration(border: Border.all(color: Colors.white, width: 3), borderRadius: outerBr),
-      child: Center(
-        child: Container(
-          width: 10, height: 10,
-          decoration: BoxDecoration(color: Colors.white, borderRadius: innerBr),
+            ),
+          ),
         ),
-      ),
-    );
+      // Circle — unified circular finder pattern
+      _ => Container(
+          width: 28, height: 28,
+          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+          child: Center(
+            child: Container(
+              width: 10, height: 10,
+              decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFF2E2E2E)),
+            ),
+          ),
+        ),
+    };
   }
 }
 
