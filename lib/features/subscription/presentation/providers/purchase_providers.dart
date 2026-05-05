@@ -57,8 +57,9 @@ final purchaseProductsProvider = FutureProvider<List<PurchaseProduct>>((ref) asy
     final products = await repository.getProducts();
     if (products.isNotEmpty) return products;
     // Fall through to mock if empty
-  } catch (_) {
-    // Fall through to mock in debug/simulator
+  } catch (e) {
+    debugPrint('purchaseProductsProvider: getProducts failed — $e');
+    if (!kDebugMode) rethrow; // surface error state in production paywall
   }
 
   // In debug mode (simulator/dev) return mock products so the paywall renders.

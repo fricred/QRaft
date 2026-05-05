@@ -8,6 +8,7 @@ import '../../../../shared/widgets/glass_button.dart';
 import '../../../../shared/widgets/qraft_logo.dart';
 import '../providers/purchase_providers.dart';
 import '../providers/subscription_providers.dart' show debugPremiumOverrideProvider;
+import '../../domain/entities/purchase_product.dart';
 
 /// Resolves the current RevenueCat offering for the paywall.
 /// Waits for RevenueCat to be initialized before fetching offerings so the
@@ -278,10 +279,11 @@ class _SubscribeButtonState extends ConsumerState<_SubscribeButton> {
     setState(() => _isPurchasing = true);
 
     try {
-      final datasource = ref.read(revenueCatDataSourceProvider);
-      await datasource.purchasePackage(package);
+      // Route through PurchaseController so forceSync() + state updates fire correctly.
+      final product = PurchaseProduct.fromPackage(package);
+      final success = await ref.read(purchaseControllerProvider.notifier).purchase(product);
 
-      if (mounted) {
+      if (mounted && success) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Suscripcion activada. Disfruta QRaft Premium.'),
@@ -289,6 +291,11 @@ class _SubscribeButtonState extends ConsumerState<_SubscribeButton> {
           ),
         );
         Navigator.of(context).pop();
+      } else if (mounted && !success) {
+        final err = ref.read(purchaseControllerProvider).error?.message ?? 'Error al suscribirse';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(err), backgroundColor: Colors.red.shade700),
+        );
       }
     } catch (e) {
       if (mounted) {
