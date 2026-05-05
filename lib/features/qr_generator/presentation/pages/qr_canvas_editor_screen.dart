@@ -91,9 +91,12 @@ class _QRCanvasEditorScreenState extends ConsumerState<QRCanvasEditorScreen> {
   Map<String, dynamic> _formData = {};
   String _frameKind = 'none';
   String _labelText = 'SCAN ME';
-  double _sizeSlider = 0.5;
+  int _sizeStep = 2; // 0..4 → S / M / L / XL / XX
 
-  double get _displaySize => 180 + _sizeSlider * 100;
+  static const _kDisplaySizes = [150.0, 180.0, 210.0, 240.0, 270.0];
+  static const _kExportSizes  = [300.0, 500.0, 750.0, 1000.0, 1500.0];
+
+  double get _displaySize => _kDisplaySizes[_sizeStep];
 
   bool get _isDataFilled => switch (widget.qrType) {
         QRType.url => (_formData['url'] as String? ?? '').isNotEmpty,
@@ -509,7 +512,7 @@ class _QRCanvasEditorScreenState extends ConsumerState<QRCanvasEditorScreen> {
                       BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 24, offset: const Offset(0, 8)),
                     ],
                   ),
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(6),
                   child: _buildQrWithFrame(customization),
                 ),
               ).animate().scale(begin: const Offset(0.85, 0.85), duration: 400.ms, curve: Curves.easeOutBack),
@@ -695,10 +698,10 @@ class _QRCanvasEditorScreenState extends ConsumerState<QRCanvasEditorScreen> {
           onLabelChange: (t) => setState(() => _labelText = t),
         ),
       'size' => _SizeSheet(
-          value: _sizeSlider,
-          onChange: (v) {
-            setState(() => _sizeSlider = v);
-            ctrl.updateSize(200 + v * 200);
+          step: _sizeStep,
+          onChange: (s) {
+            setState(() => _sizeStep = s);
+            ctrl.updateSize(_QRCanvasEditorScreenState._kExportSizes[s]);
             _markDirty();
           },
         ),
@@ -1308,45 +1311,76 @@ class _FramePreviewIcon extends StatelessWidget {
 }
 
 class _SizeSheet extends StatelessWidget {
-  final double value;
-  final ValueChanged<double> onChange;
-  const _SizeSheet({required this.value, required this.onChange});
+  final int step;
+  final ValueChanged<int> onChange;
+  const _SizeSheet({required this.step, required this.onChange});
+
+  static const _labels = ['S', 'M', 'L', 'XL', 'XX'];
+  static const _cm     = [2.5, 4.2, 6.4, 8.5, 12.7];
+  static const _px     = [300, 500, 750, 1000, 1500];
 
   @override
   Widget build(BuildContext context) {
-    final label = value < 0.33 ? 'Small' : value < 0.66 ? 'Medium' : value < 0.88 ? 'Large' : 'X-Large';
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Size', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)),
-            Text(label, style: const TextStyle(fontSize: 13, color: _kNeon, fontWeight: FontWeight.w600)),
+            const Text('Tamaño', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)),
+            Text(
+              '${_cm[step]}cm · ${_px[step]}px',
+              style: const TextStyle(fontSize: 13, color: _kNeon, fontWeight: FontWeight.w600),
+            ),
           ],
         ),
         const SizedBox(height: 12),
         Row(
-          children: [
-            const Text('S', style: TextStyle(color: Color(0xFF888888), fontSize: 12)),
-            Expanded(
-              child: SliderTheme(
-                data: SliderThemeData(
-                  trackHeight: 4,
-                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
-                  overlayShape: const RoundSliderOverlayShape(overlayRadius: 18),
-                  activeTrackColor: _kNeon,
-                  inactiveTrackColor: const Color(0xFF444444),
-                  thumbColor: Colors.white,
-                  overlayColor: _kNeon.withValues(alpha: 0.2),
+          children: List.generate(_labels.length, (i) {
+            final active = step == i;
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => onChange(i),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  margin: EdgeInsets.only(right: i < 4 ? 6 : 0),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: active ? _kNeon.withValues(alpha: 0.1) : const Color(0xFF222222),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: active ? _kNeon : Colors.transparent),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _labels[i],
+                        style: TextStyle(
+                          fontSize: 13, fontWeight: FontWeight.w700,
+                          color: active ? _kNeon : Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${_cm[i]}cm',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: active ? _kNeon.withValues(alpha: 0.8) : const Color(0xFF888888),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Slider(value: value, min: 0.0, max: 1.0, onChanged: onChange),
               ),
-            ),
-            const Text('XL', style: TextStyle(color: Color(0xFF888888), fontSize: 12)),
-          ],
+            );
+          }),
         ),
-        const Text('Auto-fits canvas by default', style: TextStyle(fontSize: 12, color: Color(0xFF888888))),
+        const SizedBox(height: 8),
+        const Text(
+          'Medidas equivalentes a impresión 300 DPI',
+          style: TextStyle(fontSize: 11, color: Color(0xFF666666)),
+        ),
       ],
     );
   }
