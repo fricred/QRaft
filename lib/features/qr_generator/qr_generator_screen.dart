@@ -5,13 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/app_localizations.dart';
 import 'domain/entities/qr_type.dart';
-import 'presentation/pages/event_qr_screen.dart';
-import 'presentation/pages/location_qr_screen.dart';
-import 'presentation/pages/url_qr_screen.dart';
-import 'presentation/pages/text_qr_screen.dart';
-import 'presentation/pages/personal_info_qr_screen.dart';
-import 'presentation/pages/email_qr_screen.dart';
-import 'presentation/pages/wifi_qr_screen.dart';
+import 'presentation/pages/qr_templates_screen.dart';
 import '../subscription/presentation/providers/feature_gate_providers.dart';
 import '../subscription/presentation/widgets/pro_badge.dart';
 import '../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
@@ -95,95 +89,7 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
                 ),
               ),
               
-              const SizedBox(height: 24),
-              
-              // Template Library Button
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF6366F1).withValues(alpha: 0.1),
-                      blurRadius: 20,
-                      spreadRadius: 0,
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            const Color(0xFF2E2E2E).withValues(alpha: 0.7),
-                            const Color(0xFF1A1A1A).withValues(alpha: 0.8),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.12),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              Icons.auto_awesome_rounded,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.templateLibrary,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  l10n.templateLibraryDescription,
-                                  style: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            color: Colors.grey[400],
-                            size: 16,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ).animate()
-                .fadeIn(duration: 300.ms, delay: 400.ms, curve: Curves.easeOutCubic)
-                .slideY(begin: 0.15, duration: 300.ms, delay: 400.ms, curve: Curves.easeOutQuart),
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -247,34 +153,9 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
                           return;
                         }
 
-                        Widget targetScreen;
-                        switch (qrType) {
-                          case QRType.url:
-                            targetScreen = const URLQRScreen();
-                            break;
-                          case QRType.text:
-                            targetScreen = const TextQRScreen();
-                            break;
-                          case QRType.personalInfo:
-                            targetScreen = const PersonalInfoQRScreen();
-                            break;
-                          case QRType.email:
-                            targetScreen = const EmailQRScreen();
-                            break;
-                          case QRType.wifi:
-                            targetScreen = const WiFiQRScreen();
-                            break;
-                          case QRType.location:
-                            targetScreen = LocationQRScreen();
-                            break;
-                          case QRType.event:
-                            targetScreen = const EventQRScreen();
-                            break;
-                        }
-
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => targetScreen,
+                            builder: (context) => QRTemplatesScreen(qrType: qrType),
                           ),
                         );
                       },
