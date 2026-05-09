@@ -1,12 +1,15 @@
 // Screen 3 of the QR creation flow: tap-to-edit canvas with tool rail.
 // TypePicker → TemplatesPicker → [this screen]
 import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../domain/entities/qr_code_entity.dart';
 import '../../domain/entities/qr_data_models.dart';
@@ -85,11 +88,13 @@ class QRCanvasEditorScreen extends ConsumerStatefulWidget {
 }
 
 class _QRCanvasEditorScreenState extends ConsumerState<QRCanvasEditorScreen> {
+  final GlobalKey _repaintKey = GlobalKey();
   String? _openTool;
   bool _dirty = false;
   bool _saving = false;
   bool _saved = false;
   bool _showExit = false;
+  bool _sharing = false;
   Map<String, dynamic> _formData = {};
   String _frameKind = 'none';
   String _labelText = 'SCAN ME';
@@ -399,6 +404,32 @@ class _QRCanvasEditorScreenState extends ConsumerState<QRCanvasEditorScreen> {
     }
   }
 
+  Future<void> _handleShare() async {
+    if (_sharing) return;
+    setState(() => _sharing = true);
+    try {
+      final ctx = _repaintKey.currentContext;
+      if (ctx == null) throw Exception('QR preview not ready');
+      final boundary = ctx.findRenderObject() as RenderRepaintBoundary;
+      final image = await boundary.toImage(pixelRatio: 3.0);
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (bytes == null) throw Exception('Failed to encode image');
+      final name = ((_formData['name'] as String?) ?? 'QR Code')
+          .replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '_');
+      final file = File('${Directory.systemTemp.path}/qraft_$name.png');
+      await file.writeAsBytes(bytes.buffer.asUint8List());
+      await Share.shareXFiles([XFile(file.path)], text: 'QR: $name');
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Share failed: $e'), backgroundColor: _kError),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+    }
+  }
+
   void _openDataSheet() {
     showModalBottomSheet(
       context: context,
@@ -505,6 +536,26 @@ class _QRCanvasEditorScreenState extends ConsumerState<QRCanvasEditorScreen> {
             ),
           ),
           const Spacer(),
+          // Share icon — only active when data is filled
+          if (_isDataFilled) ...[
+            GestureDetector(
+              onTap: _handleShare,
+              child: Container(
+                width: 36, height: 36,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle, color: _kSurface,
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                ),
+                child: _sharing
+                    ? const Padding(
+                        padding: EdgeInsets.all(9),
+                        child: CircularProgressIndicator(strokeWidth: 2, color: _kNeon),
+                      )
+                    : const Icon(Icons.share_rounded, color: Colors.white, size: 16),
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
           GestureDetector(
             onTap: _handleSave,
             child: AnimatedContainer(
@@ -646,10 +697,13 @@ class _QRCanvasEditorScreenState extends ConsumerState<QRCanvasEditorScreen> {
   }
 
   Widget _buildQrWithFrame(QRCustomization customization) {
-    final qr = _LiveQRPreview(
-      customization: customization,
-      qrData: _previewQrData,
-      size: _displaySize,
+    final qr = RepaintBoundary(
+      key: _repaintKey,
+      child: _LiveQRPreview(
+        customization: customization,
+        qrData: _previewQrData,
+        size: _displaySize,
+      ),
     );
     return switch (_frameKind) {
       'box' => Container(
