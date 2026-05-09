@@ -9,6 +9,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../qr_generator/domain/entities/qr_code_entity.dart';
 import '../../../qr_generator/presentation/controllers/qr_customization_controller.dart';
 import '../../../qr_generator/presentation/pages/qr_canvas_editor_screen.dart';
+import '../../../qr_digital/presentation/pages/qr_widget_pin_page.dart';
 import '../widgets/qr_code_display_widget.dart';
 import '../providers/qr_library_providers.dart';
 
@@ -212,6 +213,12 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                     label: l10n.edit,
                     onPressed: _handleEdit,
                     delayMs: 300,
+                  ),
+                  _buildActionButton(
+                    icon: Icons.widgets_rounded,
+                    label: 'Widget',
+                    onPressed: _handlePinToWidget,
+                    delayMs: 312,
                   ),
                   _buildActionButton(
                     icon: Icons.delete_rounded,
@@ -430,6 +437,14 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
+      ),
+    );
+  }
+
+  void _handlePinToWidget() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => QrWidgetPinPage(entity: widget.qrEntity),
       ),
     );
   }
