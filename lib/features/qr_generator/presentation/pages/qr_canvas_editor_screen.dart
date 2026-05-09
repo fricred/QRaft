@@ -217,18 +217,44 @@ class _QRCanvasEditorScreenState extends ConsumerState<QRCanvasEditorScreen> {
   @override
   void initState() {
     super.initState();
+    // Sync non-provider state synchronously to avoid first-frame race conditions
+    if (widget.editingQR != null) {
+      _formData = _parseEntityData(widget.editingQR!);
+      _restoreFrameAndSize(widget.editingQR!);
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final notifier = ref.read(qrCustomizationControllerProvider.notifier);
       if (widget.editingQR != null) {
         notifier.loadFromEntity(widget.editingQR!);
-        setState(() {
-          _formData = _parseEntityData(widget.editingQR!);
-          _dirty = false;
-        });
       } else {
         notifier.applyFullTemplate(widget.template);
       }
     });
+  }
+
+  void _restoreFrameAndSize(QRCodeEntity entity) {
+    // Restore frame: null→none, 'box'/'rounded'→frame kind, else→label text
+    final ft = entity.customization.frameText;
+    if (ft == null) {
+      _frameKind = 'none';
+    } else if (ft == 'box' || ft == 'rounded') {
+      _frameKind = ft;
+    } else {
+      _frameKind = 'label';
+      _labelText = ft;
+    }
+    // Restore size step to closest saved export size
+    _sizeStep = _sizeToStep(entity.customization.size);
+  }
+
+  int _sizeToStep(double size) {
+    int closest = 0;
+    double minDiff = (size - _kExportSizes[0]).abs();
+    for (var i = 1; i < _kExportSizes.length; i++) {
+      final diff = (size - _kExportSizes[i]).abs();
+      if (diff < minDiff) { minDiff = diff; closest = i; }
+    }
+    return closest;
   }
 
   Map<String, dynamic> _parseEntityData(QRCodeEntity entity) {
@@ -306,6 +332,13 @@ class _QRCanvasEditorScreenState extends ConsumerState<QRCanvasEditorScreen> {
 
     try {
       final dataModel = _buildDataModel()!;
+      // Sync frame local state → QRCustomization.frameText before reading
+      final ctrl = ref.read(qrCustomizationControllerProvider.notifier);
+      ctrl.updateFrameText(switch (_frameKind) {
+        'none'    => null,
+        'label'   => _labelText.isNotEmpty ? _labelText : 'SCAN ME',
+        final k   => k,   // 'box' or 'rounded'
+      });
       final customization = ref.read(qrCustomizationControllerProvider).customization;
       final name = ((_formData['name'] as String?) ?? '').isNotEmpty
           ? _formData['name'] as String
