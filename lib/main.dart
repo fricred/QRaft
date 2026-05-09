@@ -202,41 +202,31 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
     }
     
     if (authProvider.errorMessage != null) {
-      return Scaffold(
-        backgroundColor: const Color(0xFF1A1A1A),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                color: Colors.red[400],
-                size: 64,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Authentication Error',
-                style: TextStyle(
-                  color: Colors.red[400],
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white, size: 18),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    authProvider.errorMessage!,
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                authProvider.errorMessage!,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+              ],
+            ),
+            backgroundColor: const Color(0xFFEF4444),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            duration: const Duration(seconds: 4),
           ),
-        ),
-      );
+        );
+      });
     }
-    
+
     if (currentUser != null) {
       // User is authenticated, show home screen
       return const MainScaffold();
