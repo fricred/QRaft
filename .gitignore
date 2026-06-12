@@ -52,3 +52,6 @@ env.json
 android/key.properties
 android/app/upload-keystore.jks
 *.jks
+
+# GSD planning metadata (local only, not for the repo)
+.planning/
