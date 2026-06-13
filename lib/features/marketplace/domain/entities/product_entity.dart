@@ -230,6 +230,12 @@ class MaterialGradients {
     end: Alignment.bottomRight,
   );
 
+  static const LinearGradient tattoo = LinearGradient(
+    colors: [Color(0xFF4A148C), Color(0xFFAD1457)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
   static LinearGradient forCategory(String category) {
     switch (category.toLowerCase()) {
       case 'wood':
@@ -244,6 +250,8 @@ class MaterialGradients {
         return glass;
       case 'stone':
         return stone;
+      case 'tattoo_transfer':
+        return tattoo;
       default:
         return const LinearGradient(
           colors: [Color(0xFF2E2E2E), Color(0xFF1A1A1A)],
