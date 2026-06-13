@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'dart:math' show log;
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -106,10 +109,15 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                       ),
                       child: Column(
                         children: [
-                          QRCodeDisplayWidget(
-                            qrEntity: widget.qrEntity,
-                            size: 240,
-                            showFallbackIcon: true,
+                          // Hero matches the icon container in the library card,
+                          // giving a smooth expand transition on navigation.
+                          Hero(
+                            tag: 'qr-icon-${widget.qrEntity.id}',
+                            child: QRCodeDisplayWidget(
+                              qrEntity: widget.qrEntity,
+                              size: 240,
+                              showFallbackIcon: true,
+                            ),
                           ),
                           const SizedBox(height: 16),
                           Text(
@@ -411,15 +419,59 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
       .scale(begin: const Offset(0.98, 0.98), duration: duration.ms, delay: delay.ms);
   }
 
-  void _handleShare() {
-    final l10n = AppLocalizations.of(context)!;
-    // TODO: Implement share functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.shareFunctionalityComingSoon),
-        backgroundColor: const Color(0xFF2E2E2E),
-      ),
-    );
+  Future<void> _handleShare() async {
+    try {
+      const int size = 900;
+      final painter = QrPainter(
+        data: widget.qrEntity.data,
+        version: QrVersions.auto,
+        gapless: true,
+        eyeStyle: const QrEyeStyle(
+          eyeShape: QrEyeShape.square,
+          color: Color(0xFF000000),
+        ),
+        dataModuleStyle: const QrDataModuleStyle(
+          dataModuleShape: QrDataModuleShape.square,
+          color: Color(0xFF000000),
+        ),
+      );
+
+      final recorder = PictureRecorder();
+      final canvas = Canvas(
+        recorder,
+        Rect.fromLTWH(0, 0, size.toDouble(), size.toDouble()),
+      );
+      canvas.drawRect(
+        Rect.fromLTWH(0, 0, size.toDouble(), size.toDouble()),
+        Paint()..color = const Color(0xFFFFFFFF),
+      );
+      painter.paint(canvas, const Size(size / 1.0, size / 1.0));
+
+      final image = await recorder.endRecording().toImage(size, size);
+      final byteData = await image.toByteData(format: ImageByteFormat.png);
+      if (byteData == null) return;
+
+      final sanitized =
+          widget.qrEntity.name.replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '_');
+      final file = File(
+          '${Directory.systemTemp.path}/qraft_${sanitized}_${DateTime.now().millisecondsSinceEpoch}.png');
+      await file.writeAsBytes(byteData.buffer.asUint8List());
+
+      final shareText = widget.qrEntity.isDynamic
+          ? 'QR: ${widget.qrEntity.name}\nhttps://scanqraft.app/${widget.qrEntity.slug}'
+          : 'QR: ${widget.qrEntity.name}';
+
+      await Share.shareXFiles([XFile(file.path)], text: shareText);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al compartir: $e'),
+          backgroundColor: const Color(0xFFEF4444),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   void _handleCopyData() {

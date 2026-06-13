@@ -1288,29 +1288,32 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
             flex: 3,
             child: GestureDetector(
               onTap: () => _showEntityQRDetails(qrEntity),
-              child: Container(
-                width: double.infinity,
-                margin: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      color.withValues(alpha: 0.15),
-                      color.withValues(alpha: 0.08),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+              onLongPress: () {
+                HapticFeedback.mediumImpact();
+                _showQrContextMenu(qrEntity);
+              },
+              child: Hero(
+                tag: 'qr-icon-${qrEntity.id}',
+                child: Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        color.withValues(alpha: 0.15),
+                        color.withValues(alpha: 0.08),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: color.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: color.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
-                ),
-                child: Center(
-                  child: Icon(
-                    iconData,
-                    color: color,
-                    size: 36,
+                  child: Center(
+                    child: Icon(iconData, color: color, size: 36),
                   ),
                 ),
               ),
@@ -1375,6 +1378,47 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
               ],
             ),
           ),
+
+          // Dynamic-QR chip: visible only when redirect is linked (isDynamic).
+          // Surfaced here so users learn "edit destination" without digging
+          // into the popup menu — the key engagement investment loop.
+          if (qrEntity.isDynamic)
+            GestureDetector(
+              onTap: () => _editRedirectDestination(qrEntity),
+              child: Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(left: 12, right: 12, bottom: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A73E8).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: const Color(0xFF1A73E8).withValues(alpha: 0.35),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.swap_horiz_rounded,
+                      color: Color(0xFF1A73E8),
+                      size: 12,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        qrEntity.slug ?? '',
+                        style: const TextStyle(
+                          color: Color(0xFF1A73E8),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           
           // Action Buttons Section
           Container(
@@ -1618,9 +1662,16 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
       final tmpFile = File('${Directory.systemTemp.path}/$fileName');
       await tmpFile.writeAsBytes(byteData.buffer.asUint8List());
 
+      // B8: include the scanqraft.app short link when the QR is dynamic.
+      // Every share distributes the link — each scan on it feeds the owner's
+      // scan counter (the engagement reward loop).
+      final shareText = qrEntity.isDynamic
+          ? 'QR: ${qrEntity.name}\nhttps://scanqraft.app/${qrEntity.slug}'
+          : 'QR: ${qrEntity.name}';
+
       await Share.shareXFiles(
         [XFile(tmpFile.path)],
-        text: 'QR: ${qrEntity.name}',
+        text: shareText,
       );
     } catch (e) {
       _showShareError('Failed to share QR: $e');
@@ -1640,6 +1691,86 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
         ),
       );
     }
+  }
+
+  /// Long-press bottom sheet (lazy — only created when triggered).
+  /// Replaces the per-card PopupMenuButton subtree for long-press, so
+  /// all menus share one sheet definition instead of allocating N trees.
+  void _showQrContextMenu(QRCodeEntity qrEntity) {
+    final l10n = AppLocalizations.of(context)!;
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: const Color(0xFF2A2A2A),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+              child: Text(
+                qrEntity.name,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const Divider(color: Colors.white12, height: 1),
+            _ContextTile(
+              icon: Icons.visibility_rounded,
+              label: l10n.preview,
+              onTap: () { Navigator.pop(context); _showEntityQRDetails(qrEntity); },
+            ),
+            _ContextTile(
+              icon: Icons.edit_rounded,
+              label: l10n.edit,
+              onTap: () { Navigator.pop(context); _editQRCode(qrEntity); },
+            ),
+            if (qrEntity.isDynamic)
+              _ContextTile(
+                icon: Icons.swap_horiz_rounded,
+                label: l10n.editRedirectDestination,
+                color: const Color(0xFF1A73E8),
+                onTap: () { Navigator.pop(context); _editRedirectDestination(qrEntity); },
+              ),
+            _ContextTile(
+              icon: Icons.share_rounded,
+              label: l10n.share,
+              onTap: () { Navigator.pop(context); _shareQRCode(qrEntity); },
+            ),
+            _ContextTile(
+              icon: Icons.precision_manufacturing_rounded,
+              label: 'Grabar en material',
+              color: const Color(0xFF00FF88),
+              onTap: () { Navigator.pop(context); _engraveQRCode(qrEntity); },
+            ),
+            _ContextTile(
+              icon: Icons.delete_rounded,
+              label: l10n.delete,
+              color: const Color(0xFFEF4444),
+              onTap: () { Navigator.pop(context); _confirmDeleteQR(qrEntity); },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
   }
 
   void _handleMenuAction(String action, QRCodeEntity qrEntity) {
@@ -1897,6 +2028,34 @@ class _ScanCountBadge extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// A single action row inside [_showQrContextMenu]'s bottom sheet.
+/// Created lazily (only when the sheet is opened), so N cards in the
+/// grid no longer each allocate a PopupMenuButton widget tree at build.
+class _ContextTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final Color? color;
+
+  const _ContextTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = color ?? Colors.white;
+    return ListTile(
+      dense: true,
+      leading: Icon(icon, color: c, size: 22),
+      title: Text(label, style: TextStyle(color: c, fontSize: 14)),
+      onTap: onTap,
     );
   }
 }
