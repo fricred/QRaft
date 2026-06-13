@@ -13,9 +13,23 @@ class QRCodeModel extends QRCodeEntity {
     required super.updatedAt,
     required super.userId,
     super.isFavorite = false,
+    super.slug,
+    super.scanCount,
+    super.lastScannedAt,
   });
 
   factory QRCodeModel.fromJson(Map<String, dynamic> json) {
+    // PostgREST embeds the reverse-FK `redirects` relation as a list
+    // (one redirect per QR in practice). Absent pre-migration or for
+    // static QRs.
+    Map<String, dynamic>? redirect;
+    final embedded = json['redirects'];
+    if (embedded is List && embedded.isNotEmpty) {
+      redirect = embedded.first as Map<String, dynamic>;
+    } else if (embedded is Map<String, dynamic>) {
+      redirect = embedded;
+    }
+
     return QRCodeModel(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -27,6 +41,11 @@ class QRCodeModel extends QRCodeEntity {
       updatedAt: DateTime.parse(json['updated_at'] as String),
       userId: json['user_id'] as String,
       isFavorite: json['is_favorite'] as bool? ?? false,
+      slug: redirect?['slug'] as String?,
+      scanCount: redirect?['scan_count'] as int?,
+      lastScannedAt: redirect?['last_scanned_at'] != null
+          ? DateTime.parse(redirect!['last_scanned_at'] as String)
+          : null,
     );
   }
 

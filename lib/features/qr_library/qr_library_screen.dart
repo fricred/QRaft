@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math' show log;
 import 'dart:ui';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -17,7 +16,6 @@ import '../qr_generator/domain/entities/qr_code_entity.dart';
 import '../qr_generator/presentation/controllers/qr_customization_controller.dart';
 import '../qr_generator/presentation/pages/qr_canvas_editor_screen.dart';
 import 'presentation/pages/qr_code_details_screen.dart';
-import '../auth/data/providers/supabase_auth_provider.dart';
 import '../redirect/presentation/screens/redirect_edit_screen.dart';
 import '../marketplace/marketplace_screen.dart';
 import '../marketplace/presentation/providers/marketplace_providers.dart';
@@ -34,6 +32,34 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
   int _selectedTab = 0;
   final PageController _pageController = PageController();
   final Set<String> _processingFavorites = {};
+
+  /// Cards that already played their entrance animation. Without this,
+  /// every scroll-back re-runs the flutter_animate chain (new element =
+  /// new controllers) and cards flicker on viewport re-entry.
+  final Set<String> _animatedCardIds = {};
+
+  /// Wraps [child] in a RepaintBoundary and plays the entrance animation
+  /// only on first appearance. Delay is linear and capped (the old
+  /// log-scale delays piled up to ~320ms deep in the grid).
+  Widget _animateCardOnce({
+    required String id,
+    required int index,
+    required Widget child,
+    bool horizontal = false,
+  }) {
+    final card = RepaintBoundary(child: child);
+    if (_animatedCardIds.contains(id)) return card;
+    _animatedCardIds.add(id);
+    final delay = (60 * (index % 6)).ms;
+    final animated = card.animate(delay: delay);
+    return horizontal
+        ? animated
+            .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+            .slideX(begin: 0.12, duration: 300.ms, curve: Curves.easeOutQuart)
+        : animated
+            .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+            .slideY(begin: 0.12, duration: 300.ms, curve: Curves.easeOutQuart);
+  }
 
   // Search state
   bool _isSearchExpanded = false;
@@ -225,9 +251,11 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
                   });
                 },
                 children: [
-                  _buildMyQRsTab(l10n),
-                  _buildFavoritesTab(l10n),
-                  _buildRecentTab(l10n),
+                  // Keep-alive: without it PageView disposes off-screen tabs
+                  // and every swipe re-fetches + re-animates from scratch.
+                  _KeepAlivePage(child: _buildMyQRsTab(l10n)),
+                  _KeepAlivePage(child: _buildFavoritesTab(l10n)),
+                  _KeepAlivePage(child: _buildRecentTab(l10n)),
                 ],
               ),
             ),
@@ -344,26 +372,11 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
                         childAspectRatio: 0.75, // Polaroid aspect ratio - taller cards
                       ),
                       itemCount: filteredCodes.length,
-                      itemBuilder: (context, index) {
-                        final delay = (100 + (40.0 * log(index + 2))).toInt();
-                        return _buildEntityQRCard(filteredCodes[index], l10n).animate()
-                          .fadeIn(
-                            duration: 300.ms,
-                            delay: delay.ms,
-                            curve: Curves.easeOutCubic,
-                          )
-                          .slideY(
-                            begin: 0.15,
-                            duration: 300.ms,
-                            delay: delay.ms,
-                            curve: Curves.easeOutQuart,
-                          )
-                          .scale(
-                            begin: const Offset(0.95, 0.95),
-                            duration: 300.ms,
-                            delay: delay.ms,
-                          );
-                      },
+                      itemBuilder: (context, index) => _animateCardOnce(
+                        id: filteredCodes[index].id,
+                        index: index,
+                        child: _buildEntityQRCard(filteredCodes[index], l10n),
+                      ),
                     );
                   },
                   loading: () => GridView.builder(
@@ -374,21 +387,9 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
                       childAspectRatio: 0.75, // Polaroid aspect ratio - taller cards
                     ),
                     itemCount: 6, // Placeholder count
-                    itemBuilder: (context, index) {
-                      final delay = (100 + (40.0 * log(index + 2))).toInt();
-                      return _buildQRCardSkeleton().animate()
-                        .fadeIn(
-                          duration: 300.ms,
-                          delay: delay.ms,
-                          curve: Curves.easeOutCubic,
-                        )
-                        .slideY(
-                          begin: 0.15,
-                          duration: 300.ms,
-                          delay: delay.ms,
-                          curve: Curves.easeOutQuart,
-                        );
-                    },
+                    itemBuilder: (context, index) =>
+                        _buildQRCardSkeleton().animate(delay: (60 * index).ms)
+                            .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic),
                   ),
                   error: (error, _) => _buildEmptyQRLibrary(l10n),
                 );
@@ -471,26 +472,11 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
               childAspectRatio: 0.75, // Polaroid aspect ratio - taller cards
             ),
             itemCount: favoriteQRs.length,
-            itemBuilder: (context, index) {
-              final delay = (100 + (40.0 * log(index + 2))).toInt();
-              return _buildEntityQRCard(favoriteQRs[index], l10n).animate()
-                .fadeIn(
-                  duration: 300.ms,
-                  delay: delay.ms,
-                  curve: Curves.easeOutCubic,
-                )
-                .slideY(
-                  begin: 0.15,
-                  duration: 300.ms,
-                  delay: delay.ms,
-                  curve: Curves.easeOutQuart,
-                )
-                .scale(
-                  begin: const Offset(0.95, 0.95),
-                  duration: 300.ms,
-                  delay: delay.ms,
-                );
-            },
+            itemBuilder: (context, index) => _animateCardOnce(
+              id: 'fav_${favoriteQRs[index].id}',
+              index: index,
+              child: _buildEntityQRCard(favoriteQRs[index], l10n),
+            ),
           ),
         );
       },
@@ -562,21 +548,12 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: ListView.builder(
             itemCount: recentQRs.length,
-            itemBuilder: (context, index) {
-              final delay = (100 + (40.0 * log(index + 2))).toInt();
-              return _buildRecentEntityQRCard(recentQRs[index], l10n).animate()
-                .fadeIn(
-                  duration: 300.ms,
-                  delay: delay.ms,
-                  curve: Curves.easeOutCubic,
-                )
-                .slideX(
-                  begin: 0.15,
-                  duration: 300.ms,
-                  delay: delay.ms,
-                  curve: Curves.easeOutQuart,
-                );
-            },
+            itemBuilder: (context, index) => _animateCardOnce(
+              id: 'recent_${recentQRs[index].id}',
+              index: index,
+              horizontal: true,
+              child: _buildRecentEntityQRCard(recentQRs[index], l10n),
+            ),
           ),
         );
       },
@@ -584,6 +561,8 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
   }
 
   Widget _buildStatsCard(String title, String value, IconData icon) {
+    // Solid surface instead of BackdropFilter: the blur read-back is
+    // GPU-expensive and visually indistinguishable on dark-on-dark.
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
@@ -598,19 +577,10 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
+          child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    const Color(0xFF2E2E2E).withValues(alpha: 0.7),
-                    const Color(0xFF1A1A1A).withValues(alpha: 0.8),
-                  ],
-                ),
+                color: const Color(0xFF2A2A2A),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.12),
@@ -647,7 +617,6 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
                   ),
                 ],
               ),
-            ),
           ),
         ),
       ),
@@ -1202,19 +1171,11 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-          child: Container(
+        // Solid surface — per-row BackdropFilter caused scroll jank.
+        child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  const Color(0xFF2E2E2E).withValues(alpha: 0.7),
-                  const Color(0xFF1A1A1A).withValues(alpha: 0.8),
-                ],
-              ),
+              color: const Color(0xFF2A2A2A),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.12),
@@ -1285,7 +1246,6 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
       ),
           ),
         ),
-      ),
     );
   }
 
@@ -1310,18 +1270,11 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
+        // Solid surface — per-card BackdropFilter in a scrolling grid was the
+        // top jank source flagged in the performance review.
+        child: Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  const Color(0xFF2E2E2E).withValues(alpha: 0.7),
-                  const Color(0xFF1A1A1A).withValues(alpha: 0.8),
-                ],
-              ),
+              color: const Color(0xFF2A2A2A),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.12),
@@ -1398,19 +1351,28 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
             ),
           ),
           
-          // Time info
+          // Time info + scan-count badge (when the QR has a live redirect)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             height: 20,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                timeAgo,
-                style: TextStyle(
-                  color: Colors.grey[500],
-                  fontSize: 11,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    timeAgo,
+                    style: TextStyle(
+                      color: Colors.grey[500],
+                      fontSize: 11,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
+                if ((qrEntity.scanCount ?? 0) > 0)
+                  _ScanCountBadge(
+                    count: qrEntity.scanCount!,
+                    lastScannedAt: qrEntity.lastScannedAt,
+                  ),
+              ],
             ),
           ),
           
@@ -1545,7 +1507,6 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
             ),
           ),
         ),
-      ),
     );
   }
 
@@ -1564,14 +1525,8 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
     setState(() => _processingFavorites.add(qrEntity.id));
 
     try {
-      // First, ensure the controller has the latest data
-      final user = ref.read(authStateProvider);
-      if (user != null) {
-        // Load user QR codes to ensure controller state is synced
-        await ref.read(qrLibraryControllerProvider.notifier).loadUserQRCodes(user.id);
-      }
-
-      // Toggle favorite using the controller
+      // Toggle directly — the previous pre-load (full loadUserQRCodes before
+      // every toggle) doubled the Supabase round-trips per tap for no benefit.
       await ref.read(qrLibraryControllerProvider.notifier).toggleFavorite(qrEntity.id);
 
       // Refresh the user QR codes provider to get updated data
@@ -1724,17 +1679,14 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
 
   /// Navigate to [RedirectEditScreen] for URL-type QR codes.
   ///
-  /// QRCodeEntity does not currently carry a slug field; an empty string is
-  /// passed and the screen shows a "no redirect linked" message. This is a
-  /// known follow-up: add the slug column to qr_codes + expose it on the
-  /// entity model so the slug can be passed here directly.
+  /// Passes the real slug when the QR has a linked redirect (requires the
+  /// redirects.qr_code_id migration); falls back to '' which the screen
+  /// renders as "no redirect linked".
   void _editRedirectDestination(QRCodeEntity qrEntity) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => RedirectEditScreen(
-          // TODO(follow-up): replace '' with qrEntity.slug once
-          // QRCodeEntity carries the slug field.
-          slug: '',
+          slug: qrEntity.slug ?? '',
         ),
       ),
     );
@@ -1874,4 +1826,77 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
     }
   }
 
+}
+/// Keeps a PageView page alive across swipes so tab content isn't disposed
+/// and rebuilt (with re-fetches and replayed animations) on every tab change.
+class _KeepAlivePage extends StatefulWidget {
+  final Widget child;
+
+  const _KeepAlivePage({required this.child});
+
+  @override
+  State<_KeepAlivePage> createState() => _KeepAlivePageState();
+}
+
+class _KeepAlivePageState extends State<_KeepAlivePage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
+  }
+}
+
+/// Neon scan-count badge shown on library cards for QRs with a live
+/// scanqraft.app redirect ("12 · 3h"). The count is the variable reward
+/// that turns the library from an archive into a feed.
+class _ScanCountBadge extends StatelessWidget {
+  final int count;
+  final DateTime? lastScannedAt;
+
+  const _ScanCountBadge({required this.count, this.lastScannedAt});
+
+  String _compactAgo(DateTime t) {
+    final d = DateTime.now().difference(t);
+    if (d.inMinutes < 60) return '${d.inMinutes}m';
+    if (d.inHours < 24) return '${d.inHours}h';
+    return '${d.inDays}d';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ago = lastScannedAt != null ? ' · ${_compactAgo(lastScannedAt!)}' : '';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+      decoration: BoxDecoration(
+        color: const Color(0xFF00FF88).withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: const Color(0xFF00FF88).withValues(alpha: 0.35),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.bolt_rounded,
+            color: Color(0xFF00FF88),
+            size: 11,
+          ),
+          const SizedBox(width: 2),
+          Text(
+            '$count$ago',
+            style: const TextStyle(
+              color: Color(0xFF00FF88),
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

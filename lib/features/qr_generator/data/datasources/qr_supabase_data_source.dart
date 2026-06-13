@@ -7,6 +7,15 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
 
   QRSupabaseDataSource({required this.client});
 
+  /// Embedded select pulling each QR's redirect metadata (slug, scan stats).
+  /// Requires the redirects.qr_code_id FK (migration 20260612000001).
+  static const _selectWithRedirects =
+      '*, redirects(slug, scan_count, last_scanned_at)';
+
+  /// Flips to false the first time the embedded select fails (FK migration
+  /// not applied yet) so subsequent fetches skip the doomed join.
+  static bool _redirectJoinAvailable = true;
+
   @override
   Future<QRCodeModel> saveQRCode(QRCodeModel qrCode) async {
     try {
@@ -24,6 +33,24 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
 
   @override
   Future<List<QRCodeModel>> getUserQRCodes(String userId) async {
+    if (_redirectJoinAvailable) {
+      try {
+        final response = await client
+            .from('qr_codes')
+            .select(_selectWithRedirects)
+            .eq('user_id', userId)
+            .order('created_at', ascending: false);
+
+        return (response as List)
+            .map((json) => QRCodeModel.fromJson(json))
+            .toList();
+      } on PostgrestException {
+        // Relationship missing (migration 20260612000001 not applied yet) —
+        // degrade to the plain select and stop attempting the join.
+        _redirectJoinAvailable = false;
+      }
+    }
+
     try {
       final response = await client
           .from('qr_codes')

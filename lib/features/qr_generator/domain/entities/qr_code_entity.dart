@@ -14,6 +14,14 @@ class QRCodeEntity extends Equatable {
   final String userId;
   final bool isFavorite;
 
+  /// Dynamic-redirect metadata, populated from the `redirects` table when
+  /// this QR has a scanqraft.app/{slug} redirect minted (engraved orders,
+  /// RDR-01). All null for purely static QRs or until the redirects link
+  /// migration (20260612000001) is applied.
+  final String? slug;
+  final int? scanCount;
+  final DateTime? lastScannedAt;
+
   const QRCodeEntity({
     required this.id,
     required this.name,
@@ -25,7 +33,14 @@ class QRCodeEntity extends Equatable {
     required this.updatedAt,
     required this.userId,
     this.isFavorite = false,
+    this.slug,
+    this.scanCount,
+    this.lastScannedAt,
   });
+
+  /// True when this QR is dynamic — it has a scanqraft.app redirect whose
+  /// destination can be edited after engraving.
+  bool get isDynamic => slug != null && slug!.isNotEmpty;
 
   QRCodeEntity copyWith({
     String? id,
@@ -38,6 +53,9 @@ class QRCodeEntity extends Equatable {
     DateTime? updatedAt,
     String? userId,
     bool? isFavorite,
+    String? slug,
+    int? scanCount,
+    DateTime? lastScannedAt,
   }) {
     return QRCodeEntity(
       id: id ?? this.id,
@@ -50,6 +68,9 @@ class QRCodeEntity extends Equatable {
       updatedAt: updatedAt ?? this.updatedAt,
       userId: userId ?? this.userId,
       isFavorite: isFavorite ?? this.isFavorite,
+      slug: slug ?? this.slug,
+      scanCount: scanCount ?? this.scanCount,
+      lastScannedAt: lastScannedAt ?? this.lastScannedAt,
     );
   }
 
@@ -65,6 +86,9 @@ class QRCodeEntity extends Equatable {
         updatedAt,
         userId,
         isFavorite,
+        slug,
+        scanCount,
+        lastScannedAt,
       ];
 }
 
