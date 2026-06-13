@@ -22,7 +22,6 @@ class CartSummaryWidget extends ConsumerWidget {
     return Semantics(
       identifier: 'cart_summary_widget',
       child: Container(
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 0),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: const Color(0xFF2E2E2E),

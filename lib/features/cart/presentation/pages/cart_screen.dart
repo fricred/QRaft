@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../providers/cart_providers.dart';
 import '../widgets/cart_item_tile.dart';
 import '../widgets/cart_summary_widget.dart';
 import '../../../checkout/presentation/pages/shipping_screen.dart';
+
+String _formatCop(int pesos) =>
+    NumberFormat.currency(locale: 'es_CO', symbol: r'$', decimalDigits: 0)
+        .format(pesos);
 
 /// Full cart screen showing the current user's cart items with quantity
 /// controls, remove action, empty state, and a loading shimmer.
@@ -46,6 +52,7 @@ class CartScreen extends ConsumerWidget {
           // disabled while totals are still loading to prevent tapping
           // before server-computed amounts are confirmed.
           final totalsReady = totalsAsync.hasValue && !totalsAsync.isLoading;
+          final totalCop = totalsAsync.value?.totalCop;
 
           return Column(
             children: [
@@ -54,8 +61,11 @@ class CartScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(16),
                   itemCount: items.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (_, index) =>
-                      CartItemTile(item: items[index]),
+                  itemBuilder: (_, index) => CartItemTile(
+                    key: ValueKey(items[index].id),
+                    item: items[index],
+                    index: index,
+                  ),
                 ),
               ),
               Padding(
@@ -69,7 +79,11 @@ class CartScreen extends ConsumerWidget {
                     Semantics(
                       identifier: 'cart_proceed_to_checkout_button',
                       child: PrimaryGlassButton(
-                        text: 'Proceder al pago',
+                        // Surface the total in the CTA so the user confirms
+                        // the amount with the action itself.
+                        text: totalsReady && totalCop != null
+                            ? 'Pagar ${_formatCop(totalCop)}'
+                            : 'Proceder al pago',
                         width: double.infinity,
                         isLoading: false,
                         // Disabled when totals not yet loaded or cart is empty.
@@ -151,14 +165,39 @@ class CartScreen extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.shopping_cart_outlined,
-              color: Colors.grey[600],
-              size: 64,
-            ),
-            const SizedBox(height: 20),
+            Container(
+              width: 104,
+              height: 104,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2E2E2E),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: const Color(0xFF00FF88).withValues(alpha: 0.25),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF00FF88).withValues(alpha: 0.12),
+                    blurRadius: 32,
+                    spreadRadius: 4,
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.shopping_cart_outlined,
+                color: Color(0xFF00FF88),
+                size: 48,
+              ),
+            )
+                .animate(onPlay: (c) => c.repeat(reverse: true))
+                .scaleXY(
+                  begin: 1.0,
+                  end: 1.05,
+                  duration: 2000.ms,
+                  curve: Curves.easeInOut,
+                ),
+            const SizedBox(height: 24),
             const Text(
-              'Tu carrito está vacio',
+              'Tu carrito está vacío',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -167,17 +206,21 @@ class CartScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Agrega productos desde el catalogo',
+              'Graba tus QR en madera, metal, acrílico y más',
+              textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey[400], fontSize: 14),
             ),
             const SizedBox(height: 28),
             PrimaryGlassButton(
-              text: 'Ver catalogo',
-              width: 200,
+              text: 'Explorar catálogo',
+              width: 220,
               onPressed: () => Navigator.of(context).pop(),
             ),
           ],
-        ),
+        )
+            .animate()
+            .fadeIn(duration: 350.ms, curve: Curves.easeOutCubic)
+            .slideY(begin: 0.08, duration: 350.ms, curve: Curves.easeOutQuart),
       ),
     );
   }
