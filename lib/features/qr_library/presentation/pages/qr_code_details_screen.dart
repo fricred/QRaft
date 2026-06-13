@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:math' show log;
-import 'dart:ui';
+import 'dart:ui' show ImageByteFormat, PictureRecorder;
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
@@ -292,30 +292,28 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
               ),
               child: ClipRRect(
                 borderRadius: buttonRadius,
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2E2E2E).withValues(alpha: 0.7),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2A2A2A),
+                    borderRadius: buttonRadius,
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: onPressed,
                       borderRadius: buttonRadius,
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: onPressed,
-                        borderRadius: buttonRadius,
-                        child: Center(
-                          child: isLoading
-                              ? SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(iconColor),
-                                  ),
-                                )
-                              : Icon(icon, color: iconColor, size: 22),
-                        ),
+                      child: Center(
+                        child: isLoading
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor:
+                                      AlwaysStoppedAnimation<Color>(iconColor),
+                                ),
+                              )
+                            : Icon(icon, color: iconColor, size: 22),
                       ),
                     ),
                   ),
