@@ -20,6 +20,7 @@ import '../../domain/entities/qr_type.dart';
 import '../../domain/services/qr_decoration_builder.dart';
 import '../../domain/value_objects/qr_profile.dart';
 import '../controllers/qr_customization_controller.dart';
+import '../widgets/content_inputs.dart';
 import '../providers/qr_providers.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
 import '../../../qr_library/presentation/providers/qr_library_providers.dart';
@@ -287,6 +288,14 @@ startDateTime: _typedEventDate ??
         // Preserved from the original QR when editing.
         // Moving the start moves the original end by the same amount (never end < start).
         endDateTime: (() {
+          // An end time picked in the sheet ("HH:MM", same day; earlier = next day).
+          final pickedEnd = RegExp(r'^(\d{1,2}):(\d{2})$').firstMatch((_formData['eventEnd'] as String? ?? '').trim());
+          if (pickedEnd != null) {
+            final s = _typedEventDate ?? (_formData['dateTime'] as DateTime?) ?? _defaultEventStart;
+            var e = DateTime(s.year, s.month, s.day, int.parse(pickedEnd[1]!), int.parse(pickedEnd[2]!));
+            if (!e.isAfter(s)) e = e.add(const Duration(days: 1));
+            return e;
+          }
           final end = _formData['endDateTime'] as DateTime?;
           final origStart = _formData['dateTime'] as DateTime?;
           final typed = _typedEventDate;
@@ -2608,20 +2617,20 @@ class _DataSheetState extends State<_DataSheet> {
         multi: false,
         keyboard: TextInputType.text,
       ),
+      (
+        key: 'body',
+        label: 'Message',
+        hint: 'Hi, I would like to…',
+        required: false,
+        multi: true,
+        keyboard: TextInputType.multiline,
+      ),
     ],
     QRType.location => [
       (
         key: 'name',
         label: 'QR Name',
         hint: 'e.g. Office',
-        required: false,
-        multi: false,
-        keyboard: TextInputType.text,
-      ),
-      (
-        key: 'locName',
-        label: 'Place name',
-        hint: 'Coffee Shop',
         required: false,
         multi: false,
         keyboard: TextInputType.text,
@@ -2647,6 +2656,14 @@ class _DataSheetState extends State<_DataSheet> {
           signed: true,
           decimal: true,
         ),
+      ),
+      (
+        key: 'locName',
+        label: 'Place name',
+        hint: 'Coffee Shop',
+        required: false,
+        multi: false,
+        keyboard: TextInputType.text,
       ),
     ],
     QRType.event => [
@@ -2681,6 +2698,22 @@ class _DataSheetState extends State<_DataSheet> {
         required: false,
         multi: false,
         keyboard: TextInputType.text,
+      ),
+      (
+        key: 'eventEnd',
+        label: 'Ends',
+        hint: '',
+        required: false,
+        multi: false,
+        keyboard: TextInputType.datetime,
+      ),
+      (
+        key: 'description',
+        label: 'Description',
+        hint: 'Details, dress code, what to bring…',
+        required: false,
+        multi: true,
+        keyboard: TextInputType.multiline,
       ),
     ],
     QRType.personalInfo => [
@@ -2749,6 +2782,31 @@ class _DataSheetState extends State<_DataSheet> {
     return deviceIsSpanish()
         ? 'Escribe una dirección web válida, sin espacios (ej. tunegocio.com)'
         : 'Enter a valid web address, without spaces (e.g. yourbusiness.com)';
+  }
+
+  /// Map / date pickers / place suggestions instead of plain text for these keys.
+  /// They write the same keys (lat, lng, eventDate, eventEnd, location), so saving is unchanged.
+  Widget? _specialInput(String key) {
+    void changed() => setState(() {});
+    switch ((widget.qrType, key)) {
+      case (QRType.location, 'lat'):
+        return LocationPickField(lat: _ctrls['lat']!, lng: _ctrls['lng']!, name: _ctrls['locName']!, onChanged: changed);
+      case (QRType.location, 'lng'):
+      case (QRType.event, 'eventEnd'):
+        return const SizedBox.shrink();
+      case (QRType.event, 'eventDate'):
+        return EventWhenField(
+          start: _ctrls['eventDate']!,
+          end: _ctrls['eventEnd']!,
+          fallbackStart: widget.initialData['dateTime'] as DateTime?,
+          fallbackEnd: widget.initialData['endDateTime'] as DateTime?,
+          onChanged: changed,
+        );
+      case (QRType.event, 'location'):
+        return PlaceAutocompleteField(controller: _ctrls['location']!, label: _trField('Location'), hint: _trField('Conference Room B'), onChanged: changed);
+      default:
+        return null;
+    }
   }
 
   void _save() {
@@ -2826,6 +2884,12 @@ class _DataSheetState extends State<_DataSheet> {
                   ..._fields.indexed.map((entry) {
                     final (i, f) = entry;
                     final isLast = i == _fields.length - 1;
+                    final special = _specialInput(f.key);
+                    if (special != null) {
+                      return special is SizedBox
+                          ? special
+                          : Padding(padding: const EdgeInsets.only(bottom: 12), child: special);
+                    }
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Semantics(
