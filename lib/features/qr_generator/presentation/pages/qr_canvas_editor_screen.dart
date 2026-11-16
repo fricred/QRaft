@@ -28,6 +28,8 @@ import '../../../subscription/presentation/providers/subscription_providers.dart
 import '../../../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
 import '../../../dynamic_qr/presentation/checkout_screen.dart';
 import '../../../dynamic_qr/presentation/save_kind_sheet.dart';
+import '../../../dynamic_qr/data/dynamic_qr_repository.dart' show DynamicQrException;
+import '../../../dynamic_qr/presentation/dq_ui.dart' show dynamicUrlProblem, dynamicQrErrorText;
 
 // ── Design Tokens ──────────────────────────────────────────────────────────────
 const _kBg = Color(0xFF1A1A1A);
@@ -822,6 +824,17 @@ startDateTime: _typedEventDate ??
   /// New dynamic QR: same name/design/content as a static save, paid in its own checkout.
   Future<void> _saveAsDynamic() async {
     final dataModel = _buildDataModel()!;
+    if (dataModel is URLData) {
+      final problem = dynamicUrlProblem(dataModel.url);
+      if (problem != null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(dynamicQrErrorText(context, DynamicQrException(problem))),
+          duration: const Duration(seconds: 6),
+        ));
+        _openDataSheet();
+        return;
+      }
+    }
     final ctrl = ref.read(qrCustomizationControllerProvider.notifier);
     ctrl.updateFrameText(switch (_frameKind) {
       'none' => null,
@@ -2734,8 +2747,8 @@ class _DataSheetState extends State<_DataSheet> {
     final v = _ctrls['url']?.text ?? '';
     if (v.trim().isEmpty || isPlausibleUrl(v)) return null;
     return deviceIsSpanish()
-        ? 'Escribe una dirección web válida, sin espacios (ej. scanqraft.app)'
-        : 'Enter a valid web address, without spaces (e.g. scanqraft.app)';
+        ? 'Escribe una dirección web válida, sin espacios (ej. tunegocio.com)'
+        : 'Enter a valid web address, without spaces (e.g. yourbusiness.com)';
   }
 
   void _save() {

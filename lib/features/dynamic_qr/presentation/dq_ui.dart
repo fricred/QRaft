@@ -148,13 +148,50 @@ class DynamicStatusChip extends StatelessWidget {
   }
 }
 
+const _kShortenerHosts = {
+  'bit.ly', 'bitly.com', 'tinyurl.com', 't.co', 'goo.gl', 'ow.ly', 'is.gd', 'buff.ly', 'cutt.ly',
+  'rebrand.ly', 'shorturl.at', 'tiny.cc', 'rb.gy', 's.id', 't.ly', 'v.gd', 'shorte.st', 'adf.ly',
+};
+
+/// Same host rules as the server's `validateContent` (supabase/functions/_shared/dynamic_qr.ts),
+/// checked before checkout so the owner fixes the link in the editor instead of a failed payment.
+/// Returns the server error code, or null when the URL is acceptable.
+String? dynamicUrlProblem(String url) {
+  final raw = url.trim();
+  final uri = Uri.tryParse(raw.contains('://') ? raw : 'https://$raw');
+  if (uri == null || uri.host.isEmpty) return null; // the form validator handles malformed URLs
+  final host = uri.host.toLowerCase().replaceFirst(RegExp(r'^www\.'), '');
+  if (host == 'scanqraft.app' || host.endsWith('.scanqraft.app')) return 'own_domain_not_allowed';
+  if (_kShortenerHosts.contains(host)) return 'shortener_not_allowed';
+  return null;
+}
+
+/// Error codes caused by what the code shows (fixable in the editor), not by the payment.
+bool isDynamicContentError(Object error) =>
+    error is DynamicQrException &&
+    const {
+      'invalid_url', 'shortener_not_allowed', 'own_domain_not_allowed', 'unsafe_url', 'content_too_long', 'empty_content',
+      'invalid_vcard', 'invalid_event', 'invalid_wifi', 'invalid_email', 'invalid_location', 'invalid_type',
+    }.contains(error.code);
+
+/// Content rejected by a safety rule (hidden or dangerous destination), as opposed to a typo.
+bool isDynamicSecurityError(Object error) =>
+    error is DynamicQrException && const {'shortener_not_allowed', 'unsafe_url'}.contains(error.code);
+
 /// User-facing message for a `dynamic-qr` function error code.
 String dynamicQrErrorText(BuildContext context, Object error) {
   final code = error is DynamicQrException ? error.code : 'server_error';
   return switch (code) {
     'invalid_url' => dqT(context, 'Escribe una dirección web válida, sin espacios.', 'Enter a valid web address, without spaces.'),
-    'shortener_not_allowed' => dqT(context, 'Usa el link final, no un acortador (bit.ly, tinyurl…).', 'Use the final link, not a shortener (bit.ly, tinyurl…).'),
-    'unsafe_url' => dqT(context, 'Ese link está marcado como peligroso por Google. Usa otro.', 'Google flags that link as dangerous. Use another one.'),
+    'shortener_not_allowed' => dqT(context,
+        'Por seguridad no aceptamos links acortados (bit.ly, tinyurl…): esconden a dónde lleva el código. Pega el link final de la página.',
+        "For safety we don't accept shortened links (bit.ly, tinyurl…): they hide where the code leads. Paste the page's final link."),
+    'own_domain_not_allowed' => dqT(context,
+        'Ese link es de QRaft (scanqraft.app): el código se apuntaría a sí mismo. Pon la web a la que quieres llevar a la gente, por ejemplo la de tu negocio.',
+        "That's a QRaft link (scanqraft.app): the code would point to itself. Enter the website you want people to land on, e.g. your business site."),
+    'unsafe_url' => dqT(context,
+        'Por seguridad bloqueamos este link: Google lo tiene marcado como peligroso (phishing o malware). Usa otro.',
+        'For safety we blocked this link: Google flags it as dangerous (phishing or malware). Use another one.'),
     'content_too_long' => dqT(context, 'El contenido es demasiado largo.', 'The content is too long.'),
     'empty_content' || 'invalid_vcard' || 'invalid_event' || 'invalid_wifi' || 'invalid_email' || 'invalid_location' =>
       dqT(context, 'Revisa los datos: falta algo o no es válido.', 'Check the details: something is missing or invalid.'),

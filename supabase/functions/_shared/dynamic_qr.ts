@@ -28,8 +28,8 @@ const MAX_PAYLOAD = 4000;
 const BLOCKED_HOSTS = new Set([
   "bit.ly", "bitly.com", "tinyurl.com", "t.co", "goo.gl", "ow.ly", "is.gd", "buff.ly", "cutt.ly",
   "rebrand.ly", "shorturl.at", "tiny.cc", "rb.gy", "s.id", "t.ly", "v.gd", "shorte.st", "adf.ly",
-  "scanqraft.app",
 ]);
+const OWN_HOSTS = new Set(["scanqraft.app"]);
 
 export type Validation = { ok: true } | { ok: false; error: string };
 
@@ -43,6 +43,7 @@ export function validateContent(type: string, payload: unknown): Validation {
       const url = safeHttpUrl(payload);
       if (!url) return { ok: false, error: "invalid_url" };
       const host = new URL(url).hostname.toLowerCase().replace(/^www\./, "");
+      if (OWN_HOSTS.has(host) || host.endsWith(".scanqraft.app")) return { ok: false, error: "own_domain_not_allowed" };
       if (BLOCKED_HOSTS.has(host)) return { ok: false, error: "shortener_not_allowed" };
       return { ok: true };
     }

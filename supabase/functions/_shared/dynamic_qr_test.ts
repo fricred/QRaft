@@ -4,7 +4,7 @@ import { validateContent } from "./dynamic_qr.ts";
 Deno.test("validateContent per type", () => {
   assertEquals(validateContent("url", "https://cafe.co/menu"), { ok: true });
   assertEquals(validateContent("url", "https://bit.ly/x"), { ok: false, error: "shortener_not_allowed" });
-  assertEquals(validateContent("url", "https://www.scanqraft.app/abc"), { ok: false, error: "shortener_not_allowed" });
+  assertEquals(validateContent("url", "https://www.scanqraft.app/abc"), { ok: false, error: "own_domain_not_allowed" });
   assertEquals(validateContent("url", "javascript:alert(1)"), { ok: false, error: "invalid_url" });
   assertEquals(validateContent("bogus", "x"), { ok: false, error: "invalid_type" });
   assertEquals(validateContent("text", "   "), { ok: false, error: "empty_content" });

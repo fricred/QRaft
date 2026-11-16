@@ -40,6 +40,8 @@ class DynamicQrCheckoutScreen extends ConsumerStatefulWidget {
 class _DynamicQrCheckoutScreenState extends ConsumerState<DynamicQrCheckoutScreen> {
   _Step _step = _Step.summary;
   String? _error;
+  bool _contentError = false; // the server rejected the content: fix it in the editor, no retry
+  bool _securityError = false; // ...because of a safety rule (shortener, flagged URL)
   late String? _redirectId = widget.pendingRedirectId;
   late String? _slug = widget.pendingSlug;
 
@@ -49,6 +51,8 @@ class _DynamicQrCheckoutScreenState extends ConsumerState<DynamicQrCheckoutScree
     setState(() {
       _step = _Step.working;
       _error = null;
+      _contentError = false;
+      _securityError = false;
     });
     final repo = ref.read(dynamicQrRepositoryProvider);
     try {
@@ -68,6 +72,8 @@ class _DynamicQrCheckoutScreenState extends ConsumerState<DynamicQrCheckoutScree
       setState(() {
         _step = _Step.failed;
         _error = dynamicQrErrorText(context, e);
+        _contentError = isDynamicContentError(e);
+        _securityError = isDynamicSecurityError(e);
       });
       return;
     }
@@ -209,7 +215,7 @@ class _DynamicQrCheckoutScreenState extends ConsumerState<DynamicQrCheckoutScree
           TextButton(
             style: TextButton.styleFrom(foregroundColor: kDqMuted, minimumSize: const Size.fromHeight(48)),
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text(dqT(context, 'Mejor guardarlo como estático (gratis)', 'Save it as static instead (free)')),
+            child: Text(dqT(context, 'Volver al editor', 'Back to the editor')),
           ),
       ],
     );
@@ -306,20 +312,34 @@ class _DynamicQrCheckoutScreenState extends ConsumerState<DynamicQrCheckoutScree
         ],
       );
 
-  Widget _failed() => _centered(
-        key: const ValueKey('failed'),
-        icon: Icons.error_outline_rounded,
-        color: kDqError,
-        title: dqT(context, 'No se completó el pago', "The payment didn't go through"),
-        body: _error ?? '',
-        actions: [
-          _primary(dqT(context, 'Intentar de nuevo', 'Try again'), _pay, key: const Key('dynamic_checkout_retry_button')),
-          _secondary(
-            _created ? dqT(context, 'Pagar después', 'Pay later') : dqT(context, 'Guardarlo como estático (gratis)', 'Save it as static (free)'),
-            () => Navigator.of(context).pop(_created),
-          ),
-        ],
-      );
+  Widget _failed() => _contentError
+      ? _centered(
+          key: const ValueKey('content_error'),
+          icon: _securityError ? Icons.gpp_bad_rounded : Icons.edit_note_rounded,
+          color: kDqAmber,
+          title: _securityError
+              ? dqT(context, 'Link bloqueado por seguridad', 'Link blocked for safety')
+              : dqT(context, 'Revisa lo que mostrará', 'Check what it will show'),
+          body: '${_error ?? ''}\n\n${dqT(context, 'No se hizo ningún cobro.', 'You were not charged.')}',
+          actions: [
+            _primary(_securityError ? dqT(context, 'Cambiar el link', 'Change the link') : dqT(context, 'Corregir el contenido', 'Fix the content'), () => Navigator.of(context).pop(false),
+                key: const Key('dynamic_checkout_fix_content_button')),
+          ],
+        )
+      : _centered(
+          key: const ValueKey('failed'),
+          icon: Icons.error_outline_rounded,
+          color: kDqError,
+          title: dqT(context, 'No se completó el pago', "The payment didn't go through"),
+          body: _error ?? '',
+          actions: [
+            _primary(dqT(context, 'Intentar de nuevo', 'Try again'), _pay, key: const Key('dynamic_checkout_retry_button')),
+            _secondary(
+              _created ? dqT(context, 'Pagar después', 'Pay later') : dqT(context, 'Volver al editor', 'Back to the editor'),
+              () => Navigator.of(context).pop(_created),
+            ),
+          ],
+        );
 }
 
 /// Opens the checkout for a code that is still `pending_payment`.
