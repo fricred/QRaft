@@ -42,8 +42,13 @@ export function validateContent(type: string, payload: unknown): Validation {
     case "url": {
       const url = safeHttpUrl(payload);
       if (!url) return { ok: false, error: "invalid_url" };
-      const host = new URL(url).hostname.toLowerCase().replace(/^www\./, "");
-      if (OWN_HOSTS.has(host) || host.endsWith(".scanqraft.app")) return { ok: false, error: "own_domain_not_allowed" };
+      const u = new URL(url);
+      // Only scanqraft.app/<slug> (another dynamic code) is refused: chaining codes hides the real
+      // destination, skips that code's checks and can loop. The QRaft website (www, apex root) is fine.
+      if (OWN_HOSTS.has(u.hostname.toLowerCase()) && u.pathname.replace(/\/+$/, "") !== "") {
+        return { ok: false, error: "own_domain_not_allowed" };
+      }
+      const host = u.hostname.toLowerCase().replace(/^www\./, "");
       if (BLOCKED_HOSTS.has(host)) return { ok: false, error: "shortener_not_allowed" };
       return { ok: true };
     }

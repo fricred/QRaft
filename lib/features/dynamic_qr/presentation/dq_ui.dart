@@ -160,8 +160,11 @@ String? dynamicUrlProblem(String url) {
   final raw = url.trim();
   final uri = Uri.tryParse(raw.contains('://') ? raw : 'https://$raw');
   if (uri == null || uri.host.isEmpty) return null; // the form validator handles malformed URLs
+  // Only another dynamic code (scanqraft.app/<slug>) is refused; the QRaft website is a normal destination.
+  if (uri.host.toLowerCase() == 'scanqraft.app' && uri.path.replaceAll(RegExp(r'/+$'), '').isNotEmpty) {
+    return 'own_domain_not_allowed';
+  }
   final host = uri.host.toLowerCase().replaceFirst(RegExp(r'^www\.'), '');
-  if (host == 'scanqraft.app' || host.endsWith('.scanqraft.app')) return 'own_domain_not_allowed';
   if (_kShortenerHosts.contains(host)) return 'shortener_not_allowed';
   return null;
 }
@@ -176,7 +179,7 @@ bool isDynamicContentError(Object error) =>
 
 /// Content rejected by a safety rule (hidden or dangerous destination), as opposed to a typo.
 bool isDynamicSecurityError(Object error) =>
-    error is DynamicQrException && const {'shortener_not_allowed', 'unsafe_url'}.contains(error.code);
+    error is DynamicQrException && const {'shortener_not_allowed', 'unsafe_url', 'own_domain_not_allowed'}.contains(error.code);
 
 /// User-facing message for a `dynamic-qr` function error code.
 String dynamicQrErrorText(BuildContext context, Object error) {
@@ -187,8 +190,8 @@ String dynamicQrErrorText(BuildContext context, Object error) {
         'Por seguridad no aceptamos links acortados (bit.ly, tinyurl…): esconden a dónde lleva el código. Pega el link final de la página.',
         "For safety we don't accept shortened links (bit.ly, tinyurl…): they hide where the code leads. Paste the page's final link."),
     'own_domain_not_allowed' => dqT(context,
-        'Ese link es de QRaft (scanqraft.app): el código se apuntaría a sí mismo. Pon la web a la que quieres llevar a la gente, por ejemplo la de tu negocio.',
-        "That's a QRaft link (scanqraft.app): the code would point to itself. Enter the website you want people to land on, e.g. your business site."),
+        'Ese es el link de otro QR dinámico. Por seguridad no se pueden encadenar: se escondería el destino real. Pega el link final al que quieres llevar a la gente.',
+        "That's another dynamic QR's link. For safety codes can't be chained: it would hide the real destination. Paste the final link you want people to land on."),
     'unsafe_url' => dqT(context,
         'Por seguridad bloqueamos este link: Google lo tiene marcado como peligroso (phishing o malware). Usa otro.',
         'For safety we blocked this link: Google flags it as dangerous (phishing or malware). Use another one.'),
