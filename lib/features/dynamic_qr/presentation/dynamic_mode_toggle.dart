@@ -94,7 +94,7 @@ class DynamicModeToggle extends ConsumerWidget {
               const SizedBox(height: 4),
               Padding(
                 padding: const EdgeInsets.only(left: 36),
-                child: Text(dqT(context, 'Editable · todos los tipos', 'Editable · every type'),
+                child: Text(dqT(context, 'Por código · pago único', 'Per code · one-time'),
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(color: kDqMuted, fontSize: 11, fontWeight: FontWeight.w600)),
               ),

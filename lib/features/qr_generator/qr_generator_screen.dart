@@ -13,7 +13,6 @@ import '../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
 import '../subscription/presentation/widgets/qr_limit_indicator.dart';
 import '../dynamic_qr/presentation/limit_choice_sheet.dart';
 import '../dynamic_qr/presentation/dynamic_mode_toggle.dart';
-import '../dynamic_qr/presentation/purchase_flow.dart';
 
 class QRGeneratorScreen extends ConsumerStatefulWidget {
   const QRGeneratorScreen({super.key, this.initialDynamic = false});
@@ -107,10 +106,19 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
                           dynamic: _dynamic,
                           onChanged: (v) => setState(() => _dynamic = v),
                           staticCaption: Localizations.localeOf(context).languageCode == 'es'
-                              ? (ref.watch(canCreateQRProvider) ? 'Gratis' : 'Requiere Pro')
-                              : (ref.watch(canCreateQRProvider) ? 'Free' : 'Requires Pro'),
+                              ? (ref.watch(canCreateQRProvider) ? 'Gratis · no editable' : 'Requiere Pro')
+                              : (ref.watch(canCreateQRProvider) ? 'Free · not editable' : 'Requires Pro'),
                         ),
 
+                        if (_dynamic) ...[
+                          const SizedBox(height: 12),
+                          Text(
+                            Localizations.localeOf(context).languageCode == 'es'
+                                ? 'Elige con qué empieza tu código. Podrás cambiarlo a cualquier tipo después.'
+                                : 'Pick what your code starts with. You can switch it to any type later.',
+                            style: const TextStyle(color: Color(0xFFB4BCC6), fontSize: 13, height: 1.4),
+                          ),
+                        ],
                         const SizedBox(height: 20),
                       ],
                     ),
@@ -289,17 +297,20 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
                         ),
                       ),
                     ),
+                    // Dynamic mode: no price per tile (the price is per code, shown once in
+                    // the toggle and at checkout) — just a neutral "editable" mark.
                     if (_dynamic)
                       Positioned(
                         top: 8,
                         right: 8,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(color: const Color(0xFF00FF88), borderRadius: BorderRadius.circular(999)),
-                          child: Text(
-                            ref.watch(dynamicQrPackageProvider).value?.storeProduct.priceString ?? 'US\$9.99',
-                            style: const TextStyle(color: Color(0xFF04140D), fontSize: 11, fontWeight: FontWeight.w800),
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00FF88).withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(color: const Color(0xFF00FF88).withValues(alpha: 0.6)),
                           ),
+                          child: const Icon(Icons.sync_rounded, size: 14, color: Color(0xFF00FF88)),
                         ),
                       ),
                     // PRO badge for locked features
