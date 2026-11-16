@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import '../qr_generator/domain/services/qr_decoration_builder.dart';
+import '../qr_generator/domain/services/qr_export_service.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../shared/widgets/glass_button.dart';
 import '../../shared/widgets/animated_favorite_button.dart';
@@ -1620,50 +1620,20 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
     if (_blockedDynamic(qrEntity)) return;
     // Render QR data to a PNG via QrPainter offscreen canvas, then share.
     try {
-      const int size = 900; // 3x the display size for print quality
-
-      final QrPainter painter = QrPainter(
-        data: qrEntity.data,
-        version: QrVersions.auto,
-        gapless: true,
-        eyeStyle: const QrEyeStyle(
-          eyeShape: QrEyeShape.square,
-          color: ui.Color(0xFF000000),
-        ),
-        dataModuleStyle: const QrDataModuleStyle(
-          dataModuleShape: QrDataModuleShape.square,
-          color: ui.Color(0xFF000000),
-        ),
+      // Same design as on screen (gradient, presets, logo) on white, sharp enough to print.
+      final c = qrEntity.customization;
+      final bytes = await QrExportService.exportDigitalOnly(
+        QrDecorationBuilder.buildQrImage(qrEntity.data, c),
+        QrDecorationBuilder.buildDecoration(c),
+        size: 1080,
       );
-
-      final ui.PictureRecorder recorder = ui.PictureRecorder();
-      final Canvas canvas = Canvas(
-        recorder,
-        Rect.fromLTWH(0, 0, size.toDouble(), size.toDouble()),
-      );
-
-      // White background
-      canvas.drawRect(
-        Rect.fromLTWH(0, 0, size.toDouble(), size.toDouble()),
-        Paint()..color = const ui.Color(0xFFFFFFFF),
-      );
-      painter.paint(canvas, const Size(size / 1.0, size / 1.0));
-
-      final ui.Image image = await recorder.endRecording().toImage(size, size);
-      final ByteData? byteData =
-          await image.toByteData(format: ui.ImageByteFormat.png);
-
-      if (byteData == null) {
-        _showShareError('Failed to encode QR image.');
-        return;
-      }
 
       final sanitizedName =
           qrEntity.name.replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '_');
       final fileName =
           'qraft_${sanitizedName}_${DateTime.now().millisecondsSinceEpoch}.png';
       final tmpFile = File('${Directory.systemTemp.path}/$fileName');
-      await tmpFile.writeAsBytes(byteData.buffer.asUint8List());
+      await tmpFile.writeAsBytes(bytes);
 
       // B8: include the scanqraft.app short link when the QR is dynamic.
       // Every share distributes the link — each scan on it feeds the owner's

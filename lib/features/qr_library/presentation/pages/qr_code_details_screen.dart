@@ -1,8 +1,6 @@
 import 'dart:io';
 import 'dart:math' show log;
-import 'dart:ui' show ImageByteFormat, PictureRecorder;
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +9,8 @@ import '../../../../shared/widgets/glass_button.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../qr_generator/domain/entities/qr_code_entity.dart';
 import '../../../qr_generator/domain/entities/qr_type.dart';
+import '../../../qr_generator/domain/services/qr_decoration_builder.dart';
+import '../../../qr_generator/domain/services/qr_export_service.dart';
 import '../../../qr_generator/presentation/controllers/qr_customization_controller.dart';
 import '../../../qr_generator/presentation/pages/qr_canvas_editor_screen.dart';
 import '../../../qr_digital/presentation/pages/qr_widget_pin_page.dart';
@@ -431,41 +431,19 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
       return;
     }
     try {
-      const int size = 900;
-      final painter = QrPainter(
-        data: widget.qrEntity.data,
-        version: QrVersions.auto,
-        gapless: true,
-        eyeStyle: const QrEyeStyle(
-          eyeShape: QrEyeShape.square,
-          color: Color(0xFF000000),
-        ),
-        dataModuleStyle: const QrDataModuleStyle(
-          dataModuleShape: QrDataModuleShape.square,
-          color: Color(0xFF000000),
-        ),
+      // Same design as on screen (gradient, presets, logo) on white, sharp enough to print.
+      final c = widget.qrEntity.customization;
+      final bytes = await QrExportService.exportDigitalOnly(
+        QrDecorationBuilder.buildQrImage(widget.qrEntity.data, c),
+        QrDecorationBuilder.buildDecoration(c),
+        size: 1080,
       );
-
-      final recorder = PictureRecorder();
-      final canvas = Canvas(
-        recorder,
-        Rect.fromLTWH(0, 0, size.toDouble(), size.toDouble()),
-      );
-      canvas.drawRect(
-        Rect.fromLTWH(0, 0, size.toDouble(), size.toDouble()),
-        Paint()..color = const Color(0xFFFFFFFF),
-      );
-      painter.paint(canvas, const Size(size / 1.0, size / 1.0));
-
-      final image = await recorder.endRecording().toImage(size, size);
-      final byteData = await image.toByteData(format: ImageByteFormat.png);
-      if (byteData == null) return;
 
       final sanitized =
           widget.qrEntity.name.replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '_');
       final file = File(
           '${Directory.systemTemp.path}/qraft_${sanitized}_${DateTime.now().millisecondsSinceEpoch}.png');
-      await file.writeAsBytes(byteData.buffer.asUint8List());
+      await file.writeAsBytes(bytes);
 
       final shareText = widget.qrEntity.isDynamic
           ? 'QR: ${widget.qrEntity.name}\nhttps://scanqraft.app/${widget.qrEntity.slug}'
