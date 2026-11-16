@@ -7,7 +7,7 @@
 // Content-Type / CSP come back in X-Qraft-* headers and are restored here.
 
 const FN = "https://cnieotneosdkfzboxazw.supabase.co/functions/v1/redirect/";
-const PASS = ["location", "cache-control", "x-robots-tag", "referrer-policy", "content-disposition", "retry-after", "allow"];
+const PASS = ["location", "cache-control", "x-robots-tag", "referrer-policy", "content-disposition", "retry-after", "allow", "vary"];
 
 export default {
   async fetch(request) {
@@ -25,6 +25,9 @@ export default {
     const headers = { "X-Forwarded-Host": url.hostname };
     const lang = request.headers.get("accept-language");
     if (lang) headers["Accept-Language"] = lang;
+    // The function answers natively per platform (iPhone contact/event sheets, Android intents).
+    const ua = request.headers.get("user-agent");
+    if (ua) headers["User-Agent"] = ua;
     const country = request.cf?.country ?? request.headers.get("cf-ipcountry");
     if (country) headers["X-Country"] = country;
 

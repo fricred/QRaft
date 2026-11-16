@@ -91,8 +91,8 @@ Deno.test("event parse, page and ics", () => {
   assertEquals(ev.start?.floating, true);
   const r = row({ content_type: "vevent", content: { payload: EVENT } });
   const page = respond("x", r, opts());
-  assertStringIncludes(page.body!, "viernes");
-  assertStringIncludes(page.body!, "Agregar al calendario");
+  assertStringIncludes(page.body!, "vie");
+  assertStringIncludes(page.body!, "Agregar a Google Calendar");
   const ics = icsFile(EVENT, "abc12345", now);
   assertStringIncludes(ics, "PRODID:-//QRaft//scanqraft.app//ES\r\n");
   assertStringIncludes(ics, "UID:abc12345@scanqraft.app\r\n");
@@ -104,9 +104,10 @@ Deno.test("event parse, page and ics", () => {
 Deno.test("wifi parse with escapes", () => {
   const w = parseWifi('WIFI:T:WPA;S:Caf\\;e\\:5G;P:p\\\\a\\"ss;H:false;;');
   assertEquals(w, { ssid: "Caf;e:5G", password: 'p\\a"ss', security: "WPA", hidden: false });
-  const page = respond("x", row({ content_type: "wifi", content: { payload: "WIFI:T:WPA;S:Home;P:secret;H:false;;" } }), opts());
+  const page = respond("x", row({ content_type: "wifi", content: { payload: "WIFI:T:WPA;S:Home;P:secret;H:false;;" } }), { ...opts(), platform: "ios" });
   assertStringIncludes(page.body!, "Copiar contraseña");
-  assertStringIncludes(page.body!, "secret");
+  assertStringIncludes(page.body!, '<strong id="v2" class="mono">secret</strong>');
+  assertStringIncludes(page.body!, 'data-copy="v2"');
 });
 
 Deno.test("email parse rejects junk", () => {

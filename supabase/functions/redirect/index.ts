@@ -3,12 +3,13 @@
 // (supabase/config.toml has verify_jwt = false for this function): scanners send no JWT.
 //
 // What each state answers lives in render.ts (pure, unit-tested):
-//   active link/location → 302 (no-store) · other types → 200 page (+ ?dl=vcf / ?dl=ics)
+//   active link/location → 302 (iPhone location → Apple Maps) · iPhone contact/event → the .vcf/.ics
+//   itself (Safari's native sheet) · other types → 200 page with native buttons (+ ?dl=, ?view=page)
 //   paused / pending_payment → 200 notice · unknown → 404 · revoked → 410 · blocked → 451
 //   lookup failure → 503 + Retry-After. Only real views of active codes count as scans.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { errorOutcome, pickLang, type RedirectRow, respond } from "./render.ts";
+import { detectPlatform, errorOutcome, pickLang, type RedirectRow, respond } from "./render.ts";
 
 const SLUG = /^[a-z0-9-]{1,64}$/;
 
@@ -65,7 +66,14 @@ Deno.serve(async (req: Request): Promise<Response> => {
     row = data as RedirectRow | null;
   }
 
-  const out = respond(slug, row, { lang, dl: url.searchParams.get("dl"), nonce: n, now: new Date() });
+  const out = respond(slug, row, {
+    lang,
+    dl: url.searchParams.get("dl"),
+    view: url.searchParams.get("view"),
+    platform: detectPlatform(req.headers.get("user-agent")),
+    nonce: n,
+    now: new Date(),
+  });
 
   // HEAD = link previews / scanner pre-checks, not a person scanning.
   if (out.countScan && row && req.method === "GET") {
