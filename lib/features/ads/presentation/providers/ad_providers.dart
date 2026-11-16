@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:qraft/features/ads/constants/ad_unit_ids.dart';
 import 'package:qraft/features/ads/data/services/admob_service.dart';

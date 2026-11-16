@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/entities/product_variant_entity.dart';
+import '../../domain/entities/material_entity.dart';
 
 String _formatCop(int priceCop) =>
     NumberFormat.currency(locale: 'es_CO', symbol: '\$', decimalDigits: 0)
@@ -197,37 +198,37 @@ class _MaterialThumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final material = variant.material;
-    final hasTexture =
-        material.textureUrl.isNotEmpty && material.textureUrl.startsWith('https://');
+    final photo = variant.primaryImage;
+    final photoUrl = photo?.gridUrl ?? '';
+    final hasPhoto = photoUrl.startsWith('https://');
+
+    // Single degradation subtree, used as the `else`, the placeholder AND the
+    // errorWidget — so the photo → texture → gradient chain also covers a photo
+    // that fails at runtime, not just one that is absent from the data.
+    final fallback = _TextureOrGradient(material: material);
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Layer 1: material texture or gradient fallback
-          if (hasTexture)
-            CachedNetworkImage(
-              imageUrl: material.textureUrl,
-              fit: BoxFit.cover,
-              memCacheWidth: 480,
-              placeholder: (_, __) => DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: MaterialGradients.forCategory(material.id),
-                ),
-              ),
-              errorWidget: (_, __, ___) => DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: MaterialGradients.forCategory(material.id),
-                ),
+          // Layer 1: real photo, else material texture, else gradient
+          if (hasPhoto)
+            Semantics(
+              image: true,
+              label: photo!.altTextEs.isEmpty
+                  ? '${variant.productNameEs} en ${material.displayNameEs}'
+                  : photo.altTextEs,
+              child: CachedNetworkImage(
+                imageUrl: photoUrl,
+                fit: BoxFit.cover,
+                memCacheWidth: 480,
+                placeholder: (_, __) => fallback,
+                errorWidget: (_, __, ___) => fallback,
               ),
             )
           else
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: MaterialGradients.forCategory(material.id),
-              ),
-            ),
+            fallback,
 
           // Layer 2: bottom scrim so the chip stays legible on any texture
           DecoratedBox(
@@ -238,35 +239,41 @@ class _MaterialThumbnail extends StatelessWidget {
                 stops: const [0.5, 1.0],
                 colors: [
                   Colors.transparent,
-                  Colors.black.withValues(alpha: 0.45),
+                  // Lighter over a real photo: the scrim exists to keep the
+                  // chip legible, not to dim the product.
+                  Colors.black.withValues(alpha: hasPhoto ? 0.35 : 0.45),
                 ],
               ),
             ),
           ),
 
-          // Layer 3: white engraved-QR plate, centered
-          Center(
-            child: Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.35),
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.qr_code_2_rounded,
-                color: Color(0xFF1A1A1A),
-                size: 40,
+          // Layer 3: simulated engraved-QR plate — only WITHOUT a real photo.
+          // On a photo of the physical product the QR is already engraved into
+          // the image; overlaying a fake plate would stack a second, false
+          // representation on top of a true one.
+          if (!hasPhoto)
+            Center(
+              child: Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.35),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.qr_code_2_rounded,
+                  color: Color(0xFF1A1A1A),
+                  size: 40,
+                ),
               ),
             ),
-          ),
 
           // Layer 4: material chip, bottom-left
           Positioned(
@@ -380,6 +387,36 @@ class ProductVariantCardShimmer extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Material texture, falling back to the material's gradient.
+///
+/// Extracted so it can serve as the `else` branch, the placeholder and the
+/// errorWidget of the real-photo image — making the degradation chain cover
+/// runtime failures, not only missing data.
+class _TextureOrGradient extends StatelessWidget {
+  final MaterialEntity material;
+
+  const _TextureOrGradient({required this.material});
+
+  @override
+  Widget build(BuildContext context) {
+    final gradient = DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: MaterialGradients.forCategory(material.id),
+      ),
+    );
+
+    if (!material.textureUrl.startsWith('https://')) return gradient;
+
+    return CachedNetworkImage(
+      imageUrl: material.textureUrl,
+      fit: BoxFit.cover,
+      memCacheWidth: 480,
+      placeholder: (_, __) => gradient,
+      errorWidget: (_, __, ___) => gradient,
     );
   }
 }

@@ -1,0 +1,23 @@
+appId: io.gothcorp.qraft
+name: generator/landscape-types-visible
+tags:
+  - generator
+  - regression
+  - qraft-14
+# QRAFT-14: in landscape the QR types must stay reachable (header scrolls with the grid).
+# Env: MAESTRO_TEST_EMAIL / MAESTRO_TEST_PASSWORD.
+---
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/login.yaml
+- tapOn:
+    id: "main_scaffold_generate_tab"
+- setOrientation: LANDSCAPE_LEFT
+- waitForAnimationToEnd
+- assertVisible: "(?s)(Website URL|URL del Sitio Web).*"
+- scrollUntilVisible:
+    element: "(?s)(Location|Ubicación).*"
+    direction: DOWN
+    timeout: 15000
+- takeScreenshot: qraft14_landscape
+- setOrientation: PORTRAIT

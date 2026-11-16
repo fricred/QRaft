@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../domain/entities/subscription_plan.dart';
 
 /// Service to sync RevenueCat subscription data with Supabase
 class SubscriptionSyncService {
@@ -47,107 +46,33 @@ class SubscriptionSyncService {
     }
   }
 
-  /// Sync subscription data to Supabase
+  /// Asks the server to re-read this user's plan from RevenueCat and store it.
+  ///
+  /// The plan columns of `users` can only be written server-side (trigger
+  /// protect_subscription_columns), so the app never writes them directly: the
+  /// `sync-subscription` edge function verifies the entitlement with RevenueCat's API.
+  /// The app picks up the change through the users realtime listener.
   Future<void> syncSubscription(String userId, CustomerInfo customerInfo) async {
-    final hasProAccess = customerInfo.entitlements.active.containsKey('pro');
-    final proEntitlement = customerInfo.entitlements.all['pro'];
-
-    // Determine subscription tier
-    SubscriptionTier tier;
-    SubscriptionStatus status;
-    String? productId;
-    SubscriptionPeriod? periodType;
-    DateTime? expiresAt;
-    DateTime? purchaseDate;
-
-    if (hasProAccess && proEntitlement != null) {
-      tier = SubscriptionTier.pro;
-      status = _mapEntitlementStatus(proEntitlement);
-      productId = proEntitlement.productIdentifier;
-      periodType = _mapPeriodType(proEntitlement.productIdentifier);
-
-      if (proEntitlement.expirationDate != null) {
-        expiresAt = DateTime.parse(proEntitlement.expirationDate!);
-      }
-
-      purchaseDate = DateTime.parse(proEntitlement.latestPurchaseDate);
-    } else {
-      tier = SubscriptionTier.free;
-      status = SubscriptionStatus.active;
-    }
-
-    // Update Supabase
-    final updateData = {
-      'subscription_plan': tier.name,
-      'subscription_status': _statusToString(status),
-      'subscription_expires_at': expiresAt?.toIso8601String(),
-      'subscription_product_id': productId,
-      'subscription_period_type': periodType?.name,
-      'original_purchase_date': purchaseDate?.toIso8601String(),
-      'revenuecat_customer_id': customerInfo.originalAppUserId,
-      'last_verified_at': DateTime.now().toIso8601String(),
-    };
-
-    await _supabase
-        .from('users')
-        .update(updateData)
-        .eq('id', userId);
-
-    debugPrint('SubscriptionSync: Updated user $userId - tier: ${tier.name}, status: ${status.name}');
-  }
-
-  /// Map RevenueCat entitlement to subscription status
-  SubscriptionStatus _mapEntitlementStatus(EntitlementInfo entitlement) {
-    if (entitlement.willRenew) {
-      return SubscriptionStatus.active;
-    }
-
-    if (entitlement.unsubscribeDetectedAt != null) {
-      return SubscriptionStatus.cancelled;
-    }
-
-    if (entitlement.billingIssueDetectedAt != null) {
-      return SubscriptionStatus.billingIssue;
-    }
-
-    // Check if expired
-    if (entitlement.expirationDate != null) {
-      final expiry = DateTime.parse(entitlement.expirationDate!);
-      if (DateTime.now().isAfter(expiry)) {
-        return SubscriptionStatus.expired;
-      }
-    }
-
-    return SubscriptionStatus.active;
-  }
-
-  /// Map product ID to period type
-  SubscriptionPeriod? _mapPeriodType(String productId) {
-    if (productId.contains('monthly')) {
-      return SubscriptionPeriod.monthly;
-    } else if (productId.contains('annual') || productId.contains('yearly')) {
-      return SubscriptionPeriod.annual;
-    } else if (productId.contains('lifetime')) {
-      return SubscriptionPeriod.lifetime;
-    }
-    return null;
-  }
-
-  /// Convert status enum to database string
-  String _statusToString(SubscriptionStatus status) {
-    switch (status) {
-      case SubscriptionStatus.active:
-        return 'active';
-      case SubscriptionStatus.expired:
-        return 'expired';
-      case SubscriptionStatus.cancelled:
-        return 'cancelled';
-      case SubscriptionStatus.trial:
-        return 'trial';
-      case SubscriptionStatus.billingIssue:
-        return 'billing_issue';
+    final res = await _supabase.functions.invoke('sync-subscription');
+    debugPrint('SubscriptionSync: server sync for $userId -> ${res.status} ${res.data}');
+    // The server reads RevenueCat at most once every ~20s per user. If this call was
+    // throttled (e.g. right after a purchase), re-check once the window has passed so
+    // the new state isn't missed even if the webhook is slow.
+    final data = res.data;
+    if (data is Map && data['throttled'] == true) {
+      _retryTimer?.cancel();
+      _retryTimer = Timer(const Duration(seconds: 21), () async {
+        if (_supabase.auth.currentUser?.id != userId) return;
+        try {
+          await _supabase.functions.invoke('sync-subscription');
+        } catch (e) {
+          debugPrint('SubscriptionSync: retry failed - $e');
+        }
+      });
     }
   }
+
+  Timer? _retryTimer;
 
   /// Force sync current subscription state
   Future<void> forceSync() async {
@@ -164,6 +89,7 @@ class SubscriptionSyncService {
 
   /// Dispose resources
   void dispose() {
+    _retryTimer?.cancel();
     stopListening();
   }
 }

@@ -93,7 +93,9 @@ class QrPickerSheet extends ConsumerWidget {
                   title: 'No pudimos cargar tus QRs',
                   subtitle: 'Revisa tu conexión e intenta de nuevo',
                 ),
-                data: (qrCodes) {
+                data: (allQrCodes) {
+                  // Only codes that scan to real content can be engraved.
+                  final qrCodes = allQrCodes.where((q) => q.isPrintable).toList();
                   if (qrCodes.isEmpty) {
                     return _EmptyLibrary(
                       onCreate: () {

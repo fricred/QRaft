@@ -62,7 +62,7 @@ class OperatorOrderRow extends Equatable {
   /// client-side against [kSlaThresholds].
   factory OperatorOrderRow.fromMap(Map<String, dynamic> m) {
     final status = m['status'] as String? ?? '';
-    final createdAt = DateTime.parse(m['created_at'] as String);
+    final createdAt = DateTime.parse(m['created_at'] as String).toLocal();
     final age = DateTime.now().difference(createdAt);
     final sla = kSlaThresholds[status];
     final isStale = sla != null && age > sla;

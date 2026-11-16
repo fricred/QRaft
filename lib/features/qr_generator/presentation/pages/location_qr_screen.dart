@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -311,6 +312,7 @@ class _LocationQRScreenState extends ConsumerState<LocationQRScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -1318,7 +1320,7 @@ class _LocationQRScreenState extends ConsumerState<LocationQRScreen>
     if (widget.editingQRCode == null) {
       final canCreate = ref.read(canCreateQRProvider);
       if (!canCreate) {
-        UpgradeBottomSheet.show(context);
+        UpgradeBottomSheet.show(context, freeLimit: ref.read(qrLimitProvider));
         return;
       }
     }
@@ -1646,6 +1648,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         backgroundColor: const Color(0xFF1A1A1A),
         elevation: 0,
         leading: IconButton(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),

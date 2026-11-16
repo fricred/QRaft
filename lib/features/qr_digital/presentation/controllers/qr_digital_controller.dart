@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -134,7 +134,7 @@ class QrDigitalController extends StateNotifier<QrDigitalState> {
         name: 'qraft_qr.gif',
         mimeType: 'image/gif',
       );
-      await Share.shareXFiles([xFile]);
+      await SharePlus.instance.share(ShareParams(files: [xFile]));
 
       state = state.copyWith(isExporting: false, gifBytes: gifBytes);
     } catch (e) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/friendly_error.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/widgets/glass_button.dart';
@@ -78,6 +79,7 @@ class _TextQRScreenState extends ConsumerState<TextQRScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -829,7 +831,7 @@ class _TextQRScreenState extends ConsumerState<TextQRScreen>
     if (widget.editingQRCode == null) {
       final canCreate = ref.read(canCreateQRProvider);
       if (!canCreate) {
-        UpgradeBottomSheet.show(context);
+        UpgradeBottomSheet.show(context, freeLimit: ref.read(qrLimitProvider));
         return;
       }
     }
@@ -928,7 +930,7 @@ class _TextQRScreenState extends ConsumerState<TextQRScreen>
               children: [
                 const Icon(Icons.error, color: Colors.white),
                 const SizedBox(width: 8),
-                Expanded(child: Text(l10n?.failedToSaveQR(e.toString()) ?? 'Failed to save QR code: ${e.toString()}')),
+                Expanded(child: Text(l10n?.failedToSaveQR(friendlyErrorMessage(e, spanish: Localizations.localeOf(context).languageCode == 'es')) ?? friendlyErrorMessage(e, spanish: Localizations.localeOf(context).languageCode == 'es'))),
               ],
             ),
             backgroundColor: const Color(0xFFEF4444),

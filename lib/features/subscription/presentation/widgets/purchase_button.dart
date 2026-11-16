@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:qraft/l10n/app_localizations.dart';
 
 import '../../domain/entities/purchase_product.dart';
 
@@ -57,7 +58,7 @@ class PurchaseButton extends StatelessWidget {
                   ),
                 )
               : Text(
-                  _getButtonText(),
+                  _getButtonText(context),
                   style: TextStyle(
                     color: isEnabled ? Colors.black : Colors.white54,
                     fontSize: 16,
@@ -69,18 +70,12 @@ class PurchaseButton extends StatelessWidget {
     );
   }
 
-  String _getButtonText() {
-    if (product == null) return 'Select a plan';
-
-    if (product!.hasFreeTrial) {
-      return 'Start ${product!.trialDays}-Day Free Trial';
-    }
-
-    if (product!.isLifetime) {
-      return 'Purchase Lifetime Access';
-    }
-
-    return 'Subscribe Now';
+  String _getButtonText(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    if (product == null) return l10n.selectPlan;
+    if (product!.hasFreeTrial) return l10n.startFreeTrial(product!.trialDays ?? 0);
+    if (product!.isLifetime) return l10n.purchaseLifetimeAccess;
+    return l10n.subscribeNow;
   }
 }
 
@@ -113,7 +108,7 @@ class RestorePurchasesButton extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Restoring...',
+                  AppLocalizations.of(context)!.restoring,
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 14,
@@ -122,7 +117,7 @@ class RestorePurchasesButton extends StatelessWidget {
               ],
             )
           : Text(
-              'Restore Purchases',
+              AppLocalizations.of(context)!.restorePurchases,
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.6),
                 fontSize: 14,

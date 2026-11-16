@@ -1,6 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker_android/image_picker_android.dart';
+import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,7 +14,9 @@ import 'core/services/observability_service.dart';
 import 'features/splash/splash_screen.dart';
 import 'features/auth/presentation/pages/auth_flow.dart';
 import 'features/auth/presentation/widgets/forgot_password_dialog.dart';
+import 'features/auth/presentation/pages/reset_password_screen.dart';
 import 'features/auth/data/providers/supabase_auth_provider.dart';
+import 'core/utils/friendly_error.dart';
 import 'features/main/main_scaffold.dart';
 import 'features/subscription/presentation/providers/purchase_providers.dart';
 import 'features/ads/presentation/providers/ad_providers.dart';
@@ -27,8 +32,13 @@ import 'package:qraft/l10n/app_localizations.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  _enableAndroidPhotoPicker();
+
   // Initialize Supabase before starting the app
   await initializeApp();
+
+  // QRAFT-3: know before the first frame whether a password recovery is pending.
+  await SupabaseAuthProvider.preloadRecoveryFlag();
 
   // Register background message handler BEFORE runApp.
   // FCM requires this to be called as early as possible so the background
@@ -36,6 +46,22 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(firebaseBackgroundMessageHandler);
 
   runApp(const ProviderScope(child: QRaftApp()));
+}
+
+/// Opts every `image_picker` gallery call into the Android Photo Picker.
+///
+/// image_picker_android still defaults `useAndroidPhotoPicker` to false and
+/// falls back to the legacy ACTION_GET_CONTENT chooser. The Photo Picker is the
+/// selector Google's Photo and Video Permissions policy points apps at for
+/// one-off picks: it needs no runtime permission, and it is backported to older
+/// releases through Google Play services. The flag is global, so setting it
+/// once here covers every pickImage call in the app.
+void _enableAndroidPhotoPicker() {
+  if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
+  final picker = ImagePickerPlatform.instance;
+  if (picker is ImagePickerAndroid) {
+    picker.useAndroidPhotoPicker = true;
+  }
 }
 
 Future<void> initializeApp() async {
@@ -93,6 +119,9 @@ class _QRaftAppState extends ConsumerState<QRaftApp> {
   @override
   Widget build(BuildContext context) {
     final locale = ref.watch(localeProvider);
+    // Messages built without a BuildContext (auth errors, notices) follow the app's
+    // chosen language, not the OS one.
+    appLanguageCode = locale.languageCode;
 
     // Trigger AdMob init only after UMP resolves. (D-04)
     // adMobInitProvider is idempotent (see AdMobService.initialize()).
@@ -157,6 +186,7 @@ class AuthWrapper extends ConsumerStatefulWidget {
 
 class _AuthWrapperState extends ConsumerState<AuthWrapper> {
   String? _lastUserId;
+  bool _recoveryRoutesCleared = false;
 
   @override
   Widget build(BuildContext context) {
@@ -168,10 +198,22 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
     ref.watch(deepLinkHandlerProvider);
 
     // Initialize RevenueCat, Subscription Realtime, and FCM when user authenticates
-    if (currentUser != null && _lastUserId != currentUser.id) {
+    // A recovery session for another account while someone was signed in: stop the
+    // previous user's services so nothing stays bound to them during the reset.
+    if (authProvider.isRecovering && _lastUserId != null && _lastUserId != currentUser?.id) {
+      _lastUserId = null;
+      Future.microtask(() {
+        stopSubscriptionRealtime(ref);
+        logoutRevenueCat(ProviderScope.containerOf(context, listen: false));
+        ObservabilityService.clearUserId();
+      });
+    }
+
+    // Not for a password-recovery session: services start once a real session exists.
+    if (currentUser != null && !authProvider.isRecovering && _lastUserId != currentUser.id) {
       _lastUserId = currentUser.id;
       Future.microtask(() {
-        initializeRevenueCat(ref, currentUser.id);
+        initializeRevenueCat(ProviderScope.containerOf(context, listen: false), currentUser.id);
         startSubscriptionRealtime(ref, currentUser.id);
         // Register FCM token now that a user is signed in (Phase 10 plan 01).
         ref.read(fcmServiceProvider).initialize();
@@ -185,12 +227,31 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
       _lastUserId = null;
       Future.microtask(() {
         stopSubscriptionRealtime(ref);
+        // Unbind RevenueCat from the signed-out user so a shared device never shows or
+        // records purchases against them.
+        logoutRevenueCat(ProviderScope.containerOf(context, listen: false));
         // Clear observability user identity on sign-out.
         ObservabilityService.clearUserId();
       });
     }
 
-    if (authProvider.isLoading) {
+    if (!authProvider.isRecovering) _recoveryRoutesCleared = false;
+    // QRAFT-3: a recovery link opens a temporary session; force a new-password step.
+    if (authProvider.isRecovering) {
+      // Close any route pushed above home (editor, sheets, dialogs) so the recovery
+      // session cannot keep using the app without choosing a new password.
+      // Only once per recovery, so dialogs the reset screen opens are not closed later.
+      if (!_recoveryRoutesCleared) {
+        _recoveryRoutesCleared = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          appNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+        });
+      }
+      return const ResetPasswordScreen();
+    }
+
+    // A request while signed in (e.g. sign-out) still uses the full-screen spinner.
+    if (authProvider.isLoading && currentUser != null) {
       return const Scaffold(
         backgroundColor: Color(0xFF1A1A1A),
         body: Center(
@@ -200,43 +261,57 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
         ),
       );
     }
-    
-    if (authProvider.errorMessage != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.error_outline, color: Colors.white, size: 18),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    authProvider.errorMessage!,
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: const Color(0xFFEF4444),
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            duration: const Duration(seconds: 4),
-          ),
-        );
-      });
-    }
 
     if (currentUser != null) {
-      // User is authenticated, show home screen
+      // Errors raised while signed in (e.g. sign-out failing offline) still need a
+      // visible message; the auth-flow listener is not mounted here.
+      final notice = authProvider.takeNotice();
+      if (notice != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+            SnackBar(
+              content: Text(notice, style: const TextStyle(color: Colors.white, fontSize: 14)),
+              backgroundColor: const Color(0xFF14532D),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        });
+      }
+      final error = authProvider.takeErrorForSnackbar();
+      if (error != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+            SnackBar(
+              content: Text(error, style: const TextStyle(color: Colors.white, fontSize: 14)),
+              backgroundColor: const Color(0xFFB42318),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        });
+      }
       return const MainScaffold();
-    } else {
-      // User is not authenticated, show auth flow
-      return AuthFlowWithListeners(
-        l10n: l10n,
-        authProvider: authProvider,
-      );
     }
+
+    // QRAFT-4: the auth flow is ALWAYS the first child of the same Stack, so a login or
+    // sign-up in flight only adds an overlay and never rebuilds AuthFlow (which would reset
+    // the user to the welcome screen and drop what they typed). Errors and notices are
+    // shown by AuthFlowWithListeners' listener, once per change.
+    return Stack(
+      children: [
+        AuthFlowWithListeners(l10n: l10n, authProvider: authProvider),
+        if (authProvider.isLoading)
+          const Positioned.fill(
+            child: ColoredBox(
+              color: Color(0x99000000),
+              child: Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF00FF88)),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
   }
 }
 
@@ -254,32 +329,57 @@ class AuthFlowWithListeners extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Listen to auth provider changes for UI feedback
     ref.listen<SupabaseAuthProvider>(supabaseAuthProvider, (previous, next) {
-      // Clear any previous error messages
-      if (previous?.errorMessage != null && next.errorMessage == null) {
+      // Each error is shown once, after its request finished (the provider tracks it;
+      // previous/next are the same ChangeNotifier instance, so they can't be compared).
+      final error = next.takeErrorForSnackbar();
+      if (error != null) {
         ScaffoldMessenger.of(context).clearSnackBars();
-      }
-      
-      // Show error messages
-      if (next.errorMessage != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(next.errorMessage!),
-            backgroundColor: Colors.red[700],
+            content: Text(
+              error,
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+            backgroundColor: const Color(0xFFB42318),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            action: SnackBarAction(
-              label: 'Dismiss',
-              textColor: Colors.white,
-              onPressed: () {
-                authProvider.clearError();
-                ScaffoldMessenger.of(context).clearSnackBars();
-              },
-            ),
+            // QRAFT-15: an unconfirmed account gets a way out: resend the email.
+            action: next.unconfirmedEmail != null
+                ? SnackBarAction(
+                    label: Localizations.localeOf(context).languageCode == 'es'
+                        ? 'Reenviar correo'
+                        : 'Resend email',
+                    textColor: Colors.white,
+                    onPressed: () => authProvider.resendConfirmation(),
+                  )
+                : SnackBarAction(
+                    label: MaterialLocalizations.of(context).closeButtonLabel,
+                    textColor: Colors.white,
+                    onPressed: () {
+                      authProvider.clearError();
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                    },
+                  ),
+            duration: Duration(seconds: next.unconfirmedEmail != null ? 10 : 4),
+          ),
+        );
+      }
+
+      // Non-error notices (e.g. "confirm your email" after sign-up), shown once.
+      final notice = next.takeNotice();
+      if (notice != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(notice),
+            backgroundColor: const Color(0xFF14532D),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 8),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
       }
     });
-    
+
     return AuthFlow(
       onLogin: (email, password) async {
         await authProvider.signIn(

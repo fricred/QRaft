@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'material_entity.dart';
+import 'product_image_entity.dart';
 
 class ProductVariantEntity extends Equatable {
   final String id;
@@ -16,6 +17,12 @@ class ProductVariantEntity extends Equatable {
   final String? sku;
   final bool isActive;
 
+  /// Real product photos for this variant, already ordered most-specific-first.
+  ///
+  /// Defaults to empty so every existing call site keeps compiling and the UI
+  /// degrades to the material texture / gradient it uses today.
+  final List<ProductImageEntity> images;
+
   const ProductVariantEntity({
     required this.id,
     required this.productId,
@@ -30,7 +37,36 @@ class ProductVariantEntity extends Equatable {
     required this.priceCop,
     this.sku,
     this.isActive = true,
+    this.images = const [],
   });
+
+  /// The photo to lead with, or null when this variant has none yet.
+  ProductImageEntity? get primaryImage => images.isEmpty ? null : images.first;
+
+  /// True when a real photograph is available, as opposed to the simulated
+  /// material preview. Callers use this to drop the fake engraved-QR plate.
+  bool get hasRealPhoto =>
+      (primaryImage?.gridUrl ?? '').startsWith('https://');
+
+  /// Returns a copy carrying [images]; photos are attached after the variant is
+  /// parsed, since they come from a separate query.
+  ProductVariantEntity withImages(List<ProductImageEntity> images) =>
+      ProductVariantEntity(
+        id: id,
+        productId: productId,
+        productSlug: productSlug,
+        productNameEs: productNameEs,
+        productNameEn: productNameEn,
+        productDescriptionEs: productDescriptionEs,
+        material: material,
+        sizeLabel: sizeLabel,
+        widthMm: widthMm,
+        heightMm: heightMm,
+        priceCop: priceCop,
+        sku: sku,
+        isActive: isActive,
+        images: images,
+      );
 
   /// Returns true when this variant's material is `tattoo_transfer`.
   ///

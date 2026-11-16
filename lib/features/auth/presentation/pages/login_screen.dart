@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../widgets/auth_header.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../shared/widgets/qraft_logo.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
 import 'package:qraft/l10n/app_localizations.dart';
@@ -68,94 +68,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           SafeArea(
             child: Column(
               children: [
-                // Top section with back button and header
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    children: [
-                      // Back button row
-                      Row(
-                        children: [
-                          IconButton(
-                            onPressed: widget.onBackPressed,
-                            icon: const Icon(
-                              Icons.arrow_back_ios_rounded,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            style: IconButton.styleFrom(
-                              backgroundColor: const Color(0xFF2E2E2E),
-                              padding: const EdgeInsets.all(10),
-                              minimumSize: const Size(40, 40),
-                            ),
-                          ).animate()
-                            .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
-                            .slideX(begin: -0.15, duration: 300.ms, curve: Curves.easeOutQuart),
-                        ],
-                      ),
-                      
-                      const SizedBox(height: 20),
-                      
-                      // Compact header
-                      Row(
-                        children: [
-                          // Small logo
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF1A73E8), Color(0xFF00FF88)],
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFF00FF88).withValues(alpha: 0.2),
-                                  blurRadius: 8,
-                                  spreadRadius: 1,
-                                ),
-                              ],
-                            ),
-                            child: const QRaftLogo(
-                              size: 32,
-                              primaryColor: Colors.white,
-                            ),
-                          ),
-                          
-                          const SizedBox(width: 16),
-                          
-                          // Title and subtitle in row
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.welcomeBack,
-                                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 24,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  l10n.signInToContinue,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Colors.grey[400],
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ).animate()
-                        .fadeIn(duration: 300.ms, delay: 100.ms, curve: Curves.easeOutCubic)
-                        .slideY(begin: 0.15, duration: 300.ms, delay: 100.ms, curve: Curves.easeOutQuart),
-                    ],
-                  ),
+                // One-row header that compacts while the keyboard is open
+                AuthHeader(
+                  title: l10n.welcomeBack,
+                  subtitle: l10n.signInToContinue,
+                  onBack: widget.onBackPressed,
                 ),
-                
+
                 // Form section - takes remaining space
                 Expanded(
                   child: SingleChildScrollView(
@@ -246,6 +165,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     textInputAction: TextInputAction.done,
                                     onSubmitted: _handleLogin,
                                     suffixIcon: IconButton(
+                                      tooltip: (Localizations.localeOf(context).languageCode == 'es') ? (_obscurePassword ? 'Mostrar contraseña' : 'Ocultar contraseña') : (_obscurePassword ? 'Show password' : 'Hide password'),
                                       onPressed: () {
                                         setState(() => _obscurePassword = !_obscurePassword);
                                       },

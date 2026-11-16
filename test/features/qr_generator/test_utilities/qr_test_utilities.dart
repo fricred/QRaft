@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart'; // Override moved here in Riverpod 3
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:geolocator/geolocator.dart';
@@ -225,14 +226,11 @@ class QRTestHelpers {
     required String name,
     required List<String> emails,
   }) {
-    final contact = Contact();
-    contact.displayName = name;
-    contact.emails = emails.map((email) {
-      final emailObj = Email('');
-      emailObj.address = email;
-      return emailObj;
-    }).toList();
-    return contact;
+    // Contact is immutable in flutter_contacts 2.x — build it in one shot.
+    return Contact(
+      displayName: name,
+      emails: emails.map((email) => Email(address: email)).toList(),
+    );
   }
   
   /// Creates a provider container with overrides for testing

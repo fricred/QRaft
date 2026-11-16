@@ -6,7 +6,7 @@ import 'package:qraft/l10n/app_localizations.dart';
 import '../../../shared/widgets/glass_button.dart';
 import '../providers/qr_scanner_provider.dart';
 import '../models/scan_result.dart';
-import 'scan_result_dialog.dart';
+import '../scan_result_screen.dart';
 import '../../subscription/presentation/providers/subscription_providers.dart';
 import '../../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
 import '../../ads/ads.dart';
@@ -29,6 +29,8 @@ class ScanHistoryScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
+          // Accessible name for screen readers and test automation (QRAFT-17).
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
         ),
@@ -539,10 +541,7 @@ class ScanHistoryScreen extends ConsumerWidget {
   }
 
   void _showScanResultDialog(BuildContext context, ScanResult scanResult) {
-    showDialog(
-      context: context,
-      builder: (context) => ScanResultDialog(scanResult: scanResult),
-    );
+    ScanResultScreen.push(context, scanResult);
   }
 
   void _deleteScanResult(WidgetRef ref, String scanId) {

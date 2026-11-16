@@ -1,0 +1,44 @@
+appId: io.gothcorp.qraft
+name: generator/save-first-qr-new-user
+tags:
+  - generator
+  - regression
+  - qraft-1
+# QRAFT-1: a brand-new (just confirmed) user must be able to save their first QR.
+#
+# Sign-up requires email confirmation, so this flow starts from an account that was just
+# created and confirmed and has 0 QR codes (MAESTRO_TEST_EMAIL / MAESTRO_TEST_PASSWORD).
+# Before the fix this first save failed with RLS 42501 / FK 23503 shown raw on screen.
+#
+# Keyboard-first: tap only the first field, then type and advance with the keyboard's
+# action key (pressKey: Enter); the last field's action key closes the data sheet.
+---
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/login.yaml
+- tapOn:
+    id: "main_scaffold_generate_tab"
+# Type cards expose title + description on several lines, hence (?s).
+- tapOn: "(?s)(Website URL|URL del Sitio Web).*"
+# Step 1: pick a style (Classic is preselected).
+- tapOn: "(?s)(Continue|Continuar).*"
+# Step 2: the canvas editor. Fill the data sheet with the keyboard.
+- tapOn: "(?s)(Add data|Agregar datos|Añadir datos).*"
+- tapOn:
+    id: "qr_data_name_field"
+- inputText: "Maestro primer QR"
+- pressKey: Enter
+- inputText: "https://scanqraft.app"
+- pressKey: Enter
+- waitForAnimationToEnd
+- takeScreenshot: qraft1_before_save
+- tapOn:
+    id: "qr_editor_save_button"
+# Raw server errors must never reach the screen.
+- assertNotVisible:
+    text: "(?s).*(row-level security|PostgrestException|foreign key|violates|42501|23503).*"
+- extendedWaitUntil:
+    visible:
+      text: "(?s).*(saved|guardado).*"
+    timeout: 10000
+- takeScreenshot: qraft1_saved

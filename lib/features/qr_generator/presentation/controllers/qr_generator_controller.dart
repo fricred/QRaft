@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../../../../core/services/observability_service.dart';
 import '../../domain/entities/qr_code_entity.dart';
 import '../../domain/entities/qr_data_models.dart';

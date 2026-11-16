@@ -181,11 +181,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sendResetLink => 'Send';
 
   @override
-  String get emailSent => 'Email Sent!';
+  String get emailSent => 'Check your email';
 
   @override
   String checkEmailForReset(String email) {
-    return 'We\'ve sent a password reset link to $email. Please check your email and follow the instructions to reset your password.';
+    return 'If $email has a QRaft account, we sent it a link to reset your password. Check your spam folder too.';
   }
 
   @override
@@ -413,6 +413,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gallery => 'Gallery';
+
+  @override
+  String get noQRFoundInImage =>
+      'We couldn\'t find a QR code in that photo. Try an image where the code is fully visible and in focus.';
 
   @override
   String get chooseFromPhotos => 'Choose from photos';
@@ -1941,4 +1945,70 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get redirectDestinationUpdated =>
       'Redirect destination updated successfully';
+
+  @override
+  String get scanResultTitle => 'Result';
+
+  @override
+  String get scanResultSuccess => 'Code scanned!';
+
+  @override
+  String get scanResultContent => 'Content';
+
+  @override
+  String get scanResultDetails => 'Details';
+
+  @override
+  String get scanResultScanAgain => 'Scan another';
+
+  @override
+  String get qrTypeUrl => 'Website';
+
+  @override
+  String get qrTypePhone => 'Phone';
+
+  @override
+  String get qrTypeSms => 'SMS message';
+
+  @override
+  String get qrTypeVcard => 'Contact';
+
+  @override
+  String get qrActionOpen => 'Open';
+
+  @override
+  String get qrActionConnect => 'Connect';
+
+  @override
+  String get qrActionSaveContact => 'Save contact';
+
+  @override
+  String get qrActionEmail => 'Send email';
+
+  @override
+  String get qrActionCall => 'Call';
+
+  @override
+  String get qrActionMessage => 'Send message';
+
+  @override
+  String get qrActionOpenMap => 'View on map';
+
+  @override
+  String get qrActionShare => 'Share';
+
+  @override
+  String get contactSaved => 'Contact saved';
+
+  @override
+  String get unableToPerformAction => 'We couldn\'t complete that action';
+
+  @override
+  String get wifiSsidLabel => 'Network (SSID)';
+
+  @override
+  String get wifiOpenSettings => 'Open WiFi settings';
+
+  @override
+  String get scanTypePlainText => 'Text';
 }

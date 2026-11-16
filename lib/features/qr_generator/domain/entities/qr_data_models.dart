@@ -51,7 +51,9 @@ class PersonalInfoData extends QRDataModel {
       vcard.writeln('URL:$website');
     }
     if (address.isNotEmpty) {
-      vcard.writeln('ADR:;;$address;;;;');
+      // A structured ADR value (from an existing vCard) is kept as-is; plain text goes
+      // into the street slot.
+      vcard.writeln(address.contains(';') ? 'ADR:$address' : 'ADR:;;$address;;;;');
     }
     if (note.isNotEmpty) {
       vcard.writeln('NOTE:$note');
@@ -98,7 +100,9 @@ class WiFiData extends QRDataModel {
 
   @override
   String get qrData {
-    return 'WIFI:T:$security;S:$networkName;P:$password;H:${hidden ? 'true' : 'false'};;';
+    // Escape the WIFI: special characters (\ ; , : ") per the de-facto spec.
+    String esc(String v) => v.replaceAllMapped(RegExp(r'[\\;,:"]'), (m) => '\\${m[0]}');
+    return 'WIFI:T:$security;S:${esc(networkName)};P:${esc(password)};H:${hidden ? 'true' : 'false'};;';
   }
 
   @override

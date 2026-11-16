@@ -54,7 +54,7 @@ class QRLimitIndicator extends ConsumerWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            'Unlimited QR Codes',
+            Localizations.localeOf(context).languageCode == 'es' ? 'Códigos QR ilimitados' : 'Unlimited QR Codes',
             style: TextStyle(
               color: const Color(0xFF00FF88),
               fontSize: compact ? 11 : 13,
@@ -118,7 +118,7 @@ class QRLimitIndicator extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'QR Codes',
+                Localizations.localeOf(context).languageCode == 'es' ? 'Códigos QR' : 'QR Codes',
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.9),
                   fontSize: 14,
@@ -150,8 +150,8 @@ class QRLimitIndicator extends ConsumerWidget {
           const SizedBox(height: 6),
           Text(
             remaining > 0
-                ? '$remaining remaining'
-                : 'Limit reached',
+                ? (Localizations.localeOf(context).languageCode == 'es' ? (remaining == 1 ? 'Te queda 1' : 'Te quedan $remaining') : '$remaining remaining')
+                : (Localizations.localeOf(context).languageCode == 'es' ? 'Límite alcanzado' : 'Limit reached'),
             style: TextStyle(
               color: color.withValues(alpha: 0.8),
               fontSize: 12,

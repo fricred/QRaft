@@ -1,0 +1,23 @@
+appId: io.gothcorp.qraft
+name: generator/url-validation
+tags:
+  - generator
+  - regression
+  - qraft-18
+# QRAFT-18: text that isn't a web address is rejected inline (never previewed as valid).
+# Precondition: the account (MAESTRO_TEST_EMAIL / MAESTRO_TEST_PASSWORD) has room for 1 QR.
+---
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/login.yaml
+- tapOn:
+    id: "main_scaffold_generate_tab"
+- tapOn: "(?s)(Website URL|URL del Sitio Web).*"
+- tapOn: "(?s)(Continue|Continuar).*"
+- tapOn: "(?s)(Add data|Agregar datos|Añadir datos).*"
+- tapOn:
+    id: "qr_data_name_field"
+- pressKey: Enter
+- inputText: "esto no es una url"
+- assertVisible: "(?s).*(valid web address|dirección web válida).*"
+- takeScreenshot: qraft18_invalid_url

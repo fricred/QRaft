@@ -38,7 +38,8 @@ void main() {
       expect(entity.customizationSnapshot, equals(sampleSnapshot));
       expect(entity.pngStorageUrl, isNull);
       expect(entity.quantity, equals(2));
-      expect(entity.addedAt, equals(sampleAddedAt));
+      // Timestamps are read back in local time; compare the instant, not the zone.
+      expect(entity.addedAt.isAtSameMomentAs(sampleAddedAt), isTrue);
 
       // Round-trip: toJson → fromJson should produce equal entity
       final roundTripped = CartItemEntity.fromJson(entity.toJson());

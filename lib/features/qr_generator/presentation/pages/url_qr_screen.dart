@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/friendly_error.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/widgets/glass_button.dart';
@@ -24,10 +25,7 @@ import 'dart:io';
 class URLQRScreen extends ConsumerStatefulWidget {
   final QRCodeEntity? editingQRCode;
 
-  const URLQRScreen({
-    super.key,
-    this.editingQRCode,
-  });
+  const URLQRScreen({super.key, this.editingQRCode});
 
   @override
   ConsumerState<URLQRScreen> createState() => _URLQRScreenState();
@@ -53,8 +51,12 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
         // EDIT MODE: Pre-fill form and customization
         final l10n = AppLocalizations.of(context);
         final urlData = URLData(url: qrToEdit.data);
-        ref.read(urlFormProvider.notifier).loadFromEntity(urlData, qrToEdit.name, l10n);
-        ref.read(qrCustomizationControllerProvider.notifier).loadFromEntity(qrToEdit);
+        ref
+            .read(urlFormProvider.notifier)
+            .loadFromEntity(urlData, qrToEdit.name, l10n);
+        ref
+            .read(qrCustomizationControllerProvider.notifier)
+            .loadFromEntity(qrToEdit);
       } else {
         // CREATE MODE: Reset providers
         ref.read(urlFormProvider.notifier).reset();
@@ -79,13 +81,15 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           widget.editingQRCode != null
-            ? (AppLocalizations.of(context)?.editQRCode ?? 'Edit QR Code')
-            : (AppLocalizations.of(context)?.qrTypeWebsiteUrl ?? 'Website URL QR'),
+              ? (AppLocalizations.of(context)?.editQRCode ?? 'Edit QR Code')
+              : (AppLocalizations.of(context)?.qrTypeWebsiteUrl ??
+                  'Website URL QR'),
           style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -104,7 +108,8 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
             ),
             Tab(
               icon: const Icon(Icons.palette_rounded),
-              text: AppLocalizations.of(context)?.qrFormStepCustomize ?? 'Style',
+              text:
+                  AppLocalizations.of(context)?.qrFormStepCustomize ?? 'Style',
             ),
           ],
         ),
@@ -117,13 +122,13 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
               children: [
                 // Form Tab
                 URLForm(onContinue: () => _tabController.animateTo(1)),
-                
+
                 // Style Tab
                 _buildStyleTab(),
               ],
             ),
           ),
-          
+
           // Bottom action area
           Container(
             padding: const EdgeInsets.all(24),
@@ -140,32 +145,42 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Save button
-                PrimaryGlassButton(
-                  text: widget.editingQRCode != null
-                    ? (AppLocalizations.of(context)?.saveChanges ?? 'Save Changes')
-                    : (AppLocalizations.of(context)?.qrFormButtonSave ?? 'Save QR Code'),
-                  icon: widget.editingQRCode != null ? Icons.check_rounded : Icons.save_rounded,
-                  isLoading: _isSaving,
-                  onPressed: urlState.isValid ? _saveQRCode : null,
-                  width: double.infinity,
+                Semantics(
+                  identifier: 'url_qr_save_button',
+                  button: true,
+                  child: PrimaryGlassButton(
+                    key: const Key("url_qr_save_button"),
+                    text:
+                        widget.editingQRCode != null
+                            ? (AppLocalizations.of(context)?.saveChanges ??
+                                'Save Changes')
+                            : (AppLocalizations.of(context)?.qrFormButtonSave ??
+                                'Save QR Code'),
+                    icon:
+                        widget.editingQRCode != null
+                            ? Icons.check_rounded
+                            : Icons.save_rounded,
+                    isLoading: _isSaving,
+                    onPressed: urlState.isValid ? _saveQRCode : null,
+                    width: double.infinity,
+                  ),
                 ),
 
                 if (urlState.isValid) ...[
                   const SizedBox(height: 12),
                   QrShareButton(
                     repaintKey: repaintKey,
-                    qrName: urlState.name.isNotEmpty ? urlState.name : 'QR Code',
+                    qrName:
+                        urlState.name.isNotEmpty ? urlState.name : 'QR Code',
                   ),
                 ],
 
                 if (!urlState.isValid) ...[
                   const SizedBox(height: 8),
                   Text(
-                    AppLocalizations.of(context)?.qrFormCompleteFields ?? 'Complete the form to save QR code',
-                    style: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 12,
-                    ),
+                    AppLocalizations.of(context)?.qrFormCompleteFields ??
+                        'Complete the form to save QR code',
+                    style: TextStyle(color: Colors.grey[500], fontSize: 12),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -179,87 +194,103 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
 
   Widget _buildStyleTab() {
     final customizationState = ref.watch(qrCustomizationControllerProvider);
-    final customizationController = ref.read(qrCustomizationControllerProvider.notifier);
-    
+    final customizationController = ref.read(
+      qrCustomizationControllerProvider.notifier,
+    );
+
     return Column(
       children: [
         // Header
         Padding(
           padding: const EdgeInsets.all(16),
           child: Text(
-            AppLocalizations.of(context)?.customizeQR ?? 'Customize your QR',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ).animate()
-            .fadeIn(duration: 600.ms)
-            .slideY(begin: -0.3, duration: 600.ms),
+                AppLocalizations.of(context)?.customizeQR ??
+                    'Customize your QR',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+              .animate()
+              .fadeIn(duration: 600.ms)
+              .slideY(begin: -0.3, duration: 600.ms),
         ),
-        
+
         // QR Preview - Fixed at top with expand button
         Container(
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Color(customizationState.customization.backgroundColor),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Color(customizationState.customization.backgroundColor),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // QR Preview
-              _buildQRPreviewWidget(customizationState, isSmallPreview: true),
-              const SizedBox(height: 12),
-              
-              // Expand button
-              if (ref.watch(urlFormProvider).isValid)
-                GestureDetector(
-                  onTap: () => _showFullSizePreview(customizationState),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        width: 1,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.zoom_in_rounded,
-                          color: Colors.white,
-                          size: 16,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // QR Preview
+                  _buildQRPreviewWidget(
+                    customizationState,
+                    isSmallPreview: true,
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Expand button
+                  if (ref.watch(urlFormProvider).isValid)
+                    GestureDetector(
+                      onTap: () => _showFullSizePreview(customizationState),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          AppLocalizations.of(context)?.viewFullSize ?? 'View Full Size',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            width: 1,
                           ),
                         ),
-                      ],
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.zoom_in_rounded,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              AppLocalizations.of(context)?.viewFullSize ??
+                                  'View Full Size',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-            ],
-          ),
-        ).animate()
-          .fadeIn(duration: 800.ms, delay: 200.ms)
-          .scale(begin: const Offset(0.8, 0.8), duration: 800.ms, delay: 200.ms),
-        
+                ],
+              ),
+            )
+            .animate()
+            .fadeIn(duration: 800.ms, delay: 200.ms)
+            .scale(
+              begin: const Offset(0.8, 0.8),
+              duration: 800.ms,
+              delay: 200.ms,
+            ),
+
         // Customization Controls with Tabs
         Expanded(
           child: DefaultTabController(
@@ -293,12 +324,13 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.palette_rounded,
-                              size: 18,
-                            ),
+                            Icon(Icons.palette_rounded, size: 18),
                             const SizedBox(height: 2),
-                            Text(AppLocalizations.of(context)?.styleColors ?? 'Colors', style: TextStyle(fontSize: 10)),
+                            Text(
+                              AppLocalizations.of(context)?.styleColors ??
+                                  'Colors',
+                              style: TextStyle(fontSize: 10),
+                            ),
                           ],
                         ),
                       ),
@@ -311,7 +343,10 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
                               size: 18,
                             ),
                             const SizedBox(height: 2),
-                            Text(AppLocalizations.of(context)?.qrSize ?? 'Size', style: TextStyle(fontSize: 10)),
+                            Text(
+                              AppLocalizations.of(context)?.qrSize ?? 'Size',
+                              style: TextStyle(fontSize: 10),
+                            ),
                           ],
                         ),
                       ),
@@ -319,31 +354,40 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.add_photo_alternate_rounded,
-                              size: 18,
-                            ),
+                            Icon(Icons.add_photo_alternate_rounded, size: 18),
                             const SizedBox(height: 2),
-                            Text(AppLocalizations.of(context)?.logo ?? 'Logo', style: TextStyle(fontSize: 10)),
+                            Text(
+                              AppLocalizations.of(context)?.logo ?? 'Logo',
+                              style: TextStyle(fontSize: 10),
+                            ),
                           ],
                         ),
                       ),
                     ],
                   ),
                 ),
-                
+
                 // Tab Views
                 Expanded(
                   child: TabBarView(
                     children: [
                       // Colors Tab
-                      _buildColorsTabContent(customizationController, customizationState),
-                      
+                      _buildColorsTabContent(
+                        customizationController,
+                        customizationState,
+                      ),
+
                       // Size Tab
-                      _buildSizeTabContent(customizationController, customizationState),
-                      
+                      _buildSizeTabContent(
+                        customizationController,
+                        customizationState,
+                      ),
+
                       // Logo Tab
-                      _buildLogoTabContent(customizationController, customizationState),
+                      _buildLogoTabContent(
+                        customizationController,
+                        customizationState,
+                      ),
                     ],
                   ),
                 ),
@@ -355,10 +399,14 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
     );
   }
 
-  Widget _buildQRPreviewWidget(QRCustomizationState customizationState, {bool isSmallPreview = false}) {
+  Widget _buildQRPreviewWidget(
+    QRCustomizationState customizationState, {
+    bool isSmallPreview = false,
+  }) {
     final urlState = ref.watch(urlFormProvider);
-    final qrSize = isSmallPreview ? 150.0 : customizationState.customization.size;
-    
+    final qrSize =
+        isSmallPreview ? 150.0 : customizationState.customization.size;
+
     if (!urlState.isValid) {
       return Container(
         width: 150,
@@ -374,18 +422,12 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.qr_code_rounded,
-              color: Colors.grey[400],
-              size: 48,
-            ),
+            Icon(Icons.qr_code_rounded, color: Colors.grey[400], size: 48),
             const SizedBox(height: 8),
             Text(
-              AppLocalizations.of(context)?.completeFormToSeePreview ?? 'Complete form\nto see preview',
-              style: TextStyle(
-                color: Colors.grey[400],
-                fontSize: 12,
-              ),
+              AppLocalizations.of(context)?.completeFormToSeePreview ??
+                  'Complete form\nto see preview',
+              style: TextStyle(color: Colors.grey[400], fontSize: 12),
               textAlign: TextAlign.center,
             ),
           ],
@@ -399,23 +441,28 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
         data: ref.read(urlFormProvider.notifier).getFormattedURL(urlState.url),
         version: QrVersions.auto,
         size: qrSize,
-        backgroundColor: Color(customizationState.customization.backgroundColor),
+        backgroundColor: Color(
+          customizationState.customization.backgroundColor,
+        ),
         eyeStyle: QrEyeStyle(
-          eyeShape: customizationState.customization.eyeShape == 0
-              ? QrEyeShape.square
-              : QrEyeShape.circle,
+          eyeShape:
+              customizationState.customization.eyeShape == 0
+                  ? QrEyeShape.square
+                  : QrEyeShape.circle,
           color: Color(customizationState.customization.eyeColor),
         ),
         dataModuleStyle: QrDataModuleStyle(
-          dataModuleShape: customizationState.customization.dataShape == 0
-              ? QrDataModuleShape.square
-              : QrDataModuleShape.circle,
+          dataModuleShape:
+              customizationState.customization.dataShape == 0
+                  ? QrDataModuleShape.square
+                  : QrDataModuleShape.circle,
           color: Color(customizationState.customization.foregroundColor),
         ),
-        embeddedImage: customizationState.customization.hasLogo &&
-                customizationState.customization.logoPath != null
-            ? FileImage(File(customizationState.customization.logoPath!))
-            : null,
+        embeddedImage:
+            customizationState.customization.hasLogo &&
+                    customizationState.customization.logoPath != null
+                ? FileImage(File(customizationState.customization.logoPath!))
+                : null,
         embeddedImageStyle: QrEmbeddedImageStyle(
           size: Size(
             customizationState.customization.logoSize,
@@ -426,7 +473,10 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
     );
   }
 
-  Widget _buildColorsTabContent(QRCustomizationController controller, QRCustomizationState state) {
+  Widget _buildColorsTabContent(
+    QRCustomizationController controller,
+    QRCustomizationState state,
+  ) {
     final colorAccess = ref.watch(colorCustomizationAccessProvider);
 
     return Stack(
@@ -438,13 +488,17 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
               _buildColorRow(
                 AppLocalizations.of(context)?.foregroundColor ?? 'QR Color',
                 Color(state.customization.foregroundColor),
-                colorAccess.isAllowed ? controller.updateForegroundColor : (_) {},
+                colorAccess.isAllowed
+                    ? controller.updateForegroundColor
+                    : (_) {},
               ),
               const SizedBox(height: 20),
               _buildColorRow(
                 AppLocalizations.of(context)?.backgroundColor ?? 'Background',
                 Color(state.customization.backgroundColor),
-                colorAccess.isAllowed ? controller.updateBackgroundColor : (_) {},
+                colorAccess.isAllowed
+                    ? controller.updateBackgroundColor
+                    : (_) {},
               ),
               const SizedBox(height: 20),
               _buildColorRow(
@@ -468,7 +522,10 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
     );
   }
 
-  Widget _buildSizeTabContent(QRCustomizationController controller, QRCustomizationState state) {
+  Widget _buildSizeTabContent(
+    QRCustomizationController controller,
+    QRCustomizationState state,
+  ) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -505,11 +562,26 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('150px', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-              Text(AppLocalizations.of(context)?.sizeSmall ?? 'Small', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-              Text(AppLocalizations.of(context)?.sizeMedium ?? 'Medium', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-              Text(AppLocalizations.of(context)?.sizeLarge ?? 'Large', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-              Text('500px', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+              Text(
+                '150px',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12),
+              ),
+              Text(
+                AppLocalizations.of(context)?.sizeSmall ?? 'Small',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12),
+              ),
+              Text(
+                AppLocalizations.of(context)?.sizeMedium ?? 'Medium',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12),
+              ),
+              Text(
+                AppLocalizations.of(context)?.sizeLarge ?? 'Large',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12),
+              ),
+              Text(
+                '500px',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12),
+              ),
             ],
           ),
         ],
@@ -517,7 +589,10 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
     );
   }
 
-  Widget _buildLogoTabContent(QRCustomizationController controller, QRCustomizationState state) {
+  Widget _buildLogoTabContent(
+    QRCustomizationController controller,
+    QRCustomizationState state,
+  ) {
     final logoAccess = ref.watch(logoInsertionAccessProvider);
 
     return Stack(
@@ -532,38 +607,45 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: state.customization.hasLogo
-                      ? Colors.transparent
-                      : Colors.grey[700],
+                  color:
+                      state.customization.hasLogo
+                          ? Colors.transparent
+                          : Colors.grey[700],
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: Colors.white.withValues(alpha: 0.3),
                     width: 2,
                   ),
                 ),
-                child: state.customization.hasLogo &&
-                       state.customization.logoPath != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(14),
-                        child: Image.file(
-                          File(state.customization.logoPath!),
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.broken_image, color: Colors.grey, size: 48),
+                child:
+                    state.customization.hasLogo &&
+                            state.customization.logoPath != null
+                        ? ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: Image.file(
+                            File(state.customization.logoPath!),
+                            fit: BoxFit.cover,
+                            errorBuilder:
+                                (context, error, stackTrace) => const Icon(
+                                  Icons.broken_image,
+                                  color: Colors.grey,
+                                  size: 48,
+                                ),
+                          ),
+                        )
+                        : Icon(
+                          Icons.add_photo_alternate_rounded,
+                          color: Colors.grey[400],
+                          size: 48,
                         ),
-                      )
-                    : Icon(
-                        Icons.add_photo_alternate_rounded,
-                        color: Colors.grey[400],
-                        size: 48,
-                      ),
               ),
 
               const SizedBox(height: 20),
 
               Text(
                 state.customization.hasLogo
-                    ? (AppLocalizations.of(context)?.logoAddedTitle ?? 'Logo Added')
+                    ? (AppLocalizations.of(context)?.logoAddedTitle ??
+                        'Logo Added')
                     : (AppLocalizations.of(context)?.noLogoTitle ?? 'No Logo'),
                 style: const TextStyle(
                   color: Colors.white,
@@ -576,12 +658,11 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
 
               Text(
                 state.customization.hasLogo
-                    ? (AppLocalizations.of(context)?.logoWillAppearInCenter ?? 'Your logo will appear in the center of the QR code')
-                    : (AppLocalizations.of(context)?.addLogoToPersonalize ?? 'Add a logo to personalize your QR code'),
-                style: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: 14,
-                ),
+                    ? (AppLocalizations.of(context)?.logoWillAppearInCenter ??
+                        'Your logo will appear in the center of the QR code')
+                    : (AppLocalizations.of(context)?.addLogoToPersonalize ??
+                        'Add a logo to personalize your QR code'),
+                style: TextStyle(color: Colors.grey[400], fontSize: 14),
                 textAlign: TextAlign.center,
               ),
 
@@ -595,7 +676,8 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
                       child: SecondaryGlassButton(
                         text: AppLocalizations.of(context)?.remove ?? 'Remove',
                         icon: Icons.delete_outline,
-                        onPressed: logoAccess.isAllowed ? controller.removeLogo : null,
+                        onPressed:
+                            logoAccess.isAllowed ? controller.removeLogo : null,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -603,7 +685,10 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
                       child: SecondaryGlassButton(
                         text: AppLocalizations.of(context)?.change ?? 'Change',
                         icon: Icons.swap_horizontal_circle,
-                        onPressed: logoAccess.isAllowed ? () => _handleAddLogo(controller) : null,
+                        onPressed:
+                            logoAccess.isAllowed
+                                ? () => _handleAddLogo(controller)
+                                : null,
                       ),
                     ),
                   ],
@@ -612,7 +697,10 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
                 PrimaryGlassButton(
                   text: AppLocalizations.of(context)?.addLogo ?? 'Add Logo',
                   icon: Icons.add_photo_alternate,
-                  onPressed: logoAccess.isAllowed ? () => _handleAddLogo(controller) : null,
+                  onPressed:
+                      logoAccess.isAllowed
+                          ? () => _handleAddLogo(controller)
+                          : null,
                   width: double.infinity,
                 ),
               ],
@@ -632,12 +720,21 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
     );
   }
 
-
-  Widget _buildColorRow(String title, Color selectedColor, Function(Color) onChanged) {
+  Widget _buildColorRow(
+    String title,
+    Color selectedColor,
+    Function(Color) onChanged,
+  ) {
     const predefinedColors = [
-      Color(0xFF000000), Color(0xFFFFFFFF), Color(0xFF808080),
-      Color(0xFF1A73E8), Color(0xFF00FF88), Color(0xFF6366F1),
-      Color(0xFFEF4444), Color(0xFFF59E0B), Color(0xFF10B981),
+      Color(0xFF000000),
+      Color(0xFFFFFFFF),
+      Color(0xFF808080),
+      Color(0xFF1A73E8),
+      Color(0xFF00FF88),
+      Color(0xFF6366F1),
+      Color(0xFFEF4444),
+      Color(0xFFF59E0B),
+      Color(0xFF10B981),
     ];
 
     return Column(
@@ -673,31 +770,36 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
               child: Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: predefinedColors.map((color) {
-                  final isSelected = color == selectedColor;
-                  return GestureDetector(
-                    onTap: () => onChanged(color),
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: color,
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(
-                          color: isSelected 
-                              ? const Color(0xFF00FF88)
-                              : Colors.white.withValues(alpha: 0.2),
-                          width: isSelected ? 2 : 1,
+                children:
+                    predefinedColors.map((color) {
+                      final isSelected = color == selectedColor;
+                      return GestureDetector(
+                        onTap: () => onChanged(color),
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: color,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color:
+                                  isSelected
+                                      ? const Color(0xFF00FF88)
+                                      : Colors.white.withValues(alpha: 0.2),
+                              width: isSelected ? 2 : 1,
+                            ),
+                          ),
+                          child:
+                              isSelected
+                                  ? const Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 16,
+                                  )
+                                  : null,
                         ),
-                      ),
-                      child: isSelected ? const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 16,
-                      ) : null,
-                    ),
-                  );
-                }).toList(),
+                      );
+                    }).toList(),
               ),
             ),
           ],
@@ -706,102 +808,110 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
     );
   }
 
-
   void _showFullSizePreview(QRCustomizationState customizationState) {
     showDialog(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.8),
-      builder: (context) => Dialog.fullscreen(
-        backgroundColor: Colors.transparent,
-        child: Stack(
-          children: [
-            // Blur background
-            Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.8),
-              ),
-            ),
-            
-            // QR Code centered with scrollable area
-            Center(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Container(
-                    padding: const EdgeInsets.all(40),
-                    margin: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Color(customizationState.customization.backgroundColor),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.5),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Size indicator
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.3),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '${customizationState.customization.size.toInt()}px',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        
-                        // Full size QR
-                        _buildQRPreviewWidget(customizationState, isSmallPreview: false),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            
-            // Close button
-            Positioned(
-              top: 60,
-              right: 20,
-              child: GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
-                child: Container(
-                  width: 48,
-                  height: 48,
+      builder:
+          (context) => Dialog.fullscreen(
+            backgroundColor: Colors.transparent,
+            child: Stack(
+              children: [
+                // Blur background
+                Container(
+                  width: double.infinity,
+                  height: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.6),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      width: 1,
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.close_rounded,
-                    color: Colors.white,
-                    size: 24,
+                    color: Colors.black.withValues(alpha: 0.8),
                   ),
                 ),
-              ),
+
+                // QR Code centered with scrollable area
+                Center(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Container(
+                        padding: const EdgeInsets.all(40),
+                        margin: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Color(
+                            customizationState.customization.backgroundColor,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.5),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Size indicator
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.3),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                '${customizationState.customization.size.toInt()}px',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+
+                            // Full size QR
+                            _buildQRPreviewWidget(
+                              customizationState,
+                              isSmallPreview: false,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Close button
+                Positioned(
+                  top: 60,
+                  right: 20,
+                  child: GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.6),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -821,7 +931,10 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context)?.logoUpdatedSuccessfully ?? 'Logo updated successfully!'),
+              content: Text(
+                AppLocalizations.of(context)?.logoUpdatedSuccessfully ??
+                    'Logo updated successfully!',
+              ),
               backgroundColor: const Color(0xFF00FF88),
             ),
           );
@@ -831,7 +944,10 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToPickImage(e.toString()) ?? 'Failed to pick image: ${e.toString()}'),
+            content: Text(
+              AppLocalizations.of(context)?.failedToPickImage(e.toString()) ??
+                  'Failed to pick image: ${e.toString()}',
+            ),
             backgroundColor: const Color(0xFFEF4444),
           ),
         );
@@ -846,7 +962,7 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
     if (widget.editingQRCode == null) {
       final canCreate = ref.read(canCreateQRProvider);
       if (!canCreate) {
-        UpgradeBottomSheet.show(context);
+        UpgradeBottomSheet.show(context, freeLimit: ref.read(qrLimitProvider));
         return;
       }
     }
@@ -873,8 +989,12 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
         final controller = ref.read(qrGeneratorControllerProvider.notifier);
         final updatedQR = widget.editingQRCode!.copyWith(
           name: urlState.name,
-          data: ref.read(urlFormProvider.notifier).getFormattedURL(urlState.url),
-          displayData: ref.read(urlFormProvider.notifier).getFormattedURL(urlState.url),
+          data: ref
+              .read(urlFormProvider.notifier)
+              .getFormattedURL(urlState.url),
+          displayData: ref
+              .read(urlFormProvider.notifier)
+              .getFormattedURL(urlState.url),
           customization: customizationState.customization,
           updatedAt: DateTime.now(),
         );
@@ -892,7 +1012,10 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
                 children: [
                   const Icon(Icons.check_circle, color: Colors.white),
                   const SizedBox(width: 8),
-                  Text(l10n?.qrUpdatedSuccess(urlState.name) ?? 'QR code "${urlState.name}" updated successfully!'),
+                  Text(
+                    l10n?.qrUpdatedSuccess(urlState.name) ??
+                        'QR code "${urlState.name}" updated successfully!',
+                  ),
                 ],
               ),
               backgroundColor: const Color(0xFF00FF88),
@@ -924,7 +1047,10 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
                 children: [
                   const Icon(Icons.check_circle, color: Colors.white),
                   const SizedBox(width: 8),
-                  Text(l10n?.qrSavedSuccess(urlState.name) ?? 'QR code "${urlState.name}" saved successfully!'),
+                  Text(
+                    l10n?.qrSavedSuccess(urlState.name) ??
+                        'QR code "${urlState.name}" saved successfully!',
+                  ),
                 ],
               ),
               backgroundColor: const Color(0xFF00FF88),
@@ -944,7 +1070,12 @@ class _URLQRScreenState extends ConsumerState<URLQRScreen>
               children: [
                 const Icon(Icons.error, color: Colors.white),
                 const SizedBox(width: 8),
-                Expanded(child: Text(l10n?.failedToSaveQR(e.toString()) ?? 'Failed to save QR code: ${e.toString()}')),
+                Expanded(
+                  child: Text(
+                    l10n?.failedToSaveQR(friendlyErrorMessage(e, spanish: Localizations.localeOf(context).languageCode == 'es')) ??
+                        friendlyErrorMessage(e, spanish: Localizations.localeOf(context).languageCode == 'es'),
+                  ),
+                ),
               ],
             ),
             backgroundColor: const Color(0xFFEF4444),

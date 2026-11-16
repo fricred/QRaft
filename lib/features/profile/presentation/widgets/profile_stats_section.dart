@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/user_profile_entity.dart';
 import '../../data/providers/profile_stats_providers.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class ProfileStatsSection extends ConsumerWidget {
   final UserProfileEntity? profile;
@@ -17,6 +18,7 @@ class ProfileStatsSection extends ConsumerWidget {
     final qrCodes = ref.watch(userQRCodesProvider);
     final scanHistory = ref.watch(userScanHistoryProvider);
     final orders = ref.watch(userOrdersProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       decoration: BoxDecoration(
@@ -54,8 +56,8 @@ class ProfileStatsSection extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Statistics',
-            style: TextStyle(
+            l10n.statistics,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -68,7 +70,7 @@ class ProfileStatsSection extends ConsumerWidget {
               Expanded(
                 child: _buildStatCard(
                   icon: Icons.qr_code_rounded,
-                  title: 'QR Codes',
+                  title: l10n.qrCodes,
                   value: qrCodes.when(
                     data: (codes) => codes.length.toString(),
                     loading: () => '...',
@@ -81,7 +83,7 @@ class ProfileStatsSection extends ConsumerWidget {
               Expanded(
                 child: _buildStatCard(
                   icon: Icons.qr_code_scanner_rounded,
-                  title: 'Scans',
+                  title: l10n.scans,
                   value: scanHistory.when(
                     data: (scans) => scans.length.toString(),
                     loading: () => '...',
@@ -100,7 +102,7 @@ class ProfileStatsSection extends ConsumerWidget {
               Expanded(
                 child: _buildStatCard(
                   icon: Icons.shopping_bag_rounded,
-                  title: 'Orders',
+                  title: l10n.orders,
                   value: orders.when(
                     data: (orderList) => orderList.length.toString(),
                     loading: () => '...',
@@ -113,7 +115,7 @@ class ProfileStatsSection extends ConsumerWidget {
               Expanded(
                 child: _buildStatCard(
                   icon: Icons.calendar_today_rounded,
-                  title: 'Days Active',
+                  title: l10n.daysActive,
                   value: _calculateDaysActive(),
                   color: const Color(0xFF9C27B0),
                 ),

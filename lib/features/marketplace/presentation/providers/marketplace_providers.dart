@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../data/datasources/product_supabase_data_source.dart';
 import '../../data/repositories/product_repository_impl.dart';

@@ -32,6 +32,6 @@ class CartItemModel extends CartItemEntity {
             (row['customization_snapshot'] as Map<String, dynamic>?) ?? {},
         pngStorageUrl: row['png_storage_url'] as String?,
         quantity: row['quantity'] as int,
-        addedAt: DateTime.parse(row['added_at'] as String),
+        addedAt: DateTime.parse(row['added_at'] as String).toLocal(),
       );
 }

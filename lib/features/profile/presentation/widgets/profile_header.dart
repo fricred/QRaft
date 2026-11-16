@@ -90,7 +90,13 @@ class ProfileHeader extends ConsumerWidget {
               Positioned(
                 bottom: 0,
                 right: 0,
-                child: GestureDetector(
+                child: Semantics(
+                  identifier: 'profile_change_photo_button',
+                  button: true,
+                  label: Localizations.localeOf(context).languageCode == 'es'
+                      ? 'Cambiar foto de perfil'
+                      : 'Change profile photo',
+                  child: GestureDetector(
                   onTap: () => _showPhotoOptions(context, ref),
                   child: Container(
                     width: 32,
@@ -112,6 +118,7 @@ class ProfileHeader extends ConsumerWidget {
                       size: 16,
                     ),
                   ),
+                ),
                 ),
               ),
             ],

@@ -130,27 +130,27 @@ class OrderEntity extends Equatable {
     shippingCity: m['shipping_city'] as String,
     shippingAddress: m['shipping_address'] as String,
     shippingNotes: m['shipping_notes'] as String?,
-    createdAt: DateTime.parse(m['created_at'] as String),
+    createdAt: DateTime.parse(m['created_at'] as String).toLocal(),
     paidAt: m['paid_at'] != null
-        ? DateTime.parse(m['paid_at'] as String)
+        ? DateTime.parse(m['paid_at'] as String).toLocal()
         : null,
     receivedAt: m['received_at'] != null
-        ? DateTime.parse(m['received_at'] as String)
+        ? DateTime.parse(m['received_at'] as String).toLocal()
         : null,
     engravingStartedAt: m['engraving_started_at'] != null
-        ? DateTime.parse(m['engraving_started_at'] as String)
+        ? DateTime.parse(m['engraving_started_at'] as String).toLocal()
         : null,
     engravingDoneAt: m['engraving_done_at'] != null
-        ? DateTime.parse(m['engraving_done_at'] as String)
+        ? DateTime.parse(m['engraving_done_at'] as String).toLocal()
         : null,
     shippedAt: m['shipped_at'] != null
-        ? DateTime.parse(m['shipped_at'] as String)
+        ? DateTime.parse(m['shipped_at'] as String).toLocal()
         : null,
     deliveredAt: m['delivered_at'] != null
-        ? DateTime.parse(m['delivered_at'] as String)
+        ? DateTime.parse(m['delivered_at'] as String).toLocal()
         : null,
     cancelledAt: m['cancelled_at'] != null
-        ? DateTime.parse(m['cancelled_at'] as String)
+        ? DateTime.parse(m['cancelled_at'] as String).toLocal()
         : null,
   );
 

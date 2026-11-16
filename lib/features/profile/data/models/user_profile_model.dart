@@ -30,8 +30,8 @@ class UserProfileModel extends UserProfileEntity {
       website: json['website'] as String?,
       company: json['company'] as String?,
       jobTitle: json['job_title'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
+      updatedAt: DateTime.parse(json['updated_at'] as String).toLocal(),
       preferences: json['preferences'] as Map<String, dynamic>? ?? {},
       statistics: json['statistics'] as Map<String, dynamic>? ?? {},
     );
@@ -49,8 +49,8 @@ class UserProfileModel extends UserProfileEntity {
       'website': website,
       'company': company,
       'job_title': jobTitle,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
+      'created_at': createdAt.toUtc().toIso8601String(),
+      'updated_at': updatedAt.toUtc().toIso8601String(),
       'preferences': preferences,
       'statistics': statistics,
     };

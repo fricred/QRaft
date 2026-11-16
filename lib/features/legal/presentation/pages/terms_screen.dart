@@ -96,7 +96,7 @@ class TermsScreen extends StatelessWidget {
                 '• Pérdida del objeto\n'
                 '• Desgaste normal por uso\n\n'
                 'Para reclamar garantía: Perfil → Garantía 3 meses, o escríbenos a '
-                'soporte@qraft.co indicando tu número de orden.',
+                'support@scanqraft.app indicando tu número de orden.',
               ),
               const Divider(color: Color(0xFF3A3A3A), height: 32),
 

@@ -16,6 +16,17 @@ import 'package:qraft/l10n/app_localizations.dart';
 // The test can verify structural properties of the class.
 import 'package:qraft/features/qr_scanner/qr_scanner_screen.dart';
 
+
+/// testWidgets + teardown: the screen's entrance animations schedule delayed timers, so
+/// unmount the tree and let them expire before the binding checks for pending timers.
+void testScreen(String description, Future<void> Function(WidgetTester) body) {
+  testWidgets(description, (tester) async {
+    await body(tester);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(seconds: 5));
+  });
+}
+
 void main() {
   // Ensure Flutter binding is initialized
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -50,7 +61,7 @@ void main() {
   }
 
   group('QRScannerScreen - WidgetsBindingObserver lifecycle', () {
-    testWidgets(
+    testScreen(
         'QRScannerScreen registers WidgetsBindingObserver on initState',
         (WidgetTester tester) async {
       // Build the screen
@@ -74,7 +85,7 @@ void main() {
       );
     });
 
-    testWidgets(
+    testScreen(
         'QRScannerScreen handles AppLifecycleState.inactive without error',
         (WidgetTester tester) async {
       await tester.pumpWidget(buildTestApp());
@@ -83,16 +94,11 @@ void main() {
       final binding = tester.binding;
 
       // This should not throw — the observer must handle the inactive state
-      expect(
-        () async {
-          binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
-          await tester.pump();
-        },
-        returnsNormally,
-      );
+      binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      await tester.pump();
     });
 
-    testWidgets(
+    testScreen(
         'QRScannerScreen handles AppLifecycleState.resumed without error',
         (WidgetTester tester) async {
       await tester.pumpWidget(buildTestApp());
@@ -104,16 +110,11 @@ void main() {
       binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
       await tester.pump();
 
-      expect(
-        () async {
-          binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-          await tester.pump();
-        },
-        returnsNormally,
-      );
+      binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump();
     });
 
-    testWidgets(
+    testScreen(
         'QRScannerScreen disposes cleanly without errors',
         (WidgetTester tester) async {
       await tester.pumpWidget(buildTestApp());
@@ -132,7 +133,7 @@ void main() {
   });
 
   group('QRScannerScreen - Permission denied persistent UI', () {
-    testWidgets(
+    testScreen(
         'Shows Open Settings button when permission is permanently denied',
         (WidgetTester tester) async {
       // Mock the permission_handler to return permanently denied
@@ -140,8 +141,8 @@ void main() {
           .setMockMethodCallHandler(
         const MethodChannel('flutter.baseflow.com/permissions/methods'),
         (MethodCall methodCall) async {
-          if (methodCall.method == 'checkPermissionStatus') return 6; // permanentlyDenied
-          if (methodCall.method == 'requestPermissions') return {0: 6}; // permanentlyDenied
+          if (methodCall.method == 'checkPermissionStatus') return 4; // permanentlyDenied
+          if (methodCall.method == 'requestPermissions') return {1: 4}; // camera -> permanentlyDenied
           return null;
         },
       );
@@ -168,7 +169,7 @@ void main() {
   });
 
   group('QRScannerScreen - Maestro identifiers', () {
-    testWidgets(
+    testScreen(
         'Flash button has scanner_flash_button Semantics identifier',
         (WidgetTester tester) async {
       await tester.pumpWidget(buildTestApp());
@@ -181,7 +182,7 @@ void main() {
       );
     });
 
-    testWidgets(
+    testScreen(
         'Gallery button has scanner_gallery_button Semantics identifier',
         (WidgetTester tester) async {
       await tester.pumpWidget(buildTestApp());
@@ -194,7 +195,7 @@ void main() {
       );
     });
 
-    testWidgets(
+    testScreen(
         'History button has scanner_history_button Semantics identifier',
         (WidgetTester tester) async {
       await tester.pumpWidget(buildTestApp());
@@ -207,7 +208,7 @@ void main() {
       );
     });
 
-    testWidgets(
+    testScreen(
         'Scan button has scanner_scan_button Semantics identifier',
         (WidgetTester tester) async {
       await tester.pumpWidget(buildTestApp());

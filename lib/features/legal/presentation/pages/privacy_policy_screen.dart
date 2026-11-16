@@ -47,7 +47,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               _buildSectionTitle('1. Responsable del tratamiento'),
               _buildBodyText(
                 'QRaft, operado por [Nombre legal de la empresa], con NIT [pendiente]. '
-                'Correo de contacto: privacidad@qraft.co\n\n'
+                'Correo de contacto: privacy@scanqraft.app\n\n'
                 'En esta política, "QRaft", "nosotros" o "la empresa" se refiere a la '
                 'entidad responsable del tratamiento de sus datos personales.',
               ),
@@ -106,7 +106,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               _buildSectionTitle('5. Mecanismos para ejercer sus derechos'),
               _buildBodyText(
                 'Puede ejercer sus derechos de las siguientes formas:\n\n'
-                '• Correo electrónico: privacidad@qraft.co\n'
+                '• Correo electrónico: privacy@scanqraft.app\n'
                 '• In-app: Perfil → Mis datos personales → Solicitar exportación / '
                 'Eliminar cuenta\n\n'
                 'Tiempo de respuesta: 10 días hábiles para consultas, '
@@ -159,7 +159,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'antelación. El uso continuado de la aplicación después de la notificación '
                 'constituye aceptación de la nueva política.\n\n'
                 'Para preguntas o inquietudes sobre esta política, contáctenos en '
-                'privacidad@qraft.co.',
+                'privacy@scanqraft.app.',
               ),
 
               const SizedBox(height: 40),

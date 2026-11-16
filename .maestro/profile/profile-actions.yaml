@@ -1,0 +1,67 @@
+appId: io.gothcorp.qraft
+name: profile/profile-actions
+tags:
+  - profile
+  - regression
+  - qraft-7
+# QRAFT-7: every profile shortcut must open something (no silent no-ops).
+# Env: MAESTRO_TEST_EMAIL / MAESTRO_TEST_PASSWORD.
+---
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/dismiss-permissions.yaml
+- runFlow: ../launch/ump-accept.yaml
+- runFlow: ../helpers/login.yaml
+
+# My QR Codes -> Library tab
+- tapOn:
+    id: "dashboard_profile_button"
+- scrollUntilVisible:
+    element: "(?s)(My QR Codes|Mis Códigos QR).*"
+    direction: DOWN
+    timeout: 20000
+- tapOn: "(?s)(My QR Codes|Mis Códigos QR).*"
+- extendedWaitUntil:
+    visible: "(?s)(QR Library|Biblioteca).*"
+    timeout: 10000
+
+# My Orders -> Orders tab
+- tapOn:
+    id: "main_scaffold_dashboard_tab"
+- tapOn:
+    id: "dashboard_profile_button"
+- scrollUntilVisible:
+    element: "(?s)(My Orders|Mis Pedidos).*"
+    direction: DOWN
+    timeout: 20000
+- tapOn: "(?s)(My Orders|Mis Pedidos).*"
+- assertNotVisible: "(?s)(Quick Actions|Acciones Rápidas).*"
+
+# Scan History, Export Data and Privacy open their screens and come back
+- tapOn:
+    id: "main_scaffold_dashboard_tab"
+- tapOn:
+    id: "dashboard_profile_button"
+- scrollUntilVisible:
+    element: "(?s)(Scan History|Historial de Escaneos).*"
+    direction: DOWN
+    timeout: 20000
+- tapOn: "(?s)(Scan History|Historial de Escaneos).*"
+- assertNotVisible: "(?s)(Quick Actions|Acciones Rápidas).*"
+- tapOn: "Back|Atrás|Volver"  # `back` is Android-only; iOS needs the on-screen button
+- scrollUntilVisible:
+    element: "(?s)(Export Data|Exportar Datos).*"
+    direction: DOWN
+    timeout: 20000
+- tapOn: "(?s)(Export Data|Exportar Datos).*"
+- extendedWaitUntil:
+    visible: "(?s).*(Exportar mis datos|Solicitar exportación).*"
+    timeout: 10000
+- tapOn: "Back|Atrás|Volver"  # `back` is Android-only; iOS needs the on-screen button
+- scrollUntilVisible:
+    element: "(?s)(Privacy & Security|Privacidad y Seguridad).*"
+    direction: DOWN
+    timeout: 20000
+- tapOn: "(?s)(Privacy & Security|Privacidad y Seguridad).*"
+- assertNotVisible: "(?s)(Quick Actions|Acciones Rápidas).*"
+- takeScreenshot: qraft7_privacy

@@ -9,7 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:qraft/l10n/app_localizations.dart';
 import 'providers/qr_scanner_provider.dart';
 import 'models/scan_result.dart';
-import 'widgets/scan_result_dialog.dart';
+import 'scan_result_screen.dart';
 import 'widgets/scan_history_screen.dart';
 
 class QRScannerScreen extends ConsumerStatefulWidget {
@@ -542,6 +542,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
     double size = 52,
     double iconSize = 22,
     String? semanticsIdentifier,
+    String? semanticsLabel,
   }) {
     final container = Container(
       key: semanticsIdentifier != null ? Key(semanticsIdentifier) : null,
@@ -594,6 +595,8 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
     if (semanticsIdentifier != null) {
       return Semantics(
         identifier: semanticsIdentifier,
+        button: true,
+        label: semanticsLabel,
         child: container,
       );
     }
@@ -624,6 +627,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
                   iconSize: 22,
                   delayMs: 250,
                   semanticsIdentifier: 'scanner_gallery_button',
+                  semanticsLabel: l10n.gallery,
                 ),
                 const SizedBox(height: _labelSpacing),
                 Text(
@@ -677,6 +681,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
                   iconSize: 22,
                   delayMs: 300,
                   semanticsIdentifier: 'scanner_history_button',
+                  semanticsLabel: l10n.scans,
                 ),
                 const SizedBox(height: _labelSpacing),
                 Text(
@@ -698,7 +703,15 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
   }
 
   Widget _buildScanButton(bool isScanning) {
-    return Container(
+    final es = Localizations.localeOf(context).languageCode == 'es';
+    return Semantics(
+      identifier: 'scanner_scan_button',
+      button: true,
+      label: isScanning
+          ? (es ? 'Detener escaneo' : 'Stop scanning')
+          : (es ? 'Escanear' : 'Scan'),
+      child: Container(
+      key: const Key('scanner_scan_button'),
       width: _mainButtonSize,
       height: _mainButtonSize,
       decoration: BoxDecoration(
@@ -738,7 +751,8 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
       ),
     ).animate()
       .fadeIn(duration: 300.ms, delay: 200.ms, curve: Curves.easeOutCubic)
-      .scale(begin: const Offset(0.8, 0.8), duration: 300.ms, delay: 200.ms, curve: Curves.easeOutBack);
+      .scale(begin: const Offset(0.8, 0.8), duration: 300.ms, delay: 200.ms, curve: Curves.easeOutBack),
+    );
   }
 
   Widget _buildGridLine(int index) {
@@ -802,16 +816,25 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
   }
 
   void _showScanResultDialog(ScanResult scanResult) {
-    showDialog(
-      context: context,
-      builder: (context) => ScanResultDialog(scanResult: scanResult),
-    );
+    ScanResultScreen.push(context, scanResult);
   }
 
-  void _showErrorSnackBar(String error) {
+  void _showErrorSnackBar(String rawError) {
+    // The provider has no BuildContext, so it reports some failures as l10n
+    // keys rather than prose. Resolve those here; anything unrecognised is
+    // already a human-readable message.
+    final l10n = AppLocalizations.of(context)!;
+    final error = switch (rawError) {
+      'noQRFoundInImage' => l10n.noQRFoundInImage,
+      'galleryScanFailed' => Localizations.localeOf(context).languageCode == 'es'
+          ? 'No pudimos leer esa imagen. Inténtalo de nuevo.'
+          : "We couldn't read that image. Please try again.",
+      _ => rawError,
+    };
+
     // Check if this is a permission-related error
     final isPermissionError = error.toLowerCase().contains('permission');
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(

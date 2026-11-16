@@ -413,13 +413,13 @@ abstract class AppLocalizations {
   /// Email sent success title
   ///
   /// In en, this message translates to:
-  /// **'Email Sent!'**
+  /// **'Check your email'**
   String get emailSent;
 
   /// Email sent success message
   ///
   /// In en, this message translates to:
-  /// **'We\'ve sent a password reset link to {email}. Please check your email and follow the instructions to reset your password.'**
+  /// **'If {email} has a QRaft account, we sent it a link to reset your password. Check your spam folder too.'**
   String checkEmailForReset(String email);
 
   /// Done button text
@@ -829,6 +829,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gallery'**
   String get gallery;
+
+  /// No description provided for @noQRFoundInImage.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find a QR code in that photo. Try an image where the code is fully visible and in focus.'**
+  String get noQRFoundInImage;
 
   /// Gallery option description
   ///
@@ -3625,6 +3631,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Redirect destination updated successfully'**
   String get redirectDestinationUpdated;
+
+  /// No description provided for @scanResultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Result'**
+  String get scanResultTitle;
+
+  /// No description provided for @scanResultSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Code scanned!'**
+  String get scanResultSuccess;
+
+  /// No description provided for @scanResultContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Content'**
+  String get scanResultContent;
+
+  /// No description provided for @scanResultDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get scanResultDetails;
+
+  /// No description provided for @scanResultScanAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan another'**
+  String get scanResultScanAgain;
+
+  /// No description provided for @qrTypeUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Website'**
+  String get qrTypeUrl;
+
+  /// No description provided for @qrTypePhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get qrTypePhone;
+
+  /// No description provided for @qrTypeSms.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS message'**
+  String get qrTypeSms;
+
+  /// No description provided for @qrTypeVcard.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get qrTypeVcard;
+
+  /// No description provided for @qrActionOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get qrActionOpen;
+
+  /// No description provided for @qrActionConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect'**
+  String get qrActionConnect;
+
+  /// No description provided for @qrActionSaveContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Save contact'**
+  String get qrActionSaveContact;
+
+  /// No description provided for @qrActionEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Send email'**
+  String get qrActionEmail;
+
+  /// No description provided for @qrActionCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get qrActionCall;
+
+  /// No description provided for @qrActionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Send message'**
+  String get qrActionMessage;
+
+  /// No description provided for @qrActionOpenMap.
+  ///
+  /// In en, this message translates to:
+  /// **'View on map'**
+  String get qrActionOpenMap;
+
+  /// No description provided for @qrActionShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get qrActionShare;
+
+  /// No description provided for @contactSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact saved'**
+  String get contactSaved;
+
+  /// No description provided for @unableToPerformAction.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t complete that action'**
+  String get unableToPerformAction;
+
+  /// No description provided for @wifiSsidLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Network (SSID)'**
+  String get wifiSsidLabel;
+
+  /// No description provided for @wifiOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open WiFi settings'**
+  String get wifiOpenSettings;
+
+  /// No description provided for @scanTypePlainText.
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get scanTypePlainText;
 }
 
 class _AppLocalizationsDelegate

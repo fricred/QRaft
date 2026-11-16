@@ -140,7 +140,7 @@ class HabeasDataScreen extends ConsumerWidget {
               // Contact info
               Text(
                 'Para consultas adicionales sobre tus datos personales, '
-                'escríbenos a privacidad@qraft.co',
+                'escríbenos a privacy@scanqraft.app',
                 style: TextStyle(
                   color: Colors.grey[500],
                   fontSize: 12,

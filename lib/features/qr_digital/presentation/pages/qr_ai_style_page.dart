@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../qr_generator/domain/entities/qr_code_entity.dart';
-import '../../../../features/redirect/presentation/providers/redirect_providers.dart';
 import '../controllers/qr_digital_controller.dart';
 
 /// AI Style QR screen.
@@ -97,7 +97,7 @@ class _QrAiStylePageState extends ConsumerState<QrAiStylePage> {
     final prompt = _promptController.text.trim();
     if (prompt.isEmpty) return;
 
-    final client = ref.read(supabaseClientProvider);
+    final client = Supabase.instance.client;
     await ref
         .read(qrDigitalControllerProvider(widget.entity).notifier)
         .generateAiStyle(prompt, client, widget.qrStorageUrl);
@@ -112,7 +112,7 @@ class _QrAiStylePageState extends ConsumerState<QrAiStylePage> {
       name: 'ai_qr.png',
       mimeType: 'image/png',
     );
-    await Share.shareXFiles([xFile]);
+    await SharePlus.instance.share(ShareParams(files: [xFile]));
   }
 
   @override

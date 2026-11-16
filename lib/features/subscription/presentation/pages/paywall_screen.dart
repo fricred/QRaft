@@ -5,20 +5,28 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/widgets/glass_button.dart';
+import '../../../../core/utils/friendly_error.dart';
 import '../../../../shared/widgets/qraft_logo.dart';
 import '../providers/purchase_providers.dart';
 import '../providers/subscription_providers.dart' show debugPremiumOverrideProvider;
 import '../../domain/entities/purchase_product.dart';
+import '../../data/datasources/revenuecat_datasource.dart';
+import '../widgets/test_store_notice.dart';
 
 /// Resolves the current RevenueCat offering for the paywall.
-/// Waits for RevenueCat to be initialized before fetching offerings so the
-/// paywall never shows empty due to a race condition on first login.
-final _currentOfferingProvider = FutureProvider<Package?>((ref) async {
-  // Wait until SDK is initialized (max 10s)
-  int retries = 0;
-  while (!ref.read(isRevenueCatInitializedProvider) && retries < 20) {
-    await Future<void>.delayed(const Duration(milliseconds: 500));
-    retries++;
+/// Loads once RevenueCat is initialized (reactively, no polling) so the paywall
+/// never offers a purchase without a real package behind it.
+// autoDispose: a null result from a slow init must not stick for the whole session.
+final _currentOfferingProvider = FutureProvider.autoDispose<Package?>((ref) async {
+  if (RevenueCatDataSource.purchasesUnavailable) return null;
+  // Rebuilds as soon as RevenueCat finishes initializing; never calls into an
+  // unconfigured Purchases singleton (native crash) and never polls.
+  // Stay in the loading state (never a dead/null package) until init completes;
+  // the watch rebuilds this provider the moment it does.
+  if (ref.watch(isRevenueCatInitFailedProvider)) return null; // prices unavailable
+  if (!ref.watch(isRevenueCatInitializedProvider)) {
+    // Wait for init (this provider rebuilds when it completes), but never forever.
+    return Future<Package?>.delayed(const Duration(seconds: 10), () => null);
   }
   try {
     final offerings = await Purchases.getOfferings();
@@ -150,6 +158,14 @@ class PaywallScreen extends ConsumerWidget {
 
               const SizedBox(height: 32),
 
+              // ── Store mode notice (QRAFT-2) ─────────────────────────────────
+              // A RevenueCat Test Store key simulates purchases and charges nothing.
+              // Say so before offering the purchase; in release such a build cannot sell.
+              if (RevenueCatDataSource.isTestStoreKey) ...[
+                const TestStoreNotice(key: Key('paywall_test_store_notice')),
+                const SizedBox(height: 16),
+              ],
+
               // ── Subscribe CTA ─────────────────────────────────────────────
               offeringAsync.when(
                 loading: () => PrimaryGlassButton(
@@ -166,7 +182,16 @@ class PaywallScreen extends ConsumerWidget {
                   isLoading: false,
                   onPressed: null,
                 ),
-                data: (package) => _SubscribeButton(package: package),
+                // No package (init failed / unavailable): never an enabled dead button.
+                data: (package) => package == null
+                    ? PrimaryGlassButton(
+                        key: const Key('paywall_subscribe_btn'),
+                        text: deviceIsSpanish() ? 'Precio no disponible' : 'Price unavailable',
+                        width: double.infinity,
+                        isLoading: false,
+                        onPressed: null,
+                      )
+                    : _SubscribeButton(package: package),
               ),
 
               const SizedBox(height: 16),
@@ -301,7 +326,12 @@ class _SubscribeButtonState extends ConsumerState<_SubscribeButton> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al suscribirse: $e'),
+            content: Text(
+              deviceIsSpanish()
+                  ? 'No pudimos completar la suscripción. Inténtalo de nuevo.'
+                  : "We couldn't complete the subscription. Please try again.",
+              style: TextStyle(color: Colors.white),
+            ),
             backgroundColor: Colors.red.shade700,
           ),
         );

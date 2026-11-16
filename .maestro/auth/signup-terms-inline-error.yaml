@@ -1,0 +1,38 @@
+appId: io.gothcorp.qraft
+name: auth/signup-terms-inline-error
+tags:
+  - auth
+  - regression
+  - qraft-19
+# QRAFT-19 (P3-05): submitting without accepting the terms shows the error next to the
+# checkbox and keeps it until the box is checked. Keyboard-first; nothing is created.
+---
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/dismiss-permissions.yaml
+- scrollUntilVisible:
+    element:
+      id: "welcome_signup_cta"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    id: "welcome_signup_cta"
+- tapOn:
+    id: "signup_name_field"
+- inputText: "QA Terms"
+- pressKey: Enter
+- inputText: "qa.maestro+terms@mailinator.com"
+- pressKey: Enter
+- inputText: "Qraft-Test-2026!"
+- pressKey: Enter
+- inputText: "Qraft-Test-2026!"
+- pressKey: Enter
+- extendedWaitUntil:
+    visible:
+      id: "signup_terms_error"
+    timeout: 5000
+- takeScreenshot: qraft19_terms_error
+- tapOn:
+    id: "signup_terms_checkbox"
+- assertNotVisible:
+    id: "signup_terms_error"

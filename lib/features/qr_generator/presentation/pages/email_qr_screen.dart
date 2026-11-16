@@ -110,6 +110,7 @@ class _EmailQRScreenState extends ConsumerState<EmailQRScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -901,7 +902,7 @@ class _EmailQRScreenState extends ConsumerState<EmailQRScreen>
     if (widget.editingQRCode == null) {
       final canCreate = ref.read(canCreateQRProvider);
       if (!canCreate) {
-        UpgradeBottomSheet.show(context);
+        UpgradeBottomSheet.show(context, freeLimit: ref.read(qrLimitProvider));
         return;
       }
     }

@@ -16,6 +16,8 @@ class QRCodeModel extends QRCodeEntity {
     super.slug,
     super.scanCount,
     super.lastScannedAt,
+    super.redirectId,
+    super.dynamicStatus,
   });
 
   factory QRCodeModel.fromJson(Map<String, dynamic> json) {
@@ -36,16 +38,20 @@ class QRCodeModel extends QRCodeEntity {
       type: QRType.values.firstWhere((e) => e.identifier == json['type']),
       data: json['data'] as String,
       displayData: json['display_data'] as String,
-      customization: QRCustomizationModel.fromJson(json['customization'] as Map<String, dynamic>),
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      // Full customization (gradient, presets, frame…), not just the legacy fields.
+      customization: QRCustomization.fromJson(
+          (json['customization'] as Map?)?.cast<String, dynamic>() ?? const {}),
+      createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
+      updatedAt: DateTime.parse(json['updated_at'] as String).toLocal(),
       userId: json['user_id'] as String,
       isFavorite: json['is_favorite'] as bool? ?? false,
       slug: redirect?['slug'] as String?,
       scanCount: redirect?['scan_count'] as int?,
       lastScannedAt: redirect?['last_scanned_at'] != null
-          ? DateTime.parse(redirect!['last_scanned_at'] as String)
+          ? DateTime.parse(redirect!['last_scanned_at'] as String).toLocal()
           : null,
+      redirectId: redirect?['id'] as String?,
+      dynamicStatus: redirect?['status'] as String?,
     );
   }
 
@@ -56,9 +62,9 @@ class QRCodeModel extends QRCodeEntity {
       'type': type.identifier,
       'data': data,
       'display_data': displayData,
-      'customization': (customization as QRCustomizationModel).toJson(),
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
+      'customization': customization.toJson(),
+      'created_at': createdAt.toUtc().toIso8601String(),
+      'updated_at': updatedAt.toUtc().toIso8601String(),
       'user_id': userId,
       'is_favorite': isFavorite,
     };
@@ -71,11 +77,16 @@ class QRCodeModel extends QRCodeEntity {
       type: entity.type,
       data: entity.data,
       displayData: entity.displayData,
-      customization: QRCustomizationModel.fromEntity(entity.customization),
+      customization: entity.customization,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
       userId: entity.userId,
       isFavorite: entity.isFavorite,
+      slug: entity.slug,
+      scanCount: entity.scanCount,
+      lastScannedAt: entity.lastScannedAt,
+      redirectId: entity.redirectId,
+      dynamicStatus: entity.dynamicStatus,
     );
   }
 }

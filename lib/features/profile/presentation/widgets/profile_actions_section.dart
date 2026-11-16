@@ -2,6 +2,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'package:share_plus/share_plus.dart';
+import '../../../auth/data/providers/supabase_auth_provider.dart';
+import '../../../main/main_scaffold.dart' show navigationIndexProvider;
+import '../../../qr_scanner/widgets/scan_history_screen.dart';
+import '../../../legal/presentation/pages/habeas_data_screen.dart';
+import '../../../legal/presentation/pages/privacy_policy_screen.dart';
+
 
 class ProfileActionsSection extends ConsumerWidget {
   const ProfileActionsSection({super.key});
@@ -62,7 +69,7 @@ class ProfileActionsSection extends ConsumerWidget {
                   icon: Icons.qr_code_rounded,
                   label: l10n.myQRCodes,
                   color: const Color(0xFF1A73E8),
-                  onTap: () => _navigateToQRLibrary(context),
+                  onTap: () => _openTab(context, ref, 3), // Library
                 ),
               ),
               const SizedBox(width: 12),
@@ -71,7 +78,7 @@ class ProfileActionsSection extends ConsumerWidget {
                   icon: Icons.history_rounded,
                   label: l10n.scanHistory,
                   color: const Color(0xFF00FF88),
-                  onTap: () => _navigateToScanHistory(context),
+                  onTap: () => _push(context, const ScanHistoryScreen()),
                 ),
               ),
             ],
@@ -86,7 +93,7 @@ class ProfileActionsSection extends ConsumerWidget {
                   icon: Icons.shopping_bag_rounded,
                   label: l10n.myOrders,
                   color: const Color(0xFFFF6B6B),
-                  onTap: () => _navigateToOrders(context),
+                  onTap: () => _openTab(context, ref, 5), // Orders
                 ),
               ),
               const SizedBox(width: 12),
@@ -95,7 +102,7 @@ class ProfileActionsSection extends ConsumerWidget {
                   icon: Icons.share_rounded,
                   label: l10n.shareProfile,
                   color: const Color(0xFF9C27B0),
-                  onTap: () => _shareProfile(context),
+                  onTap: () => _shareProfile(context, ref),
                 ),
               ),
             ],
@@ -108,17 +115,9 @@ class ProfileActionsSection extends ConsumerWidget {
             icon: Icons.download_rounded,
             title: l10n.exportData,
             subtitle: l10n.exportDataDescription,
-            onTap: () => _exportData(context, l10n),
+            onTap: () => _push(context, const HabeasDataScreen()),
           ),
 
-          const SizedBox(height: 8),
-
-          _buildActionListItem(
-            icon: Icons.backup_rounded,
-            title: l10n.backupSync,
-            subtitle: l10n.backupSyncDescription,
-            onTap: () => _backupData(context, l10n),
-          ),
 
           const SizedBox(height: 8),
 
@@ -126,7 +125,7 @@ class ProfileActionsSection extends ConsumerWidget {
             icon: Icons.security_rounded,
             title: l10n.privacySecurity,
             subtitle: l10n.privacySecurityDescription,
-            onTap: () => _navigateToPrivacySettings(context, l10n),
+            onTap: () => _push(context, const PrivacyPolicyScreen()),
           ),
         ],
       ),
@@ -248,68 +247,33 @@ class ProfileActionsSection extends ConsumerWidget {
     );
   }
 
-  void _navigateToQRLibrary(BuildContext context) {
-    // TODO: Navigate to QR Library screen
-    debugPrint('Navigate to QR Library');
+  // QRAFT-7: every action opens something real. Backup & Sync was removed: QR codes are
+  // already stored in the cloud, so it could only ever show "coming soon".
+
+  /// Switches the bottom-nav tab and returns to the main shell.
+  void _openTab(BuildContext context, WidgetRef ref, int index) {
+    ref.read(navigationIndexProvider.notifier).state = index;
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
-  void _navigateToScanHistory(BuildContext context) {
-    // TODO: Navigate to Scan History screen
-    debugPrint('Navigate to Scan History');
+  void _push(BuildContext context, Widget screen) {
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen));
   }
 
-  void _navigateToOrders(BuildContext context) {
-    // TODO: Navigate to Orders screen
-    debugPrint('Navigate to Orders');
-  }
-
-  void _shareProfile(BuildContext context) {
-    // TODO: Implement profile sharing
-    debugPrint('Share Profile');
-  }
-
-  void _exportData(BuildContext context, AppLocalizations l10n) {
-    // TODO: Implement data export
-    debugPrint('Export Data');
-    _showComingSoonDialog(context, l10n, l10n.exportData);
-  }
-
-  void _backupData(BuildContext context, AppLocalizations l10n) {
-    // TODO: Implement data backup
-    debugPrint('Backup Data');
-    _showComingSoonDialog(context, l10n, l10n.backupSync);
-  }
-
-  void _navigateToPrivacySettings(BuildContext context, AppLocalizations l10n) {
-    // TODO: Navigate to Privacy Settings
-    debugPrint('Navigate to Privacy Settings');
-    _showComingSoonDialog(context, l10n, l10n.privacySecurity);
-  }
-
-  void _showComingSoonDialog(BuildContext context, AppLocalizations l10n, String feature) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF2E2E2E),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          l10n.comingSoon,
-          style: const TextStyle(color: Colors.white),
-        ),
-        content: Text(
-          l10n.featureComingSoon(feature),
-          style: TextStyle(color: Colors.grey[300]),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              l10n.ok,
-              style: const TextStyle(color: Color(0xFF00FF88)),
-            ),
-          ),
-        ],
-      ),
-    );
+  /// Shares the user's contact card as text through the system share sheet.
+  Future<void> _shareProfile(BuildContext context, WidgetRef ref) async {
+    final user = ref.read(supabaseAuthProvider).currentUser;
+    if (user == null) return;
+    final name = (user.userMetadata?['display_name'] as String?)?.trim();
+    final lines = <String>[
+      if (name != null && name.isNotEmpty) name,
+      if (user.email != null) user.email!,
+    ];
+    if (lines.isEmpty) return;
+    final box = context.findRenderObject() as RenderBox?;
+    await SharePlus.instance.share(ShareParams(
+      text: lines.join('\n'),
+      sharePositionOrigin: box != null ? box.localToGlobal(Offset.zero) & box.size : null,
+    ));
   }
 }

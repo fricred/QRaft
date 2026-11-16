@@ -4,6 +4,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { timingSafeEqual } from "https://deno.land/std@0.168.0/crypto/timing_safe_equal.ts";
+import { isDynamicQrStoreId, revenueCatConfigured, syncUserFromRevenueCat } from "../_shared/revenuecat_sync.ts";
+import { reconcileDynamicQr } from "../_shared/dynamic_qr.ts";
 
 // CORS headers - restricted for webhook security
 // RevenueCat webhooks are server-to-server, but we keep minimal CORS for health checks
@@ -43,11 +45,15 @@ interface RevenueCatEvent {
     store: string;
     is_trial_conversion?: boolean;
     cancel_reason?: string;
+    transferred_from?: string[];
+    transferred_to?: string[];
   };
 }
 
 // Map RevenueCat event types to subscription status
-function mapEventToStatus(eventType: string): { plan: string; status: string } {
+// Returns null for events that must not change the plan (unknown / informational ones):
+// writing "free" for them would downgrade a paying user.
+function mapEventToStatus(eventType: string): { plan: string; status: string } | null {
   switch (eventType) {
     case "INITIAL_PURCHASE":
     case "RENEWAL":
@@ -69,8 +75,8 @@ function mapEventToStatus(eventType: string): { plan: string; status: string } {
       return { plan: "pro", status: "active" };
 
     default:
-      console.log(`Unknown event type: ${eventType}`);
-      return { plan: "free", status: "active" };
+      console.log(`Event type not mapped, plan left unchanged: ${eventType}`);
+      return null;
   }
 }
 
@@ -133,8 +139,72 @@ serve(async (req: Request) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Map event to subscription status
-    const { plan, status } = mapEventToStatus(event.type);
+    // Dynamic QR consumable: a one-time credit for one code, never a Pro plan change.
+    // Any event for it (purchase confirmed late, refund, transfer) = re-read the user's
+    // purchases from RevenueCat and apply them; idempotent with the app's own claim.
+    if (isDynamicQrStoreId(event.product_id)) {
+      const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const users = [event.app_user_id, ...(event.transferred_to ?? [])].filter((id) => !!id && UUID_RE.test(id));
+      const results: Record<string, unknown> = {};
+      let failed = false;
+      for (const id of new Set(users)) {
+        const r = await reconcileDynamicQr(supabase, id);
+        results[id] = r;
+        if (!r.ok) failed = true;
+      }
+      console.log("Dynamic QR reconcile:", JSON.stringify(results));
+      return new Response(
+        JSON.stringify({ success: !failed, event_type: event.type, dynamic_qr: true }),
+        { status: failed ? 500 : 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Preferred path: ask RevenueCat for the real current state of every affected user
+    // (handles TRANSFER, refunds, extensions… without mapping each event type).
+    if (revenueCatConfigured()) {
+      const ids = new Set<string>([
+        event.app_user_id,
+        ...(event.transferred_to ?? []),
+        ...(event.transferred_from ?? []),
+        // An event filed under an anonymous id still lists the user's uuid among its aliases.
+        ...(((event as unknown as { aliases?: string[] }).aliases) ?? []),
+      ].filter((id) => !!id && !id.startsWith("$RCAnonymousID")));
+      const results: Record<string, unknown> = {};
+      let transient = false;
+      let unusable = false;
+      for (const id of ids) {
+        const r = await syncUserFromRevenueCat(supabase, id);
+        results[id] = r;
+        if (!r.ok) {
+          // Bad key / missing permission / wrong project: retrying won't help and RevenueCat
+          // drops events after a few retries, so use the event itself instead. A 429 is
+          // transient (per-minute windows): keep it on the retry path, because event mapping
+          // can apply a stale event over a newer state.
+          if (/^revenuecat_(401|403)$|^entitlement_not_found$/.test(r.reason)) unusable = true;
+          else transient = true;
+        }
+      }
+      console.log("Synced from RevenueCat:", JSON.stringify(results));
+      if (unusable) {
+        console.error("RevenueCat API unusable for webhook sync, falling back to event mapping:", JSON.stringify(results));
+      } else {
+        // 500 makes RevenueCat retry the webhook later (network / 5xx / db errors).
+        return new Response(
+          JSON.stringify({ success: !transient, event_type: event.type }),
+          { status: transient ? 500 : 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
+    // Fallback without the secret API key: map the event type.
+    const mapped = mapEventToStatus(event.type);
+    if (!mapped) {
+      return new Response(
+        JSON.stringify({ success: true, event_type: event.type, ignored: true }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const { plan, status } = mapped;
     const periodType = mapPeriodType(event.product_id);
 
     // Prepare update data
@@ -171,8 +241,9 @@ serve(async (req: Request) => {
       .eq("id", event.app_user_id)
       .select();
 
-    if (error) {
-      console.error("Failed to update user:", error);
+    // No matching row is not an error for PostgREST: use the fallback in that case too.
+    if (error || !data || data.length === 0) {
+      if (error) console.error("Failed to update user:", error);
 
       // Try by revenuecat_customer_id as fallback
       const { data: fallbackData, error: fallbackError } = await supabase

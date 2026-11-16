@@ -1,6 +1,7 @@
 // Screen 2 of the QR creation flow: pick a visual template.
 // TypePicker → [this screen] → QRCanvasEditorScreen
 import 'package:flutter/material.dart';
+import '../../../../core/utils/inline_l10n.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
@@ -29,7 +30,10 @@ const _templateTags = {
 
 class QRTemplatesScreen extends ConsumerStatefulWidget {
   final QRType qrType;
-  const QRTemplatesScreen({super.key, required this.qrType});
+
+  /// Came from "Dinámico" mode: the editor's save sheet opens on Dynamic.
+  final bool preferDynamic;
+  const QRTemplatesScreen({super.key, required this.qrType, this.preferDynamic = false});
 
   @override
   ConsumerState<QRTemplatesScreen> createState() => _QRTemplatesScreenState();
@@ -38,11 +42,14 @@ class QRTemplatesScreen extends ConsumerStatefulWidget {
 class _QRTemplatesScreenState extends ConsumerState<QRTemplatesScreen> {
   QrFullTemplate _selected = kQrTemplates.first;
 
-  void _onContinue() {
+  Future<void> _onContinue() async {
     ref.read(qrCustomizationControllerProvider.notifier).applyFullTemplate(_selected);
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => QRCanvasEditorScreen(qrType: widget.qrType, template: _selected),
+    final result = await Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => QRCanvasEditorScreen(qrType: widget.qrType, template: _selected, preferDynamic: widget.preferDynamic),
     ));
+    // Saved in the editor: leave the create flow too, instead of landing back on
+    // "Pick a style" (which invited duplicate saves).
+    if (result != null && mounted) Navigator.of(context).pop(result);
   }
 
   @override
@@ -58,6 +65,7 @@ class _QRTemplatesScreenState extends ConsumerState<QRTemplatesScreen> {
               child: Row(
                 children: [
                   _CircleIconButton(
+                    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                     icon: Icons.arrow_back_ios_rounded,
                     onTap: () => Navigator.of(context).pop(),
                   ),
@@ -81,7 +89,7 @@ class _QRTemplatesScreenState extends ConsumerState<QRTemplatesScreen> {
                     text: TextSpan(
                       style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white, height: 1.1),
                       children: [
-                        const TextSpan(text: 'Pick a '),
+                        TextSpan(text: tr('Pick a ')),
                         WidgetSpan(
                           alignment: PlaceholderAlignment.baseline,
                           baseline: TextBaseline.alphabetic,
@@ -89,9 +97,9 @@ class _QRTemplatesScreenState extends ConsumerState<QRTemplatesScreen> {
                             shaderCallback: (r) => const LinearGradient(
                               colors: [_kNeon, Color(0xFF1A73E8)],
                             ).createShader(r),
-                            child: const Text(
-                              'style',
-                              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white, height: 1.1),
+                            child: Text(
+                              tr('style'),
+                              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white, height: 1.1),
                             ),
                           ),
                         ),
@@ -173,10 +181,10 @@ class _QRTemplatesScreenState extends ConsumerState<QRTemplatesScreen> {
                             ),
                           ),
                           const SizedBox(height: 10),
-                          Text(tpl.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)),
+                          Text(tr(tpl.name), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)),
                           const SizedBox(height: 2),
                           Text(
-                            _templateTags[tpl.id] ?? '',
+                            tr(_templateTags[tpl.id] ?? ''),
                             style: const TextStyle(fontSize: 11, color: Color(0xFF888888)),
                           ),
                         ],
@@ -198,10 +206,10 @@ class _QRTemplatesScreenState extends ConsumerState<QRTemplatesScreen> {
                     gradient: const LinearGradient(colors: [_kNeon, Color(0xFF1A73E8)]),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Continue', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF0A1810))),
+                      Text(tr('Continue'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF0A1810))),
                       SizedBox(width: 8),
                       Icon(Icons.arrow_forward_rounded, size: 18, color: Color(0xFF0A1810)),
                     ],
@@ -221,20 +229,37 @@ class _QRTemplatesScreenState extends ConsumerState<QRTemplatesScreen> {
 class _CircleIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
-  const _CircleIconButton({required this.icon, required this.onTap});
+  final String? tooltip;
+  const _CircleIconButton({required this.icon, required this.onTap, this.tooltip});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 40, height: 40,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: _kSurface,
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+    // Real button semantics + a 44 pt hit area (QRAFT-17); the visual circle stays 40.
+    return Semantics(
+      button: true,
+      label: tooltip,
+      excludeSemantics: true,
+      child: Tooltip(
+        message: tooltip ?? '',
+        child: InkResponse(
+          onTap: onTap,
+          radius: 24,
+          child: SizedBox(
+            width: 44,
+            height: 44,
+            child: Center(
+              child: Container(
+                width: 40, height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _kSurface,
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                ),
+                child: Icon(icon, color: Colors.white, size: 16),
+              ),
+            ),
+          ),
         ),
-        child: Icon(icon, color: Colors.white, size: 16),
       ),
     );
   }
@@ -283,7 +308,7 @@ class _QRThumbnailState extends State<_QRThumbnail> {
   void initState() {
     super.initState();
     try {
-      _qrImage = QrDecorationBuilder.buildQrImage('https://qraft.app', widget.customization);
+      _qrImage = QrDecorationBuilder.buildQrImage('https://scanqraft.app', widget.customization);
     } catch (_) {}
   }
 

@@ -65,7 +65,7 @@ class _FcmOverlayHandlerState extends State<FcmOverlayHandler> {
         requestSoundPermission: false,
       ),
     );
-    await _localNotifications.initialize(initSettings);
+    await _localNotifications.initialize(settings: initSettings);
 
     // Android 8+ requires an explicit notification channel to be created
     // before showing notifications with Importance.high.
@@ -96,10 +96,10 @@ class _FcmOverlayHandlerState extends State<FcmOverlayHandler> {
 
     await _localNotifications.show(
       // Use hashCode as notification ID — unique per message without state.
-      message.hashCode,
-      notification.title,
-      notification.body,
-      NotificationDetails(
+      id: message.hashCode,
+      title: notification.title,
+      body: notification.body,
+      notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
           _androidChannelId,
           _androidChannelName,

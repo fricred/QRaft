@@ -143,8 +143,8 @@ class SupabaseService {
         'job_title': jobTitle,
         'preferences': preferences ?? {},
         'statistics': statistics ?? {},
-        'created_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
+        'created_at': DateTime.now().toUtc().toIso8601String(),
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
       };
       
       debugPrint('Creating user profile with data: $profileData');
@@ -205,7 +205,7 @@ class SupabaseService {
       }
 
       final updateData = <String, dynamic>{
-        'updated_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
       };
       
       // Only include non-null values
@@ -298,7 +298,7 @@ class SupabaseService {
       if (user == null) {
         throw Exception('No authenticated user found');
       }
-      
+
       final response = await client
           .from(SupabaseConfig.qrCodesTable)
           .insert({
@@ -309,8 +309,8 @@ class SupabaseService {
             'title': title,
             'description': description,
             'customization': customization,
-            'created_at': DateTime.now().toIso8601String(),
-            'updated_at': DateTime.now().toIso8601String(),
+            'created_at': DateTime.now().toUtc().toIso8601String(),
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
           })
           .select('id')
           .single();
@@ -369,7 +369,7 @@ class SupabaseService {
         'qr_type': qrType,
         'content': content,
         'scanned_data': scannedData,
-        'scanned_at': DateTime.now().toIso8601String(),
+        'scanned_at': DateTime.now().toUtc().toIso8601String(),
       });
     } catch (e) {
       throw Exception('Failed to save scan history: $e');
@@ -431,7 +431,7 @@ class SupabaseService {
         'qr_type': scanResult.toJson()['type'], // Use the toJson method which has the fix
         'display_value': scanResult.displayValue,
         'parsed_data': scanResult.parsedData,
-        'scanned_at': scanResult.scannedAt.toIso8601String(),
+        'scanned_at': scanResult.scannedAt.toUtc().toIso8601String(),
       };
       
       await client.from(SupabaseConfig.scanHistoryTable).insert(scanData);
@@ -561,8 +561,8 @@ class SupabaseService {
             'total_amount': totalAmount,
             'shipping_address': shippingAddress,
             'customization': customization,
-            'created_at': DateTime.now().toIso8601String(),
-            'updated_at': DateTime.now().toIso8601String(),
+            'created_at': DateTime.now().toUtc().toIso8601String(),
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
           })
           .select('id')
           .single();
@@ -573,7 +573,7 @@ class SupabaseService {
       final orderItems = items.map((item) => {
         ...item,
         'order_id': orderId,
-        'created_at': DateTime.now().toIso8601String(),
+        'created_at': DateTime.now().toUtc().toIso8601String(),
       }).toList();
       
       await client

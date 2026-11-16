@@ -27,11 +27,12 @@ tags:
 - inputText: wrong-password-123
 # Press Enter to submit (keyboard occludes login_submit_button on iOS sim).
 - pressKey: Enter
-# When SupabaseAuthProvider returns an AuthException, AuthWrapper in main.dart:178-212
-# REPLACES the login screen with a full-screen "Authentication Error" Scaffold (currentUser
-# stays null, errorMessage becomes non-null). So login_screen_root is gone — the bar is
-# that an error UI surfaces, NOT that we stay on the login screen.
+# QRAFT-4: a wrong password shows a friendly message and keeps the user on the login
+# form (it used to replace it with a full-screen "Authentication Error").
 - extendedWaitUntil:
     visible:
-      text: "Authentication Error"
+      text: "(?s).*(Correo o contraseña incorrectos|Incorrect email or password).*"
     timeout: 15000
+- assertVisible:
+    id: "login_screen_root"
+- assertNotVisible: "Authentication Error"

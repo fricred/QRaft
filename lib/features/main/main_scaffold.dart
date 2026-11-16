@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../../shared/widgets/main_navigation.dart';
 import '../dashboard/dashboard_screen.dart';
 import '../qr_generator/qr_generator_screen.dart';

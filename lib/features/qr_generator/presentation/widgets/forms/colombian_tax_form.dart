@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../../../domain/entities/qr_data_models.dart';
 
 final colombianTaxFormProvider = StateNotifierProvider<ColombianTaxFormController, ColombianTaxFormState>((ref) {

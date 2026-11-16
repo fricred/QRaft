@@ -10,7 +10,7 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
   /// Embedded select pulling each QR's redirect metadata (slug, scan stats).
   /// Requires the redirects.qr_code_id FK (migration 20260612000001).
   static const _selectWithRedirects =
-      '*, redirects(slug, scan_count, last_scanned_at)';
+      '*, redirects(id, slug, status, scan_count, last_scanned_at)';
 
   /// Flips to false the first time the embedded select fails (FK migration
   /// not applied yet) so subsequent fetches skip the doomed join.
@@ -22,7 +22,7 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
       final response = await client
           .from('qr_codes')
           .insert(qrCode.toJson())
-          .select()
+          .select(_selectWithRedirects)
           .single();
 
       return QRCodeModel.fromJson(response);
@@ -43,6 +43,8 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
 
         return (response as List)
             .map((json) => QRCodeModel.fromJson(json))
+            // Revoked dynamic codes (refunded / deleted) are not part of the library.
+            .where((q) => q.dynamicStatus != 'revoked')
             .toList();
       } on PostgrestException {
         // Relationship missing (migration 20260612000001 not applied yet) —
@@ -54,12 +56,14 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
     try {
       final response = await client
           .from('qr_codes')
-          .select()
+          .select(_selectWithRedirects)
           .eq('user_id', userId)
           .order('created_at', ascending: false);
 
       return (response as List)
           .map((json) => QRCodeModel.fromJson(json))
+          // Revoked dynamic codes (refunded / deleted) are not part of the library.
+          .where((q) => q.dynamicStatus != 'revoked')
           .toList();
     } catch (e) {
       throw Exception('Failed to fetch user QR codes: $e');
@@ -71,7 +75,7 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
     try {
       final response = await client
           .from('qr_codes')
-          .select()
+          .select(_selectWithRedirects)
           .eq('id', id)
           .maybeSingle();
 
@@ -91,7 +95,7 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
           .from('qr_codes')
           .update(qrCode.toJson())
           .eq('id', qrCode.id)
-          .select()
+          .select(_selectWithRedirects)
           .single();
 
       return QRCodeModel.fromJson(response);
@@ -117,13 +121,15 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
     try {
       final response = await client
           .from('qr_codes')
-          .select()
+          .select(_selectWithRedirects)
           .eq('user_id', userId)
           .eq('type', type)
           .order('created_at', ascending: false);
 
       return (response as List)
           .map((json) => QRCodeModel.fromJson(json))
+          // Revoked dynamic codes (refunded / deleted) are not part of the library.
+          .where((q) => q.dynamicStatus != 'revoked')
           .toList();
     } catch (e) {
       throw Exception('Failed to fetch QR codes by type: $e');
@@ -143,10 +149,10 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
           .from('qr_codes')
           .update({
             'is_favorite': isFavorite,
-            'updated_at': DateTime.now().toIso8601String(),
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
           })
           .eq('id', qrCodeId)
-          .select()
+          .select(_selectWithRedirects)
           .single();
 
       return QRCodeModel.fromJson(response);
@@ -163,13 +169,15 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
     try {
       final response = await client
           .from('qr_codes')
-          .select()
+          .select(_selectWithRedirects)
           .eq('user_id', userId)
           .eq('is_favorite', true)
           .order('updated_at', ascending: false);
 
       return (response as List)
           .map((json) => QRCodeModel.fromJson(json))
+          // Revoked dynamic codes (refunded / deleted) are not part of the library.
+          .where((q) => q.dynamicStatus != 'revoked')
           .toList();
     } catch (e) {
       throw Exception('Failed to fetch favorite QR codes: $e');
@@ -187,13 +195,15 @@ class QRSupabaseDataSource implements QRRemoteDataSource {
       final to = from + pageSize - 1;
       final response = await client
           .from('qr_codes')
-          .select()
+          .select(_selectWithRedirects)
           .eq('user_id', userId)
           .order('created_at', ascending: false)
           .range(from, to);
 
       return response
           .map((json) => QRCodeModel.fromJson(json))
+          // Revoked dynamic codes (refunded / deleted) are not part of the library.
+          .where((q) => q.dynamicStatus != 'revoked')
           .toList();
     } catch (e) {
       throw Exception('Failed to fetch paginated QR codes: $e');

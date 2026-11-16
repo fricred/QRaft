@@ -137,9 +137,16 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
     final isSelected = widget.currentIndex == index;
 
     return Expanded(
+      // QRAFT-17: unselected labels are faded to 0 (screen readers skip them), so the
+      // item carries its own accessible name and selected state.
       child: Semantics(
         identifier: semanticIdentifier,
         button: true,
+        label: label,
+        selected: isSelected,
+        excludeSemantics: true,
+        // excludeSemantics drops the GestureDetector's action: give the node its own tap.
+        onTap: () => widget.onTap(index),
         child: GestureDetector(
         key: itemKey,
         onTap: () {
@@ -203,6 +210,10 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
     return Semantics(
       identifier: 'main_scaffold_generate_tab',
       button: true,
+      label: AppLocalizations.of(context)!.generateQRTitle,
+      selected: isSelected,
+      excludeSemantics: true,
+      onTap: () => widget.onTap(1),
       child: GestureDetector(
       key: widget.generateTabKey,
       onTap: () {

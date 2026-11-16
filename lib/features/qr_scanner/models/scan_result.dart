@@ -61,7 +61,7 @@ class ScanResult extends Equatable {
       'type': _getTypeName(type),
       'display_value': displayValue,
       'parsed_data': parsedData,
-      'scanned_at': scannedAt.toIso8601String(),
+      'scanned_at': scannedAt.toUtc().toIso8601String(),
     };
   }
 
@@ -97,7 +97,7 @@ class ScanResult extends Equatable {
       type: _getTypeFromName(json['type']),
       displayValue: json['display_value'],
       parsedData: json['parsed_data'] as Map<String, dynamic>?,
-      scannedAt: DateTime.parse(json['scanned_at']),
+      scannedAt: DateTime.parse(json['scanned_at']).toLocal(),
     );
   }
 

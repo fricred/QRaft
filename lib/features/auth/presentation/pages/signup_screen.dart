@@ -1,11 +1,12 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../widgets/auth_header.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../shared/widgets/qraft_logo.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
 import '../../../legal/presentation/pages/privacy_policy_screen.dart';
+import '../../../legal/presentation/pages/terms_screen.dart';
 import 'package:qraft/l10n/app_localizations.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
@@ -37,6 +38,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _agreeToTerms = false;
+  // QRAFT-19 (P3-05): the error lives next to the checkbox and stays until it's checked.
+  bool _termsError = false;
 
   @override
   void dispose() {
@@ -54,15 +57,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   void _handleSignUp() async {
     if (_formKey.currentState?.validate() ?? false) {
       if (!_agreeToTerms) {
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.pleaseAgreeToTerms),
-            backgroundColor: Colors.red[700],
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-        );
+        setState(() => _termsError = true); // announced via the error's liveRegion
         return;
       }
 
@@ -90,94 +85,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           SafeArea(
             child: Column(
               children: [
-                // Top section with back button and header
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    children: [
-                      // Back button row
-                      Row(
-                        children: [
-                          IconButton(
-                            onPressed: widget.onBackPressed,
-                            icon: const Icon(
-                              Icons.arrow_back_ios_rounded,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            style: IconButton.styleFrom(
-                              backgroundColor: const Color(0xFF2E2E2E),
-                              padding: const EdgeInsets.all(10),
-                              minimumSize: const Size(40, 40),
-                            ),
-                          ).animate()
-                            .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
-                            .slideX(begin: -0.15, duration: 300.ms, curve: Curves.easeOutQuart),
-                        ],
-                      ),
-                      
-                      const SizedBox(height: 20),
-                      
-                      // Compact header
-                      Row(
-                        children: [
-                          // Small logo
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF1A73E8), Color(0xFF00FF88)],
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFF00FF88).withValues(alpha: 0.2),
-                                  blurRadius: 8,
-                                  spreadRadius: 1,
-                                ),
-                              ],
-                            ),
-                            child: const QRaftLogo(
-                              size: 32,
-                              primaryColor: Colors.white,
-                            ),
-                          ),
-                          
-                          const SizedBox(width: 16),
-                          
-                          // Title and subtitle in row
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.createAccount,
-                                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 24,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  l10n.joinQRaft,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Colors.grey[400],
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ).animate()
-                        .fadeIn(duration: 300.ms, delay: 100.ms, curve: Curves.easeOutCubic)
-                        .slideY(begin: 0.15, duration: 300.ms, delay: 100.ms, curve: Curves.easeOutQuart),
-                    ],
-                  ),
+                // One-row header that compacts while the keyboard is open
+                AuthHeader(
+                  title: l10n.createAccount,
+                  subtitle: l10n.joinQRaft,
+                  onBack: widget.onBackPressed,
                 ),
-                
+
                 // Form section - takes remaining space
                 Expanded(
                   child: SingleChildScrollView(
@@ -227,6 +141,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                 _buildTextField(
                                   l10n: l10n,
                                   controller: _nameController,
+                                  fieldKey: const Key('signup_name_field'),
                                   focusNode: _nameFocusNode,
                                   label: l10n.fullName,
                                   hint: l10n.enterFullName,
@@ -250,6 +165,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                 _buildTextField(
                                   l10n: l10n,
                                   controller: _emailController,
+                                  fieldKey: const Key('signup_email_field'),
                                   focusNode: _emailFocusNode,
                                   label: l10n.email,
                                   hint: l10n.enterEmail,
@@ -276,6 +192,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                 _buildTextField(
                                   l10n: l10n,
                                   controller: _passwordController,
+                                  fieldKey: const Key('signup_password_field'),
                                   focusNode: _passwordFocusNode,
                                   label: l10n.password,
                                   hint: l10n.createPassword,
@@ -284,6 +201,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                   textInputAction: TextInputAction.next,
                                   onSubmitted: () => _confirmPasswordFocusNode.requestFocus(),
                                   suffixIcon: IconButton(
+                                    tooltip: (Localizations.localeOf(context).languageCode == 'es') ? (_obscurePassword ? 'Mostrar contraseña' : 'Ocultar contraseña') : (_obscurePassword ? 'Show password' : 'Hide password'),
                                     onPressed: () {
                                       setState(() => _obscurePassword = !_obscurePassword);
                                     },
@@ -324,6 +242,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                 _buildTextField(
                                   l10n: l10n,
                                   controller: _confirmPasswordController,
+                                  fieldKey: const Key('signup_confirm_password_field'),
                                   focusNode: _confirmPasswordFocusNode,
                                   label: l10n.confirmPassword,
                                   hint: l10n.confirmPasswordHint,
@@ -332,6 +251,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                   textInputAction: TextInputAction.done,
                                   onSubmitted: _handleSignUp,
                                   suffixIcon: IconButton(
+                                    tooltip: (Localizations.localeOf(context).languageCode == 'es') ? (_obscureConfirmPassword ? 'Mostrar contraseña' : 'Ocultar contraseña') : (_obscureConfirmPassword ? 'Show password' : 'Hide password'),
                                     onPressed: () {
                                       setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
                                     },
@@ -363,14 +283,24 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                     SizedBox(
                                       width: 24,
                                       height: 24,
-                                      child: Checkbox(
+                                      child: Semantics(
+                                        identifier: 'signup_terms_checkbox',
+                                        child: Checkbox(
+                                        key: const Key('signup_terms_checkbox'),
                                         value: _agreeToTerms,
                                         onChanged: (value) {
-                                          setState(() => _agreeToTerms = value ?? false);
+                                          setState(() {
+                                            _agreeToTerms = value ?? false;
+                                            if (_agreeToTerms) _termsError = false;
+                                          });
                                         },
                                         activeColor: const Color(0xFF00FF88),
                                         checkColor: Colors.white,
-                                        side: BorderSide(color: Colors.grey[600]!),
+                                        side: BorderSide(
+                                          color: _termsError ? Colors.red[400]! : Colors.grey[600]!,
+                                          width: _termsError ? 2 : 1,
+                                        ),
+                                      ),
                                       ),
                                     ),
                                     const SizedBox(width: 12),
@@ -385,15 +315,32 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                     ),
                                   ],
                                 ),
+                                if (_termsError)
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 36, top: 6),
+                                    child: Semantics(
+                                      identifier: 'signup_terms_error',
+                                      liveRegion: true,
+                                      child: Text(
+                                        l10n.pleaseAgreeToTerms,
+                                        style: TextStyle(color: Colors.red[300], fontSize: 13),
+                                      ),
+                                    ),
+                                  ),
                                 
                                 const SizedBox(height: 24),
                                 
                                 // Sign up button
-                                PrimaryGlassButton(
-                                  text: l10n.createAccount,
-                                  onPressed: _handleSignUp,
-                                  isLoading: isLoading,
-                                  width: double.infinity,
+                                Semantics(
+                                  identifier: 'signup_submit_button',
+                                  button: true,
+                                  child: PrimaryGlassButton(
+                                    key: const Key('signup_submit_button'),
+                                    text: l10n.createAccount,
+                                    onPressed: _handleSignUp,
+                                    isLoading: isLoading,
+                                    width: double.infinity,
+                                  ),
                                 ),
                               ],
                             ),
@@ -407,8 +354,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           const SizedBox(height: 12),
 
                           // Privacy policy link (Ley 1581 — LGL-03)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               Text(
                                 'Al registrarte aceptas nuestros',
@@ -418,21 +366,37 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                 ),
                               ),
                               TextButton(
+                                key: const Key('signup_terms_link'),
                                 onPressed: () => Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (_) => const PrivacyPolicyScreen(),
-                                  ),
+                                  MaterialPageRoute<void>(builder: (_) => const TermsScreen()),
                                 ),
                                 style: TextButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 4, vertical: 0),
-                                  minimumSize: Size.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
+                                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                                  minimumSize: const Size(44, 44),
                                 ),
-                                child: const Text(
-                                  'Términos y política de privacidad',
-                                  style: TextStyle(
+                                child: Text(
+                                  Localizations.localeOf(context).languageCode == 'es' ? 'Términos' : 'Terms',
+                                  style: const TextStyle(
+                                    color: Color(0xFF00FF88),
+                                    fontSize: 12,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Color(0xFF00FF88),
+                                  ),
+                                ),
+                              ),
+                              Text(Localizations.localeOf(context).languageCode == 'es' ? 'y' : 'and', style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+                              TextButton(
+                                key: const Key('signup_privacy_link'),
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute<void>(builder: (_) => const PrivacyPolicyScreen()),
+                                ),
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                                  minimumSize: const Size(44, 44),
+                                ),
+                                child: Text(
+                                  Localizations.localeOf(context).languageCode == 'es' ? 'Política de privacidad' : 'Privacy Policy',
+                                  style: const TextStyle(
                                     color: Color(0xFF00FF88),
                                     fontSize: 12,
                                     decoration: TextDecoration.underline,
@@ -488,6 +452,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     FocusNode? focusNode,
     TextInputAction? textInputAction,
     VoidCallback? onSubmitted,
+    Key? fieldKey,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -501,7 +466,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        TextFormField(
+        Semantics(
+          identifier: fieldKey is ValueKey<String> ? fieldKey.value : null,
+          textField: true,
+          child: TextFormField(
+          key: fieldKey,
           controller: controller,
           focusNode: focusNode,
           keyboardType: keyboardType,
@@ -535,6 +504,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
+        ),
         ),
       ],
     );

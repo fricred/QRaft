@@ -5,6 +5,7 @@ export '../../../orders/domain/entities/order_item_entity.dart'
     show OrderItemEntity;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 import '../../../../core/services/supabase_service.dart';
 import '../../data/datasources/operator_supabase_datasource.dart';

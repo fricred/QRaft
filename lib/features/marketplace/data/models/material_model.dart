@@ -1,3 +1,4 @@
+import 'marketplace_url_guards.dart';
 import '../../domain/entities/material_entity.dart';
 
 class MaterialModel {
@@ -16,11 +17,9 @@ class MaterialModel {
   });
 
   factory MaterialModel.fromJson(Map<String, dynamic> json) {
-    final rawUrl = json['texture_url'] as String? ?? '';
-    // T-07-02: Accept only empty string or https:// URLs.
-    // Non-empty values that are not https are sanitized to '' (fail-safe).
-    final safeUrl =
-        rawUrl.isEmpty || rawUrl.startsWith('https://') ? rawUrl : '';
+    // T-07-02 lives in marketplace_url_guards so product images enforce the
+    // same rule instead of re-implementing it. Behaviour is unchanged.
+    final safeUrl = sanitizeHttpsUrl(json['texture_url'] as String?);
     return MaterialModel(
       id: json['id'] as String,
       displayNameEs: json['display_name_es'] as String,

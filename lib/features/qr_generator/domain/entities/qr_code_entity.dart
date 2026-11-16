@@ -22,6 +22,11 @@ class QRCodeEntity extends Equatable {
   final int? scanCount;
   final DateTime? lastScannedAt;
 
+  /// Id and server state of the dynamic redirect (`pending_payment`, `active`, `paused`,
+  /// `revoked`, `blocked`). Null for static QRs.
+  final String? redirectId;
+  final String? dynamicStatus;
+
   const QRCodeEntity({
     required this.id,
     required this.name,
@@ -36,11 +41,17 @@ class QRCodeEntity extends Equatable {
     this.slug,
     this.scanCount,
     this.lastScannedAt,
+    this.redirectId,
+    this.dynamicStatus,
   });
 
   /// True when this QR is dynamic — it has a scanqraft.app redirect whose
   /// destination can be edited after engraving.
   bool get isDynamic => slug != null && slug!.isNotEmpty;
+
+  /// Can be printed, engraved or shared: static, or a dynamic code that is live
+  /// (`active` / `paused`). Unpaid, deleted or blocked codes would scan to a notice page.
+  bool get isPrintable => !isDynamic || dynamicStatus == 'active' || dynamicStatus == 'paused';
 
   QRCodeEntity copyWith({
     String? id,
@@ -56,6 +67,8 @@ class QRCodeEntity extends Equatable {
     String? slug,
     int? scanCount,
     DateTime? lastScannedAt,
+    String? redirectId,
+    String? dynamicStatus,
   }) {
     return QRCodeEntity(
       id: id ?? this.id,
@@ -71,6 +84,8 @@ class QRCodeEntity extends Equatable {
       slug: slug ?? this.slug,
       scanCount: scanCount ?? this.scanCount,
       lastScannedAt: lastScannedAt ?? this.lastScannedAt,
+      redirectId: redirectId ?? this.redirectId,
+      dynamicStatus: dynamicStatus ?? this.dynamicStatus,
     );
   }
 
@@ -89,6 +104,8 @@ class QRCodeEntity extends Equatable {
         slug,
         scanCount,
         lastScannedAt,
+        redirectId,
+        dynamicStatus,
       ];
 }
 

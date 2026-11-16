@@ -1,0 +1,44 @@
+appId: io.gothcorp.qraft
+name: auth/login-error-stays-on-form
+tags:
+  - auth
+  - regression
+  - qraft-4
+# QRAFT-4: a failed login must keep the user on the login form (email still typed),
+# show a short, localized message once, and never leak server text.
+# Keyboard-first: tap only the first field, advance and submit with the action key.
+# Env: MAESTRO_TEST_EMAIL (any existing account).
+---
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/dismiss-permissions.yaml
+- runFlow: ../launch/ump-accept.yaml
+- extendedWaitUntil:
+    visible:
+      id: "welcome_screen_root"
+    timeout: 20000
+- scrollUntilVisible:
+    element:
+      id: "welcome_login_cta"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    id: "welcome_login_cta"
+- tapOn:
+    id: "login_email_field"
+- inputText: ${MAESTRO_TEST_EMAIL}
+- pressKey: Enter
+- inputText: "WrongPassword1"
+- pressKey: Enter
+- extendedWaitUntil:
+    visible:
+      text: "(?s).*(Incorrect email or password|Correo o contraseña incorrectos).*"
+    timeout: 15000
+- takeScreenshot: qraft4_login_error
+# Still on the form, with the email kept.
+- assertVisible:
+    id: "login_screen_root"
+- assertVisible:
+    text: ${MAESTRO_TEST_EMAIL}
+- assertNotVisible:
+    text: "(?s).*(Invalid login credentials|Login failed|AuthException|SocketException|supabase\\.co).*"

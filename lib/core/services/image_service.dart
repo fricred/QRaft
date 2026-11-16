@@ -523,27 +523,21 @@ class ImageService {
         return PermissionResult.notApplicable;
       }
       
+      // Gallery: the system picker returns a scoped grant for the single file
+      // the user picked, so no runtime permission applies on either platform.
+      if (source == ImageSource.gallery) {
+        return PermissionResult.notApplicable;
+      }
+
       // Debug mode: Log but still request permissions to test emulator behavior
       if (kDebugMode) {
         debugPrint('🚧 DEBUG MODE: Testing permission request in emulator/simulator...');
         debugPrint('ℹ️  Let\'s see if permission dialog appears in emulator');
       }
-      
-      Permission permission;
-      
-      if (source == ImageSource.camera) {
-        permission = Permission.camera;
-      } else {
-        // For gallery access on Android
-        if (Platform.isAndroid) {
-          // Use photos permission for Android 13+ (API 33+)
-          permission = Permission.photos;
-        } else {
-          // iOS doesn't need explicit permission for photo library
-          return PermissionResult.notApplicable;
-        }
-      }
-      
+
+      // Only camera reaches this point.
+      const Permission permission = Permission.camera;
+
       // Check current status
       final currentStatus = await permission.status;
       debugPrint('📱 ${source.name} permission current status: $currentStatus');
@@ -607,30 +601,11 @@ class ImageService {
         final status = await Permission.camera.request();
         debugPrint('📷 Camera permission request result: $status');
         return status.isGranted || status.isLimited;
-      } else {
-        // For gallery access on Android
-        if (Platform.isAndroid) {
-          // Use photos permission for Android 13+ (API 33+)
-          final currentStatus = await Permission.photos.status;
-          debugPrint('📱 Current photos permission status: $currentStatus');
-          
-          if (currentStatus.isGranted || currentStatus.isLimited) {
-            return true;
-          }
-          
-          // If denied permanently, we can't request again
-          if (currentStatus.isPermanentlyDenied) {
-            debugPrint('📱 Photos permission permanently denied');
-            return false;
-          }
-          
-          // Request permission
-          final status = await Permission.photos.request();
-          debugPrint('📱 Photos permission request result: $status');
-          return status.isGranted || status.isLimited;
-        }
-        return true; // iOS doesn't need explicit permission for photo library
       }
+
+      // Gallery: the system picker returns a scoped grant for the single file
+      // the user picked, so no runtime permission applies on either platform.
+      return true;
     } catch (e) {
       debugPrint('❌ Error requesting permissions: $e');
       // If permission request fails, still try to proceed

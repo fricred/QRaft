@@ -162,7 +162,7 @@ class _ProfileBadge extends StatelessWidget {
 
 /// A tiny [PrettyQrView] rendered from [QrDecorationBuilder] using sample data.
 class _MiniQrView extends StatelessWidget {
-  static const String _sampleData = 'https://qraft.co';
+  static const String _sampleData = 'https://scanqraft.app';
 
   final dynamic customization;
 

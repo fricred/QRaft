@@ -16,7 +16,9 @@ import '../qr_generator/domain/entities/qr_code_entity.dart';
 import '../qr_generator/presentation/controllers/qr_customization_controller.dart';
 import '../qr_generator/presentation/pages/qr_canvas_editor_screen.dart';
 import 'presentation/pages/qr_code_details_screen.dart';
-import '../redirect/presentation/screens/redirect_edit_screen.dart';
+import '../dynamic_qr/presentation/checkout_screen.dart';
+import '../dynamic_qr/presentation/detail_screen.dart';
+import '../dynamic_qr/presentation/manager_screen.dart';
 import '../marketplace/marketplace_screen.dart';
 import '../marketplace/presentation/providers/marketplace_providers.dart';
 import '../../l10n/app_localizations.dart';
@@ -72,6 +74,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
   // Filter chip definitions (labels resolved via _getFilterLabel)
   static const List<Map<String, dynamic>> _filterChipDefs = [
     {'id': 'all', 'icon': Icons.filter_list_rounded, 'color': Color(0xFF00FF88)},
+    {'id': 'dynamic', 'icon': Icons.bolt_rounded, 'color': Color(0xFF00FF88)},
     {'id': 'url', 'icon': Icons.link_rounded, 'color': Color(0xFF3B82F6)},
     {'id': 'wifi', 'icon': Icons.wifi_rounded, 'color': Color(0xFF8B5CF6)},
     {'id': 'email', 'icon': Icons.email_rounded, 'color': Color(0xFFF59E0B)},
@@ -84,6 +87,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
   String _getFilterLabel(String id, AppLocalizations l10n) {
     switch (id) {
       case 'all': return l10n.filterAll;
+      case 'dynamic': return l10n.localeName.startsWith('es') ? 'Dinámicos' : 'Dynamic';
       case 'url': return l10n.filterUrl;
       case 'wifi': return l10n.filterWifi;
       case 'email': return l10n.filterEmail;
@@ -689,6 +693,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
 
     // Check type filters
     if (_selectedFilters.contains('all')) return true;
+    if (_selectedFilters.contains('dynamic') && qr.isDynamic) return true;
     return _selectedFilters.contains(qr.type.identifier.toLowerCase());
   }
 
@@ -1493,11 +1498,8 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
                         ],
                       ),
                     ),
-                    // Show "Edit redirect destination" for URL-type QRs.
-                    // QRCodeEntity does not yet carry a slug field — the screen
-                    // handles the empty-slug case gracefully (follow-up: add
-                    // slug to QRCodeEntity once the qr_codes table column exists).
-                    if (qrEntity.type.identifier == 'url')
+                    // Dynamic QRs: what the printed code shows is managed in its detail.
+                    if (qrEntity.isDynamic)
                       PopupMenuItem<String>(
                         value: 'editRedirect',
                         child: Row(
@@ -1615,6 +1617,7 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
   }
 
   Future<void> _shareQRCode(QRCodeEntity qrEntity) async {
+    if (_blockedDynamic(qrEntity)) return;
     // Render QR data to a PNG via QrPainter offscreen canvas, then share.
     try {
       const int size = 900; // 3x the display size for print quality
@@ -1669,9 +1672,8 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
           ? 'QR: ${qrEntity.name}\nhttps://scanqraft.app/${qrEntity.slug}'
           : 'QR: ${qrEntity.name}';
 
-      await Share.shareXFiles(
-        [XFile(tmpFile.path)],
-        text: shareText,
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(tmpFile.path)], text: shareText),
       );
     } catch (e) {
       _showShareError('Failed to share QR: $e');
@@ -1749,6 +1751,15 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
                 color: const Color(0xFF1A73E8),
                 onTap: () { Navigator.pop(context); _editRedirectDestination(qrEntity); },
               ),
+            if (!qrEntity.isDynamic)
+              _ContextTile(
+                icon: Icons.bolt_rounded,
+                label: l10n.localeName.startsWith('es')
+                    ? 'Crear versión dinámica · US\$9.99'
+                    : 'Create dynamic version · US\$9.99',
+                color: const Color(0xFF00FF88),
+                onTap: () { Navigator.pop(context); _createDynamicVersion(qrEntity); },
+              ),
             _ContextTile(
               icon: Icons.share_rounded,
               label: l10n.share,
@@ -1799,7 +1810,23 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
   /// Sets [selectedQrForMarketplaceProvider] to the given QR's id, then
   /// navigates to [MarketplaceScreen] so the user can pick a material/variant
   /// and see a live MaterialPreviewWidget for this QR code.
+  /// A dynamic code that isn't live (unpaid, deleted, blocked) must not be printed,
+  /// engraved or shared: its link would show "not active" / "no longer available".
+  bool _blockedDynamic(QRCodeEntity qrEntity) {
+    final s = qrEntity.dynamicStatus;
+    if (qrEntity.isPrintable) return false;
+    final es = Localizations.localeOf(context).languageCode == 'es';
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(s == 'pending_payment'
+          ? (es ? 'Este código se activa cuando se confirme el pago. Aún no lo compartas ni lo imprimas.'
+                : "This code turns on once the payment is confirmed. Don't share or print it yet.")
+          : (es ? 'Este código ya no está activo.' : 'This code is no longer active.')),
+    ));
+    return true;
+  }
+
   void _engraveQRCode(QRCodeEntity qrEntity) {
+    if (_blockedDynamic(qrEntity)) return;
     ref.read(selectedQrForMarketplaceProvider.notifier).state = qrEntity.id;
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -1808,22 +1835,60 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
     );
   }
 
-  /// Navigate to [RedirectEditScreen] for URL-type QR codes.
-  ///
-  /// Passes the real slug when the QR has a linked redirect (requires the
-  /// redirects.qr_code_id migration); falls back to '' which the screen
-  /// renders as "no redirect linked".
+  /// Dynamic QR → its detail (change what it shows, pause, scans…).
   void _editRedirectDestination(QRCodeEntity qrEntity) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => RedirectEditScreen(
-          slug: qrEntity.slug ?? '',
+    final id = qrEntity.redirectId;
+    Navigator.of(context)
+        .push(MaterialPageRoute(
+          builder: (_) => id != null ? DynamicQrDetailScreen(redirectId: id) : const DynamicQrManagerScreen(),
+        ))
+        .then((_) {
+      if (mounted) ref.invalidate(userQRCodesProvider);
+    });
+  }
+
+  /// Same name, design and content as [qrEntity], as a new paid dynamic code. The printed
+  /// pattern changes (it encodes scanqraft.app/<slug>), so copies already printed of the
+  /// static QR stay static.
+  Future<void> _createDynamicVersion(QRCodeEntity qrEntity) async {
+    final es = Localizations.localeOf(context).languageCode == 'es';
+    final go = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF2E2E2E),
+        title: Text(es ? 'Crear versión dinámica' : 'Create dynamic version', style: const TextStyle(color: Colors.white)),
+        content: Text(
+          es
+              ? 'Conserva tu diseño y contenido, y podrás cambiar lo que muestra sin reimprimir. Ojo: el dibujo del código cambia, así que las copias ya impresas de este QR seguirán siendo estáticas.'
+              : "Keeps your design and content, and you can change what it shows without reprinting. Note: the code's pattern changes, so copies of this QR you already printed stay static.",
+          style: const TextStyle(color: Color(0xFFB4BCC6), height: 1.45),
         ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(es ? 'Cancelar' : 'Cancel')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: const Color(0xFF00FF88), foregroundColor: const Color(0xFF04140D)),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(es ? 'Continuar' : 'Continue'),
+          ),
+        ],
       ),
     );
+    if (go != true || !mounted) return;
+    await Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => DynamicQrCheckoutScreen(
+        name: qrEntity.name,
+        type: qrEntity.type,
+        payload: qrEntity.data,
+        display: qrEntity.displayData,
+        customization: qrEntity.customization,
+      ),
+    ));
+    if (mounted) ref.invalidate(userQRCodesProvider);
   }
 
   void _editQRCode(QRCodeEntity qrEntity) {
+    // A dynamic QR's printed data is its link: edit it from its detail screen.
+    if (qrEntity.isDynamic) return _editRedirectDestination(qrEntity);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => QRCanvasEditorScreen(
@@ -1840,6 +1905,9 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
   }
 
   void _confirmDeleteQR(QRCodeEntity qrEntity) {
+    // A dynamic QR is deleted from its detail screen (revokes the printed code, with a
+    // stronger warning); the library row can't be deleted on its own.
+    if (qrEntity.isDynamic) return _editRedirectDestination(qrEntity);
     final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,

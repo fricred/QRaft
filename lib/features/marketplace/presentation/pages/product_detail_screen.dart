@@ -11,6 +11,7 @@ import '../../../../shared/widgets/glass_button.dart';
 import '../../domain/entities/product_variant_entity.dart';
 import '../providers/marketplace_providers.dart';
 import '../widgets/material_preview_widget.dart';
+import '../widgets/product_gallery.dart';
 import '../widgets/qr_picker_sheet.dart';
 import '../widgets/tattoo_profile_enforcement_widget.dart';
 import '../../../qr_library/presentation/providers/qr_library_providers.dart';
@@ -92,7 +93,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     // Resolve QRCodeEntity from already-loaded provider
     final qrCodesAsync = ref.read(userQRCodesProvider);
     final qrCodes = qrCodesAsync.value ?? [];
-    final matches = qrCodes.where((qr) => qr.id == _qrId);
+    final matches = qrCodes.where((qr) => qr.id == _qrId && qr.isPrintable);
     if (matches.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('QR no encontrado en tu biblioteca')),
@@ -265,11 +266,23 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1. Live preview — tap (or the chip) to change the QR
+                // 1. Gallery — live preview on slide 0, real photos behind it.
+                //    With no photos this collapses to exactly the preview that
+                //    used to live here.
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: _buildPreview(context, ref),
+                    child: ProductGallery(
+                      images: _variant.images,
+                      preview: _buildPreview(context, ref),
+                      // "tu QR" is only true once one has been picked.
+                      previewCaption: _qrId == null
+                          ? 'Vista previa'
+                          : 'Vista previa · tu QR',
+                      photoSemanticsLabel:
+                          '${_variant.productNameEs} en '
+                          '${_variant.material.displayNameEs}',
+                    ),
                   ),
                 ),
 

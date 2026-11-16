@@ -10,7 +10,7 @@ import '../../../../shared/widgets/glass_button.dart';
 
 /// Captures the [RepaintBoundary] pointed to by [repaintKey], encodes the
 /// rendered content as a 3x-resolution PNG, writes it to a temporary file,
-/// and opens the OS share sheet via [Share.shareXFiles].
+/// and opens the OS share sheet via [SharePlus.share].
 class QrShareButton extends StatefulWidget {
   final GlobalKey repaintKey;
   final String qrName;
@@ -62,9 +62,11 @@ class _QrShareButtonState extends State<QrShareButton> {
       final tmpFile = File('${Directory.systemTemp.path}/$fileName');
       await tmpFile.writeAsBytes(byteData.buffer.asUint8List());
 
-      await Share.shareXFiles(
-        [XFile(tmpFile.path)],
-        text: 'QR: ${widget.qrName}',
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(tmpFile.path)],
+          text: 'QR: ${widget.qrName}',
+        ),
       );
     } catch (e) {
       _showError('Failed to share QR: $e');

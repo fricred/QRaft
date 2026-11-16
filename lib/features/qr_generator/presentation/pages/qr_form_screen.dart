@@ -151,6 +151,7 @@ class _QRFormScreenState extends ConsumerState<QRFormScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
           onPressed: () {
             if (_currentPage > 0) {
@@ -1133,7 +1134,7 @@ class _QRFormScreenState extends ConsumerState<QRFormScreen> {
       case QRType.location:
       case QRType.event:
         // For "coming soon" forms, return a placeholder
-        return URLData(url: 'https://qraft.app/coming-soon');
+        return URLData(url: 'https://scanqraft.app');
     }
   }
   

@@ -18,8 +18,11 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "8.7.3" apply false
-    id("org.jetbrains.kotlin.android") version "2.1.0" apply false
+    // 8.11.1 is Flutter 3.47's minimum supported AGP.
+    id("com.android.application") version "8.11.1" apply false
+    // 2.2+ is required by plugins that use the `kotlin { compilerOptions { … } }`
+    // DSL in their own Gradle scripts (permission_handler_android 14.x).
+    id("org.jetbrains.kotlin.android") version "2.3.20" apply false
 }
 
 include(":app")

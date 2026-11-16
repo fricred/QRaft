@@ -41,7 +41,7 @@ class CartItemEntity extends Equatable {
         'customization_snapshot': customizationSnapshot,
         'png_storage_url': pngStorageUrl,
         'quantity': quantity,
-        'added_at': addedAt.toIso8601String(),
+        'added_at': addedAt.toUtc().toIso8601String(),
       };
 
   factory CartItemEntity.fromJson(Map<String, dynamic> json) => CartItemEntity(
@@ -53,7 +53,7 @@ class CartItemEntity extends Equatable {
             (json['customization_snapshot'] as Map<String, dynamic>?) ?? {},
         pngStorageUrl: json['png_storage_url'] as String?,
         quantity: json['quantity'] as int,
-        addedAt: DateTime.parse(json['added_at'] as String),
+        addedAt: DateTime.parse(json['added_at'] as String).toLocal(),
       );
 
   @override

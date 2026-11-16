@@ -224,15 +224,18 @@ class DeepLinkHandler {
 
   void _handleSignupConfirmation(String link) async {
     final parsed = DeepLinkService.parseSupabaseAuthLink(link);
-    if (parsed != null && parsed['token'] != null) {
-      debugPrint('📧 Processing signup confirmation with token: ${parsed['token']?.substring(0, 10)}...');
+    // PKCE/implicit links (code=… or #access_token=…) carry no `token`; supabase_flutter
+    // completes those itself. Only legacy token links are verified here.
+    if (parsed != null && (parsed['token'] ?? '').isNotEmpty) {
+      debugPrint('📧 Processing legacy signup confirmation link');
       
       try {
         // Verify the token with Supabase
         if (SupabaseService.isInitialized) {
+          // Legacy links carry the token hash; verifyOTP needs it as tokenHash.
           final response = await SupabaseService.client.auth.verifyOTP(
-            token: parsed['token']!,
-            type: OtpType.signup,
+            tokenHash: parsed['token']!,
+            type: OtpType.email,
           );
           
           if (response.user != null) {

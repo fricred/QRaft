@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../../../../core/utils/friendly_error.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -89,6 +90,7 @@ class _EventQRScreenState extends ConsumerState<EventQRScreen>
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),
           ),
@@ -807,7 +809,7 @@ class _EventQRScreenState extends ConsumerState<EventQRScreen>
     if (widget.editingQRCode == null) {
       final canCreate = ref.read(canCreateQRProvider);
       if (!canCreate) {
-        UpgradeBottomSheet.show(context);
+        UpgradeBottomSheet.show(context, freeLimit: ref.read(qrLimitProvider));
         return;
       }
     }
@@ -899,7 +901,7 @@ class _EventQRScreenState extends ConsumerState<EventQRScreen>
             content: Row(children: [
               const Icon(Icons.error, color: Colors.white),
               const SizedBox(width: 8),
-              Expanded(child: Text(l10n.failedToSaveQR(e.toString()))),
+              Expanded(child: Text(l10n.failedToSaveQR(friendlyErrorMessage(e, spanish: Localizations.localeOf(context).languageCode == 'es')))),
             ]),
             backgroundColor: const Color(0xFFEF4444),
             duration: const Duration(seconds: 4),

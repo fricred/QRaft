@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
+// purchases_flutter 10.x added its own PurchaseResult, which collides with the
+// domain type of the same name defined in purchase_repository.dart. The domain
+// one is what this repository's contract returns.
+import 'package:purchases_flutter/purchases_flutter.dart' hide PurchaseResult;
 
 import '../../domain/entities/purchase_product.dart';
 import '../../domain/entities/purchase_error.dart';

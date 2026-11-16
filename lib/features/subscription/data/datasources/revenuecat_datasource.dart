@@ -11,6 +11,15 @@ import '../../domain/entities/purchase_error.dart';
 
 /// RevenueCat SDK wrapper - handles all direct SDK interactions
 class RevenueCatDataSource {
+  /// True when this platform's configured key is a RevenueCat Test Store key (`test_…`).
+  static bool get isTestStoreKey => !kIsWeb && _platformApiKey.startsWith('test_');
+
+  /// Purchases cannot work in this build: release build with a Test Store key.
+  static bool get purchasesUnavailable => kReleaseMode && isTestStoreKey;
+
+  static String get _platformApiKey =>
+      Platform.isIOS ? EnvConfig.revenueCatApiKeyIOS : EnvConfig.revenueCatApiKeyAndroid;
+
   bool _isInitialized = false;
   final _customerInfoController = StreamController<CustomerInfo>.broadcast();
 
@@ -26,17 +35,34 @@ class RevenueCatDataSource {
   /// Initialize RevenueCat SDK
   Future<void> initialize(String? userId) async {
     if (_isInitialized) {
-      debugPrint('RevenueCat: Already initialized');
+      // A different user signed in on this device: re-identify, otherwise purchases and
+      // entitlements would be recorded against the previous user.
+      if (userId != null && userId.isNotEmpty) {
+        // If re-identifying fails, do NOT carry on as the previous user: a purchase would
+        // be credited to them. Rethrow so purchases stay unavailable for this session.
+        // On failure this rethrows: initializeRevenueCat then marks RevenueCat as not
+        // ready, so the paywall offers nothing under the previous identity. The SDK and
+        // its listener stay intact (no reconfigure, no duplicate listener).
+        await Purchases.logIn(userId);
+      }
       return;
     }
 
-    final apiKey = Platform.isIOS
-        ? EnvConfig.revenueCatApiKeyIOS
-        : EnvConfig.revenueCatApiKeyAndroid;
+    final apiKey = _platformApiKey;
 
     if (apiKey.isEmpty) {
-      debugPrint('RevenueCat: API key not configured');
-      return;
+      // Throw so callers never mark an unconfigured SDK as initialized (native crash
+      // on the first Purchases call otherwise).
+      throw StateError('RevenueCat: API key not configured');
+    }
+
+    // QRAFT-2: a Test Store key simulates purchases and generates no revenue. A release
+    // build must never sell with it; leave the SDK unconfigured so nothing can be bought
+    // and the paywall explains that payments are unavailable.
+    if (purchasesUnavailable) {
+      // Throw (not return) so callers never mark the SDK as initialized and nothing
+      // calls into an unconfigured Purchases singleton.
+      throw StateError('RevenueCat: Test Store key refused in a release build');
     }
 
     try {
@@ -116,13 +142,48 @@ class RevenueCatDataSource {
     _ensureInitialized();
 
     try {
-      final customerInfo = await Purchases.purchasePackage(package);
+      // purchases_flutter 10.x replaced purchasePackage() with the unified
+      // purchase(PurchaseParams) entry point, and returns a PurchaseResult
+      // wrapper rather than CustomerInfo directly; callers here only care
+      // about the customer info.
+      final result = await Purchases.purchase(PurchaseParams.package(package));
       debugPrint('RevenueCat: Purchase successful');
-      return customerInfo;
+      return result.customerInfo;
     } on PlatformException catch (e) {
       debugPrint('RevenueCat: Purchase failed - ${e.code}');
       final errorCode = PurchasesErrorHelper.getErrorCode(e);
       throw PurchaseError.fromPurchasesError(errorCode);
+    }
+  }
+
+  /// Offering id holding the one-time "dynamic QR" consumable (store id `qraft_dynamic_qr`).
+  /// Kept out of the current (Pro) offering, so the paywall never lists it.
+  static const dynamicQrOfferingId = 'dynamic_qr';
+
+  /// The dynamic QR package (for its localized price), or null when not configured.
+  Future<Package?> getDynamicQrPackage() async {
+    _ensureInitialized();
+    try {
+      final offerings = await Purchases.getOfferings();
+      final offering = offerings.getOffering(dynamicQrOfferingId);
+      return offering?.availablePackages.firstOrNull;
+    } on PlatformException catch (e) {
+      debugPrint('RevenueCat: dynamic QR offering failed - ${e.code}');
+      return null;
+    }
+  }
+
+  /// Buys one dynamic QR. Returns the store transaction id so the server can link this
+  /// exact purchase to the code it was bought for. Throws [PurchaseError] (type `pending`
+  /// for cash / carrier payments the store hasn't confirmed yet).
+  Future<String?> purchaseDynamicQr(Package package) async {
+    _ensureInitialized();
+    try {
+      final result = await Purchases.purchase(PurchaseParams.package(package));
+      return result.storeTransaction.transactionIdentifier;
+    } on PlatformException catch (e) {
+      debugPrint('RevenueCat: dynamic QR purchase failed - ${e.code}');
+      throw PurchaseError.fromPurchasesError(PurchasesErrorHelper.getErrorCode(e));
     }
   }
 

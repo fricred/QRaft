@@ -1,6 +1,12 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
+import '../../../../core/utils/friendly_error.dart';
+import 'package:permission_handler/permission_handler.dart' show openAppSettings;
+import '../../../legal/presentation/pages/habeas_data_screen.dart';
+import '../../../legal/presentation/pages/pqrs_screen.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -9,9 +15,7 @@ import 'package:qraft/l10n/app_localizations.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../legal/presentation/pages/privacy_policy_screen.dart';
 import '../../../legal/presentation/pages/terms_screen.dart';
-import '../../../legal/presentation/pages/habeas_data_screen.dart';
 import '../../../legal/presentation/pages/garantia_screen.dart';
-import '../../../legal/presentation/pages/pqrs_screen.dart';
 import '../../../../shared/widgets/language_selector.dart';
 import '../controllers/profile_controller.dart';
 import '../widgets/profile_header.dart';
@@ -51,7 +55,10 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
         actions: [
-          IconButton(
+          Semantics(
+            identifier: 'profile_settings_button',
+            child: IconButton(
+            tooltip: l10n.settings,
             onPressed: () {
               _showSettingsMenu(context, ref, l10n);
             },
@@ -59,7 +66,7 @@ class ProfileScreen extends ConsumerWidget {
               Icons.settings_rounded,
               color: Colors.grey[400],
             ),
-          ),
+          )),
         ],
       ),
       body: RefreshIndicator(
@@ -252,7 +259,8 @@ class ProfileScreen extends ConsumerWidget {
               subtitle: l10n.pushNotifications,
               onTap: () {
                 Navigator.pop(context);
-                // TODO: Implement notification settings
+                // QRAFT-7: notification permission lives in the OS settings for the app.
+                openAppSettings();
               },
             ),
             _buildSettingsItem(
@@ -260,8 +268,9 @@ class ProfileScreen extends ConsumerWidget {
               title: l10n.privacy,
               subtitle: l10n.dataPrivacySettings,
               onTap: () {
-                Navigator.pop(context);
-                // TODO: Implement privacy settings
+                final nav = Navigator.of(context); // capture before closing the sheet
+                nav.pop();
+                nav.push(MaterialPageRoute<void>(builder: (_) => const HabeasDataScreen()));
               },
             ),
             _buildSettingsItem(
@@ -269,15 +278,141 @@ class ProfileScreen extends ConsumerWidget {
               title: l10n.helpSupport,
               subtitle: l10n.helpSupportDescription,
               onTap: () {
-                Navigator.pop(context);
-                // TODO: Implement help screen
+                // QRAFT-7: the only support channel today is the PQRS form.
+                final nav = Navigator.of(context); // capture before closing the sheet
+                nav.pop();
+                nav.push(MaterialPageRoute<void>(builder: (_) => const PqrsScreen()));
               },
+            ),
+            // QRAFT-19 (P2-05): store requirement, account deletion from inside the app.
+            Semantics(
+              identifier: 'profile_delete_account_item',
+              child: ListTile(
+                leading: Icon(Icons.delete_forever_rounded, color: Colors.red[400]),
+                title: Text(
+                  _es(context) ? 'Eliminar cuenta' : 'Delete account',
+                  style: TextStyle(color: Colors.red[400], fontWeight: FontWeight.w500),
+                ),
+                subtitle: Text(
+                  _es(context)
+                      ? 'Borra tu cuenta y tus datos de forma permanente'
+                      : 'Permanently delete your account and data',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                ),
+                onTap: () {
+                  final nav = Navigator.of(context, rootNavigator: true);
+                  Navigator.of(context).pop();
+                  _showDeleteAccountDialog(nav.context, ref);
+                },
+              ),
             ),
             const SizedBox(height: 16),
           ],
         ),
       ),
     );
+  }
+
+  bool _es(BuildContext context) => Localizations.localeOf(context).languageCode == 'es';
+
+  Future<void> _showDeleteAccountDialog(BuildContext context, WidgetRef ref) async {
+    final es = _es(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: const Color(0xFF2E2E2E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          es ? '¿Eliminar tu cuenta?' : 'Delete your account?',
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          es
+              ? 'Se borrarán tu perfil, tus códigos QR y tu historial de escaneos. No se puede deshacer.\n\n'
+                  'Si tienes pedidos, se conservan solo para fines contables, sin tus datos de acceso.\n\n'
+                  'Una suscripción activa no se cancela sola: cancélala en la tienda de aplicaciones.'
+              : 'Your profile, QR codes and scan history will be deleted. This cannot be undone.\n\n'
+                  'If you have orders, they are kept only for accounting, without your login data.\n\n'
+                  'An active subscription is not cancelled automatically: cancel it in the app store.',
+          style: TextStyle(color: Colors.grey[300]),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(es ? 'Cancelar' : 'Cancel', style: TextStyle(color: Colors.grey[400])),
+          ),
+          Semantics(
+            identifier: 'profile_delete_account_confirm_button',
+            button: true,
+            child: TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(
+                es ? 'Eliminar' : 'Delete',
+                style: TextStyle(color: Colors.red[400], fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final messenger = ScaffoldMessenger.of(context);
+    showDialog<void>(
+      context: navigator.context,
+      barrierDismissible: false,
+      builder: (_) => const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF00FF88)),
+        ),
+      ),
+    );
+    final auth = ref.read(supabaseAuthProvider); // read before any await
+    try {
+      final client = Supabase.instance.client;
+      final uid = client.auth.currentUser?.id;
+      // Profile photos live in the public 'avatars' bucket under <uid>/: remove them first
+      // (the RPC can't touch Storage). A failure here stops the deletion so no photo is
+      // left public behind a deleted account.
+      if (uid != null) {
+        final files = await client.storage
+            .from('avatars')
+            .list(path: uid)
+            .timeout(const Duration(seconds: 15));
+        if (files.isNotEmpty) {
+          final removed = await client.storage
+              .from('avatars')
+              .remove([for (final f in files) '$uid/${f.name}'])
+              .timeout(const Duration(seconds: 15));
+          // Storage policies deny silently (empty result): never leave a public photo.
+          if (removed.length < files.length) {
+            throw StateError('avatar removal incomplete');
+          }
+        }
+      }
+      await client.rpc('delete_my_account').timeout(const Duration(seconds: 20));
+    } catch (e) {
+      debugPrint('Account deletion failed: $e');
+      if (navigator.mounted) navigator.pop(); // loading
+      messenger.showSnackBar(SnackBar(
+        content: Text(
+          friendlyErrorMessage(e, spanish: es),
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.red[700],
+      ));
+      return;
+    }
+    // The server already removed the account; this only clears the local session.
+    await auth.signOut();
+    if (navigator.mounted) navigator.popUntil((route) => route.isFirst);
+    messenger.showSnackBar(SnackBar(
+      content: Text(
+        es ? 'Tu cuenta fue eliminada.' : 'Your account was deleted.',
+        style: const TextStyle(color: Colors.white),
+      ),
+    ));
   }
 
   String _getLanguageDisplayName(WidgetRef ref) {
@@ -358,58 +493,37 @@ class ProfileScreen extends ConsumerWidget {
                 child: TextButton(
                   key: const Key('profile_sign_out_confirm_button'),
                   onPressed: authProvider.isLoading ? null : () async {
-                    try {
-                      // Close sign out dialog first
-                      Navigator.pop(context);
+                    // QRAFT-8: capture the root navigator BEFORE closing this dialog. This
+                    // dialog's own context is gone after pop(), so using it afterwards left
+                    // the "Signing out…" dialog on screen forever.
+                    final navigator = Navigator.of(context, rootNavigator: true);
+                    navigator.pop(); // close the confirmation dialog
 
-                      // Show loading dialog
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) => AlertDialog(
-                          backgroundColor: const Color(0xFF2E2E2E),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                          content: Row(
-                            children: [
-                              CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF00FF88)),
-                              ),
-                              const SizedBox(width: 16),
-                              Text(
-                                l10n.signingOut,
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            ],
-                          ),
+                    showDialog<void>(
+                      context: navigator.context,
+                      barrierDismissible: false,
+                      builder: (_) => AlertDialog(
+                        backgroundColor: const Color(0xFF2E2E2E),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        content: Row(
+                          children: [
+                            const CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF00FF88)),
+                            ),
+                            const SizedBox(width: 16),
+                            Text(l10n.signingOut, style: const TextStyle(color: Colors.white)),
+                          ],
                         ),
-                      );
+                      ),
+                    );
 
-                      // Perform sign out
-                      await authProvider.signOut();
+                    // signOut never throws (errors go to the provider) and is bounded in time.
+                    await authProvider.signOut();
 
-                      // Pop loading dialog AND any pushed routes back to root.
-                      // AuthWrapper switches its home from MainScaffold to AuthFlow
-                      // when currentUser becomes null, but pushed routes (ProfileScreen,
-                      // dialogs) sit on top of that switch and would occlude the auth
-                      // flow. popUntil(isFirst) clears the stack so AuthFlow renders.
-                      if (context.mounted) {
-                        Navigator.of(context).popUntil((route) => route.isFirst);
-                      }
-                    } catch (e) {
-                      // Close loading dialog if it's still open
-                      if (context.mounted) {
-                        Navigator.pop(context);
-
-                        // Show error message
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(l10n.signOutFailed),
-                            backgroundColor: Colors.red[700],
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                        );
-                      }
+                    // Close the loading dialog and any pushed routes so the auth flow (or,
+                    // if sign-out failed, the app with its error snackbar) is visible.
+                    if (navigator.mounted) {
+                      navigator.popUntil((route) => route.isFirst);
                     }
                   },
                   child: authProvider.isLoading

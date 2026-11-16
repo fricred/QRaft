@@ -10,11 +10,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../qr_generator/domain/entities/qr_code_entity.dart';
+import '../../../qr_generator/domain/entities/qr_type.dart';
 import '../../../qr_generator/presentation/controllers/qr_customization_controller.dart';
 import '../../../qr_generator/presentation/pages/qr_canvas_editor_screen.dart';
 import '../../../qr_digital/presentation/pages/qr_widget_pin_page.dart';
 import '../widgets/qr_code_display_widget.dart';
 import '../providers/qr_library_providers.dart';
+import '../../../dynamic_qr/presentation/detail_screen.dart';
 
 class QRCodeDetailsScreen extends ConsumerStatefulWidget {
   final QRCodeEntity qrEntity;
@@ -46,6 +48,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
               child: Row(
                 children: [
                   IconButton(
+                    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                     onPressed: () => Navigator.of(context).pop(),
                     icon: const Icon(
                       Icons.arrow_back_rounded,
@@ -146,7 +149,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                               ),
                             ),
                             child: Text(
-                              widget.qrEntity.type.name.toUpperCase(),
+                              widget.qrEntity.type.getDisplayName(context).toUpperCase(),
                               style: TextStyle(
                                 color: _getQRTypeColor(widget.qrEntity.type.identifier),
                                 fontSize: 12,
@@ -418,6 +421,15 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
   }
 
   Future<void> _handleShare() async {
+    final st = widget.qrEntity.dynamicStatus;
+    if (widget.qrEntity.isDynamic && st != 'active' && st != 'paused') {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(Localizations.localeOf(context).languageCode == 'es'
+            ? 'Este código aún no está activo o ya no existe.'
+            : "This code isn't active yet or no longer exists."),
+      ));
+      return;
+    }
     try {
       const int size = 900;
       final painter = QrPainter(
@@ -459,7 +471,9 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
           ? 'QR: ${widget.qrEntity.name}\nhttps://scanqraft.app/${widget.qrEntity.slug}'
           : 'QR: ${widget.qrEntity.name}';
 
-      await Share.shareXFiles([XFile(file.path)], text: shareText);
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path)], text: shareText),
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -516,6 +530,14 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
   }
 
   void _handleDelete() {
+    // Dynamic QRs are deleted from their own detail (revokes the printed code).
+    if (widget.qrEntity.isDynamic) {
+      final id = widget.qrEntity.redirectId;
+      if (id != null) {
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => DynamicQrDetailScreen(redirectId: id)));
+      }
+      return;
+    }
     final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
@@ -659,6 +681,10 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
   String _formatTime(DateTime dateTime) {
     final hour = dateTime.hour;
     final minute = dateTime.minute;
+    // Spanish uses 24-hour time ("a las 21:53"); English keeps AM/PM.
+    if (Localizations.localeOf(context).languageCode == 'es') {
+      return '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+    }
     final ampm = hour >= 12 ? 'PM' : 'AM';
     final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
     return '${displayHour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $ampm';

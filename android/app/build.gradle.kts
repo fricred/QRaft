@@ -21,15 +21,11 @@ android {
     ndkVersion = "29.0.14033849"
 
     compileOptions {
-        // Core library desugaring required by flutter_local_notifications 17.x
+        // Core library desugaring required by flutter_local_notifications
         // (per https://pub.dev/packages/flutter_local_notifications#-android-setup)
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     signingConfigs {
@@ -47,7 +43,9 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
-        targetSdk = 35
+        // Google Play requires the target API level to stay within one year of the
+        // latest Android release; 35 stops accepting updates after 2026-08-31.
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -63,6 +61,14 @@ android {
         jniLibs {
             useLegacyPackaging = true
         }
+    }
+}
+
+// Kotlin 2.3 removed the `kotlinOptions { jvmTarget = "…" }` DSL inside
+// android {}; the top-level compilerOptions DSL replaces it.
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 

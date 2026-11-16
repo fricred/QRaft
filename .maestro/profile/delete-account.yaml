@@ -1,0 +1,31 @@
+appId: io.gothcorp.qraft
+name: profile/delete-account
+tags:
+  - profile
+  - qraft-19
+# QRAFT-19 (P2-05): a user can delete their account from Settings. Uses a DISPOSABLE
+# account (MAESTRO_DELETE_EMAIL / MAESTRO_DELETE_PASSWORD): it is gone after this flow.
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: ../helpers/login.yaml
+    env:
+      MAESTRO_TEST_EMAIL: ${MAESTRO_DELETE_EMAIL}
+      MAESTRO_TEST_PASSWORD: ${MAESTRO_DELETE_PASSWORD}
+- tapOn:
+    id: "main_scaffold_dashboard_tab"
+- tapOn:
+    id: "dashboard_profile_button"
+- tapOn:
+    id: "profile_settings_button"
+- tapOn:
+    id: "profile_delete_account_item"
+- takeScreenshot: qraft19_delete_confirm
+- tapOn:
+    id: "profile_delete_account_confirm_button"
+- extendedWaitUntil:
+    visible:
+      id: "welcome_screen_root"
+    timeout: 30000
+- takeScreenshot: qraft19_deleted

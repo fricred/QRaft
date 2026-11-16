@@ -3,6 +3,7 @@ name: auth/logout
 tags:
   - auth
   - phase1
+  - qraft-8
 ---
 - launchApp:
     clearState: true
@@ -21,7 +22,8 @@ tags:
     element:
       id: "profile_sign_out_button"
     direction: DOWN
-    timeout: 10000
+    # The profile screen is long; 10 s of scrolling did not reach the button.
+    timeout: 30000
 - tapOn:
     id: "profile_sign_out_button"
 - extendedWaitUntil:

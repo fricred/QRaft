@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../../../core/services/supabase_service.dart';
 import '../../auth/data/providers/supabase_auth_provider.dart';
 import '../../qr_generator/domain/entities/qr_code_entity.dart';

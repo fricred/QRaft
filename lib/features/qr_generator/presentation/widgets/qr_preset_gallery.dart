@@ -26,7 +26,7 @@ class QrPresetGalleryWidget extends StatelessWidget {
   final ValueChanged<int> onEyePresetSelected;
 
   static const int _presetCount = 8;
-  static const String _sampleData = 'https://qraft.co';
+  static const String _sampleData = 'https://scanqraft.app';
 
   /// Labels shown in the gallery header row for each module preset.
   static const List<String> _moduleLabels = [
