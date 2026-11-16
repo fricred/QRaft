@@ -1557,11 +1557,18 @@ class _QRLibraryScreenState extends ConsumerState<QRLibraryScreen> {
   }
 
   void _showEntityQRDetails(QRCodeEntity qrEntity) {
+    // A dynamic code is managed in its own detail (change content, design, pause, history),
+    // same screen as "Mis QR dinámicos".
+    final redirectId = qrEntity.redirectId;
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => QRCodeDetailsScreen(qrEntity: qrEntity),
+        builder: (context) => qrEntity.isDynamic && redirectId != null
+            ? DynamicQrDetailScreen(redirectId: redirectId)
+            : QRCodeDetailsScreen(qrEntity: qrEntity),
       ),
-    );
+    ).then((_) {
+      if (mounted && qrEntity.isDynamic) ref.invalidate(userQRCodesProvider);
+    });
   }
 
   void _toggleFavorite(QRCodeEntity qrEntity) async {

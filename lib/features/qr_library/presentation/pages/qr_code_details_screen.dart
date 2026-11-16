@@ -492,6 +492,12 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
   }
 
   void _handleEdit() {
+    // A dynamic code is edited from its own detail ("Cambiar lo que muestra" / "Diseño").
+    final redirectId = widget.qrEntity.redirectId;
+    if (widget.qrEntity.isDynamic && redirectId != null) {
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => DynamicQrDetailScreen(redirectId: redirectId)));
+      return;
+    }
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => QRCanvasEditorScreen(
