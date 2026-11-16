@@ -92,8 +92,8 @@ class _SaveKindSheetState extends ConsumerState<_SaveKindSheet> {
                   ),
                   child: Text(
                     dqT(context,
-                        'WiFi dinámico no conecta solo: quien escanee verá la red y podrá copiar la contraseña. Para conexión en un toque, usa Estático.',
-                        "Dynamic WiFi doesn't auto-connect: people see the network and copy the password. For one-tap joining, use Static."),
+                        'Para WiFi te recomendamos Estático: la cámara conecta en un toque y es gratis. El dinámico vale la pena solo si cambias la contraseña seguido: quien escanee verá la red con “Copiar contraseña” (en Android, “Conectar” si tiene la app QRaft).',
+                        "For WiFi we recommend Static: the camera joins in one tap and it's free. Dynamic is only worth it if you change the password often: people see the network with “Copy password” (on Android, “Connect” if they have the QRaft app)."),
                     style: const TextStyle(color: Colors.white, fontSize: 14, height: 1.45),
                   ),
                 ),

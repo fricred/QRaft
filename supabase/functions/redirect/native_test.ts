@@ -98,10 +98,15 @@ Deno.test("Android WiFi: app intent with Play fallback, settings button; iPhone:
   assert(!ios.body!.includes("intent:"));
 });
 
-Deno.test("Email page tries to open the mail app once on phones, never on desktop", () => {
+Deno.test("Email: phones go straight to the mail app (302 mailto:), desktop/?view=page get the page", () => {
   const r = row({ content_type: "email", content: { payload: "mailto:hola@norte.co?subject=Cotizaci%C3%B3n" } });
-  assertStringIncludes(respond("x", r, o("android")).body!, 'location.href="mailto:hola@norte.co?subject=Cotizaci%C3%B3n"');
-  assert(!respond("x", r, o("other")).body!.includes("location.href"));
+  const a = respond("x", r, o("android"));
+  assertEquals(a.status, 302);
+  assertEquals(a.headers.Location, "mailto:hola@norte.co?subject=Cotizaci%C3%B3n");
+  assertEquals(a.countScan, true);
+  assertEquals(respond("x", r, o("ios")).status, 302);
+  assertStringIncludes(respond("x", r, o("other")).body!, "Abrir en mi correo");
+  assertEquals(respond("x", r, o("android", { view: "page" })).status, 200);
 });
 
 Deno.test("page layout: footer pinned to the bottom, dark mode, copy buttons, everything escaped", () => {

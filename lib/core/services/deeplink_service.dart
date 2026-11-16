@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'supabase_service.dart';
 import '../../features/checkout/presentation/pages/payment_result_screen.dart';
+import '../../features/wifi_join/wifi_join_screen.dart';
 
 /// Global navigator key used by [DeepLinkHandler] to push payment result
 /// screens from cold-launch deep links (T-09-12 namespacing).
@@ -184,6 +185,13 @@ class DeepLinkHandler {
     // (T-09-12: deep link collision guard).
     if (DeepLinkService.isPaymentResultLink(link)) {
       _handlePaymentResult(link);
+      return;
+    }
+
+    // ── WiFi from a scanned dynamic QR (qraft://wifi?ssid=…) — no session needed ──
+    final wifi = WifiLink.tryParse(link);
+    if (wifi != null) {
+      appNavigatorKey.currentState?.push(MaterialPageRoute<void>(builder: (_) => WifiJoinScreen(wifi: wifi)));
       return;
     }
 

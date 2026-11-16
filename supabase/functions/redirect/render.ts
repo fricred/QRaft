@@ -374,9 +374,9 @@ const T = {
     privacy: "Escaneos anónimos", privacyLink: "Privacidad",
     copy: "Copiar", copied: "Copiado", copiedToast: "Copiado al portapapeles",
     message: "Mensaje", copyText: "Copiar texto",
-    contact: "Contacto", saveContacts: "Guardar en Contactos", saveContactsNote: "Abre Contactos con todo lleno",
+    contact: "Contacto", saveContacts: "Guardar en Contactos", saveContactsNote: "Se descarga la tarjeta: tócala para guardarla en Contactos",
     saveContact: "Guardar contacto", call: "Llamar", write: "Escribir", phone: "Teléfono", email: "Email", website: "Sitio web", address: "Dirección",
-    event: "Evento", addCalendar: "Agregar al calendario", addCalendarNote: "Abre tu calendario con el evento listo",
+    event: "Evento", addCalendar: "Agregar al calendario", addCalendarNote: "Se descarga el evento: tócalo para abrirlo en tu calendario",
     googleCalendar: "Agregar a Google Calendar", downloadIcs: "Descargar evento (.ics)",
     directions: "Cómo llegar", when: "Cuándo", where: "Dónde", allDay: "todo el día",
     wifi: "Red WiFi", wifiTitle: "Conéctate al WiFi", network: "Red", password: "Contraseña", noPassword: "Red abierta, sin contraseña",
@@ -399,9 +399,9 @@ const T = {
     privacy: "Anonymous scans", privacyLink: "Privacy",
     copy: "Copy", copied: "Copied", copiedToast: "Copied to clipboard",
     message: "Message", copyText: "Copy text",
-    contact: "Contact", saveContacts: "Save to Contacts", saveContactsNote: "Opens Contacts with everything filled in",
+    contact: "Contact", saveContacts: "Save to Contacts", saveContactsNote: "The card downloads: tap it to save it to Contacts",
     saveContact: "Save contact", call: "Call", write: "Email", phone: "Phone", email: "Email", website: "Website", address: "Address",
-    event: "Event", addCalendar: "Add to calendar", addCalendarNote: "Opens your calendar with the event ready",
+    event: "Event", addCalendar: "Add to calendar", addCalendarNote: "The event downloads: tap it to open it in your calendar",
     googleCalendar: "Add to Google Calendar", downloadIcs: "Download event (.ics)",
     directions: "Directions", when: "When", where: "Where", allDay: "all day",
     wifi: "WiFi network", wifiTitle: "Join the WiFi", network: "Network", password: "Password", noPassword: "Open network, no password",
@@ -581,7 +581,9 @@ export function contentPage(row: RedirectRow, lang: Lang, nonce: string, now: Da
       const gcal = googleCalendarUrl(ev);
       let add = "";
       if (platform === "android" && ev.start) {
-        add = `${btn(androidEventIntent(ev, gcal ?? `${self}?dl=ics`)!, s.addCalendar, "cal", floatAttr(ev))}${note(s.addCalendarNote)}`;
+        // Chrome only lets intent: reach browsable activities, so the calendar's insert screen is
+        // usually refused and the .ics fallback (opened by the Calendar app) is what users get.
+        add = `${btn(androidEventIntent(ev, `${self}?dl=ics`)!, s.addCalendar, "cal", floatAttr(ev))}${note(s.addCalendarNote)}${gcal ? btn2(gcal, s.googleCalendar, "cal", ' rel="noopener"') : ""}`;
       } else if (platform === "ios") {
         add = btn(`?dl=ics`, s.addCalendar, "cal");
       } else {
@@ -610,7 +612,7 @@ export function contentPage(row: RedirectRow, lang: Lang, nonce: string, now: Da
       const m = parseEmail(payload);
       if (!m) return null;
       const title = s.writeTo.replace("%s", m.to);
-      return page(lang, row.slug, title, `<article class="card">${chip("mail", "#D97706", s.mail)}<h1>${e(title)}</h1>${field(ids, s, s.to, m.to)}${m.subject ? field(ids, s, s.subject, m.subject) : ""}${m.body ? field(ids, s, s.message, m.body) : ""}${btn(m.href, s.openMail, "mail")}${note(s.openMailNote)}</article>`, nonce, { autoOpen: platform === "other" ? undefined : m.href });
+      return page(lang, row.slug, title, `<article class="card">${chip("mail", "#D97706", s.mail)}<h1>${e(title)}</h1>${field(ids, s, s.to, m.to)}${m.subject ? field(ids, s, s.subject, m.subject) : ""}${m.body ? field(ids, s, s.message, m.body) : ""}${btn(m.href, s.openMail, "mail")}${note(s.openMailNote)}</article>`, nonce);
     }
     default:
       return null;
@@ -686,6 +688,12 @@ export function respond(
       const url = ios ? appleMapsUrl(payload) : geoToMapsUrl(payload);
       return url ? redirect(url, true) : bad();
     }
+  }
+
+  // Phones: straight into the mail app with to/subject/body filled (desktop keeps the page).
+  if (row.content_type === "email" && platform !== "other" && !forcePage) {
+    const m = parseEmail(payload);
+    return m ? redirect(m.href, true) : bad();
   }
 
   // iPhone: Safari shows the native "Create contact" / "Add to calendar" sheet for these.
