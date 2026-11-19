@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'dart:io';
 import '../models/scan_result.dart';
 import '../../../core/services/supabase_service.dart';
 
@@ -91,7 +90,7 @@ class QRScannerController extends StateNotifier<QRScannerState> {
           type: _getTypeFromName(data['type']),
           displayValue: data['displayValue'],
           parsedData: data['parsedData'] as Map<String, dynamic>?,
-          scannedAt: DateTime.parse(data['scannedAt']),
+          scannedAt: DateTime.parse(data['scannedAt']).toLocal(),
         );
       }).toList();
       
@@ -226,81 +225,27 @@ class QRScannerController extends StateNotifier<QRScannerState> {
     }
   }
 
-  /// Check gallery permissions before accessing
-  Future<bool> _checkGalleryPermissions() async {
-    try {
-      // Web doesn't need explicit permission requests for image picker
-      if (kIsWeb) {
-        return true;
-      }
-      
-      // For gallery access on Android
-      if (Platform.isAndroid) {
-        // Use photos permission for Android 13+ (API 33+)
-        final currentStatus = await Permission.photos.status;
-        debugPrint('📱 Current photos permission status: $currentStatus');
-        
-        if (currentStatus.isGranted || currentStatus.isLimited) {
-          return true;
-        }
-        
-        // If denied permanently, we can't request again
-        if (currentStatus.isPermanentlyDenied) {
-          debugPrint('📱 Photos permission permanently denied');
-          state = state.copyWith(
-            isLoading: false,
-            error: 'Gallery access permission permanently denied. Please enable it in device settings.',
-          );
-          return false;
-        }
-        
-        // Request permission
-        final status = await Permission.photos.request();
-        debugPrint('📱 Photos permission request result: $status');
-        
-        if (!(status.isGranted || status.isLimited)) {
-          state = state.copyWith(
-            isLoading: false,
-            error: 'Gallery access permission is required to scan QR codes from photos.',
-          );
-          return false;
-        }
-        
-        return true;
-      }
-      
-      // iOS doesn't need explicit permission for photo library
-      return true;
-      
-    } catch (e) {
-      debugPrint('❌ Error checking gallery permissions: $e');
-      state = state.copyWith(
-        isLoading: false,
-        error: 'Failed to check gallery permissions: $e',
-      );
-      return false;
-    }
-  }
-
-  /// Scan QR code from gallery image
-  Future<void> scanFromGallery() async {
+  /// Scan QR code from gallery image using real analyzeImage API
+  Future<void> scanFromGallery(MobileScannerController controller) async {
     try {
       state = state.copyWith(isLoading: true, error: null);
       debugPrint('📷 Opening gallery for QR scan...');
 
-      // Check permissions first
-      final hasPermission = await _checkGalleryPermissions();
-      if (!hasPermission) {
-        debugPrint('❌ Gallery permission denied');
-        return;
-      }
-
+      // No runtime permission is requested here on purpose. Picking a single
+      // image goes through a system picker (Android Photo Picker, or
+      // PHPickerViewController on iOS) which hands back a scoped grant for the
+      // chosen file only — READ_MEDIA_IMAGES / Permission.photos are never
+      // needed. Asking anyway used to break this flow outright below API 33,
+      // where permission_handler resolves Photos to "denied" because
+      // READ_MEDIA_IMAGES does not exist on those versions.
       final ImagePicker picker = ImagePicker();
+      // The image is handed straight to the barcode analyzer, so it must not be
+      // downscaled or re-encoded: doing so blurs module edges and makes dense
+      // QR codes undecodable. requestFullMetadata:false skips reading EXIF/GPS
+      // we have no use for.
       final XFile? image = await picker.pickImage(
         source: ImageSource.gallery,
-        maxWidth: 1920,
-        maxHeight: 1920,
-        imageQuality: 85,
+        requestFullMetadata: false,
       );
 
       if (image == null) {
@@ -310,77 +255,56 @@ class QRScannerController extends StateNotifier<QRScannerState> {
       }
 
       debugPrint('📷 Image selected: ${image.path}');
-      
+
+      // Stop live camera stream before calling analyzeImage (avoids undefined behavior)
+      await controller.stop();
+
       try {
-        debugPrint('🔍 Attempting to analyze image: ${image.path}');
-        
-        // Note: mobile_scanner's analyzeImage returns a bool indicating if QR codes were found
-        // The actual QR data would be received through the controller's callback
-        // For now, we'll create a mock implementation for testing error handling
-        
-        // This is a simplified mock implementation for testing purposes
-        // In a production app, you would use a proper QR detection library
-        debugPrint('📝 Note: Using mock implementation for gallery QR scanning');
-        debugPrint('🧪 Creating mock result for testing error handling and logging...');
-        
-        final mockRawValue = 'https://example.com/gallery-test-qr-${DateTime.now().millisecondsSinceEpoch}';
-        await _processGalleryMockResult(mockRawValue, 'Gallery Image: ${image.name}');
-        
-      } catch (analysisError) {
-        debugPrint('❌ Error in gallery scan process: $analysisError');
-        throw Exception('Gallery scan process failed: $analysisError');
+        final BarcodeCapture? capture = await controller.analyzeImage(image.path);
+
+        if (capture != null && capture.barcodes.isNotEmpty) {
+          final rawValue = capture.barcodes.first.rawValue;
+          if (rawValue != null && rawValue.isNotEmpty) {
+            final scanResult = ScanResult.fromRawValue(rawValue);
+            // The decoded QR is what the user came for: a failed history save (offline,
+            // server error) must not throw it away or leave the spinner running.
+            try {
+              await SupabaseService.saveScanResult(scanResult);
+            } catch (e) {
+              logDetailedError('Gallery scan history save', e);
+            }
+            final updatedHistory = [scanResult, ...state.scanHistory];
+            state = state.copyWith(
+              lastScanResult: scanResult,
+              scanHistory: updatedHistory,
+              isLoading: false,
+              error: null,
+            );
+            debugPrint('✅ Gallery scan result: ${scanResult.type} - ${scanResult.displayValue}');
+          } else {
+            state = state.copyWith(isLoading: false, error: 'noQRFoundInImage');
+          }
+        } else {
+          state = state.copyWith(isLoading: false, error: 'noQRFoundInImage');
+        }
+      } on MobileScannerBarcodeException catch (e) {
+        logDetailedError('Gallery analyzeImage', e);
+        state = state.copyWith(isLoading: false, error: 'galleryScanFailed');
+      } finally {
+        // Resume live camera stream regardless of outcome. A restart failure must not be
+        // reported as "couldn't read the image" on top of a successful scan.
+        try {
+          await controller.start();
+        } catch (e) {
+          logDetailedError('Gallery camera restart', e);
+        }
       }
-      
+
     } catch (e) {
       debugPrint('❌ Failed to scan QR from gallery: $e');
       logDetailedError('Gallery QR Scan', e);
-    }
-  }
-
-  /// Process mock scan result from gallery for testing
-  Future<void> _processGalleryMockResult(String rawValue, String source) async {
-    try {
-      debugPrint('📱 Gallery QR Code (mock): $rawValue');
-      debugPrint('🖼️ Source: $source');
-
-      // Create scan result with gallery source info
-      final scanResult = ScanResult.fromRawValue(rawValue);
-      
-      // Add source information to parsed data
-      final enhancedParsedData = Map<String, dynamic>.from(scanResult.parsedData ?? {});
-      enhancedParsedData['source'] = 'gallery';
-      enhancedParsedData['sourceInfo'] = source;
-      enhancedParsedData['testMode'] = true; // Mark as test data
-
-      final enhancedScanResult = ScanResult(
-        id: scanResult.id,
-        rawValue: scanResult.rawValue,
-        type: scanResult.type,
-        displayValue: scanResult.displayValue,
-        parsedData: enhancedParsedData,
-        scannedAt: scanResult.scannedAt,
-      );
-      
-      // Save to database
-      await SupabaseService.saveScanResult(enhancedScanResult);
-      
-      // Update state
-      final updatedHistory = [enhancedScanResult, ...state.scanHistory];
-      state = state.copyWith(
-        lastScanResult: enhancedScanResult,
-        scanHistory: updatedHistory,
-        isLoading: false,
-        error: null,
-      );
-
-      debugPrint('✅ Gallery mock scan result processed: ${enhancedScanResult.type} - ${enhancedScanResult.displayValue}');
-      
-    } catch (e, stackTrace) {
-      debugPrint('❌ Failed to process gallery mock scan result: $e');
-      logDetailedError('Gallery Mock Scan Processing', e, stackTrace: stackTrace);
-      state = state.copyWith(
-        isLoading: false,
-      );
+      // Never leave the screen stuck loading; report a localized key to the UI.
+      state = state.copyWith(isLoading: false, error: 'galleryScanFailed');
     }
   }
 

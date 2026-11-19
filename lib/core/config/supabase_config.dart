@@ -7,9 +7,6 @@ class SupabaseConfig {
   /// Get Supabase Anon Key from EnvConfig (handles .env and dart-define)
   static String get supabaseAnonKey => EnvConfig.supabaseAnonKey;
   
-  /// Get Supabase Service Key from EnvConfig (bypasses RLS)
-  static String get supabaseServiceKey => EnvConfig.supabaseServiceKey;
-  
   // Database table names
   static const String usersTable = 'users';
   static const String qrCodesTable = 'qr_codes';

@@ -1,3 +1,4 @@
+import '../../../../core/utils/inline_l10n.dart';
 import 'package:equatable/equatable.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
@@ -66,9 +67,9 @@ class PurchaseProduct extends Equatable {
   String get periodText {
     switch (type) {
       case ProductType.monthly:
-        return '/month';
+        return tr('/month');
       case ProductType.annual:
-        return '/year';
+        return tr('/year');
       case ProductType.lifetime:
         return '';
     }

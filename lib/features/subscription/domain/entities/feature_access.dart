@@ -12,6 +12,7 @@ enum FeatureType {
   qrTypeVcard,
   qrTypeEmail,
   qrTypeLocation,
+  qrTypeEvent,
 
   // Customization
   colorCustomization,
@@ -24,6 +25,11 @@ enum FeatureType {
 
   // History
   unlimitedScanHistory,
+
+  // Premium entitlements (Phase 12 — MKT-10)
+  unlimitedQrs,
+  aiStylePremium,
+  bulkImport,
 }
 
 /// Represents access status for a feature
@@ -73,6 +79,8 @@ extension FeatureTypeExtension on FeatureType {
         return 'Email QR Code';
       case FeatureType.qrTypeLocation:
         return 'Location QR Code';
+      case FeatureType.qrTypeEvent:
+        return 'Event QR Code';
       case FeatureType.colorCustomization:
         return 'Color Customization';
       case FeatureType.templateClassic:
@@ -89,6 +97,12 @@ extension FeatureTypeExtension on FeatureType {
         return 'Advanced Shapes';
       case FeatureType.unlimitedScanHistory:
         return 'Unlimited Scan History';
+      case FeatureType.unlimitedQrs:
+        return 'QRs Ilimitados';
+      case FeatureType.aiStylePremium:
+        return 'Estilos con IA Premium';
+      case FeatureType.bulkImport:
+        return 'Importación Masiva CSV';
     }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/friendly_error.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/widgets/glass_button.dart';
@@ -7,6 +8,7 @@ import '../../domain/entities/qr_type.dart';
 import '../../domain/entities/qr_code_entity.dart';
 import '../../domain/entities/qr_data_models.dart';
 import '../widgets/forms/text_form.dart';
+import '../widgets/qr_share_button.dart';
 import '../controllers/qr_customization_controller.dart';
 import '../controllers/qr_generator_controller.dart';
 import '../providers/qr_providers.dart';
@@ -36,6 +38,8 @@ class _TextQRScreenState extends ConsumerState<TextQRScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _isSaving = false;
+  // GlobalKey for RepaintBoundary — enables PNG export in Plan 05
+  final GlobalKey repaintKey = GlobalKey();
 
   @override
   void initState() {
@@ -75,6 +79,7 @@ class _TextQRScreenState extends ConsumerState<TextQRScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -147,7 +152,15 @@ class _TextQRScreenState extends ConsumerState<TextQRScreen>
                   onPressed: textState.isValid ? _saveQRCode : null,
                   width: double.infinity,
                 ),
-                
+
+                if (textState.isValid) ...[
+                  const SizedBox(height: 12),
+                  QrShareButton(
+                    repaintKey: repaintKey,
+                    qrName: textState.name.isNotEmpty ? textState.name : 'QR Code',
+                  ),
+                ],
+
                 if (!textState.isValid) ...[
                   const SizedBox(height: 8),
                   Text(
@@ -369,30 +382,35 @@ class _TextQRScreenState extends ConsumerState<TextQRScreen>
       );
     }
 
-    return QrImageView(
-      data: textState.text,
-      version: QrVersions.auto,
-      size: qrSize,
-      backgroundColor: Color(customizationState.customization.backgroundColor),
-      eyeStyle: QrEyeStyle(
-        eyeShape: customizationState.customization.eyeShape == 0 
-            ? QrEyeShape.square 
-            : QrEyeShape.circle,
-        color: Color(customizationState.customization.eyeColor),
-      ),
-      dataModuleStyle: QrDataModuleStyle(
-        dataModuleShape: customizationState.customization.dataShape == 0
-            ? QrDataModuleShape.square
-            : QrDataModuleShape.circle,
-        color: Color(customizationState.customization.foregroundColor),
-      ),
-      embeddedImage: customizationState.customization.hasLogo && 
-                   customizationState.customization.logoPath != null
-          ? FileImage(File(customizationState.customization.logoPath!))
-          : null,
-      embeddedImageStyle: QrEmbeddedImageStyle(
-        size: Size(customizationState.customization.logoSize, 
-                  customizationState.customization.logoSize),
+    return RepaintBoundary(
+      key: repaintKey,
+      child: QrImageView(
+        data: textState.text,
+        version: QrVersions.auto,
+        size: qrSize,
+        backgroundColor: Color(customizationState.customization.backgroundColor),
+        eyeStyle: QrEyeStyle(
+          eyeShape: customizationState.customization.eyeShape == 0
+              ? QrEyeShape.square
+              : QrEyeShape.circle,
+          color: Color(customizationState.customization.eyeColor),
+        ),
+        dataModuleStyle: QrDataModuleStyle(
+          dataModuleShape: customizationState.customization.dataShape == 0
+              ? QrDataModuleShape.square
+              : QrDataModuleShape.circle,
+          color: Color(customizationState.customization.foregroundColor),
+        ),
+        embeddedImage: customizationState.customization.hasLogo &&
+                customizationState.customization.logoPath != null
+            ? FileImage(File(customizationState.customization.logoPath!))
+            : null,
+        embeddedImageStyle: QrEmbeddedImageStyle(
+          size: Size(
+            customizationState.customization.logoSize,
+            customizationState.customization.logoSize,
+          ),
+        ),
       ),
     );
   }
@@ -813,7 +831,7 @@ class _TextQRScreenState extends ConsumerState<TextQRScreen>
     if (widget.editingQRCode == null) {
       final canCreate = ref.read(canCreateQRProvider);
       if (!canCreate) {
-        UpgradeBottomSheet.show(context);
+        UpgradeBottomSheet.show(context, freeLimit: ref.read(qrLimitProvider));
         return;
       }
     }
@@ -912,7 +930,7 @@ class _TextQRScreenState extends ConsumerState<TextQRScreen>
               children: [
                 const Icon(Icons.error, color: Colors.white),
                 const SizedBox(width: 8),
-                Expanded(child: Text(l10n?.failedToSaveQR(e.toString()) ?? 'Failed to save QR code: ${e.toString()}')),
+                Expanded(child: Text(l10n?.failedToSaveQR(friendlyErrorMessage(e, spanish: Localizations.localeOf(context).languageCode == 'es')) ?? friendlyErrorMessage(e, spanish: Localizations.localeOf(context).languageCode == 'es'))),
               ],
             ),
             backgroundColor: const Color(0xFFEF4444),

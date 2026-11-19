@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../../../qr_generator/domain/entities/qr_code_entity.dart';
 import '../../../qr_generator/domain/repositories/qr_repository.dart';
 

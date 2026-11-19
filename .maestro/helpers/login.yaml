@@ -1,0 +1,40 @@
+# Helper: login.yaml
+# Purpose: authenticate as a known test user. Reused by Phases 1-12 to land in authenticated state.
+# Selectors: id-based (Keys added by plan 06).
+# Env vars required: MAESTRO_TEST_EMAIL, MAESTRO_TEST_PASSWORD
+#
+# Tightened from text-matchers (plan 02 scaffold) to id-matchers (plan 07) once
+# plan 06 added stable Keys to lib/features/auth/.
+
+appId: io.gothcorp.qraft
+---
+- runFlow: ../helpers/dismiss-permissions.yaml
+- assertVisible:
+    id: "welcome_screen_root"
+# The welcome screen is a SingleChildScrollView; on small viewports the
+# login/signup CTAs sit below the fold. Scroll until the login CTA is visible.
+- scrollUntilVisible:
+    element:
+      id: "welcome_login_cta"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    id: "welcome_login_cta"
+- assertVisible:
+    id: "login_screen_root"
+- tapOn:
+    id: "login_email_field"
+- inputText: ${MAESTRO_TEST_EMAIL}
+- tapOn:
+    id: "login_password_field"
+- inputText: ${MAESTRO_TEST_PASSWORD}
+# The password field is wired to onSubmitted: _handleLogin, so pressing Enter
+# triggers the login action without needing to dismiss keyboard / tap submit.
+# This is the most reliable cross-platform path on iOS sim where the soft
+# keyboard occludes the login_submit_button below it.
+- pressKey: Enter
+# Wait for post-login transition; main scaffold home tab is the canonical landed state.
+- extendedWaitUntil:
+    visible:
+      id: "main_scaffold_dashboard_tab"
+    timeout: 15000

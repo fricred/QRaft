@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
 import '../../../qr_generator/domain/entities/qr_code_entity.dart';
+import '../../../qr_generator/domain/services/qr_decoration_builder.dart';
 
 class QRCodeDisplayWidget extends StatelessWidget {
   final QRCodeEntity qrEntity;
@@ -20,7 +21,7 @@ class QRCodeDisplayWidget extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: Color(qrEntity.customization.backgroundColor),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: _getQRTypeColor(qrEntity.type.identifier).withValues(alpha: 0.3),
@@ -34,64 +35,25 @@ class QRCodeDisplayWidget extends StatelessWidget {
     );
   }
 
+  /// Same renderer as the editor, templates and widget (QrDecorationBuilder): gradient,
+  /// module/eye presets and logo, on the white background every QRaft code uses.
   Widget _buildQRCode() {
     try {
-      return QrImageView(
-        data: qrEntity.data,
-        version: QrVersions.auto,
-        size: size,
-        backgroundColor: Color(qrEntity.customization.backgroundColor),
-        padding: const EdgeInsets.all(8),
-        errorCorrectionLevel: _getErrorCorrectionLevel(qrEntity.customization.errorCorrectionLevel),
-        embeddedImage: qrEntity.customization.hasLogo && qrEntity.customization.logoPath != null
-            ? AssetImage(qrEntity.customization.logoPath!)
-            : null,
-        embeddedImageStyle: qrEntity.customization.hasLogo 
-            ? QrEmbeddedImageStyle(
-                size: Size(qrEntity.customization.logoSize, qrEntity.customization.logoSize),
-              )
-            : null,
-        eyeStyle: QrEyeStyle(
-          eyeShape: qrEntity.customization.eyeShape == 0 
-              ? QrEyeShape.square 
-              : QrEyeShape.circle,
-          color: Color(qrEntity.customization.eyeColor),
+      final c = qrEntity.customization;
+      return Padding(
+        padding: EdgeInsets.all(size * 0.04),
+        child: PrettyQrView(
+          qrImage: QrDecorationBuilder.buildQrImage(qrEntity.data, c),
+          decoration: QrDecorationBuilder.buildDecoration(c),
         ),
-        dataModuleStyle: QrDataModuleStyle(
-          dataModuleShape: qrEntity.customization.dataShape == 0 
-              ? QrDataModuleShape.square 
-              : QrDataModuleShape.circle,
-          color: Color(qrEntity.customization.foregroundColor),
-        ),
-        errorStateBuilder: (context, error) {
-          if (showFallbackIcon) {
-            return _buildFallbackIcon();
-          }
-          return Container(
-            width: size,
-            height: size,
-            color: const Color(0xFF1A1A1A),
-            child: const Icon(
-              Icons.error_rounded,
-              color: Colors.red,
-              size: 32,
-            ),
-          );
-        },
       );
-    } catch (e) {
-      if (showFallbackIcon) {
-        return _buildFallbackIcon();
-      }
+    } catch (_) {
+      if (showFallbackIcon) return _buildFallbackIcon();
       return Container(
         width: size,
         height: size,
         color: const Color(0xFF1A1A1A),
-        child: const Icon(
-          Icons.error_rounded,
-          color: Colors.red,
-          size: 32,
-        ),
+        child: const Icon(Icons.error_rounded, color: Colors.red, size: 32),
       );
     }
   }
@@ -107,16 +69,6 @@ class QRCodeDisplayWidget extends StatelessWidget {
         size: 32,
       ),
     );
-  }
-
-  int _getErrorCorrectionLevel(int level) {
-    switch (level) {
-      case 0: return QrErrorCorrectLevel.L;
-      case 1: return QrErrorCorrectLevel.M;
-      case 2: return QrErrorCorrectLevel.Q;
-      case 3: return QrErrorCorrectLevel.H;
-      default: return QrErrorCorrectLevel.M;
-    }
   }
 
   IconData _getQRTypeIcon(String qrType) {

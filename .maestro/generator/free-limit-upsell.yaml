@@ -1,0 +1,26 @@
+appId: io.gothcorp.qraft
+name: generator/free-limit-upsell
+tags:
+  - generator
+  - regression
+  - qraft-10
+# QRAFT-10: a free user who already has 5 QR codes is told about the limit before filling a
+# new QR (upgrade sheet with the reason). The server (enforce_qr_code_limit trigger) blocks
+# the insert too, so a stale app can't go over the limit.
+# Precondition: the account (MAESTRO_TEST_EMAIL / MAESTRO_TEST_PASSWORD) is free with 5 QRs.
+---
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/login.yaml
+- tapOn:
+    id: "main_scaffold_generate_tab"
+- waitForAnimationToEnd
+- tapOn: "(?s)(Website URL|URL del Sitio Web).*"
+- extendedWaitUntil:
+    visible:
+      id: "upgrade_limit_reason"
+    timeout: 10000
+- takeScreenshot: qraft10_limit_sheet
+# The editor must not have opened behind the sheet.
+- assertNotVisible:
+    id: "qr_editor_save_button"

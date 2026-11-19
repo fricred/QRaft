@@ -19,7 +19,11 @@ class WelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     
-    return Scaffold(
+    return Semantics(
+      identifier: 'welcome_screen_root',
+      container: true,
+      child: Scaffold(
+      key: const Key('welcome_screen_root'),
       backgroundColor: const Color(0xFF1A1A1A),
       body: Stack(
         children: [
@@ -59,6 +63,7 @@ class WelcomeScreen extends StatelessWidget {
         ),
         ],
       ),
+    ),
     );
   }
 
@@ -306,19 +311,28 @@ class WelcomeScreen extends StatelessWidget {
     return Column(
       children: [
         // Primary Button - Sign Up
-        PrimaryGlassButton(
-          text: l10n.getStarted,
-          onPressed: onSignUpPressed,
-          width: double.infinity,
+        Semantics(
+          identifier: 'welcome_signup_cta',
+          button: true,
+          child: PrimaryGlassButton(
+            key: const Key('welcome_signup_cta'),
+            text: l10n.getStarted,
+            onPressed: onSignUpPressed,
+            width: double.infinity,
+          ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Secondary Button - Login
         SizedBox(
           width: double.infinity,
           height: 56,
-          child: OutlinedButton(
+          child: Semantics(
+            identifier: 'welcome_login_cta',
+            button: true,
+            child: OutlinedButton(
+            key: const Key('welcome_login_cta'),
             onPressed: onLoginPressed,
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
@@ -337,6 +351,7 @@ class WelcomeScreen extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
+          ),
           ),
         ),
       ],

@@ -1,0 +1,12 @@
+# QRaft Maestro project config
+# Pin: Maestro 2.4.0+ (verified installed at /opt/homebrew/bin/maestro per D-17)
+# Phase 1 establishes this foundation; Phases 2–12 extend with feature-specific flows.
+appId: io.gothcorp.qraft
+# Discover flows recursively across feature subdirectories (auth/, launch/, scanner/, ...).
+# Helpers in helpers/ are imported via runFlow and intentionally lack the phase1 tag so
+# includeTags filters them out when running the full suite.
+# Verified syntax: https://docs.maestro.dev/maestro-flows/workspace-management/test-discovery-and-tags
+flows:
+  - "**"
+includeTags:
+  - phase1

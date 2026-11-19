@@ -3,15 +3,14 @@
     <!-- Camera and Storage permissions for profile photo -->
     <uses-permission android:name="android.permission.CAMERA" />
     
-    <!-- Storage permissions for Android 12 and below -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" 
-                     android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" 
-                     android:maxSdkVersion="28" />
-    
-    <!-- Media permissions for Android 13+ (API 33+) -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    
+    <!--
+      No media/storage permissions are declared on purpose. Images are only ever
+      chosen through the system photo picker, which grants access to the single
+      file the user picks. Declaring READ_MEDIA_IMAGES would additionally put
+      the app under Google Play's Photo and Video Permissions policy, which
+      reserves that permission for apps whose core purpose is managing media.
+    -->
+
     <!-- Contacts permission for email QR generation -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     
@@ -83,6 +82,23 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- AdMob App ID (Production) -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-9213497138890427~5118672998"/>
+
+        <!-- QRaft home-screen widget receiver (home_widget + Glance) -->
+        <receiver
+            android:name=".QrWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/qr_widget_info" />
+        </receiver>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

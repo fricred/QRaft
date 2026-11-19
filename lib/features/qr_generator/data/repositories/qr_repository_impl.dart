@@ -113,4 +113,22 @@ class QRRepositoryImpl implements QRRepository {
       return cachedQRCodes.where((qr) => qr.isFavorite).toList();
     }
   }
+
+  @override
+  Future<List<QRCodeEntity>> getUserQRCodesPaginated(
+    String userId,
+    int page,
+    int pageSize,
+  ) async {
+    try {
+      return await remoteDataSource.getUserQRCodesPaginated(userId, page, pageSize);
+    } catch (e) {
+      // Fallback: slice local cache by page
+      final cached = await localDataSource.getCachedQRCodes(userId);
+      final from = page * pageSize;
+      if (from >= cached.length) return <QRCodeEntity>[];
+      final to = (from + pageSize).clamp(0, cached.length);
+      return cached.sublist(from, to);
+    }
+  }
 }

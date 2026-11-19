@@ -63,7 +63,7 @@ flutter build apk --dart-define-from-file=env.production.json
 - `flutter test` - Run all widget and unit tests
 - `flutter test test/widget_test.dart` - Run a specific test file
 - `flutter test test/shared/widgets/glass_button_test.dart` - Run GlassButton component tests
-- `flutter test test/features/auth/presentation/controllers/auth_controller_simple_test.dart` - Run AuthController tests
+- `flutter test test/features/auth/data/providers/supabase_auth_provider_test.dart` - Run SupabaseAuthProvider tests (the actual auth state holder; the legacy `AuthController` tests were removed when auth migrated to Supabase per D-03)
 
 ### Building
 - `flutter build apk` - Build Android APK
@@ -783,11 +783,16 @@ QRaft includes comprehensive tests for critical components and services to ensur
   - Disabled state handling
 
 **✅ Controller Tests:**
-- **AuthController** (`test/features/auth/presentation/controllers/auth_controller_simple_test.dart`)
+- **SupabaseAuthProvider** (`test/features/auth/data/providers/supabase_auth_provider_test.dart`)
+  - Supabase Auth integration tests (replaces the removed AuthController tests; auth migrated to Supabase per D-03)
   - State management and loading states
   - Password reset email functionality
   - Sign out operations
   - Error handling
+- **ForgotPasswordController** (NEW in Phase 1 plan 06; tests in Phase 1 plan 07 at `test/features/auth/presentation/controllers/forgot_password_controller_test.dart`)
+  - Forgot-password submission state machine (StateNotifier + immutable state)
+  - Loading / success / error transitions
+  - AuthException mapping
 
 **✅ Repository Tests:**
 - **AuthRepository** (`test/features/auth/data/providers/auth_provider_simple_test.dart`)
@@ -825,8 +830,7 @@ flutter test
 
 # Run specific test suites
 flutter test test/shared/widgets/glass_button_test.dart
-flutter test test/features/auth/presentation/controllers/auth_controller_simple_test.dart
-flutter test test/features/auth/data/providers/auth_provider_simple_test.dart
+flutter test test/features/auth/data/providers/supabase_auth_provider_test.dart
 
 # Run tests with coverage
 flutter test --coverage
@@ -843,10 +847,10 @@ test/
 │   └── auth/
 │       ├── data/
 │       │   └── providers/
-│       │       └── auth_provider_simple_test.dart    # Firebase Auth integration tests
+│       │       └── supabase_auth_provider_test.dart  # Supabase Auth integration tests (replaces removed AuthController tests per D-03)
 │       └── presentation/
 │           └── controllers/
-│               └── auth_controller_simple_test.dart  # State management tests
+│               └── forgot_password_controller_test.dart  # State management tests (Phase 1 plan 07 — NEW; ForgotPasswordController introduced by plan 06)
 ├── core/
 │   └── services/
 │       └── deeplink_service_test.dart       # Deeplink service tests
@@ -866,7 +870,7 @@ test/
 - ✅ **AuthController**: 4/4 tests passing (state management, async operations)
 - ✅ **AuthProvider**: 5/5 tests passing (Firebase integration, exception handling)  
 - ✅ **DeepLinkService**: 16/16 tests passing (URL parsing, service initialization)
-- 🔄 **ForgotPasswordDialog**: 5/13 tests passing (basic functionality working)
+- 🔄 **ForgotPasswordDialog**: 6/6 tests passing pre-refactor (verified empirically 2026-05-01); refactored into a `ForgotPasswordController` (StateNotifier + immutable state) in Phase 1 plan 06 and tests rewritten against the controller in Phase 1 plan 07. The earlier "5/13" figure was stale documentation, not a real failing-suite signal.
 
 ### Testing Patterns
 

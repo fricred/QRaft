@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/friendly_error.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/qr_type.dart';
 import '../../domain/entities/qr_code_entity.dart';
 import '../../domain/entities/qr_data_models.dart';
 import '../controllers/qr_customization_controller.dart';
+import '../widgets/qr_share_button.dart';
 import '../controllers/qr_generator_controller.dart';
 import '../providers/qr_providers.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
@@ -15,6 +18,7 @@ import '../../../subscription/presentation/providers/feature_gate_providers.dart
 import '../../../subscription/presentation/providers/subscription_providers.dart';
 import '../../../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
 import '../../../subscription/presentation/widgets/feature_locked_overlay.dart';
+import '../../../ads/ads.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -157,6 +161,8 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isSaving = false;
+  // GlobalKey for RepaintBoundary — enables PNG export in Plan 05
+  final GlobalKey repaintKey = GlobalKey();
 
   @override
   void initState() {
@@ -242,6 +248,7 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -298,6 +305,13 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Rewarded ad button for free users (opt-in bonus)
+                if (widget.editingQRCode == null)
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 12),
+                    child: ExtraQRSlotAdButton(compact: true),
+                  ),
+
                 PrimaryGlassButton(
                   text: widget.editingQRCode != null
                     ? (AppLocalizations.of(context)?.saveChanges ?? 'Save Changes')
@@ -307,7 +321,15 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
                   onPressed: wifiState.isValid ? _saveQRCode : null,
                   width: double.infinity,
                 ),
-                
+
+                if (wifiState.isValid) ...[
+                  const SizedBox(height: 12),
+                  QrShareButton(
+                    repaintKey: repaintKey,
+                    qrName: wifiState.networkName.isNotEmpty ? 'WiFi: ${wifiState.networkName}' : 'QR Code',
+                  ),
+                ],
+
                 if (!wifiState.isValid) ...[
                   const SizedBox(height: 8),
                   Text(
@@ -593,30 +615,35 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
       );
     }
 
-    return QrImageView(
-      data: wifiState.wifiData.qrData,
-      version: QrVersions.auto,
-      size: qrSize,
-      backgroundColor: Color(customizationState.customization.backgroundColor),
-      eyeStyle: QrEyeStyle(
-        eyeShape: customizationState.customization.eyeShape == 0 
-            ? QrEyeShape.square 
-            : QrEyeShape.circle,
-        color: Color(customizationState.customization.eyeColor),
-      ),
-      dataModuleStyle: QrDataModuleStyle(
-        dataModuleShape: customizationState.customization.dataShape == 0
-            ? QrDataModuleShape.square
-            : QrDataModuleShape.circle,
-        color: Color(customizationState.customization.foregroundColor),
-      ),
-      embeddedImage: customizationState.customization.hasLogo && 
-                   customizationState.customization.logoPath != null
-          ? FileImage(File(customizationState.customization.logoPath!))
-          : null,
-      embeddedImageStyle: QrEmbeddedImageStyle(
-        size: Size(customizationState.customization.logoSize, 
-                  customizationState.customization.logoSize),
+    return RepaintBoundary(
+      key: repaintKey,
+      child: QrImageView(
+        data: wifiState.wifiData.qrData,
+        version: QrVersions.auto,
+        size: qrSize,
+        backgroundColor: Color(customizationState.customization.backgroundColor),
+        eyeStyle: QrEyeStyle(
+          eyeShape: customizationState.customization.eyeShape == 0
+              ? QrEyeShape.square
+              : QrEyeShape.circle,
+          color: Color(customizationState.customization.eyeColor),
+        ),
+        dataModuleStyle: QrDataModuleStyle(
+          dataModuleShape: customizationState.customization.dataShape == 0
+              ? QrDataModuleShape.square
+              : QrDataModuleShape.circle,
+          color: Color(customizationState.customization.foregroundColor),
+        ),
+        embeddedImage: customizationState.customization.hasLogo &&
+                customizationState.customization.logoPath != null
+            ? FileImage(File(customizationState.customization.logoPath!))
+            : null,
+        embeddedImageStyle: QrEmbeddedImageStyle(
+          size: Size(
+            customizationState.customization.logoSize,
+            customizationState.customization.logoSize,
+          ),
+        ),
       ),
     );
   }
@@ -1278,7 +1305,7 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
     if (widget.editingQRCode == null) {
       final canCreate = ref.read(canCreateQRProvider);
       if (!canCreate) {
-        UpgradeBottomSheet.show(context);
+        UpgradeBottomSheet.show(context, freeLimit: ref.read(qrLimitProvider));
         return;
       }
     }
@@ -1377,7 +1404,7 @@ class _WiFiQRScreenState extends ConsumerState<WiFiQRScreen>
               children: [
                 const Icon(Icons.error, color: Colors.white),
                 const SizedBox(width: 8),
-                Expanded(child: Text(l10n?.failedToSaveQR(e.toString()) ?? 'Failed to save QR code: ${e.toString()}')),
+                Expanded(child: Text(l10n?.failedToSaveQR(friendlyErrorMessage(e, spanish: Localizations.localeOf(context).languageCode == 'es')) ?? friendlyErrorMessage(e, spanish: Localizations.localeOf(context).languageCode == 'es'))),
               ],
             ),
             backgroundColor: const Color(0xFFEF4444),

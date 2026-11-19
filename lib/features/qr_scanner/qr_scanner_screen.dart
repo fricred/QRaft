@@ -1,3 +1,4 @@
+import 'dart:async' show unawaited;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,8 +9,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:qraft/l10n/app_localizations.dart';
 import 'providers/qr_scanner_provider.dart';
 import 'models/scan_result.dart';
-import 'widgets/scan_result_dialog.dart';
+import 'scan_result_screen.dart';
 import 'widgets/scan_history_screen.dart';
+import '../main/main_scaffold.dart' show navigationIndexProvider;
 
 class QRScannerScreen extends ConsumerStatefulWidget {
   const QRScannerScreen({super.key});
@@ -18,7 +20,8 @@ class QRScannerScreen extends ConsumerStatefulWidget {
   ConsumerState<QRScannerScreen> createState() => _QRScannerScreenState();
 }
 
-class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
+class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
+    with WidgetsBindingObserver {
   // Design constants for bottom controls
   static const double _sideButtonSize = 52.0;
   static const double _mainButtonSize = 70.0;
@@ -27,25 +30,75 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
 
   MobileScannerController? _controller;
   bool _isControllerInitialized = false;
+  bool _isPermissionPermanentlyDenied = false;
+  bool _isPermissionDenied = false;
+  bool _setupStarted = false;
+
+  /// Index of this screen in the main IndexedStack.
+  static const int _scannerTabIndex = 2;
 
   @override
   void initState() {
     super.initState();
-    _checkPermissionsAndSetupController();
+    WidgetsBinding.instance.addObserver(this);
+    // The scanner lives in an IndexedStack, so it is built at app start. Only ask for
+    // the camera once the user actually opens this tab (QRAFT-35): creating a QR must
+    // never depend on the camera permission.
+    if (ref.read(navigationIndexProvider) == _scannerTabIndex) {
+      _setupStarted = true;
+      _checkPermissionsAndSetupController();
+    }
+    ref.listenManual<int>(navigationIndexProvider, (previous, next) {
+      if (next != _scannerTabIndex) return;
+      if (!_setupStarted || (_controller == null && _isPermissionDenied)) {
+        _setupStarted = true;
+        _checkPermissionsAndSetupController(askAgain: !_isPermissionDenied);
+      }
+    });
   }
 
-  void _checkPermissionsAndSetupController() async {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final controller = _controller;
+    // Coming back from Settings after granting the camera: set the scanner up.
+    if (state == AppLifecycleState.resumed && controller == null && _isPermissionDenied) {
+      _checkPermissionsAndSetupController(askAgain: false);
+      return;
+    }
+    if (controller == null || !_isControllerInitialized) return;
+    switch (state) {
+      case AppLifecycleState.inactive:
+        unawaited(controller.stop());
+      case AppLifecycleState.resumed:
+        unawaited(controller.start());
+      default:
+        break;
+    }
+  }
+
+  void _checkPermissionsAndSetupController({bool askAgain = true}) async {
     try {
       // Check camera permissions first
       final status = await Permission.camera.status;
       if (!status.isGranted) {
-        final result = await Permission.camera.request();
+        final result = askAgain ? await Permission.camera.request() : status;
         if (!result.isGranted) {
+          // Shown inline in the scanner area, never as a floating message: a snackbar
+          // would sit on top of other tabs' buttons (QRAFT-35).
           if (mounted) {
-            ref.read(qrScannerProvider.notifier).logDetailedError('Camera Permission', 'Camera permission denied');
+            setState(() {
+              _isPermissionDenied = true;
+              _isPermissionPermanentlyDenied = result.isPermanentlyDenied;
+            });
           }
           return;
         }
+      }
+      if (mounted && _isPermissionDenied) {
+        setState(() {
+          _isPermissionDenied = false;
+          _isPermissionPermanentlyDenied = false;
+        });
       }
 
       // Create controller with autoStart: true - it will start when MobileScanner widget is built
@@ -78,6 +131,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller?.dispose();
     super.dispose();
   }
@@ -97,12 +151,17 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
 
     // Listen to errors
     ref.listen<String?>(scannerErrorProvider, (previous, next) {
-      if (next != null) {
+      // Scanner messages belong to the scanner tab only.
+      if (next != null && ref.read(navigationIndexProvider) == _scannerTabIndex) {
         _showErrorSnackBar(next);
       }
     });
 
-    return Scaffold(
+    return Semantics(
+      identifier: 'qr_scanner_screen_root',
+      container: true,
+      child: Scaffold(
+      key: const Key('qr_scanner_screen_root'),
       backgroundColor: const Color(0xFF1A1A1A),
       body: SafeArea(
         child: Column(
@@ -124,6 +183,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
           ],
         ),
       ),
+    ),
     );
   }
 
@@ -156,19 +216,23 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
             ),
           ),
           // Flash toggle
-          IconButton(
-            onPressed: () {
-              ref.read(qrScannerProvider.notifier).toggleFlash();
-              _controller?.toggleTorch();
-            },
-            icon: Icon(
-              isFlashOn ? Icons.flash_on_rounded : Icons.flash_off_rounded,
-              color: isFlashOn ? const Color(0xFF00FF88) : Colors.white,
-              size: 24,
-            ),
-            style: IconButton.styleFrom(
-              backgroundColor: const Color(0xFF2E2E2E),
-              padding: const EdgeInsets.all(10),
+          Semantics(
+            identifier: 'scanner_flash_button',
+            child: IconButton(
+              key: const Key('scanner_flash_button'),
+              onPressed: () {
+                ref.read(qrScannerProvider.notifier).toggleFlash();
+                _controller?.toggleTorch();
+              },
+              icon: Icon(
+                isFlashOn ? Icons.flash_on_rounded : Icons.flash_off_rounded,
+                color: isFlashOn ? const Color(0xFF00FF88) : Colors.white,
+                size: 24,
+              ),
+              style: IconButton.styleFrom(
+                backgroundColor: const Color(0xFF2E2E2E),
+                padding: const EdgeInsets.all(10),
+              ),
             ),
           ),
         ],
@@ -194,9 +258,12 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
         child: Stack(
           children: [
             // Camera preview
-            if (_controller != null && _isControllerInitialized)
+            if (_isPermissionDenied)
+              _buildPermissionDeniedView()
+            else if (_controller != null && _isControllerInitialized)
               MobileScanner(
                 controller: _controller,
+                tapToFocus: true,
                 onDetect: (BarcodeCapture capture) {
                   // Always detect QR codes when camera is active
                   _handleBarcodeDetection(capture);
@@ -348,6 +415,86 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
     );
   }
 
+  Widget _buildPermissionDeniedView() {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF1A1A1A), Color(0xFF2E2E2E)],
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.no_photography_rounded,
+              color: Colors.grey,
+              size: 48,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              Localizations.localeOf(context).languageCode == 'es'
+                  ? 'Sin acceso a la cámara'
+                  : 'No camera access',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                Localizations.localeOf(context).languageCode == 'es'
+                    ? 'Para escanear códigos, permite el acceso a la cámara. Crear y guardar QR funciona sin ella.'
+                    : 'To scan codes, allow camera access. Creating and saving QR codes works without it.',
+                style: TextStyle(color: Colors.grey[400], fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Semantics(
+              identifier: 'scanner_open_settings_button',
+              child: ElevatedButton.icon(
+                key: const Key('scanner_open_settings_button'),
+                onPressed: _isPermissionPermanentlyDenied
+                    ? _openAppSettings
+                    : () => _checkPermissionsAndSetupController(),
+                icon: Icon(_isPermissionPermanentlyDenied
+                    ? Icons.settings_rounded
+                    : Icons.photo_camera_rounded),
+                label: Text(_isPermissionPermanentlyDenied
+                    ? l10n.openSettings
+                    : (Localizations.localeOf(context).languageCode == 'es'
+                        ? 'Permitir cámara'
+                        : 'Allow camera')),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00FF88),
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildScanningOverlay(bool isScanning) {
     return Stack(
       children: [
@@ -433,8 +580,11 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
     required int delayMs,
     double size = 52,
     double iconSize = 22,
+    String? semanticsIdentifier,
+    String? semanticsLabel,
   }) {
-    return Container(
+    final container = Container(
+      key: semanticsIdentifier != null ? Key(semanticsIdentifier) : null,
       width: size,
       height: size,
       decoration: BoxDecoration(
@@ -480,6 +630,16 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
     ).animate()
       .fadeIn(duration: 300.ms, delay: Duration(milliseconds: delayMs))
       .scale(begin: const Offset(0.9, 0.9), duration: 300.ms, delay: Duration(milliseconds: delayMs));
+
+    if (semanticsIdentifier != null) {
+      return Semantics(
+        identifier: semanticsIdentifier,
+        button: true,
+        label: semanticsLabel,
+        child: container,
+      );
+    }
+    return container;
   }
 
   Widget _buildBottomControls(AppLocalizations l10n, bool isScanning) {
@@ -505,6 +665,8 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
                   size: _sideButtonSize,
                   iconSize: 22,
                   delayMs: 250,
+                  semanticsIdentifier: 'scanner_gallery_button',
+                  semanticsLabel: l10n.gallery,
                 ),
                 const SizedBox(height: _labelSpacing),
                 Text(
@@ -557,6 +719,8 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
                   size: _sideButtonSize,
                   iconSize: 22,
                   delayMs: 300,
+                  semanticsIdentifier: 'scanner_history_button',
+                  semanticsLabel: l10n.scans,
                 ),
                 const SizedBox(height: _labelSpacing),
                 Text(
@@ -578,7 +742,15 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
   }
 
   Widget _buildScanButton(bool isScanning) {
-    return Container(
+    final es = Localizations.localeOf(context).languageCode == 'es';
+    return Semantics(
+      identifier: 'scanner_scan_button',
+      button: true,
+      label: isScanning
+          ? (es ? 'Detener escaneo' : 'Stop scanning')
+          : (es ? 'Escanear' : 'Scan'),
+      child: Container(
+      key: const Key('scanner_scan_button'),
       width: _mainButtonSize,
       height: _mainButtonSize,
       decoration: BoxDecoration(
@@ -618,7 +790,8 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
       ),
     ).animate()
       .fadeIn(duration: 300.ms, delay: 200.ms, curve: Curves.easeOutCubic)
-      .scale(begin: const Offset(0.8, 0.8), duration: 300.ms, delay: 200.ms, curve: Curves.easeOutBack);
+      .scale(begin: const Offset(0.8, 0.8), duration: 300.ms, delay: 200.ms, curve: Curves.easeOutBack),
+    );
   }
 
   Widget _buildGridLine(int index) {
@@ -682,18 +855,33 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
   }
 
   void _showScanResultDialog(ScanResult scanResult) {
-    showDialog(
-      context: context,
-      builder: (context) => ScanResultDialog(scanResult: scanResult),
-    );
+    ScanResultScreen.push(context, scanResult);
   }
 
-  void _showErrorSnackBar(String error) {
+  void _showErrorSnackBar(String rawError) {
+    // The provider has no BuildContext, so it reports some failures as l10n
+    // keys rather than prose. Resolve those here; anything unrecognised is
+    // already a human-readable message.
+    final l10n = AppLocalizations.of(context)!;
+    final error = switch (rawError) {
+      'noQRFoundInImage' => l10n.noQRFoundInImage,
+      'galleryScanFailed' => Localizations.localeOf(context).languageCode == 'es'
+          ? 'No pudimos leer esa imagen. Inténtalo de nuevo.'
+          : "We couldn't read that image. Please try again.",
+      _ => rawError,
+    };
+
     // Check if this is a permission-related error
     final isPermissionError = error.toLowerCase().contains('permission');
-    
-    ScaffoldMessenger.of(context).showSnackBar(
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
       SnackBar(
+        // An action makes a snackbar stay forever under accessibility services, which
+        // blocked every later message (QRAFT-13). Force the timeout.
+        persist: false,
+        duration: const Duration(seconds: 5),
         content: Row(
           children: [
             Icon(
@@ -747,7 +935,8 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
   }
 
   void _scanFromGallery() {
-    ref.read(qrScannerProvider.notifier).scanFromGallery();
+    if (_controller == null) return;
+    ref.read(qrScannerProvider.notifier).scanFromGallery(_controller!);
     HapticFeedback.lightImpact();
   }
 

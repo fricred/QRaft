@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../../../domain/entities/qr_data_models.dart';
 import '../../../../../l10n/app_localizations.dart';
 
@@ -292,6 +293,7 @@ class _URLFormState extends ConsumerState<URLForm> {
               
               _buildInputField(
                 controller: _urlController,
+                fieldKey: const Key("url_qr_url_field"),
                 focusNode: _urlFocusNode,
                 label: l10n?.urlFieldLabel ?? 'Website URL',
                 hint: l10n?.urlFieldPlaceholder ?? 'example.com or https://example.com',
@@ -308,6 +310,7 @@ class _URLFormState extends ConsumerState<URLForm> {
               
               _buildInputField(
                 controller: _nameController,
+                fieldKey: const Key("url_qr_name_field"),
                 focusNode: _nameFocusNode,
                 label: 'QR Code Name',
                 hint: 'My Website',
@@ -532,6 +535,7 @@ class _URLFormState extends ConsumerState<URLForm> {
     ValueChanged<String>? onSubmitted,
     String? errorText,
     String? helperText,
+    Key? fieldKey,
     required int delay,
   }) {
     return Column(
@@ -559,7 +563,11 @@ class _URLFormState extends ConsumerState<URLForm> {
               width: 1,
             ),
           ),
-          child: TextField(
+          child: Semantics(
+            identifier: fieldKey is ValueKey<String> ? fieldKey.value : null,
+            textField: true,
+            child: TextField(
+            key: fieldKey,
             controller: controller,
             focusNode: focusNode,
             keyboardType: keyboardType,
@@ -580,6 +588,7 @@ class _URLFormState extends ConsumerState<URLForm> {
               border: InputBorder.none,
               contentPadding: const EdgeInsets.all(16),
             ),
+          ),
           ),
         ),
         if (errorText != null) ...[

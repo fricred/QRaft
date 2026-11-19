@@ -1,0 +1,28 @@
+appId: io.gothcorp.qraft
+name: launch/ump-accept
+tags:
+  - launch
+  - phase1
+---
+# Conditional helper — only acts if UMP consent screen is showing; otherwise
+# falls through (no-op). Safe to runFlow from any other flow.
+# Verified syntax pattern from Maestro's official conditions docs at
+# https://docs.maestro.dev/maestro-flows/flow-control-and-logic/conditions
+- runFlow:
+    when:
+      visible:
+        id: "ump_consent_screen_root"
+    commands:
+      - tapOn:
+          id: "ump_continue_button"
+      # Google's UMP form is a system overlay — tap localized "Consent/Aceptar/Agree".
+      # `optional: true` so the tap is best-effort — if no system button appears
+      # (e.g. notRequired regions where the form auto-skips), we just continue.
+      - tapOn:
+          text: "(Consent|Aceptar|Agree|Allow)"
+          optional: true
+      # Wait for UMP overlay to dismiss before returning.
+      - extendedWaitUntil:
+          notVisible:
+            id: "ump_consent_screen_root"
+          timeout: 15000

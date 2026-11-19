@@ -52,8 +52,8 @@
   "resetPasswordSubtitle": "Ingresa tu email para recibir el enlace",
   "enterEmailForReset": "Ingresa tu dirección de email",
   "sendResetLink": "Enviar",
-  "emailSent": "¡Email Enviado!",
-  "checkEmailForReset": "Hemos enviado un enlace de restablecimiento de contraseña a {email}. Por favor revisa tu email y sigue las instrucciones para restablecer tu contraseña.",
+  "emailSent": "Revisa tu correo",
+  "checkEmailForReset": "Si {email} tiene una cuenta en QRaft, te enviamos un enlace para restablecer tu contraseña. Revisa también la carpeta de spam.",
   "done": "Listo",
   "profile": "Perfil",
   "anonymousUser": "Usuario Anónimo",
@@ -105,9 +105,7 @@
   "settings": "Configuración",
   "language": "Idioma",
   "english": "Inglés",
-
   "spanish": "Español",
-
   "close": "Cerrar",
   "notifications": "Notificaciones",
   "permissionDeniedTitle": "Permiso de {permissionType}",
@@ -124,6 +122,7 @@
   "camera": "Cámara",
   "takeNewPhoto": "Tomar una nueva foto",
   "gallery": "Galería",
+  "noQRFoundInImage": "No encontramos ningún código QR en esa foto. Probá con una imagen donde el código se vea completo y nítido.",
   "chooseFromPhotos": "Elegir de las fotos",
   "failedToLoadProfile": "Error al cargar perfil: {error}",
   "failedToUpdateProfile": "Error al actualizar perfil: {error}",
@@ -195,6 +194,8 @@
   "qrTypeEmailDesc": "Envía correo con\ncontenido pre-llenado",
   "qrTypeLocation": "Ubicación",
   "qrTypeLocationDesc": "Coordenadas GPS\ny puntos del mapa",
+  "qrTypeEvent": "Evento",
+  "qrTypeEventDesc": "Evento de calendario con fecha,\nhora y ubicación",
   "styleColors": "Colores",
   "backToQRTypes": "Volver a Tipos de QR",
   "plannedFeatures": "Características Planificadas",
@@ -235,7 +236,6 @@
   "emailSubjectHint": "Asunto del correo...",
   "emailBodyLabel": "Mensaje",
   "emailBodyHint": "Escribe tu mensaje aquí...",
-
   "wifiNetworkDetails": "Detalles de la Red WiFi",
   "wifiFormDescription": "Ingresa los detalles de la red WiFi para crear un código QR y compartirlo fácilmente",
   "networkNameLabel": "Nombre de Red (SSID) *",
@@ -265,7 +265,6 @@
   "completeFormToSeePreview": "Completa el formulario\npara ver la vista previa",
   "logoUpdatedSuccessfully": "¡Logo actualizado exitosamente!",
   "failedToPickImage": "Error al seleccionar imagen: {error}",
-
   "locationFormTitle": "Detalles de Ubicación",
   "locationFormDescription": "Comparte tu ubicación o cualquier coordenada GPS con un código QR",
   "locationNameLabel": "Nombre de Ubicación",
@@ -300,7 +299,6 @@
   "usingDefaultLocation": "Usando ubicación predeterminada - toca para seleccionar",
   "useCurrent": "Usar Ubicación Actual",
   "mapLoadingError": "Error al cargar el mapa. Por favor verifica tu conexión a internet",
-
   "qrLibrary": "Biblioteca QR",
   "manageQRCodes": "Gestiona tus códigos QR",
   "myQRs": "Mis QRs",
@@ -320,6 +318,7 @@
   "filterVcard": "vCard",
   "filterLocation": "Ubicación",
   "filterText": "Texto",
+  "filterEvent": "Evento",
   "noFavoritesYet": "Aún No Hay Favoritos",
   "starFavoriteQRCodes": "Marca con estrella tus códigos QR favoritos para verlos aquí",
   "noRecentQRs": "No Hay QRs Recientes",
@@ -346,7 +345,6 @@
   "hoursAgo": "hace {hours}h",
   "daysAgoShort": "hace {days}d",
   "type": "Tipo",
-
   "editProfile": "Editar Perfil",
   "saveChanges": "Guardar Cambios",
   "discardChanges": "¿Descartar cambios?",
@@ -362,12 +360,10 @@
   "enterLocation": "Ciudad, País",
   "enterCompany": "Nombre de tu empresa",
   "enterJobTitle": "Tu puesto de trabajo",
-
   "dashboardTitle": "Inicio",
   "scanner": "Escáner",
   "libraryNav": "Biblioteca",
   "marketplaceNav": "Tienda",
-
   "recentQRCodes": "QR Recientes",
   "viewAll": "Ver Todo",
   "createQR": "Crear QR",
@@ -379,7 +375,6 @@
   "marketplaceAction": "Tienda",
   "marketplaceDescription": "Ordenar grabado láser",
   "viewProfile": "Ver Perfil",
-
   "cameraUnavailable": "Cámara No Disponible",
   "initializingCamera": "Inicializando Cámara...",
   "tapToScan": "Toca el botón de escanear para detectar códigos QR",
@@ -390,7 +385,6 @@
   "openSettings": "Configuración",
   "dismissButton": "Cerrar",
   "failedToOpenSettings": "Error al abrir configuración: {error}",
-
   "editQRCode": "Editar Código QR",
   "formTab": "Formulario",
   "styleTab": "Estilo",
@@ -407,11 +401,9 @@
   "wifiQrUpdatedSuccess": "¡Código QR WiFi \"{name}\" actualizado exitosamente!",
   "wifiQrSavedSuccess": "¡Código QR WiFi \"{name}\" guardado exitosamente!",
   "wifiQrPrefix": "WiFi: {name}",
-
   "colorsSection": "Colores",
   "sizeSection": "Tamaño",
   "logoSection": "Logo",
-
   "textMessageTitle": "Mensaje de Texto",
   "textFormDescription": "Ingresa cualquier texto que quieras compartir vía código QR",
   "textContentLabel": "Contenido de Texto",
@@ -430,7 +422,6 @@
   "qrCodeNameFieldLabel": "Nombre del Código QR",
   "myTextMessage": "Mi Mensaje de Texto",
   "previewText": "Vista previa: {text}",
-
   "emailAddressRequired": "La dirección de correo es requerida",
   "invalidEmailFormat": "Por favor ingresa una dirección de correo válida",
   "contactsPermissionRequired": "Se requiere permiso de contactos para importar direcciones de correo",
@@ -441,7 +432,6 @@
   "contactsNotAvailable": "El acceso a contactos no está disponible en este dispositivo.",
   "selectContactEmail": "Seleccionar Correo de Contacto",
   "unknownContact": "Contacto Desconocido",
-
   "enterWebsiteURL": "Ingresa la URL del sitio web que quieres compartir",
   "protocolAutoAdded": "El protocolo (https://) se agregará automáticamente",
   "myWebsite": "Mi Sitio Web",
@@ -450,18 +440,15 @@
   "validURLExamples": "Ejemplos de URLs válidas:",
   "pleaseEnterYourName": "Por favor ingresa tu nombre",
   "nameTooLong": "El nombre es muy largo",
-
   "locationTitle": "Ubicación",
   "shareGPSCoordinates": "Comparte coordenadas GPS y puntos del mapa",
   "comingSoonTitle": "¡Próximamente!",
   "locationQrComingSoon": "El generador de QR de ubicación está en desarrollo y estará disponible pronto.",
   "wifiQrComingSoon": "El generador de QR WiFi está en desarrollo y estará disponible pronto.",
-
   "firstNameRequired": "El nombre es requerido",
   "lastNameRequired": "El apellido es requerido",
   "invalidPhoneNumber": "Por favor ingresa un número de teléfono válido",
   "softwareDeveloperHint": "Desarrollador de Software",
-
   "searchQRCodesTitle": "Buscar Códigos QR",
   "searchPlaceholder": "Buscar por nombre, tipo o contenido...",
   "searchComingSoon": "La funcionalidad de búsqueda se implementará pronto",
@@ -469,7 +456,6 @@
   "editTypeName": "Editar Códigos QR de {type}",
   "editNotSupported": "¡Próximamente! Actualmente solo se pueden editar códigos QR de URL y Texto.",
   "backButton": "Atrás",
-
   "qrCodeDetails": "Detalles del Código QR",
   "qrContent": "Contenido del QR",
   "createdLabel": "Creado",
@@ -487,15 +473,12 @@
   "todayAt": "Hoy a las {time}",
   "yesterdayAt": "Ayer a las {time}",
   "daysAgoFormat": "Hace {days} días",
-
   "downloadQRData": "Descarga tus códigos QR y datos",
   "backupToCloud": "Respalda tus datos en la nube",
   "managePrivacy": "Administra tu configuración de privacidad",
-
   "savingBtn": "Guardando...",
   "errorTitle": "Error",
   "openSettingsMessage": "Abre Configuración > {section} > {title} para habilitar el acceso.",
-
   "inStock": "En Stock",
   "outOfStock": "Agotado",
   "defaultProductDescription": "Producto grabado con láser de alta calidad con tu código QR personalizado.",
@@ -517,55 +500,45 @@
   "addedToCart": "agregado al carrito!",
   "viewCart": "Ver Carrito",
   "errorAddingToCart": "Error al agregar al carrito. Inténtalo de nuevo.",
-
   "marketplaceComingSoon": "Próximamente",
   "marketplaceComingSoonDesc": "Estamos creando un increíble marketplace donde podrás ordenar códigos QR grabados con láser en materiales premium.",
   "marketplaceFeature1": "Diseños QR Personalizados",
   "marketplaceFeature2": "Materiales Premium",
   "marketplaceFeature3": "Envío Rápido",
-
   "upgradeToPro": "Mejorar a Pro",
   "upgradeToProTitle": "Mejorar a Pro",
   "upgradeToProSubtitle": "Desbloquea todas las funciones y crea códigos QR ilimitados",
   "upgradeComingSoonMessage": "¡Integración de pago próximamente! Podrás mejorar a Pro y desbloquear todas las funciones.",
   "maybeLater": "Quizás Después",
-
   "unlimitedQRCodes": "Códigos QR Ilimitados",
   "allQRTypes": "Todos los Tipos de QR",
   "allFeatures": "Todas las Funciones Desbloqueadas",
-
   "colorCustomization": "Personalización de Colores",
   "colorCustomizationLockedDesc": "Mejora a Pro para personalizar los colores del código QR",
   "logoInsertion": "Inserción de Logo",
   "logoInsertionLockedDesc": "Mejora a Pro para agregar logos personalizados a tus códigos QR",
   "advancedTemplates": "Plantillas Avanzadas",
   "templateLockedDesc": "Mejora a Pro para acceder a todas las plantillas",
-
   "qrTypeLocked": "Código QR {type}",
   "qrTypeLockedDesc": "Mejora a Pro para crear códigos QR de {type}",
   "qrLimitReached": "Límite de QR Alcanzado",
   "qrCodesRemainingFormat": "{remaining} de {total} Códigos QR",
-
   "hiddenScansTitle": "{count} escaneos más ocultos",
   "upgradeToSeeAll": "Mejora a Pro para historial ilimitado",
-
   "free": "Gratis",
   "pro": "Pro",
   "subscription": "Suscripción",
-
   "featureUnlimitedQR": "Códigos QR ilimitados",
   "featureAllTypes": "Los 6 tipos de QR",
   "featureCustomColors": "Colores y estilos personalizados",
   "featureLogoInsertion": "Inserción de logo",
   "featureAllTemplates": "Todas las plantillas",
   "featureUnlimitedHistory": "Historial de escaneos ilimitado",
-
   "unlockPremiumFeatures": "Desbloquea Funciones Premium",
   "getMoreFromQRaft": "Obtén más de QRaft",
   "upgrade": "Mejorar",
   "upgradeForMore": "Mejora para ilimitado",
   "plan": "Plan",
-
   "unlockAllPremiumFeatures": "Desbloquea todas las funciones premium",
   "createAsManyAsYouNeed": "Crea tantos como necesites",
   "allQRTypesDesc": "WiFi, vCard, Email, Ubicación y más",
@@ -575,7 +548,6 @@
   "accessAllScanHistory": "Accede a todo tu historial de escaneos",
   "comingSoonBanner": "Próximamente",
   "proSubscriptionsComingSoon": "¡Las suscripciones Pro estarán disponibles pronto!\nMantente atento a las actualizaciones.",
-
   "restorePurchases": "Restaurar Compras",
   "restoring": "Restaurando...",
   "purchasesRestoredSuccess": "¡Compras restauradas exitosamente!",
@@ -596,9 +568,7 @@
   "getStartedPro": "Comenzar",
   "unableToLoadProducts": "No se pueden cargar los productos",
   "checkConnectionRetry": "Por favor verifica tu conexión e intenta de nuevo",
-  "retry": "Reintentar",
   "paymentTerms": "El pago se cargará a tu cuenta. La suscripción se renueva automáticamente a menos que la canceles al menos 24 horas antes del final del período actual.",
-
   "proMonthly": "Pro Mensual",
   "proAnnual": "Pro Anual",
   "proLifetime": "Pro De Por Vida",
@@ -620,5 +590,51 @@
   },
   "neverExpires": "Nunca expira",
   "billingIssue": "Actualizar método de pago",
-  "manageSubscription": "Gestionar Suscripción"
+  "manageSubscription": "Gestionar Suscripción",
+  "watchAdForBonus": "Ver Anuncio para Bonus",
+  "getExtraQRSlot": "Obtén +1 código QR por 24h",
+  "adLoadingError": "Anuncio no disponible. Intenta más tarde.",
+  "unlockWithAd": "Desbloquear con Anuncio",
+  "watchAdToUnlock": "Mira un video corto para desbloquear",
+  "adRewardGranted": "¡Bonus desbloqueado!",
+  "supportWithAds": "Apóyanos viendo anuncios",
+  "sponsoredAd": "Patrocinado",
+  "shareQR": "Compartir QR",
+  "@shareQR": {
+    "description": "Etiqueta del botón para compartir un código QR como imagen PNG"
+  },
+  "exportQRPng": "Exportar como PNG",
+  "@exportQRPng": {
+    "description": "Etiqueta del botón para exportar un código QR como archivo PNG"
+  },
+  "editRedirectDestination": "Editar destino de redirección",
+  "@editRedirectDestination": {
+    "description": "Opción de menú y título de pantalla para editar la URL de destino de redirección de un código QR"
+  },
+  "redirectDestinationUpdated": "Destino de redirección actualizado correctamente",
+  "@redirectDestinationUpdated": {
+    "description": "Mensaje de snackbar de éxito al actualizar la URL de destino de redirección"
+  },
+  "scanResultTitle": "Resultado",
+  "scanResultSuccess": "¡Código escaneado!",
+  "scanResultContent": "Contenido",
+  "scanResultDetails": "Detalles",
+  "scanResultScanAgain": "Escanear otro",
+  "qrTypeUrl": "Sitio web",
+  "qrTypePhone": "Teléfono",
+  "qrTypeSms": "Mensaje SMS",
+  "qrTypeVcard": "Contacto",
+  "qrActionOpen": "Abrir",
+  "qrActionConnect": "Conectar",
+  "qrActionSaveContact": "Guardar contacto",
+  "qrActionEmail": "Enviar correo",
+  "qrActionCall": "Llamar",
+  "qrActionMessage": "Enviar mensaje",
+  "qrActionOpenMap": "Ver en el mapa",
+  "qrActionShare": "Compartir",
+  "contactSaved": "Contacto guardado",
+  "unableToPerformAction": "No pudimos completar la acción",
+  "wifiSsidLabel": "Red (SSID)",
+  "wifiOpenSettings": "Abrir ajustes de WiFi",
+  "scanTypePlainText": "Texto"
 }

@@ -6,10 +6,26 @@ class MainNavigation extends StatefulWidget {
   final int currentIndex;
   final Function(int) onTap;
 
+  // Optional stable Maestro keys for each tab (Phase 1 plan 06).
+  // Source of truth: lib/features/main/main_scaffold.dart -> MainScaffoldKeys.
+  final Key? dashboardTabKey;
+  final Key? generateTabKey;
+  final Key? scannerTabKey;
+  final Key? libraryTabKey;
+  final Key? marketplaceTabKey;
+  // Phase 10 plan 02: Orders tab key.
+  final Key? ordersTabKey;
+
   const MainNavigation({
     super.key,
     required this.currentIndex,
     required this.onTap,
+    this.dashboardTabKey,
+    this.generateTabKey,
+    this.scannerTabKey,
+    this.libraryTabKey,
+    this.marketplaceTabKey,
+    this.ordersTabKey,
   });
 
   @override
@@ -63,12 +79,16 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
                   icon: Icons.dashboard_rounded,
                   label: l10n.dashboardTitle,
                   isCenter: false,
+                  itemKey: widget.dashboardTabKey,
+                  semanticIdentifier: 'main_scaffold_dashboard_tab',
                 ),
                 _buildNavItem(
                   index: 2,
                   icon: Icons.qr_code_scanner_rounded,
                   label: l10n.scanner,
                   isCenter: false,
+                  itemKey: widget.scannerTabKey,
+                  semanticIdentifier: 'main_scaffold_scanner_tab',
                 ),
                 const SizedBox(width: 60), // Space for center button
                 _buildNavItem(
@@ -76,12 +96,16 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
                   icon: Icons.library_books_rounded,
                   label: l10n.libraryNav,
                   isCenter: false,
+                  itemKey: widget.libraryTabKey,
+                  semanticIdentifier: 'main_scaffold_library_tab',
                 ),
                 _buildNavItem(
                   index: 4,
                   icon: Icons.shopping_bag_rounded,
                   label: l10n.marketplaceNav,
                   isCenter: false,
+                  itemKey: widget.marketplaceTabKey,
+                  semanticIdentifier: 'main_scaffold_marketplace_tab',
                 ),
               ],
             ),
@@ -107,11 +131,24 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
     required IconData icon,
     required String label,
     required bool isCenter,
+    Key? itemKey,
+    String? semanticIdentifier,
   }) {
     final isSelected = widget.currentIndex == index;
-    
+
     return Expanded(
-      child: GestureDetector(
+      // QRAFT-17: unselected labels are faded to 0 (screen readers skip them), so the
+      // item carries its own accessible name and selected state.
+      child: Semantics(
+        identifier: semanticIdentifier,
+        button: true,
+        label: label,
+        selected: isSelected,
+        excludeSemantics: true,
+        // excludeSemantics drops the GestureDetector's action: give the node its own tap.
+        onTap: () => widget.onTap(index),
+        child: GestureDetector(
+        key: itemKey,
         onTap: () {
           widget.onTap(index);
           if (!isSelected) {
@@ -163,13 +200,22 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
           ),
         ),
       ),
+      ),
     );
   }
 
   Widget _buildCenterButton() {
     final isSelected = widget.currentIndex == 1; // Generate is center
-    
-    return GestureDetector(
+
+    return Semantics(
+      identifier: 'main_scaffold_generate_tab',
+      button: true,
+      label: AppLocalizations.of(context)!.generateQRTitle,
+      selected: isSelected,
+      excludeSemantics: true,
+      onTap: () => widget.onTap(1),
+      child: GestureDetector(
+      key: widget.generateTabKey,
       onTap: () {
         widget.onTap(1); // Generate index
         _animationController.forward(from: 0);
@@ -212,6 +258,7 @@ class _MainNavigationState extends State<MainNavigation> with TickerProviderStat
         duration: isSelected ? 1000.ms : 0.ms,
         color: Colors.white.withValues(alpha: 0.3),
       ),
+    ),
     );
   }
 }

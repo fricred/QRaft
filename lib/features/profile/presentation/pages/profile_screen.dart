@@ -1,12 +1,21 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
+import '../../../../core/utils/friendly_error.dart';
+import 'package:permission_handler/permission_handler.dart' show openAppSettings;
+import '../../../legal/presentation/pages/habeas_data_screen.dart';
+import '../../../legal/presentation/pages/pqrs_screen.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:qraft/l10n/app_localizations.dart';
 import '../../../../shared/widgets/glass_button.dart';
+import '../../../legal/presentation/pages/privacy_policy_screen.dart';
+import '../../../legal/presentation/pages/terms_screen.dart';
+import '../../../legal/presentation/pages/garantia_screen.dart';
 import '../../../../shared/widgets/language_selector.dart';
 import '../controllers/profile_controller.dart';
 import '../widgets/profile_header.dart';
@@ -20,6 +29,8 @@ import '../../../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
 import '../../../subscription/presentation/widgets/pro_badge.dart';
 import '../../../subscription/domain/entities/subscription_plan.dart';
 import '../../../../core/providers/locale_provider.dart';
+import '../../../operator/presentation/providers/operator_providers.dart';
+import '../../../operator/presentation/pages/operator_orders_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -44,7 +55,10 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
         actions: [
-          IconButton(
+          Semantics(
+            identifier: 'profile_settings_button',
+            child: IconButton(
+            tooltip: l10n.settings,
             onPressed: () {
               _showSettingsMenu(context, ref, l10n);
             },
@@ -52,7 +66,7 @@ class ProfileScreen extends ConsumerWidget {
               Icons.settings_rounded,
               color: Colors.grey[400],
             ),
-          ),
+          )),
         ],
       ),
       body: RefreshIndicator(
@@ -153,16 +167,40 @@ class ProfileScreen extends ConsumerWidget {
                   .slideY(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart)
                   .scale(begin: const Offset(0.95, 0.95), duration: 300.ms),
 
+              const SizedBox(height: 24),
+
+              // Operator dashboard link (only shown to operator-role users)
+              _buildOperatorSection(context, ref)
+                  .animate(delay: 325.ms)
+                  .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart)
+                  .scale(begin: const Offset(0.95, 0.95), duration: 300.ms),
+
+              const SizedBox(height: 24),
+
+              // Legal y soporte section
+              _buildLegalSection(context)
+                  .animate(delay: 350.ms)
+                  .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart)
+                  .scale(begin: const Offset(0.95, 0.95), duration: 300.ms),
+
               const SizedBox(height: 32),
 
-              // Sign out button
-              GlassButton(
-                text: l10n.signOut,
-                onPressed: () async {
-                  await _showSignOutDialog(context, ref, l10n);
-                },
-                width: double.infinity,
-                gradientColors: [Colors.red[400]!, Colors.red[600]!],
+              // Sign out button — Maestro selector: profile_sign_out_button
+              Semantics(
+                identifier: 'profile_sign_out_button',
+                button: true,
+                label: l10n.signOut,
+                child: GlassButton(
+                  key: const Key('profile_sign_out_button'),
+                  text: l10n.signOut,
+                  onPressed: () async {
+                    await _showSignOutDialog(context, ref, l10n);
+                  },
+                  width: double.infinity,
+                  gradientColors: [Colors.red[400]!, Colors.red[600]!],
+                ),
               )
                   .animate(delay: 400.ms)
                   .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
@@ -221,7 +259,8 @@ class ProfileScreen extends ConsumerWidget {
               subtitle: l10n.pushNotifications,
               onTap: () {
                 Navigator.pop(context);
-                // TODO: Implement notification settings
+                // QRAFT-7: notification permission lives in the OS settings for the app.
+                openAppSettings();
               },
             ),
             _buildSettingsItem(
@@ -229,8 +268,9 @@ class ProfileScreen extends ConsumerWidget {
               title: l10n.privacy,
               subtitle: l10n.dataPrivacySettings,
               onTap: () {
-                Navigator.pop(context);
-                // TODO: Implement privacy settings
+                final nav = Navigator.of(context); // capture before closing the sheet
+                nav.pop();
+                nav.push(MaterialPageRoute<void>(builder: (_) => const HabeasDataScreen()));
               },
             ),
             _buildSettingsItem(
@@ -238,15 +278,141 @@ class ProfileScreen extends ConsumerWidget {
               title: l10n.helpSupport,
               subtitle: l10n.helpSupportDescription,
               onTap: () {
-                Navigator.pop(context);
-                // TODO: Implement help screen
+                // QRAFT-7: the only support channel today is the PQRS form.
+                final nav = Navigator.of(context); // capture before closing the sheet
+                nav.pop();
+                nav.push(MaterialPageRoute<void>(builder: (_) => const PqrsScreen()));
               },
+            ),
+            // QRAFT-19 (P2-05): store requirement, account deletion from inside the app.
+            Semantics(
+              identifier: 'profile_delete_account_item',
+              child: ListTile(
+                leading: Icon(Icons.delete_forever_rounded, color: Colors.red[400]),
+                title: Text(
+                  _es(context) ? 'Eliminar cuenta' : 'Delete account',
+                  style: TextStyle(color: Colors.red[400], fontWeight: FontWeight.w500),
+                ),
+                subtitle: Text(
+                  _es(context)
+                      ? 'Borra tu cuenta y tus datos de forma permanente'
+                      : 'Permanently delete your account and data',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                ),
+                onTap: () {
+                  final nav = Navigator.of(context, rootNavigator: true);
+                  Navigator.of(context).pop();
+                  _showDeleteAccountDialog(nav.context, ref);
+                },
+              ),
             ),
             const SizedBox(height: 16),
           ],
         ),
       ),
     );
+  }
+
+  bool _es(BuildContext context) => Localizations.localeOf(context).languageCode == 'es';
+
+  Future<void> _showDeleteAccountDialog(BuildContext context, WidgetRef ref) async {
+    final es = _es(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: const Color(0xFF2E2E2E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          es ? '¿Eliminar tu cuenta?' : 'Delete your account?',
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          es
+              ? 'Se borrarán tu perfil, tus códigos QR y tu historial de escaneos. No se puede deshacer.\n\n'
+                  'Si tienes pedidos, se conservan solo para fines contables, sin tus datos de acceso.\n\n'
+                  'Una suscripción activa no se cancela sola: cancélala en la tienda de aplicaciones.'
+              : 'Your profile, QR codes and scan history will be deleted. This cannot be undone.\n\n'
+                  'If you have orders, they are kept only for accounting, without your login data.\n\n'
+                  'An active subscription is not cancelled automatically: cancel it in the app store.',
+          style: TextStyle(color: Colors.grey[300]),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(es ? 'Cancelar' : 'Cancel', style: TextStyle(color: Colors.grey[400])),
+          ),
+          Semantics(
+            identifier: 'profile_delete_account_confirm_button',
+            button: true,
+            child: TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(
+                es ? 'Eliminar' : 'Delete',
+                style: TextStyle(color: Colors.red[400], fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final messenger = ScaffoldMessenger.of(context);
+    showDialog<void>(
+      context: navigator.context,
+      barrierDismissible: false,
+      builder: (_) => const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF00FF88)),
+        ),
+      ),
+    );
+    final auth = ref.read(supabaseAuthProvider); // read before any await
+    try {
+      final client = Supabase.instance.client;
+      final uid = client.auth.currentUser?.id;
+      // Profile photos live in the public 'avatars' bucket under <uid>/: remove them first
+      // (the RPC can't touch Storage). A failure here stops the deletion so no photo is
+      // left public behind a deleted account.
+      if (uid != null) {
+        final files = await client.storage
+            .from('avatars')
+            .list(path: uid)
+            .timeout(const Duration(seconds: 15));
+        if (files.isNotEmpty) {
+          final removed = await client.storage
+              .from('avatars')
+              .remove([for (final f in files) '$uid/${f.name}'])
+              .timeout(const Duration(seconds: 15));
+          // Storage policies deny silently (empty result): never leave a public photo.
+          if (removed.length < files.length) {
+            throw StateError('avatar removal incomplete');
+          }
+        }
+      }
+      await client.rpc('delete_my_account').timeout(const Duration(seconds: 20));
+    } catch (e) {
+      debugPrint('Account deletion failed: $e');
+      if (navigator.mounted) navigator.pop(); // loading
+      messenger.showSnackBar(SnackBar(
+        content: Text(
+          friendlyErrorMessage(e, spanish: es),
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.red[700],
+      ));
+      return;
+    }
+    // The server already removed the account; this only clears the local session.
+    await auth.signOut();
+    if (navigator.mounted) navigator.popUntil((route) => route.isFirst);
+    messenger.showSnackBar(SnackBar(
+      content: Text(
+        es ? 'Tu cuenta fue eliminada.' : 'Your account was deleted.',
+        style: const TextStyle(color: Colors.white),
+      ),
+    ));
   }
 
   String _getLanguageDisplayName(WidgetRef ref) {
@@ -320,71 +486,60 @@ class ProfileScreen extends ConsumerWidget {
           Consumer(
             builder: (context, ref, child) {
               final authProvider = ref.watch(supabaseAuthProvider);
-              return TextButton(
-                onPressed: authProvider.isLoading ? null : () async {
-                  try {
-                    // Close sign out dialog first
-                    Navigator.pop(context);
-                    
-                    // Show loading dialog
-                    showDialog(
-                      context: context,
+              return Semantics(
+                identifier: 'profile_sign_out_confirm_button',
+                button: true,
+                label: deviceIsSpanish() ? 'Confirmar cierre de sesión' : 'Confirm sign out',
+                child: TextButton(
+                  key: const Key('profile_sign_out_confirm_button'),
+                  onPressed: authProvider.isLoading ? null : () async {
+                    // QRAFT-8: capture the root navigator BEFORE closing this dialog. This
+                    // dialog's own context is gone after pop(), so using it afterwards left
+                    // the "Signing out…" dialog on screen forever.
+                    final navigator = Navigator.of(context, rootNavigator: true);
+                    navigator.pop(); // close the confirmation dialog
+
+                    showDialog<void>(
+                      context: navigator.context,
                       barrierDismissible: false,
-                      builder: (context) => AlertDialog(
+                      builder: (_) => AlertDialog(
                         backgroundColor: const Color(0xFF2E2E2E),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         content: Row(
                           children: [
-                            CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF00FF88)),
+                            const CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF00FF88)),
                             ),
                             const SizedBox(width: 16),
-                            Text(
-                              l10n.signingOut,
-                              style: const TextStyle(color: Colors.white),
-                            ),
+                            Text(l10n.signingOut, style: const TextStyle(color: Colors.white)),
                           ],
                         ),
                       ),
                     );
-                    
-                    // Perform sign out
+
+                    // signOut never throws (errors go to the provider) and is bounded in time.
                     await authProvider.signOut();
-                    
-                    // Close loading dialog - AuthWrapper will handle navigation automatically
-                    if (context.mounted) {
-                      Navigator.pop(context);
+
+                    // Close the loading dialog and any pushed routes so the auth flow (or,
+                    // if sign-out failed, the app with its error snackbar) is visible.
+                    if (navigator.mounted) {
+                      navigator.popUntil((route) => route.isFirst);
                     }
-                  } catch (e) {
-                    // Close loading dialog if it's still open
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                      
-                      // Show error message
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l10n.signOutFailed),
-                          backgroundColor: Colors.red[700],
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  },
+                  child: authProvider.isLoading
+                    ? SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.red[400]!),
                         ),
-                      );
-                    }
-                  }
-                },
-                child: authProvider.isLoading 
-                  ? SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.red[400]!),
+                      )
+                    : Text(
+                        l10n.signOut,
+                        style: TextStyle(color: Colors.red[400]),
                       ),
-                    )
-                  : Text(
-                      l10n.signOut,
-                      style: TextStyle(color: Colors.red[400]),
-                    ),
+                ),
               );
             },
           ),
@@ -450,7 +605,7 @@ class ProfileScreen extends ConsumerWidget {
 
     // Show renewal or expiration date
     if (plan.expiresAt != null) {
-      final dateStr = DateFormat.yMMMd().format(plan.expiresAt!);
+      final dateStr = DateFormat.yMMMd(deviceIsSpanish() ? 'es' : 'en').add_Hm().format(plan.expiresAt!.toLocal());
       if (plan.status == SubscriptionStatus.cancelled) {
         return l10n.expiresOn(dateStr);
       }
@@ -458,6 +613,230 @@ class ProfileScreen extends ConsumerWidget {
     }
 
     return null;
+  }
+
+  /// Operator dashboard section — only visible to users with operator_profiles row.
+  ///
+  /// Checks [isOperatorProvider] and renders nothing for consumer users (T-11-10).
+  Widget _buildOperatorSection(BuildContext context, WidgetRef ref) {
+    final isOperatorAsync = ref.watch(isOperatorProvider);
+
+    return isOperatorAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (isOperator) {
+        if (!isOperator) return const SizedBox.shrink();
+
+        return Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF2E2E2E),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: const Color(0xFF1A73E8).withValues(alpha: 0.4),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF1A73E8), Color(0xFF00FF88)],
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.admin_panel_settings_rounded,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Operador',
+                      style: TextStyle(
+                        color: Colors.grey[400],
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(color: Color(0xFF3A3A3A), height: 1),
+              ListTile(
+                key: const Key('profile_operator_dashboard_tile'),
+                leading: const Icon(
+                  Icons.dashboard_rounded,
+                  color: Color(0xFF1A73E8),
+                ),
+                title: const Text(
+                  'Panel de Operador',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                subtitle: Text(
+                  'Gestionar pedidos',
+                  style: TextStyle(
+                    color: Colors.grey[500],
+                    fontSize: 12,
+                  ),
+                ),
+                trailing: Icon(
+                  Icons.chevron_right,
+                  color: Colors.grey[600],
+                ),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const OperatorOrdersScreen(),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLegalSection(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF2E2E2E),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF3A3A3A)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Text(
+              'Legal y soporte',
+              style: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+          const Divider(color: Color(0xFF3A3A3A), height: 1),
+          Semantics(
+            identifier: 'profile_privacy_policy_tile',
+            child: ListTile(
+              key: const Key('profile_privacy_policy_tile'),
+              leading: const Icon(
+                Icons.privacy_tip_outlined,
+                color: Color(0xFF00FF88),
+              ),
+              title: const Text(
+                'Política de privacidad',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              ),
+              trailing: Icon(Icons.chevron_right, color: Colors.grey[600]),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                    builder: (_) => const PrivacyPolicyScreen()),
+              ),
+            ),
+          ),
+          const Divider(color: Color(0xFF3A3A3A), height: 1, indent: 56),
+          Semantics(
+            identifier: 'profile_terms_tile',
+            child: ListTile(
+              key: const Key('profile_terms_tile'),
+              leading: const Icon(
+                Icons.policy_outlined,
+                color: Color(0xFF00FF88),
+              ),
+              title: const Text(
+                'Términos y condiciones',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              ),
+              trailing: Icon(Icons.chevron_right, color: Colors.grey[600]),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const TermsScreen()),
+              ),
+            ),
+          ),
+          const Divider(color: Color(0xFF3A3A3A), height: 1, indent: 56),
+          Semantics(
+            identifier: 'profile_habeas_data_tile',
+            child: ListTile(
+              key: const Key('profile_habeas_data_tile'),
+              leading: const Icon(
+                Icons.manage_accounts_outlined,
+                color: Color(0xFF00FF88),
+              ),
+              title: const Text(
+                'Mis datos personales',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              ),
+              trailing: Icon(Icons.chevron_right, color: Colors.grey[600]),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                    builder: (_) => const HabeasDataScreen()),
+              ),
+            ),
+          ),
+          const Divider(color: Color(0xFF3A3A3A), height: 1, indent: 56),
+          Semantics(
+            identifier: 'profile_garantia_tile',
+            child: ListTile(
+              key: const Key('profile_garantia_tile'),
+              leading: const Icon(
+                Icons.verified_user_outlined,
+                color: Color(0xFF00FF88),
+              ),
+              title: const Text(
+                'Garantía 3 meses',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              ),
+              trailing: Icon(Icons.chevron_right, color: Colors.grey[600]),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                    builder: (_) => const GarantiaScreen()),
+              ),
+            ),
+          ),
+          const Divider(color: Color(0xFF3A3A3A), height: 1, indent: 56),
+          Semantics(
+            identifier: 'profile_pqrs_tile',
+            child: ListTile(
+              key: const Key('profile_pqrs_tile'),
+              leading: const Icon(
+                Icons.feedback_outlined,
+                color: Color(0xFF00FF88),
+              ),
+              title: const Text(
+                'PQRS',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              ),
+              subtitle: Text(
+                'Peticiones, quejas, reclamos y sugerencias',
+                style: TextStyle(color: Colors.grey[500], fontSize: 12),
+              ),
+              trailing: Icon(Icons.chevron_right, color: Colors.grey[600]),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const PqrsScreen()),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
   }
 
   Widget _buildSubscriptionSection(BuildContext context, WidgetRef ref, AppLocalizations l10n) {

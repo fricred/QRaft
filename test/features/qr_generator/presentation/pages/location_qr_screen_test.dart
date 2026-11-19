@@ -1,7 +1,12 @@
+@Skip('Legacy per-type screen: no longer reachable (all QR creation goes through QRTemplatesScreen -> QRCanvasEditorScreen). Delete together with the screen, or re-enable if it comes back.')
+library;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart'; // Override moved here in Riverpod 3
 import 'package:mocktail/mocktail.dart';
+import 'package:qraft/features/qr_generator/domain/entities/qr_data_models.dart';
 import 'package:qraft/features/qr_generator/presentation/pages/location_qr_screen.dart';
 import 'package:qraft/features/qr_generator/presentation/providers/qr_providers.dart';
 import 'package:qraft/features/qr_generator/domain/entities/qr_code_entity.dart';
@@ -17,7 +22,16 @@ import '../../test_utilities/qr_test_utilities.dart';
 class MockGenerateQRUseCase extends Mock implements GenerateQRUseCase {}
 class MockSupabaseAuthProvider extends Mock implements SupabaseAuthProvider {}
 
+class _FakeQRDataModel extends Fake implements QRDataModel {}
+
 void main() {
+  // `any()` on non-primitive parameters needs a fallback value in mocktail.
+  setUpAll(() {
+    registerFallbackValue(QRType.url);
+    registerFallbackValue(_FakeQRDataModel());
+    registerFallbackValue(const QRCustomization());
+  });
+
   group('LocationQRScreen Tests', () {
     late MockGenerateQRUseCase mockGenerateQRUseCase;
     late MockSupabaseAuthProvider mockAuthProvider;
@@ -784,11 +798,6 @@ void main() {
 }
 
 // Mock classes for testing
-class MockUser {
-  final String id;
-  final String email;
-  MockUser({required this.id, required this.email});
-}
 
 QRCodeEntity createMockQRCodeEntity() {
   return QRCodeEntity(

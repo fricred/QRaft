@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "748679454944",
+    "project_id": "qraft-e8a1d",
+    "storage_bucket": "qraft-e8a1d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:748679454944:android:92ea5fdece5f1c20343085",
+        "android_client_info": {
+          "package_name": "io.gothcorp.qraft"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "748679454944-8jcau049u06e2v4qtbn6flvtmdbnk22r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRPuHipgKflY1ONC7WFJFCy1SmEJnV5-s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "748679454944-8jcau049u06e2v4qtbn6flvtmdbnk22r.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "748679454944-b60fo8r97dhsh603utaqoibp0hphor62.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "co.gothcorp.qraft"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

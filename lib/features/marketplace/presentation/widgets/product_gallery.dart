@@ -1,18 +1,57 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:qraft/l10n/app_localizations.dart';
+import 'package:shimmer/shimmer.dart';
 
-/// Product gallery with horizontal PageView and dot indicators.
-/// Falls back to gradient placeholders if no images are provided.
+import '../../domain/entities/product_image_entity.dart';
+
+const _kAccent = Color(0xFF00FF88);
+const _kSurface = Color(0xFF2E2E2E);
+
+/// One swipeable strip holding the live QR preview *and* the real product
+/// photos, plus a thumbnail rail to jump between them.
+///
+/// **Slide 0 is always [preview].** Two independent reasons, both hard:
+///
+///   - `PageView` only builds the current page and its neighbours. The purchase
+///     flow taps `product_select_qr_button`, which lives inside the preview. On
+///     a later slide that widget would not exist until the user swiped, so the
+///     E2E flow — and anyone navigating with a screen reader from the top —
+///     would never reach it.
+///   - The preview is what the app sells: the buyer's own QR composited on the
+///     material. Demoting it behind marketing photos inverts the value prop.
+///
+/// Every slide carries a caption chip — "Vista previa · tu QR" against "Foto
+/// real del producto". That distinction is not decoration: under Ley 1480 de
+/// 2011 art. 30 a simulation presented as the delivered article is misleading
+/// advertising, so the render itself has to say which one the buyer is seeing.
+///
+/// With no photos the widget returns [preview] untouched — no `PageView`, no
+/// chips, no rail — so a catalog without photography renders exactly as before.
 class ProductGallery extends StatefulWidget {
-  final List<String> images;
-  final LinearGradient gradient;
-  final IconData? icon;
+  /// The live composite (or its shimmer / error / "pick a QR" stand-ins). Taken
+  /// as a widget so the gallery stays free of Riverpod and QR resolution.
+  final Widget preview;
+
+  /// Photos for the current variant, already ordered most-specific-first.
+  final List<ProductImageEntity> images;
+
+  /// Side of the square slide. Matches `MaterialPreviewWidget.previewSize`.
+  final double size;
+
+  /// Caption for slide 0. The caller varies it because "tu QR" is only true
+  /// once a QR has actually been picked.
+  final String previewCaption;
+
+  /// Used as the accessible label of a photo whose row has no `alt_text_es`.
+  final String photoSemanticsLabel;
 
   const ProductGallery({
     super.key,
+    required this.preview,
     required this.images,
-    required this.gradient,
-    this.icon,
+    this.size = 280,
+    this.previewCaption = 'Vista previa · tu QR',
+    this.photoSemanticsLabel = 'Foto del producto',
   });
 
   @override
@@ -20,91 +59,182 @@ class ProductGallery extends StatefulWidget {
 }
 
 class _ProductGalleryState extends State<ProductGallery> {
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
-
-  // Number of placeholder images to show if no real images
-  static const int _placeholderCount = 3;
+  final PageController _controller = PageController();
+  int _page = 0;
 
   @override
   void dispose() {
-    _pageController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
-  int get _itemCount => widget.images.isNotEmpty ? widget.images.length : _placeholderCount;
+  @override
+  void didUpdateWidget(covariant ProductGallery oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Switching size swaps the variant, which may carry fewer photos. Without
+    // this the controller would sit on a page that no longer exists.
+    final lastPage = widget.images.length;
+    if (_page > lastPage) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_controller.hasClients) return;
+        _controller.jumpToPage(lastPage);
+        setState(() => _page = lastPage);
+      });
+    }
+  }
+
+  void _goTo(int index) {
+    if (!_controller.hasClients) return;
+    _controller.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 260),
+      curve: Curves.easeOutCubic,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    // Nothing to carousel through: hand back the preview as-is.
+    if (widget.images.isEmpty) return widget.preview;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    final pageCount = widget.images.length + 1;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          // Extra room so the slides' drop shadow isn't clipped by the viewport.
+          height: widget.size + 24,
+          child: PageView.builder(
+            controller: _controller,
+            itemCount: pageCount,
+            onPageChanged: (i) => setState(() => _page = i),
+            itemBuilder: (context, index) => Center(
+              child: SizedBox(
+                width: widget.size,
+                height: widget.size,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: index == 0
+                          ? Center(child: widget.preview)
+                          : _GalleryPhoto(
+                              image: widget.images[index - 1],
+                              size: widget.size,
+                              fallbackLabel: widget.photoSemanticsLabel,
+                            ),
+                    ),
+                    Positioned(
+                      top: 10,
+                      left: 10,
+                      child: _CaptionChip(
+                        label: index == 0
+                            ? widget.previewCaption
+                            : 'Foto real del producto',
+                        isPreview: index == 0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        _ThumbRail(
+          images: widget.images,
+          activeIndex: _page,
+          onTap: _goTo,
+        ),
+      ],
+    );
+  }
+}
+
+/// A single real photograph, sized and shadowed to sit flush with the live
+/// preview so swiping between them doesn't jump.
+class _GalleryPhoto extends StatelessWidget {
+  final ProductImageEntity image;
+  final double size;
+  final String fallbackLabel;
+
+  const _GalleryPhoto({
+    required this.image,
+    required this.size,
+    required this.fallbackLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      image: true,
+      label: image.altTextEs.isEmpty ? fallbackLabel : image.altTextEs,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.4),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: CachedNetworkImage(
+            imageUrl: image.url,
+            fit: BoxFit.cover,
+            width: size,
+            height: size,
+            memCacheWidth: 900,
+            placeholder: (_, __) => _SquareShimmer(size: size),
+            errorWidget: (_, __, ___) => _PhotoUnavailable(size: size),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Legend that tells the buyer whether they are looking at a simulation or at
+/// the physical article. Neon for the preview, neutral for a photo.
+class _CaptionChip extends StatelessWidget {
+  final String label;
+  final bool isPreview;
+
+  const _CaptionChip({required this.label, required this.isPreview});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.65),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isPreview
+              ? _kAccent.withValues(alpha: 0.45)
+              : Colors.white.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Section title
+          Icon(
+            isPreview
+                ? Icons.auto_awesome_rounded
+                : Icons.photo_camera_outlined,
+            size: 13,
+            color: isPreview ? _kAccent : Colors.white,
+          ),
+          const SizedBox(width: 5),
           Text(
-            l10n.productGallery,
+            label,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Gallery PageView
-          SizedBox(
-            height: 200,
-            child: PageView.builder(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() => _currentPage = index);
-              },
-              itemCount: _itemCount,
-              itemBuilder: (context, index) {
-                if (widget.images.isNotEmpty) {
-                  return _GalleryImage(
-                    imageUrl: widget.images[index],
-                    gradient: widget.gradient,
-                  );
-                } else {
-                  return _PlaceholderImage(
-                    index: index,
-                    gradient: widget.gradient,
-                    icon: widget.icon,
-                  );
-                }
-              },
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Page indicator dots
-          Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(_itemCount, (index) {
-                final isActive = index == _currentPage;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: isActive ? 24 : 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    gradient: isActive
-                        ? const LinearGradient(
-                            colors: [Color(0xFF00FF88), Color(0xFF1A73E8)],
-                          )
-                        : null,
-                    color: isActive ? null : Colors.grey[700],
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                );
-              }),
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -113,179 +243,154 @@ class _ProductGalleryState extends State<ProductGallery> {
   }
 }
 
-/// Gallery image with network loading
-class _GalleryImage extends StatelessWidget {
-  final String imageUrl;
-  final LinearGradient gradient;
+/// Thumbnail rail. Tile 0 stands for the live preview, the rest are photos.
+///
+/// Centred while the tiles fit and scrollable once they don't, so a product
+/// with two photos doesn't look left-adrift under a centred carousel.
+class _ThumbRail extends StatelessWidget {
+  final List<ProductImageEntity> images;
+  final int activeIndex;
+  final ValueChanged<int> onTap;
 
-  const _GalleryImage({
-    required this.imageUrl,
-    required this.gradient,
+  const _ThumbRail({
+    required this.images,
+    required this.activeIndex,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
-        ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Image.network(
-          imageUrl,
-          fit: BoxFit.cover,
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Container(
-              decoration: BoxDecoration(
-                gradient: gradient,
+    return SizedBox(
+      height: 58,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Unbounded width would make minWidth infinite; fall back to letting
+          // the row size itself.
+          final available = constraints.maxWidth.isFinite
+              ? (constraints.maxWidth - 48).clamp(0.0, double.infinity)
+              : 0.0;
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minWidth: available),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (var i = 0; i <= images.length; i++) ...[
+                    if (i > 0) const SizedBox(width: 8),
+                    _Thumb(
+                      index: i,
+                      image: i == 0 ? null : images[i - 1],
+                      isActive: i == activeIndex,
+                      onTap: () => onTap(i),
+                    ),
+                  ],
+                ],
               ),
-              child: Center(
-                child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                      : null,
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              ),
-            );
-          },
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              decoration: BoxDecoration(
-                gradient: gradient,
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.broken_image_rounded,
-                  color: Colors.white54,
-                  size: 48,
-                ),
-              ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 }
 
-/// Placeholder image with gradient and icon
-class _PlaceholderImage extends StatelessWidget {
+class _Thumb extends StatelessWidget {
   final int index;
-  final LinearGradient gradient;
-  final IconData? icon;
 
-  const _PlaceholderImage({
+  /// null marks the live-preview tile.
+  final ProductImageEntity? image;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _Thumb({
     required this.index,
-    required this.gradient,
-    this.icon,
+    required this.image,
+    required this.isActive,
+    required this.onTap,
   });
-
-  // Icons for each placeholder view
-  static const _icons = [
-    Icons.view_in_ar_rounded,
-    Icons.threed_rotation_rounded,
-    Icons.qr_code_2_rounded,
-  ];
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    // Localized labels for each placeholder
-    final labels = [
-      l10n.galleryFrontView,
-      l10n.gallery3DPreview,
-      l10n.galleryWithQRCode,
-    ];
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      decoration: BoxDecoration(
-        gradient: gradient,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.15),
-        ),
-      ),
-      child: Stack(
-        children: [
-          // Background pattern
-          Positioned.fill(
-            child: CustomPaint(
-              painter: _GridPatternPainter.instance,
+    return Semantics(
+      identifier: 'product_gallery_thumb_$index',
+      button: true,
+      selected: isActive,
+      label: image == null ? 'Vista previa con tu QR' : 'Foto $index',
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            color: _kSurface,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: isActive
+                  ? _kAccent
+                  : Colors.white.withValues(alpha: 0.12),
+              width: isActive ? 2 : 1,
             ),
           ),
-
-          // Icon and label
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  icon ?? _icons[index % _icons.length],
-                  color: Colors.white.withValues(alpha: 0.7),
-                  size: 64,
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    labels[index % labels.length],
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: image == null
+                ? const Icon(
+                    Icons.qr_code_2_rounded,
+                    color: _kAccent,
+                    size: 26,
+                  )
+                : CachedNetworkImage(
+                    imageUrl: image!.gridUrl,
+                    fit: BoxFit.cover,
+                    memCacheWidth: 160,
+                    placeholder: (_, __) => const _SquareShimmer(size: 52),
+                    errorWidget: (_, __, ___) => const Icon(
+                      Icons.image_not_supported_outlined,
+                      color: Colors.white24,
+                      size: 20,
                     ),
                   ),
-                ),
-              ],
-            ),
           ),
-        ],
+        ),
       ),
     );
   }
 }
 
-/// Grid pattern painter for placeholder background
-class _GridPatternPainter extends CustomPainter {
-  const _GridPatternPainter();
-
-  // Cached instance to avoid recreation on each build
-  static const instance = _GridPatternPainter();
+class _SquareShimmer extends StatelessWidget {
+  final double size;
+  const _SquareShimmer({required this.size});
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.05)
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
-
-    const spacing = 20.0;
-
-    // Vertical lines
-    for (double x = 0; x < size.width; x += spacing) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
-    }
-
-    // Horizontal lines
-    for (double y = 0; y < size.height; y += spacing) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: _kSurface,
+      highlightColor: const Color(0xFF3E3E3E),
+      child: Container(width: size, height: size, color: _kSurface),
+    );
   }
+}
+
+class _PhotoUnavailable extends StatelessWidget {
+  final double size;
+  const _PhotoUnavailable({required this.size});
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      color: _kSurface,
+      child: Center(
+        child: Icon(
+          Icons.broken_image_outlined,
+          color: Colors.grey[500],
+          size: 44,
+        ),
+      ),
+    );
+  }
 }

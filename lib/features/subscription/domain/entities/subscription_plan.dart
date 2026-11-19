@@ -46,8 +46,15 @@ class SubscriptionPlan extends Equatable {
   });
 
   /// Check if user has active Pro subscription
+  /// Same rule as the server (enforce_qr_code_limit trigger): a cancelled or billing-issue
+  /// subscription keeps Pro until it expires (with a 3-day grace for a late renewal sync).
   bool get isPro =>
-      tier == SubscriptionTier.pro && status == SubscriptionStatus.active;
+      tier == SubscriptionTier.pro &&
+      (status == SubscriptionStatus.active ||
+          status == SubscriptionStatus.cancelled ||
+          status == SubscriptionStatus.billingIssue) &&
+      (expiresAt == null ||
+          expiresAt!.isAfter(DateTime.now().subtract(const Duration(days: 3))));
 
   /// Check if user is on free plan
   bool get isFree => tier == SubscriptionTier.free;
@@ -74,13 +81,13 @@ class SubscriptionPlan extends Equatable {
       tier: _parseTier(map['subscription_plan'] as String? ?? 'free'),
       status: _parseStatus(map['subscription_status'] as String? ?? 'active'),
       expiresAt: map['subscription_expires_at'] != null
-          ? DateTime.parse(map['subscription_expires_at'] as String)
+          ? DateTime.parse(map['subscription_expires_at'] as String).toLocal()
           : null,
       trialStartedAt: map['trial_started_at'] != null
-          ? DateTime.parse(map['trial_started_at'] as String)
+          ? DateTime.parse(map['trial_started_at'] as String).toLocal()
           : null,
       trialEndsAt: map['trial_ends_at'] != null
-          ? DateTime.parse(map['trial_ends_at'] as String)
+          ? DateTime.parse(map['trial_ends_at'] as String).toLocal()
           : null,
       productId: map['subscription_product_id'] as String?,
       periodType: _parsePeriodType(map['subscription_period_type'] as String?),

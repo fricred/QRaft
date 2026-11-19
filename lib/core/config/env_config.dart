@@ -18,12 +18,6 @@ class EnvConfig {
     defaultValue: 'your-anon-key-here',
   );
   
-  /// Get Supabase Service Key from dart-define (bypasses RLS)
-  static const String supabaseServiceKey = String.fromEnvironment(
-    'SUPABASE_SERVICE_KEY',
-    defaultValue: 'your-service-key-here',
-  );
-
   /// RevenueCat API Key for iOS
   static const String revenueCatApiKeyIOS = String.fromEnvironment(
     'REVENUECAT_API_KEY_IOS',

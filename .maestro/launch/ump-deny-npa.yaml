@@ -1,0 +1,51 @@
+appId: io.gothcorp.qraft
+name: launch/ump-deny-npa
+tags:
+  - launch
+  - phase1
+---
+# UMP deny-path validation.
+#
+# Per D-05 (CONTEXT.md), UMP scope is global — Google's UMP SDK auto-detects GDPR/EU
+# jurisdictions and returns `notRequired` outside them. Test devices in Colombia (and
+# any other non-GDPR locale) therefore never see the UMP screen — the SDK returns
+# `notRequired` and the app falls through to the welcome screen with personalized
+# ads enabled by default (D-06).
+#
+# To exercise the actual deny path on a real GDPR device, set debug-geography in
+# UMP Debug Settings (Phase 1 deferred — needs app-side ConsentDebugSettings wiring).
+# This flow validates the equally-critical correctness property that **non-GDPR
+# launches are NOT blocked by the UMP gate** — a regression here would mean
+# Colombian users see a stalled / blank screen on first launch.
+#
+# Branches:
+#   - GDPR device: ump_consent_screen_root visible -> tap continue -> deny via
+#     system overlay -> wait for screen to dismiss -> assert welcome rendered
+#   - Non-GDPR device (Colombia): ump screen never shows -> directly assert
+#     welcome screen rendered (UMP gate fell through with notRequired)
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/dismiss-permissions.yaml
+- runFlow:
+    when:
+      visible:
+        id: "ump_consent_screen_root"
+    commands:
+      - tapOn:
+          id: "ump_continue_button"
+      - tapOn:
+          text: "(Manage options|Administrar opciones|Decline|Reject|Reject all)"
+          optional: true
+      - tapOn:
+          text: "(Confirm|Confirmar|Save|Save & exit)"
+          optional: true
+      - extendedWaitUntil:
+          notVisible:
+            id: "ump_consent_screen_root"
+          timeout: 15000
+# Whether GDPR (deny path completed) or non-GDPR (gate fell through), the user
+# must land on welcome or the authenticated main scaffold.
+- extendedWaitUntil:
+    visible:
+      id: "(welcome_screen_root|main_scaffold_dashboard_tab)"
+    timeout: 15000

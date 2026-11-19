@@ -1,0 +1,16 @@
+appId: io.gothcorp.qraft
+name: launch/splash-happy
+tags:
+  - launch
+  - phase1
+---
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/dismiss-permissions.yaml
+# Splash must finish without crash; some post-splash widget must appear.
+# Use a regex-grouped id matcher (Maestro selectors are regex by default —
+# verified at https://docs.maestro.dev/reference/selectors/core-selectors.md).
+- extendedWaitUntil:
+    visible:
+      id: "(ump_consent_screen_root|welcome_screen_root|main_scaffold_dashboard_tab)"
+    timeout: 15000

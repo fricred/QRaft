@@ -1,0 +1,79 @@
+# Flow: marketplace/purchase-flow
+# Purpose: E2E of the inline purchase customization — browse catalog, open a
+# product, pick a QR from the inline picker sheet, bump quantity, add to cart,
+# and verify the cart contents.
+# Selectors: id-based (Semantics identifiers) per CONVENTIONS.md.
+# Env vars required: MAESTRO_TEST_EMAIL, MAESTRO_TEST_PASSWORD
+appId: io.gothcorp.qraft
+# NOTE: no slash in the name — Maestro's HTML reporter uses it as a file path.
+name: marketplace-purchase-flow
+tags:
+  - marketplace
+  - phase13
+---
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/dismiss-permissions.yaml
+- runFlow: ../launch/ump-accept.yaml
+- runFlow: ../helpers/login.yaml
+
+# 1. Go to the marketplace tab
+- tapOn:
+    id: "main_scaffold_marketplace_tab"
+- assertVisible: "Marketplace"
+
+# 2. Open the first product card
+- tapOn:
+    id: "marketplace_product_card_0"
+
+# 3. No QR selected yet — the prompt opens the inline picker (no dead-end).
+#    NOTE: GestureDetector+Semantics merge descendant texts into one node, so
+#    text matchers need .* wrapping; ids are the stable choice.
+- extendedWaitUntil:
+    visible:
+      id: "product_select_qr_button"
+    timeout: 10000
+- tapOn:
+    id: "product_select_qr_button"
+
+# 4. Picker sheet shows the seeded library; choose the first QR
+- extendedWaitUntil:
+    visible: ".*Elige tu QR.*"
+    timeout: 10000
+- tapOn:
+    id: "qr_picker_tile_0"
+
+# 5. Live preview applied — the "change QR" affordance proves a QR is active
+#    (merged into the preview's semantics node, hence the regex)
+- extendedWaitUntil:
+    visible: ".*Cambiar QR.*"
+    timeout: 10000
+
+# 6. Add to cart (CTA shows the line total now)
+- scrollUntilVisible:
+    element:
+      id: "product_add_to_cart_button"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    id: "product_add_to_cart_button"
+
+# 7. Success snackbar keeps us in the store, with a path to the cart
+- extendedWaitUntil:
+    visible: ".*Agregado al carrito.*"
+    timeout: 15000
+- tapOn: "Ver carrito"
+
+# 8. Cart shows the item with real product metadata and server totals.
+#    NOTE: the summary's outer Semantics merges its rows into one node — the
+#    inner cart_summary_total id is unreachable; assert the merged widget id.
+- extendedWaitUntil:
+    visible: "Mi Carrito"
+    timeout: 10000
+- extendedWaitUntil:
+    visible:
+      id: "cart_summary_widget"
+    timeout: 15000
+- assertVisible:
+    id: "cart_proceed_to_checkout_button"
+- assertVisible: ".*Pagar.*"

@@ -4,7 +4,7 @@ import 'package:qraft/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/widgets/glass_button.dart';
-import '../../data/providers/supabase_auth_provider.dart';
+import '../controllers/forgot_password_controller.dart';
 
 class ForgotPasswordDialog extends ConsumerStatefulWidget {
   const ForgotPasswordDialog({super.key});
@@ -16,7 +16,6 @@ class ForgotPasswordDialog extends ConsumerStatefulWidget {
 class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
   final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _emailSent = false;
 
   @override
   void dispose() {
@@ -26,24 +25,24 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
 
   void _handleSendResetEmail() async {
     if (_formKey.currentState?.validate() ?? false) {
-      final authProvider = ref.read(supabaseAuthProvider);
-      await authProvider.resetPassword(_emailController.text);
-
-      if (authProvider.errorMessage == null) {
-        setState(() {
-          _emailSent = true;
-        });
-      }
+      await ref
+          .read(forgotPasswordControllerProvider.notifier)
+          .submit(_emailController.text);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final authProvider = ref.watch(supabaseAuthProvider);
-    final isLoading = authProvider.isLoading;
+    final fpState = ref.watch(forgotPasswordControllerProvider);
+    final isLoading = fpState.isLoading;
+    final emailSent = fpState.emailSent;
 
-    return Dialog(
+    return Semantics(
+      identifier: 'forgot_password_dialog_root',
+      container: true,
+      child: Dialog(
+      key: const Key('forgot_password_dialog_root'),
       backgroundColor: Colors.transparent,
       child: Container(
         constraints: const BoxConstraints(maxWidth: 400),
@@ -66,7 +65,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (!_emailSent) ...[
+            if (!emailSent) ...[
               // Header
               Row(
                 children: [
@@ -147,7 +146,11 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    TextFormField(
+                    Semantics(
+                      identifier: 'forgot_password_email_field',
+                      textField: true,
+                      child: TextFormField(
+                      key: const Key('forgot_password_email_field'),
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.done,
@@ -196,6 +199,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                         return null;
                       },
                     ),
+                    ),
                   ],
                 ),
               )
@@ -212,7 +216,11 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                     flex: 1,
                     child: SizedBox(
                       height: 56,
-                      child: OutlinedButton(
+                      child: Semantics(
+                        identifier: 'forgot_password_cancel_button',
+                        button: true,
+                        child: OutlinedButton(
+                        key: const Key('forgot_password_cancel_button'),
                         onPressed: isLoading ? null : () => Navigator.of(context).pop(),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.grey[400],
@@ -221,30 +229,44 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        child: Text(
-                          l10n.cancel,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
+                        child: Semantics(
+                          label: 'Cancel forgot password',
+                          child: Text(
+                            l10n.cancel,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
+                      ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     flex: 1,
-                    child: PrimaryGlassButton(
-                      text: l10n.sendResetLink,
-                      onPressed: _handleSendResetEmail,
-                      isLoading: isLoading,
+                    child: Semantics(
+                      identifier: 'forgot_password_send_button',
+                      label: 'Send reset email',
+                      button: true,
+                      child: PrimaryGlassButton(
+                        key: const Key('forgot_password_send_button'),
+                        text: l10n.sendResetLink,
+                        onPressed: _handleSendResetEmail,
+                        isLoading: isLoading,
+                      ),
                     ),
                   ),
                 ],
               ).animate().fadeIn(duration: 600.ms, delay: 400.ms),
             ] else ...[
               // Success state
-              Column(
+              Semantics(
+                identifier: 'forgot_password_success_state',
+                container: true,
+                child: Column(
+                key: const Key('forgot_password_success_state'),
                 children: [
                   Container(
                     width: 80,
@@ -307,10 +329,12 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
                       .slideY(begin: 0.3, duration: 600.ms, delay: 600.ms),
                 ],
               ),
+              ),
             ],
           ],
         ),
       ),
+    ),
     );
   }
 }

@@ -3,6 +3,39 @@ import '../../domain/entities/plan_limits.dart';
 import '../../domain/entities/feature_access.dart';
 import 'subscription_providers.dart';
 
+/// Gate for unlimited QR creation (Phase 12 premium entitlement — MKT-10).
+final unlimitedQrsGateProvider = Provider<FeatureAccess>((ref) {
+  final isPremium = ref.watch(isPremiumProvider);
+  return isPremium
+      ? FeatureAccess.allowed(FeatureType.unlimitedQrs)
+      : FeatureAccess.locked(
+          FeatureType.unlimitedQrs,
+          'Suscríbete a Premium para crear QRs sin límite',
+        );
+});
+
+/// Gate for AI-generated styles (Phase 12 premium entitlement — MKT-10).
+final aiStyleGateProvider = Provider<FeatureAccess>((ref) {
+  final isPremium = ref.watch(isPremiumProvider);
+  return isPremium
+      ? FeatureAccess.allowed(FeatureType.aiStylePremium)
+      : FeatureAccess.locked(
+          FeatureType.aiStylePremium,
+          'Suscríbete a Premium para usar estilos con IA ilimitados',
+        );
+});
+
+/// Gate for bulk CSV import (Phase 12 premium entitlement — MKT-10).
+final bulkImportGateProvider = Provider<FeatureAccess>((ref) {
+  final isPremium = ref.watch(isPremiumProvider);
+  return isPremium
+      ? FeatureAccess.allowed(FeatureType.bulkImport)
+      : FeatureAccess.locked(
+          FeatureType.bulkImport,
+          'Importación masiva de CSV requiere Premium',
+        );
+});
+
 /// Check if specific QR type is allowed
 final qrTypeAccessProvider = Provider.family<FeatureAccess, QRType>((ref, qrType) {
   final limits = ref.watch(planLimitsProvider);
@@ -31,6 +64,8 @@ FeatureType _qrTypeToFeature(QRType type) {
       return FeatureType.qrTypeEmail;
     case QRType.location:
       return FeatureType.qrTypeLocation;
+    case QRType.event:
+      return FeatureType.qrTypeEvent;
   }
 }
 
@@ -48,6 +83,8 @@ String _qrTypeDisplayName(QRType type) {
       return 'Email';
     case QRType.location:
       return 'Location';
+    case QRType.event:
+      return 'Event';
   }
 }
 

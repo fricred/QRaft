@@ -1,0 +1,23 @@
+appId: io.gothcorp.qraft
+name: auth/session-persistence
+tags:
+  - auth
+  - phase1
+---
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/dismiss-permissions.yaml
+- runFlow: ../launch/ump-accept.yaml
+- runFlow: ../helpers/login.yaml
+- assertVisible:
+    id: "main_scaffold_dashboard_tab"
+# Kill app without clearing state.
+- killApp
+- launchApp:
+    clearState: false
+- runFlow: ../helpers/dismiss-permissions.yaml
+# Should land directly on main scaffold (Supabase session restored from secure storage).
+- extendedWaitUntil:
+    visible:
+      id: "main_scaffold_dashboard_tab"
+    timeout: 15000

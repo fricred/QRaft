@@ -7,7 +7,8 @@ enum QRType {
   wifi('wifi', 'wifi'),
   text('text', 'text'),
   email('email', 'email'),
-  location('location', 'geo');
+  location('location', 'geo'),
+  event('event', 'vevent');
 
   const QRType(this.translationKey, this.identifier);
 
@@ -31,6 +32,8 @@ extension QRTypeExtension on QRType {
         return l10n.qrTypeEmail;
       case QRType.location:
         return l10n.qrTypeLocation;
+      case QRType.event:
+        return l10n.qrTypeEvent;
     }
   }
 
@@ -49,6 +52,8 @@ extension QRTypeExtension on QRType {
         return l10n.qrTypeEmailDesc;
       case QRType.location:
         return l10n.qrTypeLocationDesc;
+      case QRType.event:
+        return l10n.qrTypeEventDesc;
     }
   }
 
@@ -66,6 +71,8 @@ extension QRTypeExtension on QRType {
         return 'email_rounded';
       case QRType.location:
         return 'location_on_rounded';
+      case QRType.event:
+        return 'event_rounded';
     }
   }
 
@@ -83,6 +90,8 @@ extension QRTypeExtension on QRType {
         return [0xFFF59E0B, 0xFFFBBF24];  // Amber gradient
       case QRType.location:
         return [0xFFF97316, 0xFFFB923C];  // Orange gradient
+      case QRType.event:
+        return [0xFF06B6D4, 0xFF22D3EE];  // Cyan gradient
     }
   }
 }

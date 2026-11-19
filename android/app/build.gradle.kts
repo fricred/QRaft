@@ -6,6 +6,7 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services")
 }
 
 val keystorePropertiesFile = rootProject.file("key.properties")
@@ -20,12 +21,11 @@ android {
     ndkVersion = "29.0.14033849"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        // Core library desugaring required by flutter_local_notifications
+        // (per https://pub.dev/packages/flutter_local_notifications#-android-setup)
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     signingConfigs {
@@ -43,7 +43,9 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
-        targetSdk = 35
+        // Google Play requires the target API level to stay within one year of the
+        // latest Android release; 35 stops accepting updates after 2026-08-31.
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -62,6 +64,23 @@ android {
     }
 }
 
+// Kotlin 2.3 removed the `kotlinOptions { jvmTarget = "…" }` DSL inside
+// android {}; the top-level compilerOptions DSL replaces it.
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+    }
+}
+
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Core library desugaring runtime — required by flutter_local_notifications 17.x
+    // when isCoreLibraryDesugaringEnabled = true.
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+
+    // Jetpack Glance — required by QrWidget (home-screen widget, QRD-03)
+    implementation("androidx.glance:glance-appwidget:1.1.1")
 }

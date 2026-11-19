@@ -40,18 +40,23 @@ import UIKit
   }
   
   // Handle deep links when app is already running
+  // Always forward to super as well: Flutter plugins (app_links, used by supabase_flutter
+  // to finish email-confirmation and password-recovery links, QRAFT-3) only receive the
+  // URL through the plugin registry. Returning early here silently dropped auth links.
   override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
     methodChannel?.invokeMethod("routeUpdated", arguments: url.absoluteString)
+    _ = super.application(app, open: url, options: options)
     return true
   }
-  
+
   // Handle universal links
   override func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
     if userActivity.activityType == NSUserActivityTypeBrowsingWeb,
        let url = userActivity.webpageURL {
       methodChannel?.invokeMethod("routeUpdated", arguments: url.absoluteString)
-      return true
+      _ = super.application(application, continue: userActivity, restorationHandler: restorationHandler)
+      return true  // handled by the app's own router
     }
-    return false
+    return super.application(application, continue: userActivity, restorationHandler: restorationHandler)
   }
 }

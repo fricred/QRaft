@@ -9,4 +9,9 @@ abstract class QRRemoteDataSource {
   Future<List<QRCodeModel>> getQRCodesByType(String userId, String type);
   Future<QRCodeModel> toggleFavorite(String qrCodeId, bool isFavorite);
   Future<List<QRCodeModel>> getFavoriteQRCodes(String userId);
+  Future<List<QRCodeModel>> getUserQRCodesPaginated(
+    String userId,
+    int page,
+    int pageSize,
+  );
 }

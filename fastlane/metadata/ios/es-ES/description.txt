@@ -1,0 +1,19 @@
+QRaft es la aplicación todo-en-uno para crear, personalizar y convertir tus códigos QR en objetos físicos de alta calidad.
+
+GENERA QRs PARA TODO
+Crea códigos QR para URLs, tarjetas de contacto vCard, redes WiFi, eventos, ubicaciones y texto libre. Personaliza colores, gradientes, estilos de módulos y agrega tu logo con corrección de error automática. Exporta como PNG o comparte con un solo toque. Los estilos con IA (Replicate API) generan diseños únicos con validación de escaneo obligatoria para garantizar que siempre funcionen.
+
+MARKETPLACE DE GRABADO LÁSER
+Lleva tu QR al mundo físico. Elige entre madera, acrílico, metal, cuero, vidrio y piedra. Visualiza en vivo cómo quedará tu diseño sobre el material seleccionado y haz tu pedido directamente desde la app. Pagos seguros con Wompi — tarjetas crédito/débito, PSE, Nequi y Daviplata en pesos colombianos. Sigue el estado de tu orden en tiempo real.
+
+TAMBIÉN DISPONIBLE
+- Tatuajes temporales y stencils con QR funcional
+- Servicio de redirects qraft.link: actualiza el destino de tu QR sin reimprimir
+- Importación masiva por CSV para generar múltiples QRs a la vez
+- Widget de pantalla de inicio (iOS WidgetKit)
+
+PREMIUM SIN LÍMITES
+QRaft Premium desbloquea QRs ilimitados, estilos con IA sin cuota mensual, importación masiva CSV y experiencia completamente libre de anuncios.
+
+LEGAL Y SEGURO
+Cumplimiento con la Ley 1480 (retracto y garantía) y la Ley 1581 (habeas data) de Colombia. Consentimiento publicitario conforme a las normas de privacidad aplicables. Firebase Crashlytics y Analytics integrados para una experiencia estable y confiable.

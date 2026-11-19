@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import '../../../domain/entities/qr_data_models.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -120,13 +121,12 @@ class EmailFormController extends StateNotifier<EmailFormState> {
   Future<bool> pickContactEmail() async {
     try {
       // Request permission to access contacts
-      if (await FlutterContacts.requestPermission()) {
+      if (await requestContactsRead()) {
         // Get all contacts with emails
-        final contacts = await FlutterContacts.getContacts(
-          withProperties: true,
-          withAccounts: false,
+        final contacts = await FlutterContacts.getAll(
+          properties: {ContactProperty.name, ContactProperty.email},
         );
-        
+
         // Filter contacts that have email addresses
         final contactsWithEmails = contacts
             .where((contact) => contact.emails.isNotEmpty)
@@ -147,12 +147,11 @@ class EmailFormController extends StateNotifier<EmailFormState> {
 
   Future<List<Contact>> getContactsWithEmails() async {
     try {
-      if (await FlutterContacts.requestPermission()) {
-        final contacts = await FlutterContacts.getContacts(
-          withProperties: true,
-          withAccounts: false,
+      if (await requestContactsRead()) {
+        final contacts = await FlutterContacts.getAll(
+          properties: {ContactProperty.name, ContactProperty.email},
         );
-        
+
         return contacts
             .where((contact) => contact.emails.isNotEmpty)
             .toList();
@@ -161,6 +160,16 @@ class EmailFormController extends StateNotifier<EmailFormState> {
     } catch (e) {
       return [];
     }
+  }
+
+  /// flutter_contacts 2.x replaced the boolean `requestPermission()` with a
+  /// typed permissions API, where `limited` (iOS partial access) is a distinct
+  /// status from `granted`. Reading is all this form needs.
+  Future<bool> requestContactsRead() async {
+    final status =
+        await FlutterContacts.permissions.request(PermissionType.read);
+    return status == PermissionStatus.granted ||
+        status == PermissionStatus.limited;
   }
 
   void setSelectedEmail(String email) {
@@ -503,7 +512,7 @@ class _EmailFormState extends ConsumerState<EmailForm> {
   Future<void> _handlePickContact(EmailFormController controller) async {
     try {
       // Check if permission is available first
-      if (!await FlutterContacts.requestPermission()) {
+      if (!await controller.requestContactsRead()) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -601,6 +610,8 @@ class _EmailFormState extends ConsumerState<EmailForm> {
               ),
               itemBuilder: (context, index) {
                 final contact = contacts[index];
+                // displayName is nullable as of flutter_contacts 2.x.
+                final displayName = contact.displayName ?? '';
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: contact.emails.map((email) {
@@ -609,8 +620,8 @@ class _EmailFormState extends ConsumerState<EmailForm> {
                       leading: CircleAvatar(
                         backgroundColor: const Color(0xFF1A73E8),
                         child: Text(
-                          contact.displayName.isNotEmpty 
-                              ? contact.displayName[0].toUpperCase()
+                          displayName.isNotEmpty
+                              ? displayName[0].toUpperCase()
                               : '?',
                           style: const TextStyle(
                             color: Colors.white,
@@ -619,8 +630,8 @@ class _EmailFormState extends ConsumerState<EmailForm> {
                         ),
                       ),
                       title: Text(
-                        contact.displayName.isNotEmpty 
-                            ? contact.displayName
+                        displayName.isNotEmpty
+                            ? displayName
                             : 'Unknown Contact',
                         style: const TextStyle(
                           color: Colors.white,

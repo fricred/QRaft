@@ -4,62 +4,50 @@
   "@appName": {
     "description": "The name of the application"
   },
-  
   "welcomeTitle": "Welcome to QRaft!",
   "@welcomeTitle": {
     "description": "Welcome screen main title"
   },
-  
   "welcomeSubtitle": "Your complete solution for custom QR codes",
   "@welcomeSubtitle": {
     "description": "Welcome screen subtitle"
   },
-  
   "featureCreateTitle": "Create Custom QR",
   "@featureCreateTitle": {
     "description": "Feature card title for QR creation"
   },
-  
   "featureCreateDescription": "Design and customize your own QR codes for any purpose.",
   "@featureCreateDescription": {
     "description": "Feature card description for QR creation"
   },
-  
   "featureShareTitle": "Share Easily",
   "@featureShareTitle": {
     "description": "Feature card title for sharing"
   },
-  
   "featureShareDescription": "Send your QR codes to your contacts or publish them on your social networks.",
   "@featureShareDescription": {
     "description": "Feature card description for sharing"
   },
-  
   "featureEngraveTitle": "Engrave on Materials",
   "@featureEngraveTitle": {
     "description": "Feature card title for engraving"
   },
-  
   "featureEngraveDescription": "Get your QR codes engraved on wood, metal and other quality materials.",
   "@featureEngraveDescription": {
     "description": "Feature card description for engraving"
   },
-  
   "getStarted": "Get Started",
   "@getStarted": {
     "description": "Primary button text to start using the app"
   },
-  
   "alreadyHaveAccount": "Already have an account? Sign In",
   "@alreadyHaveAccount": {
     "description": "Text for users who already have an account"
   },
-  
   "mainFeatures": "Main Features",
   "@mainFeatures": {
     "description": "Title for main features section"
   },
-  
   "welcomeBack": "Welcome Back",
   "@welcomeBack": {
     "description": "Login screen title"
@@ -68,160 +56,131 @@
   "@welcomeBackUser": {
     "description": "Welcome message with user name in dashboard",
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
-
   "signInToContinue": "Sign in to continue creating amazing QR codes",
   "@signInToContinue": {
     "description": "Login screen subtitle"
   },
-  
   "email": "Email",
   "@email": {
     "description": "Email field label"
   },
-  
   "enterEmail": "Enter your email",
   "@enterEmail": {
     "description": "Email field hint"
   },
-  
   "password": "Password",
   "@password": {
     "description": "Password field label"
   },
-  
   "enterPassword": "Enter your password",
   "@enterPassword": {
     "description": "Password field hint"
   },
-  
   "forgotPassword": "Forgot Password?",
   "@forgotPassword": {
     "description": "Forgot password link text"
   },
-  
   "signIn": "Sign In",
   "@signIn": {
     "description": "Sign in button text"
   },
-  
   "dontHaveAccount": "Don't have an account? Sign Up",
   "@dontHaveAccount": {
     "description": "Text for users who don't have an account"
   },
-  
   "createAccount": "Create Account",
   "@createAccount": {
     "description": "Sign up screen title"
   },
-  
   "joinQRaft": "Join QRaft and start creating amazing QR codes",
   "@joinQRaft": {
     "description": "Sign up screen subtitle"
   },
-  
   "fullName": "Full Name",
   "@fullName": {
     "description": "Full name field label"
   },
-  
   "enterFullName": "Enter your full name",
   "@enterFullName": {
     "description": "Full name field hint"
   },
-  
   "createPassword": "Create a password",
   "@createPassword": {
     "description": "Password creation field hint"
   },
-  
   "confirmPassword": "Confirm Password",
   "@confirmPassword": {
     "description": "Confirm password field label"
   },
-  
   "confirmPasswordHint": "Confirm your password",
   "@confirmPasswordHint": {
     "description": "Confirm password field hint"
   },
-  
   "agreeToTerms": "I agree to the Terms & Conditions and Privacy Policy",
   "@agreeToTerms": {
     "description": "Terms and conditions agreement text"
   },
-  
   "alreadyHaveAccountSignIn": "Already have an account? Sign In",
   "@alreadyHaveAccountSignIn": {
     "description": "Text for users who already have an account in sign up screen"
   },
-  
   "pleaseEnterEmail": "Please enter your email",
   "@pleaseEnterEmail": {
     "description": "Email validation error"
   },
-  
   "pleaseEnterValidEmail": "Please enter a valid email",
   "@pleaseEnterValidEmail": {
     "description": "Email format validation error"
   },
-  
   "pleaseEnterPassword": "Please enter your password",
   "@pleaseEnterPassword": {
     "description": "Password validation error"
   },
-  
   "passwordMinLength": "Password must be at least 6 characters",
   "@passwordMinLength": {
     "description": "Password minimum length validation error"
   },
-  
   "pleaseEnterName": "Please enter your name",
   "@pleaseEnterName": {
     "description": "Name validation error"
   },
-  
   "nameMinLength": "Name must be at least 2 characters",
   "@nameMinLength": {
     "description": "Name minimum length validation error"
   },
-  
   "passwordMinLengthSignUp": "Password must be at least 8 characters",
   "@passwordMinLengthSignUp": {
     "description": "Password minimum length validation error for sign up"
   },
-  
   "passwordMustContainUppercase": "Password must contain at least one uppercase letter",
   "@passwordMustContainUppercase": {
     "description": "Password uppercase validation error"
   },
-  
   "passwordMustContainLowercase": "Password must contain at least one lowercase letter",
   "@passwordMustContainLowercase": {
     "description": "Password lowercase validation error"
   },
-  
   "passwordMustContainNumber": "Password must contain at least one number",
   "@passwordMustContainNumber": {
     "description": "Password number validation error"
   },
-  
   "pleaseConfirmPassword": "Please confirm your password",
   "@pleaseConfirmPassword": {
     "description": "Confirm password validation error"
   },
-  
   "passwordsDoNotMatch": "Passwords do not match",
   "@passwordsDoNotMatch": {
     "description": "Password match validation error"
   },
-  
   "pleaseAgreeToTerms": "Please agree to Terms & Conditions",
   "@pleaseAgreeToTerms": {
     "description": "Terms agreement validation error"
   },
-  
   "loginAttempt": "Login attempt: {email}",
   "@loginAttempt": {
     "description": "Login attempt message",
@@ -232,7 +191,6 @@
       }
     }
   },
-  
   "accountCreated": "Account created for: {name}",
   "@accountCreated": {
     "description": "Account creation success message",
@@ -243,43 +201,35 @@
       }
     }
   },
-  
   "forgotPasswordComingSoon": "Forgot password functionality coming soon",
   "@forgotPasswordComingSoon": {
     "description": "Forgot password placeholder message"
   },
-  
   "loginSuccessful": "Login successful! Welcome back.",
   "@loginSuccessful": {
     "description": "Success message after successful login"
   },
-  
   "resetPassword": "Reset Password",
   "@resetPassword": {
     "description": "Reset password dialog title"
   },
-  
   "resetPasswordSubtitle": "Enter your email to receive reset link",
   "@resetPasswordSubtitle": {
     "description": "Reset password dialog subtitle"
   },
-  
   "enterEmailForReset": "Enter your email address",
   "@enterEmailForReset": {
     "description": "Placeholder text for email field in reset password dialog"
   },
-  
   "sendResetLink": "Send",
   "@sendResetLink": {
     "description": "Send reset link button text"
   },
-  
-  "emailSent": "Email Sent!",
+  "emailSent": "Check your email",
   "@emailSent": {
     "description": "Email sent success title"
   },
-  
-  "checkEmailForReset": "We've sent a password reset link to {email}. Please check your email and follow the instructions to reset your password.",
+  "checkEmailForReset": "If {email} has a QRaft account, we sent it a link to reset your password. Check your spam folder too.",
   "@checkEmailForReset": {
     "description": "Email sent success message",
     "placeholders": {
@@ -289,52 +239,42 @@
       }
     }
   },
-  
   "done": "Done",
   "@done": {
     "description": "Done button text"
   },
-
   "profile": "Profile",
   "@profile": {
     "description": "Profile screen title and navigation label"
   },
-
   "anonymousUser": "Anonymous User",
   "@anonymousUser": {
     "description": "Default display name for users without a name"
   },
-
   "noEmail": "No email",
   "@noEmail": {
     "description": "Default text when user has no email"
   },
-
   "changeProfilePhoto": "Change Profile Photo",
   "@changeProfilePhoto": {
     "description": "Title for profile photo change modal"
   },
-
   "choosePhotoSource": "Choose how you want to update your profile photo",
   "@choosePhotoSource": {
     "description": "Subtitle for profile photo change modal"
   },
-
   "updatingProfilePhoto": "Updating profile photo...",
   "@updatingProfilePhoto": {
     "description": "Loading message while uploading profile photo"
   },
-
   "profilePhotoUpdatedSuccess": "Profile photo updated successfully!",
   "@profilePhotoUpdatedSuccess": {
     "description": "Success message after profile photo update"
   },
-
   "profilePhotoUpdateFailed": "Failed to update profile photo. Please try again.",
   "@profilePhotoUpdateFailed": {
     "description": "Error message when profile photo update fails"
   },
-
   "error": "Error: {error}",
   "@error": {
     "description": "Generic error message with details",
@@ -345,7 +285,6 @@
       }
     }
   },
-
   "joinedDate": "Joined {date}",
   "@joinedDate": {
     "description": "User join date text",
@@ -356,12 +295,10 @@
       }
     }
   },
-
   "unknown": "Unknown",
   "@unknown": {
     "description": "Fallback text for unknown values"
   },
-
   "daysAgo": "{days} days ago",
   "@daysAgo": {
     "description": "Date format for days ago",
@@ -372,7 +309,6 @@
       }
     }
   },
-
   "monthsAgo": "{months} month{plural} ago",
   "@monthsAgo": {
     "description": "Date format for months ago",
@@ -387,7 +323,6 @@
       }
     }
   },
-
   "yearsAgo": "{years} year{plural} ago",
   "@yearsAgo": {
     "description": "Date format for years ago",
@@ -402,47 +337,38 @@
       }
     }
   },
-
   "personalInformation": "Personal Information",
   "@personalInformation": {
     "description": "Section title for personal information"
   },
-
   "displayName": "Display Name",
   "@displayName": {
     "description": "Label for display name field"
   },
-
   "phoneNumber": "Phone Number",
   "@phoneNumber": {
     "description": "Label for phone number field"
   },
-
   "bio": "Bio",
   "@bio": {
     "description": "Label for bio field"
   },
-
   "location": "Location",
   "@location": {
     "description": "Label for location field"
   },
-
   "website": "Website",
   "@website": {
     "description": "Label for website field"
   },
-
   "company": "Company",
   "@company": {
     "description": "Label for company field"
   },
-
   "jobTitle": "Job Title",
   "@jobTitle": {
     "description": "Label for job title field"
   },
-
   "enterField": "Enter {field}",
   "@enterField": {
     "description": "Hint text for input fields",
@@ -453,97 +379,78 @@
       }
     }
   },
-
   "notProvided": "Not provided",
   "@notProvided": {
     "description": "Text shown when a field has no value"
   },
-
   "statistics": "Statistics",
   "@statistics": {
     "description": "Section title for user statistics"
   },
-
   "qrCodes": "QR Codes",
   "@qrCodes": {
     "description": "Label for QR codes statistic"
   },
-
   "scans": "Scans",
   "@scans": {
     "description": "Label for scans statistic"
   },
-
   "orders": "Orders",
   "@orders": {
     "description": "Label for orders statistic"
   },
-
   "daysActive": "Days Active",
   "@daysActive": {
     "description": "Label for days active statistic"
   },
-
   "quickActions": "Quick Actions",
   "@quickActions": {
     "description": "Section title for quick actions"
   },
-
   "myQRCodes": "My QR Codes",
   "@myQRCodes": {
     "description": "Label for my QR codes action"
   },
-
   "scanHistory": "Scan History",
   "@scanHistory": {
     "description": "Label for scan history action"
   },
-
   "myOrders": "My Orders",
   "@myOrders": {
     "description": "Label for my orders action"
   },
-
   "shareProfile": "Share Profile",
   "@shareProfile": {
     "description": "Label for share profile action"
   },
-
   "exportData": "Export Data",
   "@exportData": {
     "description": "Title for export data action"
   },
-
   "exportDataDescription": "Download your QR codes and data",
   "@exportDataDescription": {
     "description": "Description for export data action"
   },
-
   "backupSync": "Backup & Sync",
   "@backupSync": {
     "description": "Title for backup and sync action"
   },
-
   "backupSyncDescription": "Backup your data to cloud",
   "@backupSyncDescription": {
     "description": "Description for backup and sync action"
   },
-
   "privacySecurity": "Privacy & Security",
   "@privacySecurity": {
     "description": "Title for privacy and security action"
   },
-
   "privacySecurityDescription": "Manage your privacy settings",
   "@privacySecurityDescription": {
     "description": "Description for privacy and security action"
   },
-
   "comingSoon": "Coming Soon",
   "@comingSoon": {
     "description": "Title for features that are not yet available"
   },
-
   "featureComingSoon": "{feature} will be available in a future update.",
   "@featureComingSoon": {
     "description": "Message for features that are coming soon",
@@ -554,22 +461,18 @@
       }
     }
   },
-
   "ok": "OK",
   "@ok": {
     "description": "OK button text"
   },
-
   "saving": "Saving...",
   "@saving": {
     "description": "Loading text while saving data"
   },
-
   "save": "Save",
   "@save": {
     "description": "Save button text"
   },
-
   "failedToUpdate": "Failed to update {field}: {error}",
   "@failedToUpdate": {
     "description": "Error message when updating a field fails",
@@ -584,120 +487,100 @@
       }
     }
   },
-
   "signOut": "Sign Out",
   "@signOut": {
     "description": "Sign out button text"
   },
-
   "settings": "Settings",
   "@settings": {
     "description": "Settings section title"
   },
-
   "language": "Language",
   "@language": {
     "description": "Language setting label"
   },
-
   "english": "English",
   "@english": {
     "description": "English language option"
   },
-
   "spanish": "Spanish",
   "@spanish": {
     "description": "Spanish language option"
   },
-
   "close": "Close",
   "@close": {
     "description": "Close button text"
   },
-
   "notifications": "Notifications",
   "@notifications": {
     "description": "Notifications setting label"
   },
-
   "permissionDeniedTitle": "{permissionType} Permission",
   "@permissionDeniedTitle": {
     "description": "Title for permission denied dialog with permission type",
     "placeholders": {
-      "permissionType": {"type": "String"}
+      "permissionType": {
+        "type": "String"
+      }
     }
   },
-
   "pushNotifications": "Push notifications",
   "@pushNotifications": {
     "description": "Push notifications setting description"
   },
-
   "privacy": "Privacy",
   "@privacy": {
     "description": "Privacy setting label"
   },
-
   "dataPrivacySettings": "Data and privacy settings",
   "@dataPrivacySettings": {
     "description": "Data and privacy setting description"
   },
-
   "helpSupport": "Help & Support",
   "@helpSupport": {
     "description": "Help and support setting label"
   },
-
   "helpSupportDescription": "Get help and contact support",
   "@helpSupportDescription": {
     "description": "Help and support setting description"
   },
-
   "signOutConfirm": "Are you sure you want to sign out of your account?",
   "@signOutConfirm": {
     "description": "Sign out confirmation dialog message"
   },
-
   "signingOut": "Signing out...",
   "@signingOut": {
     "description": "Loading text while signing out"
   },
-
   "signOutFailed": "Failed to sign out. Please try again.",
   "@signOutFailed": {
     "description": "Error message when sign out fails"
   },
-
   "selectPhotoSource": "Select Photo Source",
   "@selectPhotoSource": {
     "description": "Default title for image source selector"
   },
-
   "choosePhotoMethod": "Choose how you want to add your photo",
   "@choosePhotoMethod": {
     "description": "Default subtitle for image source selector"
   },
-
   "camera": "Camera",
   "@camera": {
     "description": "Camera option in image source selector"
   },
-
   "takeNewPhoto": "Take a new photo",
   "@takeNewPhoto": {
     "description": "Camera option description"
   },
-
   "gallery": "Gallery",
+  "noQRFoundInImage": "We couldn't find a QR code in that photo. Try an image where the code is fully visible and in focus.",
   "@gallery": {
     "description": "Gallery option in image source selector"
   },
-
   "chooseFromPhotos": "Choose from photos",
   "@chooseFromPhotos": {
     "description": "Gallery option description"
   },
-
   "failedToLoadProfile": "Failed to load profile: {error}",
   "@failedToLoadProfile": {
     "description": "Error message when profile loading fails",
@@ -708,7 +591,6 @@
       }
     }
   },
-
   "failedToUpdateProfile": "Failed to update profile: {error}",
   "@failedToUpdateProfile": {
     "description": "Error message when profile update fails",
@@ -719,7 +601,6 @@
       }
     }
   },
-
   "failedToUpdateProfilePhoto": "Failed to update profile photo: {error}",
   "@failedToUpdateProfilePhoto": {
     "description": "Error message when profile photo update fails",
@@ -730,362 +611,298 @@
       }
     }
   },
-
   "cameraPermissionDenied": "QRaft needs access to your camera to take photos for your profile picture. Please allow camera permission in your device settings.",
   "@cameraPermissionDenied": {
     "description": "Error message when camera permission is denied"
   },
-
   "galleryPermissionDenied": "QRaft needs access to your photo library to select images for your profile picture. Please allow storage permission in your device settings.",
   "@galleryPermissionDenied": {
     "description": "Error message when gallery permission is denied"
   },
-
   "imageSelectionCancelled": "Image selection was cancelled.",
   "@imageSelectionCancelled": {
     "description": "Message when user cancels image selection"
   },
-
   "retry": "Retry",
   "@retry": {
     "description": "Retry button text"
   },
-
   "cropImage": "Crop Image",
   "@cropImage": {
     "description": "Title for crop image screen"
   },
-
   "crop": "Crop",
   "@crop": {
     "description": "Crop button text"
   },
-
   "cancel": "Cancel",
   "@cancel": {
     "description": "Cancel button text"
   },
-
   "rotateLeft": "Rotate Left",
   "@rotateLeft": {
     "description": "Rotate left button text"
   },
-
   "rotateRight": "Rotate Right",
   "@rotateRight": {
     "description": "Rotate right button text"
   },
-
   "cropInstruction": "Adjust the crop area by dragging the corners",
   "@cropInstruction": {
     "description": "Instruction text for cropping"
   },
-
   "cropFailed": "Failed to crop image. Please try again.",
   "@cropFailed": {
     "description": "Error message when image cropping fails"
   },
-
   "processingImage": "Processing image...",
   "@processingImage": {
     "description": "Loading text while processing image"
   },
-
   "qrScanner": "QR Scanner",
   "@qrScanner": {
     "description": "QR Scanner screen title"
   },
-
   "pointCameraAtQR": "Point camera at QR code to scan",
   "@pointCameraAtQR": {
     "description": "Instruction text for QR scanner"
   },
-
   "copy": "Copy",
   "@copy": {
     "description": "Copy button text"
   },
-
   "clearAll": "Clear All",
   "@clearAll": {
     "description": "Clear all button text"
   },
-
   "clearAllHistory": "Clear All History",
   "@clearAllHistory": {
     "description": "Clear all history dialog title"
   },
-
   "clearAllHistoryConfirm": "Are you sure you want to clear all scan history? This action cannot be undone.",
   "@clearAllHistoryConfirm": {
     "description": "Clear all history confirmation message"
   },
-
   "noScansYet": "No Scans Yet",
   "@noScansYet": {
     "description": "Empty state title when no scans exist"
   },
-
   "startScanningToSeeHistory": "Start scanning QR codes to see your history here",
   "@startScanningToSeeHistory": {
     "description": "Empty state subtitle when no scans exist"
   },
-
   "startScanning": "Start Scanning",
   "@startScanning": {
     "description": "Button text to start scanning"
   },
-
   "createQRCode": "Create QR Code",
   "@createQRCode": {
     "description": "QR Generation screen title"
   },
-
   "chooseQRType": "Choose the type of QR code you want to create",
   "@chooseQRType": {
     "description": "QR Generation subtitle"
   },
-
   "qrFormWebsiteUrl": "Website URL",
   "@qrFormWebsiteUrl": {
     "description": "Website URL form title"
   },
-
   "qrFormWebsiteSubtitle": "Create a QR code that opens a website",
   "@qrFormWebsiteSubtitle": {
     "description": "Website URL form subtitle"
   },
-
   "urlFieldLabel": "Website URL",
   "@urlFieldLabel": {
     "description": "URL field label in QR form"
   },
-
   "urlFieldPlaceholder": "https://example.com",
   "@urlFieldPlaceholder": {
     "description": "URL field placeholder"
   },
-
   "continueButton": "Continue",
   "@continueButton": {
     "description": "Continue button text"
   },
-
   "urlValidationEmpty": "Please enter a URL",
   "@urlValidationEmpty": {
     "description": "URL validation error - empty field"
   },
-
   "urlValidationSpaces": "URL cannot contain spaces",
   "@urlValidationSpaces": {
     "description": "URL validation error - contains spaces"
   },
-
   "urlValidationInvalid": "Please enter a valid URL",
   "@urlValidationInvalid": {
     "description": "URL validation error - invalid format"
   },
-
   "urlValidationDomain": "Please enter a valid domain",
   "@urlValidationDomain": {
     "description": "URL validation error - invalid domain"
   },
-
   "customizeQR": "Customize Your QR",
   "@customizeQR": {
     "description": "QR Customization screen title"
   },
-
   "customizeQRSubtitle": "Make your QR code unique",
   "@customizeQRSubtitle": {
     "description": "QR Customization subtitle"
   },
-
   "foregroundColor": "Foreground Color",
   "@foregroundColor": {
     "description": "Foreground color section title"
   },
-
   "backgroundColor": "Background Color",
   "@backgroundColor": {
     "description": "Background color section title"
   },
-
   "eyeColor": "Eye Color",
   "@eyeColor": {
     "description": "Eye color section title"
   },
-
   "qrSize": "Size",
   "@qrSize": {
     "description": "QR size section title"
   },
-
   "templates": "Templates",
   "@templates": {
     "description": "Template selection title"
   },
-
   "logo": "Logo",
   "@logo": {
     "description": "Logo section title"
   },
-
   "addLogo": "Add Logo",
   "@addLogo": {
     "description": "Add logo button text"
   },
-
   "removeLogo": "Remove Logo",
   "@removeLogo": {
     "description": "Remove logo button text"
   },
-
   "preview": "Preview",
   "@preview": {
     "description": "Preview button text"
   },
-
   "generateQR": "Generate QR",
   "@generateQR": {
     "description": "Generate QR button text"
   },
-
   "qrFormCompleteFields": "Complete all fields correctly to continue",
   "@qrFormCompleteFields": {
     "description": "Message shown when form fields are incomplete"
   },
-
   "qrFormStepEnterInfo": "Enter information",
   "@qrFormStepEnterInfo": {
     "description": "Step 1 title for QR form"
   },
-
   "qrFormStepCustomize": "Customize appearance",
   "@qrFormStepCustomize": {
     "description": "Step 2 title for QR form"
   },
-
   "qrFormStepPreviewSave": "Preview & save",
   "@qrFormStepPreviewSave": {
     "description": "Step 3 title for QR form"
   },
-
   "qrFormButtonContinue": "Continue",
   "@qrFormButtonContinue": {
     "description": "Continue button text in QR form"
   },
-
   "qrFormButtonPreview": "Preview",
   "@qrFormButtonPreview": {
     "description": "Preview button text in QR form"
   },
-
   "qrFormButtonSave": "Save QR Code",
   "@qrFormButtonSave": {
     "description": "Save button text in QR form"
   },
-
   "generateQRTitle": "Generate QR",
   "@generateQRTitle": {
     "description": "QR Generator screen main title"
   },
-
   "generateQRSubtitle": "Create QR codes for various purposes",
   "@generateQRSubtitle": {
     "description": "QR Generator screen subtitle"
   },
-
   "templateLibrary": "Template Library",
   "@templateLibrary": {
     "description": "Template library section title"
   },
-
   "templateLibraryDescription": "Browse pre-designed QR templates",
   "@templateLibraryDescription": {
     "description": "Template library section description"
   },
-
   "qrTypePersonalInfo": "Personal Info",
   "@qrTypePersonalInfo": {
     "description": "Personal info QR type name"
   },
-
   "qrTypePersonalInfoDesc": "Contact details\nvCard format",
   "@qrTypePersonalInfoDesc": {
     "description": "Personal info QR type description"
   },
-
   "qrTypeWebsiteUrl": "Website URL",
   "@qrTypeWebsiteUrl": {
     "description": "Website URL QR type name"
   },
-
   "qrTypeWebsiteUrlDesc": "Links to websites\nand web pages",
   "@qrTypeWebsiteUrlDesc": {
     "description": "Website URL QR type description"
   },
-
   "qrTypeWifi": "WiFi Network",
   "@qrTypeWifi": {
     "description": "WiFi QR type name"
   },
-
   "qrTypeWifiDesc": "Share WiFi\ncredentials easily",
   "@qrTypeWifiDesc": {
     "description": "WiFi QR type description"
   },
-
   "qrTypeText": "Text Message",
   "@qrTypeText": {
     "description": "Text QR type name"
   },
-
   "qrTypeTextDesc": "Plain text content\nfor any purpose",
   "@qrTypeTextDesc": {
     "description": "Text QR type description"
   },
-
   "qrTypeEmail": "Email",
   "@qrTypeEmail": {
     "description": "Email QR type name"
   },
-
   "qrTypeEmailDesc": "Send email with\npre-filled content",
   "@qrTypeEmailDesc": {
     "description": "Email QR type description"
   },
-
   "qrTypeLocation": "Location",
   "@qrTypeLocation": {
     "description": "Location QR type name"
   },
-
   "qrTypeLocationDesc": "GPS coordinates\nand map points",
   "@qrTypeLocationDesc": {
     "description": "Location QR type description"
   },
-
+  "qrTypeEvent": "Event",
+  "@qrTypeEvent": {
+    "description": "Event QR type name"
+  },
+  "qrTypeEventDesc": "Calendar event with date,\ntime, and location",
+  "@qrTypeEventDesc": {
+    "description": "Event QR type description"
+  },
   "styleColors": "Colors",
   "@styleColors": {
     "description": "Style section colors title"
   },
-
   "backToQRTypes": "Back to QR Types",
   "@backToQRTypes": {
     "description": "Button text to go back to QR type selection"
   },
-
   "plannedFeatures": "Planned Features",
   "@plannedFeatures": {
     "description": "Title for planned features section"
   },
-
   "expectedInNextUpdate": "Expected in next major update",
   "@expectedInNextUpdate": {
     "description": "Text indicating feature will be available in next update"
   },
-
   "qrCodeSizeLabel": "QR Code Size: {size}px",
   "@qrCodeSizeLabel": {
     "description": "Label showing QR code size",
@@ -1096,322 +913,258 @@
       }
     }
   },
-
   "logoAdded": "Logo Added",
   "@logoAdded": {
     "description": "Text shown when logo is added"
   },
-
   "noLogo": "No Logo",
   "@noLogo": {
     "description": "Text shown when no logo is present"
   },
-
   "logoDescription": "Add a logo to personalize your QR",
   "@logoDescription": {
     "description": "Description for logo functionality"
   },
-
   "logoAddedDescription": "Tap to change or remove",
   "@logoAddedDescription": {
     "description": "Description when logo is already added"
   },
-
   "changeLogo": "Change",
   "@changeLogo": {
     "description": "Button text to change logo"
   },
-
   "logoUpdateSuccess": "Logo updated successfully!",
   "@logoUpdateSuccess": {
     "description": "Success message when logo is updated"
   },
-
   "viewFullSize": "View Full Size",
   "@viewFullSize": {
     "description": "Button text to view QR code at full size"
   },
-
   "personalInfoFormTitle": "Personal Information",
   "@personalInfoFormTitle": {
     "description": "Personal info form title"
   },
-
   "personalInfoFormSubtitle": "Create a vCard with your contact information",
   "@personalInfoFormSubtitle": {
-    "description": "Personal info form subtitle"  
+    "description": "Personal info form subtitle"
   },
-
   "qrCodeNameLabel": "QR Code Name *",
   "@qrCodeNameLabel": {
     "description": "QR code name field label"
   },
-
   "qrCodeNameHint": "My Contact Card",
   "@qrCodeNameHint": {
     "description": "QR code name field hint"
   },
-
   "firstName": "First Name *",
   "@firstName": {
     "description": "First name field label"
   },
-
   "firstNameHint": "John",
   "@firstNameHint": {
     "description": "First name field hint"
   },
-
   "lastName": "Last Name *",
   "@lastName": {
     "description": "Last name field label"
   },
-
   "lastNameHint": "Doe",
   "@lastNameHint": {
     "description": "Last name field hint"
   },
-
   "organization": "Organization",
   "@organization": {
     "description": "Organization field label"
   },
-
   "organizationHint": "Acme Corporation",
   "@organizationHint": {
     "description": "Organization field hint"
   },
-
   "phoneHint": "(555) 123-4567",
   "@phoneHint": {
     "description": "Phone field hint"
   },
-
   "emailHint": "john@example.com",
   "@emailHint": {
     "description": "Email field hint"
   },
-
   "websiteHint": "https://johndoe.com",
   "@websiteHint": {
     "description": "Website field hint"
   },
-
   "address": "Address",
   "@address": {
     "description": "Address field label"
   },
-
   "addressHint": "123 Main St, City, State 12345",
   "@addressHint": {
     "description": "Address field hint"
   },
-
   "note": "Note",
   "@note": {
     "description": "Note field label"
   },
-
   "noteHint": "Additional information...",
   "@noteHint": {
     "description": "Note field hint"
   },
-
   "requiredFieldsMessage": "Please fill in all required fields (*)",
   "@requiredFieldsMessage": {
     "description": "Message for required fields validation"
   },
-
   "searchCountry": "Search country",
   "@searchCountry": {
     "description": "Hint text for country search in phone input"
   },
-
   "emailFormTitle": "Email",
   "@emailFormTitle": {
     "description": "Email form title"
   },
-
   "emailFormSubtitle": "Create QR code for sending pre-filled email",
   "@emailFormSubtitle": {
     "description": "Email form subtitle"
   },
-
   "emailQrNameHint": "Email QR",
   "@emailQrNameHint": {
     "description": "Email QR name field hint"
   },
-
   "emailRecipientLabel": "Email Address *",
   "@emailRecipientLabel": {
     "description": "Email recipient field label"
   },
-
   "emailRecipientHint": "recipient@example.com",
   "@emailRecipientHint": {
     "description": "Email recipient field hint"
   },
-
   "emailSubjectLabel": "Subject",
   "@emailSubjectLabel": {
     "description": "Email subject field label"
   },
-
   "emailSubjectHint": "Email subject...",
   "@emailSubjectHint": {
     "description": "Email subject field hint"
   },
-
   "emailBodyLabel": "Message",
   "@emailBodyLabel": {
     "description": "Email body field label"
   },
-
   "emailBodyHint": "Type your message here...",
   "@emailBodyHint": {
     "description": "Email body field hint"
   },
-
   "wifiNetworkDetails": "WiFi Network Details",
   "@wifiNetworkDetails": {
     "description": "WiFi form section title"
   },
-
   "wifiFormDescription": "Enter WiFi network details to create a QR code for easy sharing",
   "@wifiFormDescription": {
     "description": "WiFi form description text"
   },
-
   "networkNameLabel": "Network Name (SSID) *",
   "@networkNameLabel": {
     "description": "WiFi network name field label"
   },
-
   "networkNameHint": "Enter WiFi network name",
   "@networkNameHint": {
     "description": "WiFi network name field hint"
   },
-
   "wifiPasswordLabel": "Password *",
   "@wifiPasswordLabel": {
     "description": "WiFi password field label"
   },
-
   "wifiPasswordHint": "Enter WiFi password",
   "@wifiPasswordHint": {
     "description": "WiFi password field hint"
   },
-
   "securityType": "Security Type",
   "@securityType": {
     "description": "WiFi security type section title"
   },
-
   "securityWpaRecommended": "WPA/WPA2 (Recommended)",
   "@securityWpaRecommended": {
     "description": "WPA security type option"
   },
-
   "securityWepLegacy": "WEP (Legacy)",
   "@securityWepLegacy": {
     "description": "WEP security type option"
   },
-
   "securityOpenNetwork": "Open Network (No Password)",
   "@securityOpenNetwork": {
     "description": "Open network security type option"
   },
-
   "hiddenNetwork": "Hidden Network",
   "@hiddenNetwork": {
     "description": "Hidden network toggle label"
   },
-
   "hiddenNetworkDescription": "Network name is not broadcasted publicly",
   "@hiddenNetworkDescription": {
     "description": "Hidden network toggle description"
   },
-
   "networkNameRequired": "Network name is required",
   "@networkNameRequired": {
     "description": "Network name validation error"
   },
-
   "networkNameTooLong": "Network name must be 32 characters or less",
   "@networkNameTooLong": {
     "description": "Network name length validation error"
   },
-
   "passwordRequiredForSecuredNetworks": "Password is required for secured networks",
   "@passwordRequiredForSecuredNetworks": {
     "description": "Password validation error for secured networks"
   },
-
   "passwordTooLong": "Password must be 63 characters or less",
   "@passwordTooLong": {
     "description": "Password length validation error"
   },
-
   "qrCodeSizeTitle": "QR Code Size",
   "@qrCodeSizeTitle": {
     "description": "QR code size slider title"
   },
-
   "sizeSmall": "Small",
   "@sizeSmall": {
     "description": "Small size label"
   },
-
   "sizeMedium": "Medium",
   "@sizeMedium": {
     "description": "Medium size label"
   },
-
   "sizeLarge": "Large",
   "@sizeLarge": {
     "description": "Large size label"
   },
-
   "logoAddedTitle": "Logo Added",
   "@logoAddedTitle": {
     "description": "Title when logo is added"
   },
-
   "noLogoTitle": "No Logo",
   "@noLogoTitle": {
     "description": "Title when no logo is present"
   },
-
   "logoWillAppearInCenter": "Your logo will appear in the center of the QR code",
   "@logoWillAppearInCenter": {
     "description": "Description for added logo"
   },
-
   "addLogoToPersonalize": "Add a logo to personalize your QR code",
   "@addLogoToPersonalize": {
     "description": "Description to encourage logo addition"
   },
-
   "remove": "Remove",
   "@remove": {
     "description": "Remove button text"
   },
-
   "change": "Change",
   "@change": {
     "description": "Change button text"
   },
-
   "completeFormToSeePreview": "Complete form\nto see preview",
   "@completeFormToSeePreview": {
     "description": "Preview placeholder text when form is incomplete"
   },
-
   "logoUpdatedSuccessfully": "Logo updated successfully!",
   "@logoUpdatedSuccessfully": {
     "description": "Success message when logo is updated"
   },
-
   "failedToPickImage": "Failed to pick image: {error}",
   "@failedToPickImage": {
     "description": "Error message when image picker fails",
@@ -1422,132 +1175,106 @@
       }
     }
   },
-
   "locationFormTitle": "Location Details",
   "@locationFormTitle": {
     "description": "Location form section title"
   },
-
   "locationFormDescription": "Share your location or any GPS coordinates with a QR code",
   "@locationFormDescription": {
     "description": "Location form description text"
   },
-
   "locationNameLabel": "Location Name",
   "@locationNameLabel": {
     "description": "Location name field label"
   },
-
   "locationNameHint": "My Location",
   "@locationNameHint": {
     "description": "Location name field hint"
   },
-
   "locationNameRequired": "Location name is required",
   "@locationNameRequired": {
     "description": "Location name validation error"
   },
-
   "locationNameTooShort": "Location name must be at least 2 characters",
   "@locationNameTooShort": {
     "description": "Location name minimum length validation error"
   },
-
   "latitudeLabel": "Latitude *",
   "@latitudeLabel": {
     "description": "Latitude field label"
   },
-
   "latitudeHint": "40.7128",
   "@latitudeHint": {
     "description": "Latitude field hint"
   },
-
   "longitudeLabel": "Longitude *",
   "@longitudeLabel": {
     "description": "Longitude field label"
   },
-
   "longitudeHint": "-74.0060",
   "@longitudeHint": {
     "description": "Longitude field hint"
   },
-
   "useCurrentLocation": "Use Current Location",
   "@useCurrentLocation": {
     "description": "Button text to use current location"
   },
-
   "pickFromMap": "Pick from Map",
   "@pickFromMap": {
     "description": "Button text to pick location from map"
   },
-
   "locationOptions": "Location Options",
   "@locationOptions": {
     "description": "Location options section title"
   },
-
   "manualEntry": "Manual Entry",
   "@manualEntry": {
     "description": "Manual entry option title"
   },
-
   "manualEntryDesc": "Enter coordinates manually",
   "@manualEntryDesc": {
     "description": "Manual entry option description"
   },
-
   "currentLocationDesc": "Use device GPS location",
   "@currentLocationDesc": {
     "description": "Current location option description"
   },
-
   "mapLocationDesc": "Select point on interactive map",
   "@mapLocationDesc": {
     "description": "Map location option description"
   },
-
   "latitudeRequired": "Latitude is required",
   "@latitudeRequired": {
     "description": "Latitude validation error"
   },
-
   "longitudeRequired": "Longitude is required",
   "@longitudeRequired": {
     "description": "Longitude validation error"
   },
-
   "latitudeInvalid": "Please enter a valid latitude (-90 to 90)",
   "@latitudeInvalid": {
     "description": "Latitude validation error for invalid range"
   },
-
   "longitudeInvalid": "Please enter a valid longitude (-180 to 180)",
   "@longitudeInvalid": {
     "description": "Longitude validation error for invalid range"
   },
-
   "locationPermissionRequired": "Location permission is required to use current location",
   "@locationPermissionRequired": {
     "description": "Error message when location permission is needed"
   },
-
   "locationServiceDisabled": "Location services are disabled. Please enable them in settings",
   "@locationServiceDisabled": {
     "description": "Error message when location services are disabled"
   },
-
   "gettingCurrentLocation": "Getting current location...",
   "@gettingCurrentLocation": {
     "description": "Loading message while getting current location"
   },
-
   "locationObtained": "Location obtained successfully!",
   "@locationObtained": {
     "description": "Success message when location is obtained"
   },
-
   "failedToGetLocation": "Failed to get current location: {error}",
   "@failedToGetLocation": {
     "description": "Error message when getting location fails",
@@ -1558,202 +1285,166 @@
       }
     }
   },
-
   "selectLocationOnMap": "Select Location on Map",
   "@selectLocationOnMap": {
     "description": "Map picker screen title"
   },
-
   "tapMapToSelectLocation": "Tap on the map to select a location",
   "@tapMapToSelectLocation": {
     "description": "Map picker instruction"
   },
-
   "confirmLocation": "Confirm Location",
   "@confirmLocation": {
     "description": "Button text to confirm selected location"
   },
-
   "selectedLocation": "Selected Location",
   "@selectedLocation": {
     "description": "Label for selected location info"
   },
-
   "currentLocationFound": "Current location found",
   "@currentLocationFound": {
     "description": "Success message when current location is found"
   },
-  
   "usingDefaultLocation": "Using default location - tap to select",
   "@usingDefaultLocation": {
     "description": "Message when using default location"
   },
-  
   "useCurrent": "Use Current Location",
   "@useCurrent": {
     "description": "Button text to use current location as selected"
   },
-
   "mapLoadingError": "Failed to load map. Please check your internet connection",
   "@mapLoadingError": {
     "description": "Error message when map fails to load"
   },
-
   "qrLibrary": "QR Library",
   "@qrLibrary": {
     "description": "QR Library screen title"
   },
-
   "manageQRCodes": "Manage your QR codes",
   "@manageQRCodes": {
     "description": "QR Library subtitle"
   },
-
   "myQRs": "My QRs",
   "@myQRs": {
     "description": "My QRs tab title"
   },
-
   "favorites": "Favorites",
   "@favorites": {
     "description": "Favorites tab title"
   },
-
   "recent": "Recent",
   "@recent": {
     "description": "Recent tab title"
   },
-
   "totalQRs": "Total QRs",
   "@totalQRs": {
     "description": "Total QR codes statistic label"
   },
-
   "thisMonth": "This Month",
   "@thisMonth": {
     "description": "This month statistic label"
   },
-
   "noQRCodesYet": "No QR Codes Yet",
   "@noQRCodesYet": {
     "description": "Empty state title when no QR codes exist"
   },
-
   "createFirstQRCode": "Create your first QR code to see it here",
   "@createFirstQRCode": {
     "description": "Empty state subtitle when no QR codes exist"
   },
-
   "noQRCodesFound": "No QR Codes Found",
   "@noQRCodesFound": {
     "description": "Empty state title when search returns no results"
   },
-
   "clearFilters": "Clear Filters",
   "@clearFilters": {
     "description": "Button text to clear search filters"
   },
-
   "tryDifferentSearchTerm": "Try a different search term",
   "@tryDifferentSearchTerm": {
     "description": "Hint text when search returns no results"
   },
-
   "filterAll": "All",
   "@filterAll": {
     "description": "Filter chip label for all QR types"
   },
-
   "filterUrl": "URL",
   "@filterUrl": {
     "description": "Filter chip label for URL QR type"
   },
-
   "filterWifi": "WiFi",
   "@filterWifi": {
     "description": "Filter chip label for WiFi QR type"
   },
-
   "filterEmail": "Email",
   "@filterEmail": {
     "description": "Filter chip label for Email QR type"
   },
-
   "filterVcard": "vCard",
   "@filterVcard": {
     "description": "Filter chip label for vCard QR type"
   },
-
   "filterLocation": "Location",
   "@filterLocation": {
     "description": "Filter chip label for Location QR type"
   },
-
   "filterText": "Text",
   "@filterText": {
     "description": "Filter chip label for Text QR type"
   },
-
+  "filterEvent": "Event",
+  "@filterEvent": {
+    "description": "Filter chip label for Event (iCal) QR type"
+  },
   "noFavoritesYet": "No Favorites Yet",
   "@noFavoritesYet": {
     "description": "Empty state title when no favorite QR codes exist"
   },
-
   "starFavoriteQRCodes": "Star your favorite QR codes to see them here",
   "@starFavoriteQRCodes": {
     "description": "Empty state subtitle for favorites tab"
   },
-
   "noRecentQRs": "No Recent QRs",
   "@noRecentQRs": {
     "description": "Empty state title when no recent QR codes exist"
   },
-
   "recentQRCodesAppearHere": "Your recently created QR codes will appear here",
   "@recentQRCodesAppearHere": {
     "description": "Empty state subtitle for recent tab"
   },
-
   "searchQRCodes": "Search QR Codes",
   "@searchQRCodes": {
     "description": "Search dialog title"
   },
-
   "searchByNameTypeContent": "Search by name, type, or content...",
   "@searchByNameTypeContent": {
     "description": "Search input placeholder text"
   },
-
   "search": "Search",
   "@search": {
     "description": "Search button text"
   },
-
   "searchFunctionalityComingSoon": "Search functionality will be implemented soon",
   "@searchFunctionalityComingSoon": {
     "description": "Search not implemented message"
   },
-
   "edit": "Edit",
   "@edit": {
     "description": "Edit action text"
   },
-
   "delete": "Delete",
   "@delete": {
     "description": "Delete action text"
   },
-
   "share": "Share",
   "@share": {
     "description": "Share action text"
   },
-
   "deleteQRCode": "Delete QR Code",
   "@deleteQRCode": {
     "description": "Delete confirmation dialog title"
   },
-
   "deleteQRConfirmation": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
   "@deleteQRConfirmation": {
     "description": "Delete confirmation dialog message",
@@ -1764,7 +1455,6 @@
       }
     }
   },
-
   "addedToFavorites": "Added \"{name}\" to favorites!",
   "@addedToFavorites": {
     "description": "Success message when QR added to favorites",
@@ -1775,7 +1465,6 @@
       }
     }
   },
-
   "removedFromFavorites": "Removed \"{name}\" from favorites",
   "@removedFromFavorites": {
     "description": "Success message when QR removed from favorites",
@@ -1786,7 +1475,6 @@
       }
     }
   },
-
   "failedToUpdateFavorite": "Failed to update favorite: {error}",
   "@failedToUpdateFavorite": {
     "description": "Error message when favorite update fails",
@@ -1797,7 +1485,6 @@
       }
     }
   },
-
   "sharingQRCode": "Sharing \"{name}\" QR code...",
   "@sharingQRCode": {
     "description": "Message when sharing QR code",
@@ -1808,7 +1495,6 @@
       }
     }
   },
-
   "editFunctionalityComingSoon": "Edit functionality for \"{name}\" coming soon!",
   "@editFunctionalityComingSoon": {
     "description": "Message when edit is not yet implemented",
@@ -1819,7 +1505,6 @@
       }
     }
   },
-
   "deletedSuccessfully": "\"{name}\" deleted successfully",
   "@deletedSuccessfully": {
     "description": "Success message when QR deleted",
@@ -1830,7 +1515,6 @@
       }
     }
   },
-
   "failedToDeleteQRCode": "Failed to delete QR code: {error}",
   "@failedToDeleteQRCode": {
     "description": "Error message when QR deletion fails",
@@ -1841,17 +1525,14 @@
       }
     }
   },
-
   "shareFunctionalityComingSoon": "Share functionality will be implemented soon",
   "@shareFunctionalityComingSoon": {
     "description": "Share not implemented message"
   },
-
   "justNow": "Just now",
   "@justNow": {
     "description": "Time format for very recent items"
   },
-
   "minutesAgo": "{minutes}m ago",
   "@minutesAgo": {
     "description": "Time format for minutes ago",
@@ -1862,7 +1543,6 @@
       }
     }
   },
-
   "hoursAgo": "{hours}h ago",
   "@hoursAgo": {
     "description": "Time format for hours ago",
@@ -1873,7 +1553,6 @@
       }
     }
   },
-
   "daysAgoShort": "{days}d ago",
   "@daysAgoShort": {
     "description": "Time format for days ago (short version)",
@@ -1884,92 +1563,74 @@
       }
     }
   },
-
   "type": "Type",
   "@type": {
     "description": "Label for QR code type"
   },
-
   "editProfile": "Edit Profile",
   "@editProfile": {
     "description": "Edit profile button and modal title"
   },
-
   "saveChanges": "Save Changes",
   "@saveChanges": {
     "description": "Save changes button text"
   },
-
   "discardChanges": "Discard changes?",
   "@discardChanges": {
     "description": "Discard changes dialog title"
   },
-
   "discardChangesMessage": "You have unsaved changes. Are you sure you want to discard them?",
   "@discardChangesMessage": {
     "description": "Discard changes dialog message"
   },
-
   "keepEditing": "Keep Editing",
   "@keepEditing": {
     "description": "Keep editing button in discard dialog"
   },
-
   "discard": "Discard",
   "@discard": {
     "description": "Discard button in discard dialog"
   },
-
   "personalDetails": "PERSONAL DETAILS",
   "@personalDetails": {
     "description": "Personal details section title in edit profile"
   },
-
   "workAndSocial": "WORK & SOCIAL",
   "@workAndSocial": {
     "description": "Work and social section title in edit profile"
   },
-
   "profileUpdatedSuccess": "Profile updated successfully",
   "@profileUpdatedSuccess": {
     "description": "Success message when profile is updated"
   },
-
   "enterDisplayName": "Enter your name",
   "@enterDisplayName": {
     "description": "Hint text for display name field"
   },
-
   "enterPhoneNumber": "+1 234 567 8900",
   "@enterPhoneNumber": {
     "description": "Hint text for phone number field"
   },
-
   "enterBio": "Tell us about yourself...",
   "@enterBio": {
     "description": "Hint text for bio field"
   },
-
   "enterLocation": "City, Country",
   "@enterLocation": {
     "description": "Hint text for location field"
   },
-
   "enterCompany": "Your company name",
   "@enterCompany": {
     "description": "Hint text for company field"
   },
-
   "enterJobTitle": "Your job title",
   "@enterJobTitle": {
     "description": "Hint text for job title field"
   },
-
   "dashboardTitle": "Dashboard",
   "scanner": "Scanner",
   "libraryNav": "Library",
   "marketplaceNav": "Marketplace",
-
   "recentQRCodes": "Recent QR Codes",
   "viewAll": "View All",
   "createQR": "Create QR",
@@ -1981,7 +1642,6 @@
   "marketplaceAction": "Marketplace",
   "marketplaceDescription": "Order laser engraving",
   "viewProfile": "View Profile",
-
   "cameraUnavailable": "Camera Unavailable",
   "initializingCamera": "Initializing Camera...",
   "tapToScan": "Tap the scan button to start detecting QR codes",
@@ -1994,10 +1654,11 @@
   "failedToOpenSettings": "Failed to open app settings: {error}",
   "@failedToOpenSettings": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
-
   "editQRCode": "Edit QR Code",
   "formTab": "Form",
   "styleTab": "Style",
@@ -2011,44 +1672,54 @@
   "qrSavedSuccess": "QR code \"{name}\" saved successfully!",
   "@qrSavedSuccess": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "qrUpdatedSuccess": "QR code \"{name}\" updated successfully!",
   "@qrUpdatedSuccess": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "failedToSaveQR": "Failed to save QR code: {error}",
   "@failedToSaveQR": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "wifiQrUpdatedSuccess": "WiFi QR code \"{name}\" updated successfully!",
   "@wifiQrUpdatedSuccess": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "wifiQrSavedSuccess": "WiFi QR code \"{name}\" saved successfully!",
   "@wifiQrSavedSuccess": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "wifiQrPrefix": "WiFi: {name}",
   "@wifiQrPrefix": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
-
   "colorsSection": "Colors",
   "sizeSection": "Size",
   "logoSection": "Logo",
-
   "textMessageTitle": "Text Message",
   "textFormDescription": "Enter any text you want to share via QR code",
   "textContentLabel": "Text Content",
@@ -2057,7 +1728,9 @@
   "charactersCount": "Characters: {count}",
   "@charactersCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "charStatusEmpty": "Empty",
@@ -2068,7 +1741,9 @@
   "textTooLong": "Text is too long (max {max} characters)",
   "@textTooLong": {
     "placeholders": {
-      "max": {"type": "int"}
+      "max": {
+        "type": "int"
+      }
     }
   },
   "qrNameRequired": "Please enter a name for your QR code",
@@ -2076,7 +1751,9 @@
   "qrNameTooLong": "Name is too long (max {max} characters)",
   "@qrNameTooLong": {
     "placeholders": {
-      "max": {"type": "int"}
+      "max": {
+        "type": "int"
+      }
     }
   },
   "qrCodeNameFieldLabel": "QR Code Name",
@@ -2084,10 +1761,11 @@
   "previewText": "Preview: {text}",
   "@previewText": {
     "placeholders": {
-      "text": {"type": "String"}
+      "text": {
+        "type": "String"
+      }
     }
   },
-
   "emailAddressRequired": "Email address is required",
   "invalidEmailFormat": "Please enter a valid email address",
   "contactsPermissionRequired": "Contacts permission is required to import email addresses",
@@ -2098,7 +1776,6 @@
   "contactsNotAvailable": "Contact access is not available on this device.",
   "selectContactEmail": "Select Contact Email",
   "unknownContact": "Unknown Contact",
-
   "enterWebsiteURL": "Enter the website URL you want to share",
   "protocolAutoAdded": "Protocol (https://) will be added automatically",
   "myWebsite": "My Website",
@@ -2107,18 +1784,15 @@
   "validURLExamples": "Valid URL examples:",
   "pleaseEnterYourName": "Please enter your name",
   "nameTooLong": "Name is too long",
-
   "locationTitle": "Location",
   "shareGPSCoordinates": "Share GPS coordinates and map points",
   "comingSoonTitle": "Coming Soon!",
   "locationQrComingSoon": "Location QR generator is under development and will be available soon.",
   "wifiQrComingSoon": "WiFi QR generator is under development and will be available soon.",
-
   "firstNameRequired": "First name is required",
   "lastNameRequired": "Last name is required",
   "invalidPhoneNumber": "Please enter a valid phone number",
   "softwareDeveloperHint": "Software Developer",
-
   "searchQRCodesTitle": "Search QR Codes",
   "searchPlaceholder": "Search by name, type, or content...",
   "searchComingSoon": "Search functionality will be implemented soon",
@@ -2126,12 +1800,13 @@
   "editTypeName": "Edit {type} QR Codes",
   "@editTypeName": {
     "placeholders": {
-      "type": {"type": "String"}
+      "type": {
+        "type": "String"
+      }
     }
   },
   "editNotSupported": "Coming soon! Currently only URL and Text QR codes can be edited.",
   "backButton": "Back",
-
   "qrCodeDetails": "QR Code Details",
   "qrContent": "QR Content",
   "createdLabel": "Created",
@@ -2146,569 +1821,568 @@
   "editTypeNotSupported": "Editing {type} QR codes is not supported yet",
   "@editTypeNotSupported": {
     "placeholders": {
-      "type": {"type": "String"}
+      "type": {
+        "type": "String"
+      }
     }
   },
   "qrDeletedSuccess": "QR code deleted successfully",
   "failedToDeleteQR": "Failed to delete QR code: {error}",
   "@failedToDeleteQR": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "todayAt": "Today at {time}",
   "@todayAt": {
     "placeholders": {
-      "time": {"type": "String"}
+      "time": {
+        "type": "String"
+      }
     }
   },
   "yesterdayAt": "Yesterday at {time}",
   "@yesterdayAt": {
     "placeholders": {
-      "time": {"type": "String"}
+      "time": {
+        "type": "String"
+      }
     }
   },
   "daysAgoFormat": "{days} days ago",
   "@daysAgoFormat": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int"
+      }
     }
   },
-
   "downloadQRData": "Download your QR codes and data",
   "backupToCloud": "Backup your data to cloud",
   "managePrivacy": "Manage your privacy settings",
-
   "savingBtn": "Saving...",
   "errorTitle": "Error",
   "openSettingsMessage": "Open Settings > {section} > {title} to enable access.",
   "@openSettingsMessage": {
     "placeholders": {
-      "section": {"type": "String"},
-      "title": {"type": "String"}
+      "section": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
     }
   },
-
   "inStock": "In Stock",
   "@inStock": {
     "description": "Product in stock badge text"
   },
-
   "outOfStock": "Out of Stock",
   "@outOfStock": {
     "description": "Product out of stock badge text"
   },
-
   "defaultProductDescription": "High-quality laser-engraved product with your custom QR code.",
   "@defaultProductDescription": {
     "description": "Default product description when none is provided"
   },
-
   "customization": "Customization",
   "@customization": {
     "description": "Customization section title in product details"
   },
-
   "selectSize": "Select Size",
   "@selectSize": {
     "description": "Size selector label"
   },
-
   "selectFinish": "Select Finish",
   "@selectFinish": {
     "description": "Finish selector label"
   },
-
   "productGallery": "Gallery",
   "@productGallery": {
     "description": "Product gallery section title"
   },
-
   "galleryFrontView": "Front View",
   "@galleryFrontView": {
     "description": "Gallery placeholder label for front view"
   },
-
   "gallery3DPreview": "3D Preview",
   "@gallery3DPreview": {
     "description": "Gallery placeholder label for 3D preview"
   },
-
   "galleryWithQRCode": "With QR Code",
   "@galleryWithQRCode": {
     "description": "Gallery placeholder label for QR code view"
   },
-
   "features": "Features",
   "@features": {
     "description": "Product features section title"
   },
-
   "featurePrecisionEngraving": "Precision laser engraving",
   "@featurePrecisionEngraving": {
     "description": "Feature text for precision engraving"
   },
-
   "featureHighQuality": "High-quality",
   "@featureHighQuality": {
     "description": "Feature prefix for high quality material"
   },
-
   "featureCustomQRDesign": "Custom QR code design",
   "@featureCustomQRDesign": {
     "description": "Feature text for custom QR design"
   },
-
   "featureDurable": "Durable and long-lasting",
   "@featureDurable": {
     "description": "Feature text for durability"
   },
-
   "total": "Total",
   "@total": {
     "description": "Total price label"
   },
-
   "addToCart": "Add to Cart",
   "@addToCart": {
     "description": "Add to cart button text"
   },
-
   "added": "Added!",
   "@added": {
     "description": "Added to cart success text"
   },
-
   "addedToCart": "added to cart!",
   "@addedToCart": {
     "description": "Added to cart success message suffix"
   },
-
   "viewCart": "View Cart",
   "@viewCart": {
     "description": "View cart action button text"
   },
-
   "errorAddingToCart": "Error adding to cart. Please try again.",
   "@errorAddingToCart": {
     "description": "Error message when adding product to cart fails"
   },
-
   "marketplaceComingSoon": "Coming Soon",
   "@marketplaceComingSoon": {
     "description": "Title for marketplace coming soon overlay"
   },
-
   "marketplaceComingSoonDesc": "We're crafting an amazing marketplace where you can order laser-engraved QR codes on premium materials.",
   "@marketplaceComingSoonDesc": {
     "description": "Description for marketplace coming soon overlay"
   },
-
   "marketplaceFeature1": "Custom QR Designs",
   "@marketplaceFeature1": {
     "description": "Feature 1 for marketplace coming soon"
   },
-
   "marketplaceFeature2": "Premium Materials",
   "@marketplaceFeature2": {
     "description": "Feature 2 for marketplace coming soon"
   },
-
   "marketplaceFeature3": "Fast Shipping",
   "@marketplaceFeature3": {
     "description": "Feature 3 for marketplace coming soon"
   },
-
   "upgradeToPro": "Upgrade to Pro",
   "@upgradeToPro": {
     "description": "Upgrade to Pro button text"
   },
-
   "upgradeToProTitle": "Upgrade to Pro",
   "@upgradeToProTitle": {
     "description": "Upgrade bottom sheet title"
   },
-
   "upgradeToProSubtitle": "Unlock all features and create unlimited QR codes",
   "@upgradeToProSubtitle": {
     "description": "Upgrade bottom sheet subtitle"
   },
-
   "upgradeComingSoonMessage": "Payment integration coming soon! You'll be able to upgrade to Pro and unlock all features.",
   "@upgradeComingSoonMessage": {
     "description": "Message shown when upgrade is not yet available"
   },
-
   "maybeLater": "Maybe Later",
   "@maybeLater": {
     "description": "Maybe later button text in upgrade sheet"
   },
-
   "unlimitedQRCodes": "Unlimited QR Codes",
   "@unlimitedQRCodes": {
     "description": "Pro feature: unlimited QR codes"
   },
-
   "allQRTypes": "All QR Types",
   "@allQRTypes": {
     "description": "Pro feature: all QR types"
   },
-
   "allFeatures": "All Features Unlocked",
   "@allFeatures": {
     "description": "Pro feature: all features unlocked"
   },
-
   "colorCustomization": "Color Customization",
   "@colorCustomization": {
     "description": "Color customization feature name"
   },
-
   "colorCustomizationLockedDesc": "Upgrade to Pro to customize QR code colors",
   "@colorCustomizationLockedDesc": {
     "description": "Description for locked color customization"
   },
-
   "logoInsertion": "Logo Insertion",
   "@logoInsertion": {
     "description": "Logo insertion feature name"
   },
-
   "logoInsertionLockedDesc": "Upgrade to Pro to add custom logos to your QR codes",
   "@logoInsertionLockedDesc": {
     "description": "Description for locked logo insertion"
   },
-
   "advancedTemplates": "Advanced Templates",
   "@advancedTemplates": {
     "description": "Advanced templates feature name"
   },
-
   "templateLockedDesc": "Upgrade to Pro to access all templates",
   "@templateLockedDesc": {
     "description": "Description for locked templates"
   },
-
   "qrTypeLocked": "{type} QR Code",
   "@qrTypeLocked": {
     "description": "Locked QR type title",
     "placeholders": {
-      "type": {"type": "String"}
+      "type": {
+        "type": "String"
+      }
     }
   },
-
   "qrTypeLockedDesc": "Upgrade to Pro to create {type} QR codes",
   "@qrTypeLockedDesc": {
     "description": "Description for locked QR type",
     "placeholders": {
-      "type": {"type": "String"}
+      "type": {
+        "type": "String"
+      }
     }
   },
-
   "qrLimitReached": "QR Limit Reached",
   "@qrLimitReached": {
     "description": "Title when user reaches QR code limit"
   },
-
   "qrCodesRemainingFormat": "{remaining} of {total} QR Codes",
   "@qrCodesRemainingFormat": {
     "description": "Format for QR codes remaining indicator",
     "placeholders": {
-      "remaining": {"type": "int"},
-      "total": {"type": "int"}
+      "remaining": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
-
   "hiddenScansTitle": "{count} more scans hidden",
   "@hiddenScansTitle": {
     "description": "Title showing number of hidden scan history items",
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "upgradeToSeeAll": "Upgrade to Pro for unlimited scan history",
   "@upgradeToSeeAll": {
     "description": "Description for upgrade to see all scan history"
   },
-
   "free": "Free",
   "@free": {
     "description": "Free plan name"
   },
-
   "pro": "Pro",
   "@pro": {
     "description": "Pro plan name"
   },
-
   "subscription": "Subscription",
   "@subscription": {
     "description": "Subscription section title"
   },
-
   "featureUnlimitedQR": "Unlimited QR codes",
   "@featureUnlimitedQR": {
     "description": "Pro feature: unlimited QR codes"
   },
-
   "featureAllTypes": "All 6 QR types",
   "@featureAllTypes": {
     "description": "Pro feature: all QR types"
   },
-
   "featureCustomColors": "Custom colors & styles",
   "@featureCustomColors": {
     "description": "Pro feature: custom colors"
   },
-
   "featureLogoInsertion": "Logo insertion",
   "@featureLogoInsertion": {
     "description": "Pro feature: logo insertion"
   },
-
   "featureAllTemplates": "All templates",
   "@featureAllTemplates": {
     "description": "Pro feature: all templates"
   },
-
   "featureUnlimitedHistory": "Unlimited scan history",
   "@featureUnlimitedHistory": {
     "description": "Pro feature: unlimited scan history"
   },
-
   "unlockPremiumFeatures": "Unlock Premium Features",
   "@unlockPremiumFeatures": {
     "description": "Upgrade card title"
   },
-
   "getMoreFromQRaft": "Get more from QRaft",
   "@getMoreFromQRaft": {
     "description": "Upgrade card subtitle"
   },
-
   "upgrade": "Upgrade",
   "@upgrade": {
     "description": "Upgrade button text"
   },
-
   "upgradeForMore": "Upgrade for unlimited",
   "@upgradeForMore": {
     "description": "Upgrade message for more features"
   },
-
   "plan": "Plan",
   "@plan": {
     "description": "Plan label"
   },
-
   "unlockAllPremiumFeatures": "Unlock all premium features",
   "@unlockAllPremiumFeatures": {
     "description": "Subtitle for upgrade bottom sheet"
   },
-
   "createAsManyAsYouNeed": "Create as many as you need",
   "@createAsManyAsYouNeed": {
     "description": "Description for unlimited QR codes feature"
   },
-
   "allQRTypesDesc": "WiFi, vCard, Email, Location & more",
   "@allQRTypesDesc": {
     "description": "Description for all QR types feature"
   },
-
   "fullCustomization": "Full Customization",
   "@fullCustomization": {
     "description": "Full customization feature title"
   },
-
   "fullCustomizationDesc": "Colors, logos, templates, shapes",
   "@fullCustomizationDesc": {
     "description": "Description for full customization feature"
   },
-
   "unlimitedHistory": "Unlimited History",
   "@unlimitedHistory": {
     "description": "Unlimited history feature title"
   },
-
   "accessAllScanHistory": "Access all your scan history",
   "@accessAllScanHistory": {
     "description": "Description for unlimited history feature"
   },
-
   "comingSoonBanner": "Coming Soon",
   "@comingSoonBanner": {
     "description": "Coming soon banner title"
   },
-
   "proSubscriptionsComingSoon": "Pro subscriptions will be available soon!\nStay tuned for updates.",
   "@proSubscriptionsComingSoon": {
     "description": "Coming soon message for Pro subscriptions"
   },
-
   "restorePurchases": "Restore Purchases",
   "@restorePurchases": {
     "description": "Restore purchases button text"
   },
-
   "restoring": "Restoring...",
   "@restoring": {
     "description": "Restoring purchases loading text"
   },
-
   "purchasesRestoredSuccess": "Purchases restored successfully!",
   "@purchasesRestoredSuccess": {
     "description": "Success message when purchases are restored"
   },
-
   "selectPlan": "Select a plan",
   "@selectPlan": {
     "description": "Prompt to select a subscription plan"
   },
-
   "startFreeTrial": "Start {days}-Day Free Trial",
   "@startFreeTrial": {
     "description": "Start free trial button text",
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int"
+      }
     }
   },
-
   "purchaseLifetimeAccess": "Purchase Lifetime Access",
   "@purchaseLifetimeAccess": {
     "description": "Purchase lifetime access button text"
   },
-
   "subscribeNow": "Subscribe Now",
   "@subscribeNow": {
     "description": "Subscribe now button text"
   },
-
   "monthly": "Monthly",
   "@monthly": {
     "description": "Monthly subscription type"
   },
-
   "annual": "Annual",
   "@annual": {
     "description": "Annual subscription type"
   },
-
   "lifetime": "Lifetime",
   "@lifetime": {
     "description": "Lifetime purchase type"
   },
-
   "perMonth": "/month",
   "@perMonth": {
     "description": "Per month price suffix"
   },
-
   "perYear": "/year",
   "@perYear": {
     "description": "Per year price suffix"
   },
-
   "savePercent": "Save {percent}%",
   "@savePercent": {
     "description": "Savings percentage badge",
     "placeholders": {
-      "percent": {"type": "int"}
+      "percent": {
+        "type": "int"
+      }
     }
   },
-
   "bestValue": "Best Value",
   "@bestValue": {
     "description": "Best value badge text"
   },
-
   "daysFreeTrial": "{days} days free trial",
   "@daysFreeTrial": {
     "description": "Free trial days text",
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int"
+      }
     }
   },
-
   "welcomeToPro": "Welcome to Pro!",
   "@welcomeToPro": {
     "description": "Welcome message after successful purchase"
   },
-
   "allFeaturesUnlocked": "All premium features are now unlocked",
   "@allFeaturesUnlocked": {
     "description": "Features unlocked message after purchase"
   },
-
   "getStartedPro": "Get Started",
   "@getStartedPro": {
     "description": "Get started button after purchase success"
   },
-
   "unableToLoadProducts": "Unable to load products",
   "@unableToLoadProducts": {
     "description": "Error message when products cannot be loaded"
   },
-
   "checkConnectionRetry": "Please check your connection and try again",
   "@checkConnectionRetry": {
     "description": "Retry connection message"
   },
-
-  "retry": "Retry",
-  "@retry": {
-    "description": "Retry button text"
-  },
-
   "paymentTerms": "Payment will be charged to your account. Subscription automatically renews unless canceled at least 24 hours before the end of the current period.",
   "@paymentTerms": {
     "description": "Legal payment terms text"
   },
-
   "proMonthly": "Pro Monthly",
   "@proMonthly": {
     "description": "Pro monthly subscription plan name"
   },
-
   "proAnnual": "Pro Annual",
   "@proAnnual": {
     "description": "Pro annual subscription plan name"
   },
-
   "proLifetime": "Pro Lifetime",
   "@proLifetime": {
     "description": "Pro lifetime subscription plan name"
   },
-
   "renewsOn": "Renews {date}",
   "@renewsOn": {
     "description": "Subscription renewal date text",
     "placeholders": {
-      "date": {"type": "String"}
+      "date": {
+        "type": "String"
+      }
     }
   },
-
   "expiresOn": "Expires {date}",
   "@expiresOn": {
     "description": "Subscription expiration date text",
     "placeholders": {
-      "date": {"type": "String"}
+      "date": {
+        "type": "String"
+      }
     }
   },
-
   "neverExpires": "Never expires",
   "@neverExpires": {
     "description": "Text for lifetime subscriptions"
   },
-
   "billingIssue": "Update payment method",
   "@billingIssue": {
     "description": "Billing issue warning text"
   },
-
   "manageSubscription": "Manage Subscription",
   "@manageSubscription": {
     "description": "Button to open device subscription management"
-  }
+  },
+  "watchAdForBonus": "Watch Ad for Bonus",
+  "@watchAdForBonus": {
+    "description": "Button text to watch ad for bonus reward"
+  },
+  "getExtraQRSlot": "Get +1 QR slot for 24h",
+  "@getExtraQRSlot": {
+    "description": "Description for extra QR slot reward"
+  },
+  "adLoadingError": "Ad not available. Try again later.",
+  "@adLoadingError": {
+    "description": "Error message when ad fails to load"
+  },
+  "unlockWithAd": "Unlock with Ad",
+  "@unlockWithAd": {
+    "description": "Button text to unlock feature by watching ad"
+  },
+  "watchAdToUnlock": "Watch a short video to unlock",
+  "@watchAdToUnlock": {
+    "description": "Description for unlocking feature with ad"
+  },
+  "adRewardGranted": "Bonus unlocked!",
+  "@adRewardGranted": {
+    "description": "Success message when ad reward is granted"
+  },
+  "supportWithAds": "Support us by watching ads",
+  "@supportWithAds": {
+    "description": "Message encouraging users to watch ads"
+  },
+  "sponsoredAd": "Sponsored",
+  "@sponsoredAd": {
+    "description": "Label for sponsored/ad content"
+  },
+  "shareQR": "Share QR",
+  "@shareQR": {
+    "description": "Button label to share a QR code as a PNG image"
+  },
+  "exportQRPng": "Export as PNG",
+  "@exportQRPng": {
+    "description": "Button label to export a QR code as a PNG file"
+  },
+  "editRedirectDestination": "Edit redirect destination",
+  "@editRedirectDestination": {
+    "description": "Menu item and screen title for editing the redirect destination URL of a QR code"
+  },
+  "redirectDestinationUpdated": "Redirect destination updated successfully",
+  "@redirectDestinationUpdated": {
+    "description": "Success snackbar message shown after updating a redirect destination URL"
+  },
+  "scanResultTitle": "Result",
+  "scanResultSuccess": "Code scanned!",
+  "scanResultContent": "Content",
+  "scanResultDetails": "Details",
+  "scanResultScanAgain": "Scan another",
+  "qrTypeUrl": "Website",
+  "qrTypePhone": "Phone",
+  "qrTypeSms": "SMS message",
+  "qrTypeVcard": "Contact",
+  "qrActionOpen": "Open",
+  "qrActionConnect": "Connect",
+  "qrActionSaveContact": "Save contact",
+  "qrActionEmail": "Send email",
+  "qrActionCall": "Call",
+  "qrActionMessage": "Send message",
+  "qrActionOpenMap": "View on map",
+  "qrActionShare": "Share",
+  "contactSaved": "Contact saved",
+  "unableToPerformAction": "We couldn't complete that action",
+  "wifiSsidLabel": "Network (SSID)",
+  "wifiOpenSettings": "Open WiFi settings",
+  "scanTypePlainText": "Text"
 }

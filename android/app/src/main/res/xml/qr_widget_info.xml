@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  AppWidget provider metadata for QrWidget / QrWidgetReceiver.
+  updatePeriodMillis=0: widget updates are triggered on-demand by the Flutter
+  app via HomeWidget.updateWidget() — no periodic system polling needed.
+  initialLayout references the default Glance loading layout supplied by the
+  home_widget plugin.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="110dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="2"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/qr_widget_layout"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen" />

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -10,6 +11,7 @@ import '../../domain/entities/qr_type.dart';
 import '../../domain/entities/qr_code_entity.dart';
 import '../../domain/entities/qr_data_models.dart';
 import '../controllers/qr_customization_controller.dart';
+import '../widgets/qr_share_button.dart';
 import '../controllers/qr_generator_controller.dart';
 import '../providers/qr_providers.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
@@ -215,6 +217,8 @@ class _LocationQRScreenState extends ConsumerState<LocationQRScreen>
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
   bool _isSaving = false;
+  // GlobalKey for RepaintBoundary — enables PNG export in Plan 05
+  final GlobalKey repaintKey = GlobalKey();
 
   @override
   void initState() {
@@ -308,6 +312,7 @@ class _LocationQRScreenState extends ConsumerState<LocationQRScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -373,7 +378,15 @@ class _LocationQRScreenState extends ConsumerState<LocationQRScreen>
                   onPressed: locationState.isValid ? _saveQRCode : null,
                   width: double.infinity,
                 ),
-                
+
+                if (locationState.isValid) ...[
+                  const SizedBox(height: 12),
+                  QrShareButton(
+                    repaintKey: repaintKey,
+                    qrName: locationState.name.isNotEmpty ? locationState.name : 'Location QR',
+                  ),
+                ],
+
                 if (!locationState.isValid) ...[
                   const SizedBox(height: 8),
                   Text(
@@ -720,30 +733,35 @@ class _LocationQRScreenState extends ConsumerState<LocationQRScreen>
       );
     }
 
-    return QrImageView(
-      data: locationState.locationData.qrData,
-      version: QrVersions.auto,
-      size: qrSize,
-      backgroundColor: Color(customizationState.customization.backgroundColor),
-      eyeStyle: QrEyeStyle(
-        eyeShape: customizationState.customization.eyeShape == 0 
-            ? QrEyeShape.square 
-            : QrEyeShape.circle,
-        color: Color(customizationState.customization.eyeColor),
-      ),
-      dataModuleStyle: QrDataModuleStyle(
-        dataModuleShape: customizationState.customization.dataShape == 0
-            ? QrDataModuleShape.square
-            : QrDataModuleShape.circle,
-        color: Color(customizationState.customization.foregroundColor),
-      ),
-      embeddedImage: customizationState.customization.hasLogo && 
-                   customizationState.customization.logoPath != null
-          ? FileImage(File(customizationState.customization.logoPath!))
-          : null,
-      embeddedImageStyle: QrEmbeddedImageStyle(
-        size: Size(customizationState.customization.logoSize, 
-                  customizationState.customization.logoSize),
+    return RepaintBoundary(
+      key: repaintKey,
+      child: QrImageView(
+        data: locationState.locationData.qrData,
+        version: QrVersions.auto,
+        size: qrSize,
+        backgroundColor: Color(customizationState.customization.backgroundColor),
+        eyeStyle: QrEyeStyle(
+          eyeShape: customizationState.customization.eyeShape == 0
+              ? QrEyeShape.square
+              : QrEyeShape.circle,
+          color: Color(customizationState.customization.eyeColor),
+        ),
+        dataModuleStyle: QrDataModuleStyle(
+          dataModuleShape: customizationState.customization.dataShape == 0
+              ? QrDataModuleShape.square
+              : QrDataModuleShape.circle,
+          color: Color(customizationState.customization.foregroundColor),
+        ),
+        embeddedImage: customizationState.customization.hasLogo &&
+                customizationState.customization.logoPath != null
+            ? FileImage(File(customizationState.customization.logoPath!))
+            : null,
+        embeddedImageStyle: QrEmbeddedImageStyle(
+          size: Size(
+            customizationState.customization.logoSize,
+            customizationState.customization.logoSize,
+          ),
+        ),
       ),
     );
   }
@@ -1302,7 +1320,7 @@ class _LocationQRScreenState extends ConsumerState<LocationQRScreen>
     if (widget.editingQRCode == null) {
       final canCreate = ref.read(canCreateQRProvider);
       if (!canCreate) {
-        UpgradeBottomSheet.show(context);
+        UpgradeBottomSheet.show(context, freeLimit: ref.read(qrLimitProvider));
         return;
       }
     }
@@ -1630,6 +1648,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         backgroundColor: const Color(0xFF1A1A1A),
         elevation: 0,
         leading: IconButton(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),

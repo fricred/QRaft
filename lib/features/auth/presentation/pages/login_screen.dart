@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../widgets/auth_header.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../shared/widgets/qraft_logo.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../auth/data/providers/supabase_auth_provider.dart';
 import 'package:qraft/l10n/app_localizations.dart';
@@ -54,7 +54,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authProvider = ref.watch(supabaseAuthProvider);
     final isLoading = authProvider.isLoading;
     
-    return Scaffold(
+    return Semantics(
+      identifier: 'login_screen_root',
+      container: true,
+      child: Scaffold(
+      key: const Key('login_screen_root'),
       backgroundColor: const Color(0xFF1A1A1A),
       body: Stack(
         children: [
@@ -64,94 +68,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           SafeArea(
             child: Column(
               children: [
-                // Top section with back button and header
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    children: [
-                      // Back button row
-                      Row(
-                        children: [
-                          IconButton(
-                            onPressed: widget.onBackPressed,
-                            icon: const Icon(
-                              Icons.arrow_back_ios_rounded,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            style: IconButton.styleFrom(
-                              backgroundColor: const Color(0xFF2E2E2E),
-                              padding: const EdgeInsets.all(10),
-                              minimumSize: const Size(40, 40),
-                            ),
-                          ).animate()
-                            .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
-                            .slideX(begin: -0.15, duration: 300.ms, curve: Curves.easeOutQuart),
-                        ],
-                      ),
-                      
-                      const SizedBox(height: 20),
-                      
-                      // Compact header
-                      Row(
-                        children: [
-                          // Small logo
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF1A73E8), Color(0xFF00FF88)],
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFF00FF88).withValues(alpha: 0.2),
-                                  blurRadius: 8,
-                                  spreadRadius: 1,
-                                ),
-                              ],
-                            ),
-                            child: const QRaftLogo(
-                              size: 32,
-                              primaryColor: Colors.white,
-                            ),
-                          ),
-                          
-                          const SizedBox(width: 16),
-                          
-                          // Title and subtitle in row
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.welcomeBack,
-                                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 24,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  l10n.signInToContinue,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Colors.grey[400],
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ).animate()
-                        .fadeIn(duration: 300.ms, delay: 100.ms, curve: Curves.easeOutCubic)
-                        .slideY(begin: 0.15, duration: 300.ms, delay: 100.ms, curve: Curves.easeOutQuart),
-                    ],
-                  ),
+                // One-row header that compacts while the keyboard is open
+                AuthHeader(
+                  title: l10n.welcomeBack,
+                  subtitle: l10n.signInToContinue,
+                  onBack: widget.onBackPressed,
                 ),
-                
+
                 // Form section - takes remaining space
                 Expanded(
                   child: SingleChildScrollView(
@@ -198,61 +121,72 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   child: Column(
                               children: [
                                 // Email field
-                                _buildTextField(
-                                  l10n: l10n,
-                                  controller: _emailController,
-                                  focusNode: _emailFocusNode,
-                                  label: l10n.email,
-                                  hint: l10n.enterEmail,
-                                  icon: Icons.email_outlined,
-                                  keyboardType: TextInputType.emailAddress,
-                                  textInputAction: TextInputAction.next,
-                                  onSubmitted: () => _passwordFocusNode.requestFocus(),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return l10n.pleaseEnterEmail;
-                                    }
-                                    if (!value.contains('@')) {
-                                      return l10n.pleaseEnterValidEmail;
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                
-                                const SizedBox(height: 20),
-                                
-                                // Password field
-                                _buildTextField(
-                                  l10n: l10n,
-                                  controller: _passwordController,
-                                  focusNode: _passwordFocusNode,
-                                  label: l10n.password,
-                                  hint: l10n.enterPassword,
-                                  icon: Icons.lock_outline,
-                                  obscureText: _obscurePassword,
-                                  textInputAction: TextInputAction.done,
-                                  onSubmitted: _handleLogin,
-                                  suffixIcon: IconButton(
-                                    onPressed: () {
-                                      setState(() => _obscurePassword = !_obscurePassword);
+                                Semantics(
+                                  identifier: 'login_email_field',
+                                  textField: true,
+                                  child: _buildTextField(
+                                    l10n: l10n,
+                                    fieldKey: const Key('login_email_field'),
+                                    controller: _emailController,
+                                    focusNode: _emailFocusNode,
+                                    label: l10n.email,
+                                    hint: l10n.enterEmail,
+                                    icon: Icons.email_outlined,
+                                    keyboardType: TextInputType.emailAddress,
+                                    textInputAction: TextInputAction.next,
+                                    onSubmitted: () => _passwordFocusNode.requestFocus(),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return l10n.pleaseEnterEmail;
+                                      }
+                                      if (!value.contains('@')) {
+                                        return l10n.pleaseEnterValidEmail;
+                                      }
+                                      return null;
                                     },
-                                    icon: Icon(
-                                      _obscurePassword 
-                                        ? Icons.visibility_off_outlined 
-                                        : Icons.visibility_outlined,
-                                      color: Colors.grey[400],
-                                      size: 20,
-                                    ),
                                   ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return l10n.pleaseEnterPassword;
-                                    }
-                                    if (value.length < 6) {
-                                      return l10n.passwordMinLength;
-                                    }
-                                    return null;
-                                  },
+                                ),
+
+                                const SizedBox(height: 20),
+
+                                // Password field
+                                Semantics(
+                                  identifier: 'login_password_field',
+                                  textField: true,
+                                  child: _buildTextField(
+                                    l10n: l10n,
+                                    fieldKey: const Key('login_password_field'),
+                                    controller: _passwordController,
+                                    focusNode: _passwordFocusNode,
+                                    label: l10n.password,
+                                    hint: l10n.enterPassword,
+                                    icon: Icons.lock_outline,
+                                    obscureText: _obscurePassword,
+                                    textInputAction: TextInputAction.done,
+                                    onSubmitted: _handleLogin,
+                                    suffixIcon: IconButton(
+                                      tooltip: (Localizations.localeOf(context).languageCode == 'es') ? (_obscurePassword ? 'Mostrar contraseña' : 'Ocultar contraseña') : (_obscurePassword ? 'Show password' : 'Hide password'),
+                                      onPressed: () {
+                                        setState(() => _obscurePassword = !_obscurePassword);
+                                      },
+                                      icon: Icon(
+                                        _obscurePassword
+                                          ? Icons.visibility_off_outlined
+                                          : Icons.visibility_outlined,
+                                        color: Colors.grey[400],
+                                        size: 20,
+                                      ),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return l10n.pleaseEnterPassword;
+                                      }
+                                      if (value.length < 6) {
+                                        return l10n.passwordMinLength;
+                                      }
+                                      return null;
+                                    },
+                                  ),
                                 ),
                                 
                                 const SizedBox(height: 12),
@@ -260,30 +194,40 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 // Forgot password
                                 Align(
                                   alignment: Alignment.centerRight,
-                                  child: TextButton(
-                                    onPressed: widget.onForgotPasswordPressed,
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(vertical: 8),
-                                    ),
-                                    child: Text(
-                                      l10n.forgotPassword,
-                                      style: TextStyle(
-                                        color: const Color(0xFF00FF88),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
+                                  child: Semantics(
+                                    identifier: 'login_forgot_password_link',
+                                    button: true,
+                                    child: TextButton(
+                                      key: const Key('login_forgot_password_link'),
+                                      onPressed: widget.onForgotPasswordPressed,
+                                      style: TextButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(vertical: 8),
+                                      ),
+                                      child: Text(
+                                        l10n.forgotPassword,
+                                        style: TextStyle(
+                                          color: const Color(0xFF00FF88),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                                
+
                                 const SizedBox(height: 24),
-                                
+
                                 // Login button
-                                PrimaryGlassButton(
-                                  text: l10n.signIn,
-                                  onPressed: _handleLogin,
-                                  isLoading: isLoading,
-                                  width: double.infinity,
+                                Semantics(
+                                  identifier: 'login_submit_button',
+                                  button: true,
+                                  child: PrimaryGlassButton(
+                                    key: const Key('login_submit_button'),
+                                    text: l10n.signIn,
+                                    onPressed: _handleLogin,
+                                    isLoading: isLoading,
+                                    width: double.infinity,
+                                  ),
                                 ),
                               ],
                             ),
@@ -323,6 +267,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -332,6 +277,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     required String label,
     required String hint,
     required IconData icon,
+    Key? fieldKey,
     TextInputType? keyboardType,
     bool obscureText = false,
     Widget? suffixIcon,
@@ -353,6 +299,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         const SizedBox(height: 8),
         TextFormField(
+          key: fieldKey,
           controller: controller,
           focusNode: focusNode,
           keyboardType: keyboardType,

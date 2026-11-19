@@ -1,9 +1,17 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'supabase_service.dart';
+import '../../features/checkout/presentation/pages/payment_result_screen.dart';
+import '../../features/wifi_join/wifi_join_screen.dart';
+
+/// Global navigator key used by [DeepLinkHandler] to push payment result
+/// screens from cold-launch deep links (T-09-12 namespacing).
+/// Wire this into [MaterialApp.navigatorKey] in `main.dart`.
+final GlobalKey<NavigatorState> appNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'appNavigatorKey');
 
 // Deeplink service provider
 final deepLinkServiceProvider = Provider<DeepLinkService>((ref) {
@@ -104,6 +112,33 @@ class DeepLinkService {
     return parseSupabaseAuthLink(link);
   }
 
+  // ─── Payment result deep link helpers (T-09-12) ────────────────────────
+
+  /// Returns true when [link] is a Wompi payment-result deep link
+  /// (`qraft://payment-result[?...]`).
+  ///
+  /// Checked BEFORE any auth-related processing to prevent the auth state
+  /// machine from accidentally consuming payment-result URLs.
+  static bool isPaymentResultLink(String link) {
+    return link.startsWith('qraft://payment-result');
+  }
+
+  /// Extracts `order_id` and `ref` query parameters from a
+  /// `qraft://payment-result` link.
+  ///
+  /// Returns null when the URL is not a valid payment-result link or when
+  /// `order_id` is missing.
+  static Map<String, String>? parsePaymentResultLink(String link) {
+    if (!isPaymentResultLink(link)) return null;
+    final uri = Uri.parse(link);
+    final orderId = uri.queryParameters['order_id'];
+    if (orderId == null || orderId.isEmpty) return null;
+    return {
+      'order_id': orderId,
+      'ref': uri.queryParameters['ref'] ?? '',
+    };
+  }
+
   // Handle password reset deeplink (Supabase format)
   static bool isPasswordResetLink(String link) {
     final parsed = parseSupabaseAuthLink(link);
@@ -145,6 +180,21 @@ class DeepLinkHandler {
   void handleDeepLink(String link) {
     debugPrint('🔗 Received deeplink: $link');
 
+    // ── Payment result deep link (qraft://payment-result) ─────────────────
+    // Checked FIRST to prevent the auth state machine from consuming it
+    // (T-09-12: deep link collision guard).
+    if (DeepLinkService.isPaymentResultLink(link)) {
+      _handlePaymentResult(link);
+      return;
+    }
+
+    // ── WiFi from a scanned dynamic QR (qraft://wifi?ssid=…) — no session needed ──
+    final wifi = WifiLink.tryParse(link);
+    if (wifi != null) {
+      appNavigatorKey.currentState?.push(MaterialPageRoute<void>(builder: (_) => WifiJoinScreen(wifi: wifi)));
+      return;
+    }
+
     // Handle Supabase Auth links
     if (DeepLinkService.isSignupConfirmationLink(link)) {
       _handleSignupConfirmation(link);
@@ -157,17 +207,43 @@ class DeepLinkHandler {
     }
   }
 
+  /// Handles cold-launch `qraft://payment-result?order_id=...` deep links.
+  ///
+  /// This covers the PSE flow where the user leaves the app and returns via
+  /// the system browser.  The WebView intercept handles the in-app case;
+  /// this method handles the rarer cold-launch path.
+  void _handlePaymentResult(String link) {
+    final params = DeepLinkService.parsePaymentResultLink(link);
+    if (params == null) {
+      debugPrint('⚠️ Payment result deep link missing order_id: $link');
+      return;
+    }
+    debugPrint('💳 Payment result deep link: order_id=${params['order_id']}');
+
+    appNavigatorKey.currentState?.push(
+      MaterialPageRoute<void>(
+        builder: (_) => PaymentResultScreen(
+          orderId: params['order_id']!,
+          transactionRef: params['ref'] ?? '',
+        ),
+      ),
+    );
+  }
+
   void _handleSignupConfirmation(String link) async {
     final parsed = DeepLinkService.parseSupabaseAuthLink(link);
-    if (parsed != null && parsed['token'] != null) {
-      debugPrint('📧 Processing signup confirmation with token: ${parsed['token']?.substring(0, 10)}...');
+    // PKCE/implicit links (code=… or #access_token=…) carry no `token`; supabase_flutter
+    // completes those itself. Only legacy token links are verified here.
+    if (parsed != null && (parsed['token'] ?? '').isNotEmpty) {
+      debugPrint('📧 Processing legacy signup confirmation link');
       
       try {
         // Verify the token with Supabase
         if (SupabaseService.isInitialized) {
+          // Legacy links carry the token hash; verifyOTP needs it as tokenHash.
           final response = await SupabaseService.client.auth.verifyOTP(
-            token: parsed['token']!,
-            type: OtpType.signup,
+            tokenHash: parsed['token']!,
+            type: OtpType.email,
           );
           
           if (response.user != null) {

@@ -186,11 +186,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sendResetLink => 'Enviar';
 
   @override
-  String get emailSent => '¡Email Enviado!';
+  String get emailSent => 'Revisa tu correo';
 
   @override
   String checkEmailForReset(String email) {
-    return 'Hemos enviado un enlace de restablecimiento de contraseña a $email. Por favor revisa tu email y sigue las instrucciones para restablecer tu contraseña.';
+    return 'Si $email tiene una cuenta en QRaft, te enviamos un enlace para restablecer tu contraseña. Revisa también la carpeta de spam.';
   }
 
   @override
@@ -421,6 +421,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get gallery => 'Galería';
 
   @override
+  String get noQRFoundInImage =>
+      'No encontramos ningún código QR en esa foto. Probá con una imagen donde el código se vea completo y nítido.';
+
+  @override
   String get chooseFromPhotos => 'Elegir de las fotos';
 
   @override
@@ -646,6 +650,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get qrTypeLocationDesc => 'Coordenadas GPS\ny puntos del mapa';
+
+  @override
+  String get qrTypeEvent => 'Evento';
+
+  @override
+  String get qrTypeEventDesc =>
+      'Evento de calendario con fecha,\nhora y ubicación';
 
   @override
   String get styleColors => 'Colores';
@@ -1039,6 +1050,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get filterText => 'Texto';
+
+  @override
+  String get filterEvent => 'Evento';
 
   @override
   String get noFavoritesYet => 'Aún No Hay Favoritos';
@@ -1930,4 +1944,107 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get manageSubscription => 'Gestionar Suscripción';
+
+  @override
+  String get watchAdForBonus => 'Ver Anuncio para Bonus';
+
+  @override
+  String get getExtraQRSlot => 'Obtén +1 código QR por 24h';
+
+  @override
+  String get adLoadingError => 'Anuncio no disponible. Intenta más tarde.';
+
+  @override
+  String get unlockWithAd => 'Desbloquear con Anuncio';
+
+  @override
+  String get watchAdToUnlock => 'Mira un video corto para desbloquear';
+
+  @override
+  String get adRewardGranted => '¡Bonus desbloqueado!';
+
+  @override
+  String get supportWithAds => 'Apóyanos viendo anuncios';
+
+  @override
+  String get sponsoredAd => 'Patrocinado';
+
+  @override
+  String get shareQR => 'Compartir QR';
+
+  @override
+  String get exportQRPng => 'Exportar como PNG';
+
+  @override
+  String get editRedirectDestination => 'Editar destino de redirección';
+
+  @override
+  String get redirectDestinationUpdated =>
+      'Destino de redirección actualizado correctamente';
+
+  @override
+  String get scanResultTitle => 'Resultado';
+
+  @override
+  String get scanResultSuccess => '¡Código escaneado!';
+
+  @override
+  String get scanResultContent => 'Contenido';
+
+  @override
+  String get scanResultDetails => 'Detalles';
+
+  @override
+  String get scanResultScanAgain => 'Escanear otro';
+
+  @override
+  String get qrTypeUrl => 'Sitio web';
+
+  @override
+  String get qrTypePhone => 'Teléfono';
+
+  @override
+  String get qrTypeSms => 'Mensaje SMS';
+
+  @override
+  String get qrTypeVcard => 'Contacto';
+
+  @override
+  String get qrActionOpen => 'Abrir';
+
+  @override
+  String get qrActionConnect => 'Conectar';
+
+  @override
+  String get qrActionSaveContact => 'Guardar contacto';
+
+  @override
+  String get qrActionEmail => 'Enviar correo';
+
+  @override
+  String get qrActionCall => 'Llamar';
+
+  @override
+  String get qrActionMessage => 'Enviar mensaje';
+
+  @override
+  String get qrActionOpenMap => 'Ver en el mapa';
+
+  @override
+  String get qrActionShare => 'Compartir';
+
+  @override
+  String get contactSaved => 'Contacto guardado';
+
+  @override
+  String get unableToPerformAction => 'No pudimos completar la acción';
+
+  @override
+  String get wifiSsidLabel => 'Red (SSID)';
+
+  @override
+  String get wifiOpenSettings => 'Abrir ajustes de WiFi';
+
+  @override
+  String get scanTypePlainText => 'Texto';
 }

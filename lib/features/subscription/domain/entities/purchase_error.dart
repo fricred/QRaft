@@ -78,6 +78,14 @@ class PurchaseError {
           debugMessage: message,
         );
 
+      // Google Play "pending" purchases (cash, carrier billing): the store accepted the
+      // order but the money hasn't arrived. Not a failure — the server activates it later.
+      case PurchasesErrorCode.paymentPendingError:
+        return const PurchaseError(
+          type: PurchaseErrorType.pending,
+          message: 'Your payment is pending. We will activate it as soon as it is confirmed.',
+        );
+
       case PurchasesErrorCode.purchaseNotAllowedError:
         return const PurchaseError(
           type: PurchaseErrorType.notAllowed,

@@ -36,7 +36,14 @@ class _AuthFlowState extends State<AuthFlow> {
 
   @override
   Widget build(BuildContext context) {
-    return IndexedStack(
+    // QRAFT-16: the system back button returns to the welcome screen from login/sign-up
+    // instead of closing the app; only from the welcome screen does back exit.
+    return PopScope(
+      canPop: _currentIndex == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && _currentIndex != 0) _navigateToWelcome();
+      },
+      child: IndexedStack(
       index: _currentIndex,
       children: [
         // Welcome Screen
@@ -60,6 +67,7 @@ class _AuthFlowState extends State<AuthFlow> {
           onBackPressed: _navigateToWelcome,
         ),
       ],
+      ),
     );
   }
 }

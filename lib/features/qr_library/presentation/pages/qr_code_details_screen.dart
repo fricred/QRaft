@@ -1,20 +1,22 @@
+import 'dart:io';
 import 'dart:math' show log;
-import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../qr_generator/domain/entities/qr_code_entity.dart';
-import '../../../qr_generator/presentation/pages/url_qr_screen.dart';
-import '../../../qr_generator/presentation/pages/text_qr_screen.dart';
-import '../../../qr_generator/presentation/pages/personal_info_qr_screen.dart';
-import '../../../qr_generator/presentation/pages/wifi_qr_screen.dart';
-import '../../../qr_generator/presentation/pages/email_qr_screen.dart';
-import '../../../qr_generator/presentation/pages/location_qr_screen.dart';
+import '../../../qr_generator/domain/entities/qr_type.dart';
+import '../../../qr_generator/domain/services/qr_decoration_builder.dart';
+import '../../../qr_generator/domain/services/qr_export_service.dart';
+import '../../../qr_generator/presentation/controllers/qr_customization_controller.dart';
+import '../../../qr_generator/presentation/pages/qr_canvas_editor_screen.dart';
+import '../../../qr_digital/presentation/pages/qr_widget_pin_page.dart';
 import '../widgets/qr_code_display_widget.dart';
 import '../providers/qr_library_providers.dart';
+import '../../../dynamic_qr/presentation/detail_screen.dart';
 
 class QRCodeDetailsScreen extends ConsumerStatefulWidget {
   final QRCodeEntity qrEntity;
@@ -46,6 +48,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
               child: Row(
                 children: [
                   IconButton(
+                    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                     onPressed: () => Navigator.of(context).pop(),
                     icon: const Icon(
                       Icons.arrow_back_rounded,
@@ -109,10 +112,15 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                       ),
                       child: Column(
                         children: [
-                          QRCodeDisplayWidget(
-                            qrEntity: widget.qrEntity,
-                            size: 240,
-                            showFallbackIcon: true,
+                          // Hero matches the icon container in the library card,
+                          // giving a smooth expand transition on navigation.
+                          Hero(
+                            tag: 'qr-icon-${widget.qrEntity.id}',
+                            child: QRCodeDisplayWidget(
+                              qrEntity: widget.qrEntity,
+                              size: 240,
+                              showFallbackIcon: true,
+                            ),
                           ),
                           const SizedBox(height: 16),
                           Text(
@@ -141,7 +149,7 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                               ),
                             ),
                             child: Text(
-                              widget.qrEntity.type.name.toUpperCase(),
+                              widget.qrEntity.type.getDisplayName(context).toUpperCase(),
                               style: TextStyle(
                                 color: _getQRTypeColor(widget.qrEntity.type.identifier),
                                 fontSize: 12,
@@ -218,6 +226,12 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
                     delayMs: 300,
                   ),
                   _buildActionButton(
+                    icon: Icons.widgets_rounded,
+                    label: 'Widget',
+                    onPressed: _handlePinToWidget,
+                    delayMs: 312,
+                  ),
+                  _buildActionButton(
                     icon: Icons.delete_rounded,
                     label: l10n.delete,
                     onPressed: _isDeleting ? null : _handleDelete,
@@ -281,30 +295,28 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
               ),
               child: ClipRRect(
                 borderRadius: buttonRadius,
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2E2E2E).withValues(alpha: 0.7),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2A2A2A),
+                    borderRadius: buttonRadius,
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: onPressed,
                       borderRadius: buttonRadius,
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: onPressed,
-                        borderRadius: buttonRadius,
-                        child: Center(
-                          child: isLoading
-                              ? SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(iconColor),
-                                  ),
-                                )
-                              : Icon(icon, color: iconColor, size: 22),
-                        ),
+                      child: Center(
+                        child: isLoading
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor:
+                                      AlwaysStoppedAnimation<Color>(iconColor),
+                                ),
+                              )
+                            : Icon(icon, color: iconColor, size: 22),
                       ),
                     ),
                   ),
@@ -408,15 +420,48 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
       .scale(begin: const Offset(0.98, 0.98), duration: duration.ms, delay: delay.ms);
   }
 
-  void _handleShare() {
-    final l10n = AppLocalizations.of(context)!;
-    // TODO: Implement share functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.shareFunctionalityComingSoon),
-        backgroundColor: const Color(0xFF2E2E2E),
-      ),
-    );
+  Future<void> _handleShare() async {
+    final st = widget.qrEntity.dynamicStatus;
+    if (widget.qrEntity.isDynamic && st != 'active' && st != 'paused') {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(Localizations.localeOf(context).languageCode == 'es'
+            ? 'Este código aún no está activo o ya no existe.'
+            : "This code isn't active yet or no longer exists."),
+      ));
+      return;
+    }
+    try {
+      // Same design as on screen (gradient, presets, logo) on white, sharp enough to print.
+      final c = widget.qrEntity.customization;
+      final bytes = await QrExportService.exportDigitalOnly(
+        QrDecorationBuilder.buildQrImage(widget.qrEntity.data, c),
+        QrDecorationBuilder.buildDecoration(c),
+        size: 1080,
+      );
+
+      final sanitized =
+          widget.qrEntity.name.replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '_');
+      final file = File(
+          '${Directory.systemTemp.path}/qraft_${sanitized}_${DateTime.now().millisecondsSinceEpoch}.png');
+      await file.writeAsBytes(bytes);
+
+      final shareText = widget.qrEntity.isDynamic
+          ? 'QR: ${widget.qrEntity.name}\nhttps://scanqraft.app/${widget.qrEntity.slug}'
+          : 'QR: ${widget.qrEntity.name}';
+
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path)], text: shareText),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al compartir: $e'),
+          backgroundColor: const Color(0xFFEF4444),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   void _handleCopyData() {
@@ -438,48 +483,30 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
     );
   }
 
-  void _handleEdit() {
-    final l10n = AppLocalizations.of(context)!;
-    // Navigate to the appropriate QR screen based on type
-    Widget screen;
-
-    switch (widget.qrEntity.type.identifier) {
-      case 'url':
-        screen = URLQRScreen(editingQRCode: widget.qrEntity);
-        break;
-      case 'text':
-        screen = TextQRScreen(editingQRCode: widget.qrEntity);
-        break;
-      case 'vcard':
-        screen = PersonalInfoQRScreen(editingQRCode: widget.qrEntity);
-        break;
-      case 'wifi':
-        screen = WiFiQRScreen(editingQRCode: widget.qrEntity);
-        break;
-      case 'email':
-        screen = EmailQRScreen(editingQRCode: widget.qrEntity);
-        break;
-      case 'geo':
-        screen = LocationQRScreen(editingQRCode: widget.qrEntity);
-        break;
-      default:
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.editTypeNotSupported(widget.qrEntity.type.identifier)),
-            backgroundColor: const Color(0xFFEF4444),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-        return;
-    }
-
+  void _handlePinToWidget() {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => screen),
+      MaterialPageRoute(
+        builder: (_) => QrWidgetPinPage(entity: widget.qrEntity),
+      ),
+    );
+  }
+
+  void _handleEdit() {
+    // A dynamic code is edited from its own detail ("Cambiar lo que muestra" / "Diseño").
+    final redirectId = widget.qrEntity.redirectId;
+    if (widget.qrEntity.isDynamic && redirectId != null) {
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => DynamicQrDetailScreen(redirectId: redirectId)));
+      return;
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => QRCanvasEditorScreen(
+          qrType: widget.qrEntity.type,
+          template: kQrTemplates.first,
+          editingQR: widget.qrEntity,
+        ),
+      ),
     ).then((updatedQR) {
-      // Pop back to library when returning from edit
       if (mounted && updatedQR != null) {
         Navigator.of(context).pop(updatedQR);
       }
@@ -487,6 +514,14 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
   }
 
   void _handleDelete() {
+    // Dynamic QRs are deleted from their own detail (revokes the printed code).
+    if (widget.qrEntity.isDynamic) {
+      final id = widget.qrEntity.redirectId;
+      if (id != null) {
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => DynamicQrDetailScreen(redirectId: id)));
+      }
+      return;
+    }
     final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
@@ -630,6 +665,10 @@ class _QRCodeDetailsScreenState extends ConsumerState<QRCodeDetailsScreen> {
   String _formatTime(DateTime dateTime) {
     final hour = dateTime.hour;
     final minute = dateTime.minute;
+    // Spanish uses 24-hour time ("a las 21:53"); English keeps AM/PM.
+    if (Localizations.localeOf(context).languageCode == 'es') {
+      return '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+    }
     final ampm = hour >= 12 ? 'PM' : 'AM';
     final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
     return '${displayHour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $ampm';

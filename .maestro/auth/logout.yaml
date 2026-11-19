@@ -1,0 +1,43 @@
+appId: io.gothcorp.qraft
+name: auth/logout
+tags:
+  - auth
+  - phase1
+  - qraft-8
+---
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/dismiss-permissions.yaml
+- runFlow: ../launch/ump-accept.yaml
+- runFlow: ../helpers/login.yaml
+# Sign-out lives on the Profile screen (lib/features/profile/presentation/pages/profile_screen.dart).
+# Path: dashboard tab -> profile button -> sign-out GlassButton -> confirm dialog.
+- tapOn:
+    id: "main_scaffold_dashboard_tab"
+- tapOn:
+    id: "dashboard_profile_button"
+# Profile screen is a SingleChildScrollView — sign-out button sits at the bottom
+# of the column, below the fold on Medium_Phone (and most phone viewports).
+- scrollUntilVisible:
+    element:
+      id: "profile_sign_out_button"
+    direction: DOWN
+    # The profile screen is long; 10 s of scrolling did not reach the button.
+    timeout: 30000
+- tapOn:
+    id: "profile_sign_out_button"
+- extendedWaitUntil:
+    visible:
+      id: "profile_sign_out_confirm_button"
+    timeout: 10000
+- tapOn:
+    id: "profile_sign_out_confirm_button"
+# After tapping confirm, the app shows a "Signing out..." loading dialog while
+# Supabase's auth.signOut() makes a network round-trip. On slower emulator
+# networks this can take 15-25s. We wait for the loading dialog to disappear
+# (signOut completed -> popUntil pops back to root -> AuthFlow shows welcome)
+# with a generous 30s timeout.
+- extendedWaitUntil:
+    visible:
+      id: "welcome_screen_root"
+    timeout: 30000

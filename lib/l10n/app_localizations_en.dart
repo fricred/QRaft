@@ -181,11 +181,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sendResetLink => 'Send';
 
   @override
-  String get emailSent => 'Email Sent!';
+  String get emailSent => 'Check your email';
 
   @override
   String checkEmailForReset(String email) {
-    return 'We\'ve sent a password reset link to $email. Please check your email and follow the instructions to reset your password.';
+    return 'If $email has a QRaft account, we sent it a link to reset your password. Check your spam folder too.';
   }
 
   @override
@@ -415,6 +415,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gallery => 'Gallery';
 
   @override
+  String get noQRFoundInImage =>
+      'We couldn\'t find a QR code in that photo. Try an image where the code is fully visible and in focus.';
+
+  @override
   String get chooseFromPhotos => 'Choose from photos';
 
   @override
@@ -637,6 +641,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qrTypeLocationDesc => 'GPS coordinates\nand map points';
+
+  @override
+  String get qrTypeEvent => 'Event';
+
+  @override
+  String get qrTypeEventDesc => 'Calendar event with date,\ntime, and location';
 
   @override
   String get styleColors => 'Colors';
@@ -1019,6 +1029,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filterText => 'Text';
+
+  @override
+  String get filterEvent => 'Event';
 
   @override
   String get noFavoritesYet => 'No Favorites Yet';
@@ -1895,4 +1908,107 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get manageSubscription => 'Manage Subscription';
+
+  @override
+  String get watchAdForBonus => 'Watch Ad for Bonus';
+
+  @override
+  String get getExtraQRSlot => 'Get +1 QR slot for 24h';
+
+  @override
+  String get adLoadingError => 'Ad not available. Try again later.';
+
+  @override
+  String get unlockWithAd => 'Unlock with Ad';
+
+  @override
+  String get watchAdToUnlock => 'Watch a short video to unlock';
+
+  @override
+  String get adRewardGranted => 'Bonus unlocked!';
+
+  @override
+  String get supportWithAds => 'Support us by watching ads';
+
+  @override
+  String get sponsoredAd => 'Sponsored';
+
+  @override
+  String get shareQR => 'Share QR';
+
+  @override
+  String get exportQRPng => 'Export as PNG';
+
+  @override
+  String get editRedirectDestination => 'Edit redirect destination';
+
+  @override
+  String get redirectDestinationUpdated =>
+      'Redirect destination updated successfully';
+
+  @override
+  String get scanResultTitle => 'Result';
+
+  @override
+  String get scanResultSuccess => 'Code scanned!';
+
+  @override
+  String get scanResultContent => 'Content';
+
+  @override
+  String get scanResultDetails => 'Details';
+
+  @override
+  String get scanResultScanAgain => 'Scan another';
+
+  @override
+  String get qrTypeUrl => 'Website';
+
+  @override
+  String get qrTypePhone => 'Phone';
+
+  @override
+  String get qrTypeSms => 'SMS message';
+
+  @override
+  String get qrTypeVcard => 'Contact';
+
+  @override
+  String get qrActionOpen => 'Open';
+
+  @override
+  String get qrActionConnect => 'Connect';
+
+  @override
+  String get qrActionSaveContact => 'Save contact';
+
+  @override
+  String get qrActionEmail => 'Send email';
+
+  @override
+  String get qrActionCall => 'Call';
+
+  @override
+  String get qrActionMessage => 'Send message';
+
+  @override
+  String get qrActionOpenMap => 'View on map';
+
+  @override
+  String get qrActionShare => 'Share';
+
+  @override
+  String get contactSaved => 'Contact saved';
+
+  @override
+  String get unableToPerformAction => 'We couldn\'t complete that action';
+
+  @override
+  String get wifiSsidLabel => 'Network (SSID)';
+
+  @override
+  String get wifiOpenSettings => 'Open WiFi settings';
+
+  @override
+  String get scanTypePlainText => 'Text';
 }

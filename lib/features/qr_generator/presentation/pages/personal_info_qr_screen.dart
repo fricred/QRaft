@@ -7,6 +7,7 @@ import '../../domain/entities/qr_type.dart';
 import '../../domain/entities/qr_code_entity.dart';
 import '../../domain/entities/qr_data_models.dart';
 import '../widgets/forms/personal_info_form.dart';
+import '../widgets/qr_share_button.dart';
 import '../controllers/qr_customization_controller.dart';
 import '../controllers/qr_generator_controller.dart';
 import '../providers/qr_providers.dart';
@@ -36,6 +37,8 @@ class _PersonalInfoQRScreenState extends ConsumerState<PersonalInfoQRScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _isSaving = false;
+  // GlobalKey for RepaintBoundary — enables PNG export in Plan 05
+  final GlobalKey repaintKey = GlobalKey();
 
   @override
   void initState() {
@@ -134,6 +137,7 @@ class _PersonalInfoQRScreenState extends ConsumerState<PersonalInfoQRScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -204,7 +208,15 @@ class _PersonalInfoQRScreenState extends ConsumerState<PersonalInfoQRScreen>
                   onPressed: personalInfoState.isValid ? _saveQRCode : null,
                   width: double.infinity,
                 ),
-                
+
+                if (personalInfoState.isValid) ...[
+                  const SizedBox(height: 12),
+                  QrShareButton(
+                    repaintKey: repaintKey,
+                    qrName: personalInfoState.name.isNotEmpty ? personalInfoState.name : 'QR Code',
+                  ),
+                ],
+
                 if (!personalInfoState.isValid) ...[
                   const SizedBox(height: 8),
                   Text(
@@ -426,30 +438,35 @@ class _PersonalInfoQRScreenState extends ConsumerState<PersonalInfoQRScreen>
       );
     }
 
-    return QrImageView(
-      data: personalInfoState.personalInfoData.qrData,
-      version: QrVersions.auto,
-      size: qrSize,
-      backgroundColor: Color(customizationState.customization.backgroundColor),
-      eyeStyle: QrEyeStyle(
-        eyeShape: customizationState.customization.eyeShape == 0 
-            ? QrEyeShape.square 
-            : QrEyeShape.circle,
-        color: Color(customizationState.customization.eyeColor),
-      ),
-      dataModuleStyle: QrDataModuleStyle(
-        dataModuleShape: customizationState.customization.dataShape == 0
-            ? QrDataModuleShape.square
-            : QrDataModuleShape.circle,
-        color: Color(customizationState.customization.foregroundColor),
-      ),
-      embeddedImage: customizationState.customization.hasLogo && 
-                   customizationState.customization.logoPath != null
-          ? FileImage(File(customizationState.customization.logoPath!))
-          : null,
-      embeddedImageStyle: QrEmbeddedImageStyle(
-        size: Size(customizationState.customization.logoSize, 
-                  customizationState.customization.logoSize),
+    return RepaintBoundary(
+      key: repaintKey,
+      child: QrImageView(
+        data: personalInfoState.personalInfoData.qrData,
+        version: QrVersions.auto,
+        size: qrSize,
+        backgroundColor: Color(customizationState.customization.backgroundColor),
+        eyeStyle: QrEyeStyle(
+          eyeShape: customizationState.customization.eyeShape == 0
+              ? QrEyeShape.square
+              : QrEyeShape.circle,
+          color: Color(customizationState.customization.eyeColor),
+        ),
+        dataModuleStyle: QrDataModuleStyle(
+          dataModuleShape: customizationState.customization.dataShape == 0
+              ? QrDataModuleShape.square
+              : QrDataModuleShape.circle,
+          color: Color(customizationState.customization.foregroundColor),
+        ),
+        embeddedImage: customizationState.customization.hasLogo &&
+                customizationState.customization.logoPath != null
+            ? FileImage(File(customizationState.customization.logoPath!))
+            : null,
+        embeddedImageStyle: QrEmbeddedImageStyle(
+          size: Size(
+            customizationState.customization.logoSize,
+            customizationState.customization.logoSize,
+          ),
+        ),
       ),
     );
   }
@@ -896,7 +913,7 @@ class _PersonalInfoQRScreenState extends ConsumerState<PersonalInfoQRScreen>
     if (widget.editingQRCode == null) {
       final canCreate = ref.read(canCreateQRProvider);
       if (!canCreate) {
-        UpgradeBottomSheet.show(context);
+        UpgradeBottomSheet.show(context, freeLimit: ref.read(qrLimitProvider));
         return;
       }
     }

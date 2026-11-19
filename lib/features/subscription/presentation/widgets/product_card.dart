@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../domain/entities/purchase_product.dart';
+import '../../../../core/utils/inline_l10n.dart';
+import '../../../../core/utils/friendly_error.dart' show deviceIsSpanish;
 
 /// Card displaying a purchasable product
 class ProductCard extends StatelessWidget {
@@ -54,7 +56,6 @@ class ProductCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       _getProductTitle(),
@@ -64,7 +65,11 @@ class ProductCard extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    if (isSelected)
+                    const Spacer(),
+                    // Badge inline (it used to float over the selection check).
+                    if (isRecommended || savingsPercent != null) _buildBadge(),
+                    if (isSelected) ...[
+                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.all(4),
                         decoration: const BoxDecoration(
@@ -77,6 +82,7 @@ class ProductCard extends StatelessWidget {
                           color: Colors.black,
                         ),
                       ),
+                    ],
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -118,7 +124,7 @@ class ProductCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
-                      '${product.trialDays} days free trial',
+                      deviceIsSpanish() ? '${product.trialDays} días de prueba gratis' : '${product.trialDays} days free trial',
                       style: const TextStyle(
                         color: Color(0xFF1A73E8),
                         fontSize: 12,
@@ -129,13 +135,6 @@ class ProductCard extends StatelessWidget {
                 ],
               ],
             ),
-            // Badges
-            if (isRecommended || savingsPercent != null)
-              Positioned(
-                top: -8,
-                right: -8,
-                child: _buildBadge(),
-              ),
           ],
         ),
       ),
@@ -153,7 +152,7 @@ class ProductCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
-          'Save $savingsPercent%',
+          deviceIsSpanish() ? 'Ahorra $savingsPercent%' : 'Save $savingsPercent%',
           style: const TextStyle(
             color: Colors.black,
             fontSize: 11,
@@ -170,9 +169,9 @@ class ProductCard extends StatelessWidget {
           color: const Color(0xFF00FF88),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: const Text(
-          'Best Value',
-          style: TextStyle(
+        child: Text(
+          tr('Best Value'),
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 11,
             fontWeight: FontWeight.bold,
@@ -187,11 +186,11 @@ class ProductCard extends StatelessWidget {
   String _getProductTitle() {
     switch (product.type) {
       case ProductType.monthly:
-        return 'Monthly';
+        return tr('Monthly');
       case ProductType.annual:
-        return 'Annual';
+        return tr('Annual');
       case ProductType.lifetime:
-        return 'Lifetime';
+        return tr('Lifetime');
     }
   }
 }

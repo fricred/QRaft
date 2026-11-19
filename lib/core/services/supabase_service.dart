@@ -4,20 +4,50 @@ import '../config/supabase_config.dart';
 
 class SupabaseService {
   static SupabaseClient? _client;
-  
+
+  /// Secondary Supabase client using the service_role key.
+  ///
+  /// Used exclusively by the operator dashboard datasource to bypass user-scoped
+  /// RLS on `orders`, `order_items`, and `shipments` tables, and to execute
+  /// the `transition_order` RPC (GRANT EXECUTE service_role only).
+  ///
+  /// The key is injected via `--dart-define-from-file=env.json` at build time
+  /// as `OPERATOR_SERVICE_ROLE_KEY`. Consumer app builds that omit this key
+  /// will receive a [StateError] on first access — fail loudly rather than
+  /// silently using the anon key with insufficient privileges.
+  ///
+  /// Security: the service_role key is never embedded in consumer release
+  /// builds. The operator dashboard is a separate `flutter build web` invocation
+  /// with an operator-specific env.json (T-11-09 mitigated).
+  static SupabaseClient? _operatorClient;
+
+  static SupabaseClient get operatorClient {
+    const serviceRoleKey = String.fromEnvironment('OPERATOR_SERVICE_ROLE_KEY');
+    if (serviceRoleKey.isEmpty) {
+      throw StateError(
+        'Operator client not configured. '
+        'Add OPERATOR_SERVICE_ROLE_KEY to env.json and run with '
+        '--dart-define-from-file=env.json',
+      );
+    }
+    _operatorClient ??= SupabaseClient(
+      const String.fromEnvironment('SUPABASE_URL'),
+      serviceRoleKey,
+    );
+    return _operatorClient!;
+  }
+
   static SupabaseClient get client {
     if (_client == null) {
       throw Exception('Supabase has not been initialized or configured. Check your environment variables.');
     }
     return _client!;
   }
-  
+
   static bool get isInitialized => _client != null;
   
   static Future<void> initialize() async {
     debugPrint('Initializing Supabase...');
-    debugPrint('Supabase URL: ${SupabaseConfig.supabaseUrl}');
-    debugPrint('Supabase Key: ${SupabaseConfig.supabaseAnonKey.substring(0, 10)}...');
     
     // Only initialize if we have valid config
     if (SupabaseConfig.supabaseUrl.contains('your-project') || 
@@ -113,8 +143,8 @@ class SupabaseService {
         'job_title': jobTitle,
         'preferences': preferences ?? {},
         'statistics': statistics ?? {},
-        'created_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
+        'created_at': DateTime.now().toUtc().toIso8601String(),
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
       };
       
       debugPrint('Creating user profile with data: $profileData');
@@ -175,7 +205,7 @@ class SupabaseService {
       }
 
       final updateData = <String, dynamic>{
-        'updated_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
       };
       
       // Only include non-null values
@@ -268,7 +298,7 @@ class SupabaseService {
       if (user == null) {
         throw Exception('No authenticated user found');
       }
-      
+
       final response = await client
           .from(SupabaseConfig.qrCodesTable)
           .insert({
@@ -279,8 +309,8 @@ class SupabaseService {
             'title': title,
             'description': description,
             'customization': customization,
-            'created_at': DateTime.now().toIso8601String(),
-            'updated_at': DateTime.now().toIso8601String(),
+            'created_at': DateTime.now().toUtc().toIso8601String(),
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
           })
           .select('id')
           .single();
@@ -339,7 +369,7 @@ class SupabaseService {
         'qr_type': qrType,
         'content': content,
         'scanned_data': scannedData,
-        'scanned_at': DateTime.now().toIso8601String(),
+        'scanned_at': DateTime.now().toUtc().toIso8601String(),
       });
     } catch (e) {
       throw Exception('Failed to save scan history: $e');
@@ -401,7 +431,7 @@ class SupabaseService {
         'qr_type': scanResult.toJson()['type'], // Use the toJson method which has the fix
         'display_value': scanResult.displayValue,
         'parsed_data': scanResult.parsedData,
-        'scanned_at': scanResult.scannedAt.toIso8601String(),
+        'scanned_at': scanResult.scannedAt.toUtc().toIso8601String(),
       };
       
       await client.from(SupabaseConfig.scanHistoryTable).insert(scanData);
@@ -531,8 +561,8 @@ class SupabaseService {
             'total_amount': totalAmount,
             'shipping_address': shippingAddress,
             'customization': customization,
-            'created_at': DateTime.now().toIso8601String(),
-            'updated_at': DateTime.now().toIso8601String(),
+            'created_at': DateTime.now().toUtc().toIso8601String(),
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
           })
           .select('id')
           .single();
@@ -543,7 +573,7 @@ class SupabaseService {
       final orderItems = items.map((item) => {
         ...item,
         'order_id': orderId,
-        'created_at': DateTime.now().toIso8601String(),
+        'created_at': DateTime.now().toUtc().toIso8601String(),
       }).toList();
       
       await client

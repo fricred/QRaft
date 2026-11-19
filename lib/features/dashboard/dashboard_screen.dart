@@ -10,6 +10,7 @@ import '../qr_generator/domain/entities/qr_code_entity.dart';
 import '../subscription/presentation/providers/subscription_providers.dart';
 import '../subscription/presentation/widgets/qr_limit_indicator.dart';
 import '../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
+import '../ads/ads.dart';
 import 'providers/dashboard_providers.dart';
 import '../../shared/widgets/qraft_logo.dart';
 import '../../l10n/app_localizations.dart';
@@ -87,29 +88,37 @@ class DashboardScreen extends ConsumerWidget {
                         ),
                       ),
                       
-                      // Profile/Settings button
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ProfileScreen(),
+                      // Profile/Settings button — Maestro selector: dashboard_profile_button
+                      // Wrapped in Semantics(identifier:) so iOS exposes the id on the
+                      // accessibility tree (Maestro `id:` queries that tree).
+                      Semantics(
+                        identifier: 'dashboard_profile_button',
+                        button: true,
+                        label: Localizations.localeOf(context).languageCode == 'es' ? 'Perfil' : 'Profile',
+                        child: GestureDetector(
+                          key: const Key('dashboard_profile_button'),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ProfileScreen(),
+                              ),
+                            );
+                          },
+                          onLongPress: () {
+                            _showQuickActionsMenu(context, ref, l10n);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2E2E2E),
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                          );
-                        },
-                        onLongPress: () {
-                          _showQuickActionsMenu(context, ref, l10n);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF2E2E2E),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.account_circle_outlined,
-                            color: Colors.white,
-                            size: 28,
+                            child: const Icon(
+                              Icons.account_circle_outlined,
+                              color: Colors.white,
+                              size: 28,
+                            ),
                           ),
                         ),
                       ),
@@ -185,6 +194,9 @@ class DashboardScreen extends ConsumerWidget {
                   ).animate()
                     .fadeIn(duration: 300.ms, delay: 150.ms, curve: Curves.easeOutCubic)
                     .slideY(begin: 0.15, duration: 300.ms, delay: 150.ms, curve: Curves.easeOutQuart),
+
+                  // Banner Ad (only for free users)
+                  StyledBannerAd(adUnitId: AdUnitIds.bannerDashboard),
 
                   const SizedBox(height: 24),
 

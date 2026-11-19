@@ -1,0 +1,17 @@
+appId: io.gothcorp.qraft
+name: auth/login-valid
+tags:
+  - auth
+  - phase1
+---
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/dismiss-permissions.yaml
+# UMP form may or may not appear (clearState resets; first launch shows it).
+# Use the conditional ump-accept helper — it self-gates on visibility.
+- runFlow: ../launch/ump-accept.yaml
+- runFlow: ../helpers/login.yaml
+- assertVisible:
+    id: "main_scaffold_dashboard_tab"
+- assertVisible:
+    id: "main_scaffold_scanner_tab"

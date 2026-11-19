@@ -1,0 +1,117 @@
+{
+  "identifier" : "2A6E2C2B",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : false,
+      "groupNumber" : 1,
+      "internalID" : "F5AD5D1C",
+      "introductoryOffer" : null,
+      "localizations" : [
+        {
+          "description" : "Acceso de por vida a todas las funciones premium de QRaft",
+          "displayName" : "QRaft Pro Lifetime",
+          "locale" : "es_CO"
+        },
+        {
+          "description" : "Lifetime access to all QRaft premium features",
+          "displayName" : "QRaft Pro Lifetime",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "qraft_pro_lifetime",
+      "referenceName" : "QRaft Pro Lifetime",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "C7E56FC6",
+      "localizations" : [
+        {
+          "locale" : "es_CO",
+          "name" : "QRaft Pro"
+        },
+        {
+          "locale" : "en_US",
+          "name" : "QRaft Pro"
+        }
+      ],
+      "name" : "QRaft Pro",
+      "subscriptions" : [
+        {
+          "adHocOfferCodeRedemptionEnabled" : false,
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "A1B2C3D4",
+          "introductoryOffer" : {
+            "duration" : 1,
+            "durationUnit" : "WEEK",
+            "offerMode" : "FREE_TRIAL"
+          },
+          "localizations" : [
+            {
+              "description" : "Acceso mensual a todas las funciones premium",
+              "displayName" : "QRaft Pro Mensual",
+              "locale" : "es_CO"
+            },
+            {
+              "description" : "Monthly access to all premium features",
+              "displayName" : "QRaft Pro Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "qraft_pro_monthly",
+          "referenceName" : "QRaft Pro Monthly",
+          "subscriptionPeriod" : "P1M",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOfferCodeRedemptionEnabled" : false,
+          "displayPrice" : "39.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "E5F6G7H8",
+          "introductoryOffer" : {
+            "duration" : 1,
+            "durationUnit" : "WEEK",
+            "offerMode" : "FREE_TRIAL"
+          },
+          "localizations" : [
+            {
+              "description" : "Acceso anual a todas las funciones premium (ahorra 33%)",
+              "displayName" : "QRaft Pro Anual",
+              "locale" : "es_CO"
+            },
+            {
+              "description" : "Annual access to all premium features (save 33%)",
+              "displayName" : "QRaft Pro Annual",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "qraft_pro_yearly",
+          "referenceName" : "QRaft Pro Annual",
+          "subscriptionPeriod" : "P1Y",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

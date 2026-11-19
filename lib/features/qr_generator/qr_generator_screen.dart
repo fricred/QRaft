@@ -1,373 +1,362 @@
 import 'dart:math' show log;
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../subscription/presentation/providers/subscription_providers.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/app_localizations.dart';
 import 'domain/entities/qr_type.dart';
-import 'presentation/pages/location_qr_screen.dart';
-import 'presentation/pages/url_qr_screen.dart';
-import 'presentation/pages/text_qr_screen.dart';
-import 'presentation/pages/personal_info_qr_screen.dart';
-import 'presentation/pages/email_qr_screen.dart';
-import 'presentation/pages/wifi_qr_screen.dart';
+import 'presentation/pages/qr_templates_screen.dart';
 import '../subscription/presentation/providers/feature_gate_providers.dart';
 import '../subscription/presentation/widgets/pro_badge.dart';
 import '../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
 import '../subscription/presentation/widgets/qr_limit_indicator.dart';
+import '../dynamic_qr/presentation/limit_choice_sheet.dart';
+import '../dynamic_qr/presentation/dynamic_mode_toggle.dart';
 
 class QRGeneratorScreen extends ConsumerStatefulWidget {
-  const QRGeneratorScreen({super.key});
+  const QRGeneratorScreen({super.key, this.initialDynamic = false});
+
+  /// Opens in "Dinámico" mode (e.g. from "+ Nuevo QR dinámico").
+  final bool initialDynamic;
 
   @override
   ConsumerState<QRGeneratorScreen> createState() => _QRGeneratorScreenState();
 }
 
 class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
+  late bool _dynamic = widget.initialDynamic;
+
+  void _openTemplates(QRType qrType, {required bool dynamic}) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => QRTemplatesScreen(qrType: qrType, preferDynamic: dynamic),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Text(
-                l10n.generateQRTitle,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 28,
-                ),
-              ).animate()
-                .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
-                .slideY(begin: -0.15, duration: 300.ms, curve: Curves.easeOutQuart),
-              
-              const SizedBox(height: 8),
-              
-              Text(
-                l10n.generateQRSubtitle,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[400],
-                  fontSize: 16,
-                ),
-              ).animate()
-                .fadeIn(duration: 300.ms, delay: 50.ms, curve: Curves.easeOutCubic),
-
-              const SizedBox(height: 16),
-
-              // QR Limit Indicator for Free users
-              const QRLimitIndicator(compact: true)
-                  .animate()
-                  .fadeIn(duration: 300.ms, delay: 100.ms, curve: Curves.easeOutCubic),
-
-              const SizedBox(height: 24),
-              
-              // QR Type Selection Grid
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final crossAxisCount = constraints.maxWidth > 600 ? 3 : 2;
-                    final aspectRatio = constraints.maxWidth > 600 ? 1.0 : 0.85;
-                    
-                    return GridView.count(
-                      crossAxisCount: crossAxisCount,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: aspectRatio,
-                      physics: const BouncingScrollPhysics(),
-                      children: QRType.values.map((qrType) {
-                        final index = QRType.values.indexOf(qrType);
-                        final delay = (100 + (40.0 * log(index + 2))).toInt();
-                        return _buildQRTypeCard(
-                          qrType: qrType,
-                          delay: delay,
-                        );
-                      }).toList(),
-                    );
-                  },
-                ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Template Library Button
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF6366F1).withValues(alpha: 0.1),
-                      blurRadius: 20,
-                      spreadRadius: 0,
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            const Color(0xFF2E2E2E).withValues(alpha: 0.7),
-                            const Color(0xFF1A1A1A).withValues(alpha: 0.8),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.12),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+        // QRAFT-14: one scroll view, so the header scrolls away with the grid instead of
+        // eating the height in landscape; columns adapt to the available width.
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth;
+            final crossAxisCount = width > 900 ? 4 : (width > 600 ? 3 : 2);
+            final aspectRatio = width > 600 ? 1.0 : 0.85;
+            return CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Header
+                        Text(
+                              l10n.generateQRTitle,
+                              style: Theme.of(
+                                context,
+                              ).textTheme.headlineSmall?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 28,
                               ),
-                              borderRadius: BorderRadius.circular(12),
+                            )
+                            .animate()
+                            .fadeIn(
+                              duration: 300.ms,
+                              curve: Curves.easeOutCubic,
+                            )
+                            .slideY(
+                              begin: -0.15,
+                              duration: 300.ms,
+                              curve: Curves.easeOutQuart,
                             ),
-                            child: const Icon(
-                              Icons.auto_awesome_rounded,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.templateLibrary,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  l10n.templateLibraryDescription,
-                                  style: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            color: Colors.grey[400],
-                            size: 16,
+
+                        const SizedBox(height: 8),
+
+                        Text(
+                          l10n.generateQRSubtitle,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: Colors.grey[400], fontSize: 16),
+                        ).animate().fadeIn(
+                          duration: 300.ms,
+                          delay: 50.ms,
+                          curve: Curves.easeOutCubic,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // QR Limit Indicator for Free users
+                        const QRLimitIndicator(compact: true).animate().fadeIn(
+                          duration: 300.ms,
+                          delay: 100.ms,
+                          curve: Curves.easeOutCubic,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Estático (free quota) | Dinámico (paid, featured).
+                        DynamicModeToggle(
+                          dynamic: _dynamic,
+                          onChanged: (v) => setState(() => _dynamic = v),
+                          staticCaption: Localizations.localeOf(context).languageCode == 'es'
+                              ? (ref.watch(canCreateQRProvider) ? 'Gratis · no editable' : 'Requiere Pro')
+                              : (ref.watch(canCreateQRProvider) ? 'Free · not editable' : 'Requires Pro'),
+                        ),
+
+                        if (_dynamic) ...[
+                          const SizedBox(height: 12),
+                          Text(
+                            Localizations.localeOf(context).languageCode == 'es'
+                                ? 'Elige con qué empieza tu código. Podrás cambiarlo a cualquier tipo después.'
+                                : 'Pick what your code starts with. You can switch it to any type later.',
+                            style: const TextStyle(color: Color(0xFFB4BCC6), fontSize: 13, height: 1.4),
                           ),
                         ],
-                      ),
+                        const SizedBox(height: 20),
+                      ],
                     ),
                   ),
                 ),
-              ).animate()
-                .fadeIn(duration: 300.ms, delay: 400.ms, curve: Curves.easeOutCubic)
-                .slideY(begin: 0.15, duration: 300.ms, delay: 400.ms, curve: Curves.easeOutQuart),
-            ],
-          ),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                  sliver: SliverGrid.count(
+                    crossAxisCount: crossAxisCount,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: aspectRatio,
+                    children:
+                        QRType.values.map((qrType) {
+                          final index = QRType.values.indexOf(qrType);
+                          final delay = (100 + (40.0 * log(index + 2))).toInt();
+                          return _buildQRTypeCard(qrType: qrType, delay: delay);
+                        }).toList(),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildQRTypeCard({
-    required QRType qrType,
-    required int delay,
-  }) {
+  Widget _buildQRTypeCard({required QRType qrType, required int delay}) {
     final glowColor = Color(qrType.gradientColors.first);
     final access = ref.watch(qrTypeAccessProvider(qrType));
-    final isLocked = !access.isAllowed;
+    // Dynamic codes include every type: no PRO lock, the price is shown instead.
+    final isLocked = !_dynamic && !access.isAllowed;
 
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: glowColor.withValues(alpha: 0.1),
-            blurRadius: 20,
-            spreadRadius: 0,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: glowColor.withValues(alpha: 0.1),
+                blurRadius: 20,
+                spreadRadius: 0,
+              ),
+            ],
           ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  const Color(0xFF2E2E2E).withValues(alpha: 0.7),
-                  const Color(0xFF1A1A1A).withValues(alpha: 0.8),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: isLocked
-                    ? const Color(0xFFFFD700).withValues(alpha: 0.3)
-                    : Colors.white.withValues(alpha: 0.12),
-                width: 1,
-              ),
-            ),
-            child: Stack(
-              children: [
-                // Main card content
-                Opacity(
-                  opacity: isLocked ? 0.6 : 1.0,
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(20),
-                      onTap: () {
-                        if (isLocked) {
-                          UpgradeBottomSheet.show(context);
-                          return;
-                        }
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      const Color(0xFF2E2E2E).withValues(alpha: 0.7),
+                      const Color(0xFF1A1A1A).withValues(alpha: 0.8),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color:
+                        isLocked
+                            ? const Color(0xFFFFD700).withValues(alpha: 0.3)
+                            : Colors.white.withValues(alpha: 0.12),
+                    width: 1,
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    // Main card content
+                    Opacity(
+                      opacity: isLocked ? 0.6 : 1.0,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: () async {
+                            if (_dynamic) {
+                              _openTemplates(qrType, dynamic: true);
+                              return;
+                            }
+                            if (isLocked) {
+                              UpgradeBottomSheet.show(context);
+                              return;
+                            }
 
-                        Widget targetScreen;
-                        switch (qrType) {
-                          case QRType.url:
-                            targetScreen = const URLQRScreen();
-                            break;
-                          case QRType.text:
-                            targetScreen = const TextQRScreen();
-                            break;
-                          case QRType.personalInfo:
-                            targetScreen = const PersonalInfoQRScreen();
-                            break;
-                          case QRType.email:
-                            targetScreen = const EmailQRScreen();
-                            break;
-                          case QRType.wifi:
-                            targetScreen = const WiFiQRScreen();
-                            break;
-                          case QRType.location:
-                            targetScreen = LocationQRScreen();
-                            break;
-                        }
+                            // QRAFT-10: tell the user about the free limit before they fill a
+                            // whole QR, not only when they press Save.
+                            // Only with the plan and QR count actually loaded: while they load,
+                            // limits fall back to "free" and a Pro user would be wrongly blocked
+                            // (Save still enforces the limit either way).
+                            // canCreateQRProvider never blocks while the plan loads.
+                            if (!ref.read(canCreateQRProvider)) {
+                              // At the free limit a paid dynamic QR is still possible
+                              // (it doesn't count): offer it next to Pro.
+                              final choice = await showLimitChoiceSheet(context, freeLimit: ref.read(qrLimitProvider));
+                              if (!context.mounted || choice == null) return;
+                              if (choice == LimitChoice.pro) {
+                                UpgradeBottomSheet.show(context, freeLimit: ref.read(qrLimitProvider));
+                                return;
+                              }
+                              setState(() => _dynamic = true);
+                              _openTemplates(qrType, dynamic: true);
+                              return;
+                            }
 
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => targetScreen,
-                          ),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: qrType.gradientColors.map((c) => Color(c)).toList(),
-                                ),
-                                borderRadius: BorderRadius.circular(14),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: glowColor.withValues(alpha: 0.3),
-                                    blurRadius: 6,
-                                    offset: const Offset(0, 3),
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        QRTemplatesScreen(qrType: qrType),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors:
+                                          qrType.gradientColors
+                                              .map((c) => Color(c))
+                                              .toList(),
+                                    ),
+                                    borderRadius: BorderRadius.circular(14),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: glowColor.withValues(alpha: 0.3),
+                                        blurRadius: 6,
+                                        offset: const Offset(0, 3),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              child: Icon(
-                                _getIconData(qrType.iconName),
-                                color: Colors.white,
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Flexible(
-                              child: Text(
-                                qrType.getDisplayName(context),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
+                                  child: Icon(
+                                    _getIconData(qrType.iconName),
+                                    color: Colors.white,
+                                    size: 24,
+                                  ),
                                 ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Flexible(
-                              child: Text(
-                                qrType.getDescription(context),
-                                style: TextStyle(
-                                  color: Colors.grey[400],
-                                  fontSize: 12,
-                                  height: 1.2,
+                                const SizedBox(height: 12),
+                                Flexible(
+                                  child: Text(
+                                    qrType.getDisplayName(context),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                                const SizedBox(height: 4),
+                                Flexible(
+                                  child: Text(
+                                    qrType.getDescription(context),
+                                    style: TextStyle(
+                                      color: Colors.grey[400],
+                                      fontSize: 12,
+                                      height: 1.2,
+                                    ),
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                    // Dynamic mode: no price per tile (the price is per code, shown once in
+                    // the toggle and at checkout) — just a neutral "editable" mark.
+                    if (_dynamic)
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00FF88).withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(color: const Color(0xFF00FF88).withValues(alpha: 0.6)),
+                          ),
+                          child: const Icon(Icons.sync_rounded, size: 14, color: Color(0xFF00FF88)),
+                        ),
+                      ),
+                    // PRO badge for locked features
+                    if (isLocked)
+                      const Positioned(
+                        top: 8,
+                        right: 8,
+                        child: ProBadge(mini: true),
+                      ),
+                    // Lock icon overlay for locked features
+                    if (isLocked)
+                      Positioned(
+                        bottom: 8,
+                        right: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.lock_rounded,
+                            size: 14,
+                            color: Color(0xFFFFD700),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-                // PRO badge for locked features
-                if (isLocked)
-                  const Positioned(
-                    top: 8,
-                    right: 8,
-                    child: ProBadge(mini: true),
-                  ),
-                // Lock icon overlay for locked features
-                if (isLocked)
-                  Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.lock_rounded,
-                        size: 14,
-                        color: Color(0xFFFFD700),
-                      ),
-                    ),
-                  ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
-    ).animate()
-      .fadeIn(duration: 300.ms, delay: delay.ms, curve: Curves.easeOutCubic)
-      .slideY(begin: 0.15, duration: 300.ms, delay: delay.ms, curve: Curves.easeOutQuart)
-      .scale(begin: const Offset(0.95, 0.95), duration: 300.ms, delay: delay.ms);
+        )
+        .animate()
+        .fadeIn(duration: 300.ms, delay: delay.ms, curve: Curves.easeOutCubic)
+        .slideY(
+          begin: 0.15,
+          duration: 300.ms,
+          delay: delay.ms,
+          curve: Curves.easeOutQuart,
+        )
+        .scale(
+          begin: const Offset(0.95, 0.95),
+          duration: 300.ms,
+          delay: delay.ms,
+        );
   }
 
   IconData _getIconData(String iconName) {
@@ -384,9 +373,10 @@ class _QRGeneratorScreenState extends ConsumerState<QRGeneratorScreen> {
         return Icons.email_rounded;
       case 'location_on_rounded':
         return Icons.location_on_rounded;
+      case 'event_rounded':
+        return Icons.event_rounded;
       default:
         return Icons.qr_code_rounded;
     }
   }
-
 }

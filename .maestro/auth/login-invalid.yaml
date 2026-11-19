@@ -1,0 +1,38 @@
+appId: io.gothcorp.qraft
+name: auth/login-invalid
+tags:
+  - auth
+  - phase1
+---
+- launchApp:
+    clearState: true
+- runFlow: ../helpers/dismiss-permissions.yaml
+- runFlow: ../launch/ump-accept.yaml
+- assertVisible:
+    id: "welcome_screen_root"
+- scrollUntilVisible:
+    element:
+      id: "welcome_login_cta"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    id: "welcome_login_cta"
+- assertVisible:
+    id: "login_screen_root"
+- tapOn:
+    id: "login_email_field"
+- inputText: invalid@example.com
+- tapOn:
+    id: "login_password_field"
+- inputText: wrong-password-123
+# Press Enter to submit (keyboard occludes login_submit_button on iOS sim).
+- pressKey: Enter
+# QRAFT-4: a wrong password shows a friendly message and keeps the user on the login
+# form (it used to replace it with a full-screen "Authentication Error").
+- extendedWaitUntil:
+    visible:
+      text: "(?s).*(Correo o contraseña incorrectos|Incorrect email or password).*"
+    timeout: 15000
+- assertVisible:
+    id: "login_screen_root"
+- assertNotVisible: "Authentication Error"

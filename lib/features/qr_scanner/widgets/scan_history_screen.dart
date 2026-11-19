@@ -6,9 +6,10 @@ import 'package:qraft/l10n/app_localizations.dart';
 import '../../../shared/widgets/glass_button.dart';
 import '../providers/qr_scanner_provider.dart';
 import '../models/scan_result.dart';
-import 'scan_result_dialog.dart';
+import '../scan_result_screen.dart';
 import '../../subscription/presentation/providers/subscription_providers.dart';
 import '../../subscription/presentation/widgets/upgrade_bottom_sheet.dart';
+import '../../ads/ads.dart';
 
 class ScanHistoryScreen extends ConsumerWidget {
   const ScanHistoryScreen({super.key});
@@ -28,6 +29,8 @@ class ScanHistoryScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
+          // Accessible name for screen readers and test automation (QRAFT-17).
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
         ),
@@ -141,21 +144,42 @@ class ScanHistoryScreen extends ConsumerWidget {
       return _buildEmptyState(context, l10n);
     }
 
-    // Add 1 to itemCount if there are hidden items to show upgrade message
-    final itemCount = hasHiddenItems ? scanHistory.length + 1 : scanHistory.length;
+    // Calculate item count with optional ad and upgrade message
+    // Insert native ad after 3rd item (if there are at least 3 items)
+    final showNativeAd = scanHistory.length >= 3;
+    final adIndex = 3; // After 3rd item (index 2)
+    var itemCount = scanHistory.length;
+    if (showNativeAd) itemCount += 1;
+    if (hasHiddenItems) itemCount += 1;
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: itemCount,
       itemBuilder: (context, index) {
+        // Show native ad after 3rd item
+        if (showNativeAd && index == adIndex) {
+          return NativeListAdWidget(adUnitId: AdUnitIds.nativeHistory);
+        }
+
+        // Calculate actual history index accounting for ad
+        var historyIndex = index;
+        if (showNativeAd && index > adIndex) {
+          historyIndex = index - 1;
+        }
+
         // Show upgrade message as last item
-        if (hasHiddenItems && index == scanHistory.length) {
+        if (hasHiddenItems && historyIndex >= scanHistory.length) {
           return _buildUpgradeMessage(context, hiddenCount, l10n);
         }
 
-        final scanResult = scanHistory[index];
-        final delay = (50 + (30.0 * log(index + 2))).toInt();
-        return _buildHistoryItem(context, ref, scanResult, index)
+        // Guard against out of bounds
+        if (historyIndex >= scanHistory.length) {
+          return const SizedBox.shrink();
+        }
+
+        final scanResult = scanHistory[historyIndex];
+        final delay = (50 + (30.0 * log(historyIndex + 2))).toInt();
+        return _buildHistoryItem(context, ref, scanResult, historyIndex)
             .animate(delay: delay.ms)
             .fadeIn(duration: 300.ms, curve: Curves.easeOutCubic)
             .slideX(begin: 0.15, end: 0, duration: 300.ms, curve: Curves.easeOutQuart);
@@ -517,10 +541,7 @@ class ScanHistoryScreen extends ConsumerWidget {
   }
 
   void _showScanResultDialog(BuildContext context, ScanResult scanResult) {
-    showDialog(
-      context: context,
-      builder: (context) => ScanResultDialog(scanResult: scanResult),
-    );
+    ScanResultScreen.push(context, scanResult);
   }
 
   void _deleteScanResult(WidgetRef ref, String scanId) {

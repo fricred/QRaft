@@ -1,28 +1,88 @@
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
-import '../../domain/entities/qr_type.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
 
-class QRPreviewWidget extends StatelessWidget {
+import '../../domain/entities/qr_code_entity.dart';
+import '../../domain/entities/qr_type.dart';
+import '../../domain/services/qr_decoration_builder.dart';
+
+/// A widget that renders a live QR code preview using [PrettyQrView].
+///
+/// [QrImage] is created in [initState] / [didUpdateWidget] — never in [build] —
+/// to avoid regenerating the QR on every frame repaint.
+///
+/// TODO(05-03): Add 500 ms debounce in didUpdateWidget to avoid thrashing
+/// QrImage on rapid user input (typing in text fields, slider drags).
+class QRPreviewWidget extends ConsumerStatefulWidget {
   final QRType qrType;
   final String? qrData;
+
+  /// Full customization state. Replaces the legacy color params for rendering.
+  final QRCustomization customization;
+
+  /// Kept for API compatibility — ignored in rendering (Phase 5 wires
+  /// color customization through [customization] instead).
+  @Deprecated('Use customization field instead')
   final Color? foregroundColor;
+
+  /// Kept for API compatibility — IGNORED, always white per dark-on-light
+  /// constraint (T-02-04 mitigation). Use [customization.backgroundColor] if
+  /// programmatic control is ever needed.
+  @Deprecated('Use customization field instead')
   final Color? backgroundColor;
+
   final double size;
+
+  /// GlobalKey for [RepaintBoundary] — enables PNG export in Plan 05.
+  final GlobalKey? repaintKey;
 
   const QRPreviewWidget({
     super.key,
     required this.qrType,
     this.qrData,
+    this.customization = const QRCustomization(),
+    // ignore: deprecated_member_use_from_same_package
     this.foregroundColor,
+    // ignore: deprecated_member_use_from_same_package
     this.backgroundColor,
     this.size = 200.0,
+    this.repaintKey,
   });
 
   @override
-  Widget build(BuildContext context) {
-    // Sample data for preview if no actual data provided
-    final previewData = qrData ?? _getSampleData(qrType);
+  ConsumerState<QRPreviewWidget> createState() => _QRPreviewWidgetState();
+}
 
+class _QRPreviewWidgetState extends ConsumerState<QRPreviewWidget> {
+  QrImage? _qrImage;
+
+  @override
+  void initState() {
+    super.initState();
+    _buildQrImage();
+  }
+
+  @override
+  void didUpdateWidget(QRPreviewWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.customization != oldWidget.customization ||
+        widget.qrData != oldWidget.qrData) {
+      _buildQrImage();
+    }
+  }
+
+  void _buildQrImage() {
+    final data = _previewData;
+    setState(() {
+      _qrImage =
+          QrDecorationBuilder.buildQrImage(data, widget.customization);
+    });
+  }
+
+  String get _previewData => widget.qrData ?? _getSampleData(widget.qrType);
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -36,84 +96,63 @@ class QRPreviewWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // QR Code
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: backgroundColor ?? Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: QrImageView(
-              data: previewData,
-              version: QrVersions.auto,
-              size: size,
-              backgroundColor: backgroundColor ?? Colors.white,
-              errorCorrectionLevel: QrErrorCorrectLevel.M,
-              eyeStyle: QrEyeStyle(
-                eyeShape: QrEyeShape.square,
-                color: foregroundColor ?? Colors.black,
-              ),
-              dataModuleStyle: QrDataModuleStyle(
-                dataModuleShape: QrDataModuleShape.square,
-                color: foregroundColor ?? Colors.black,
-              ),
-            ),
-          ),
-          
+          // QR Code with optional RepaintBoundary for Plan 05 PNG export
+          _buildQrContainer(),
+
           const SizedBox(height: 16),
-          
-          // QR Type indicator
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: qrType.gradientColors.map((c) => Color(c)).toList(),
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  _getIconData(qrType.iconName),
-                  color: Colors.white,
-                  size: 16,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  qrType.getDisplayName(context),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
+
+          // QR type badge
+          _TypeBadge(qrType: widget.qrType),
+
           const SizedBox(height: 12),
-          
+
           // Preview text
           Text(
-            _getPreviewText(qrType, previewData),
-            style: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 12,
-            ),
+            _getPreviewText(widget.qrType, _previewData),
+            style: TextStyle(color: Colors.grey[400], fontSize: 12),
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildQrContainer() {
+    final qrContainer = Container(
+      width: widget.size,
+      height: widget.size,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: _buildQrView(),
+    );
+
+    if (widget.repaintKey != null) {
+      return RepaintBoundary(key: widget.repaintKey, child: qrContainer);
+    }
+    return qrContainer;
+  }
+
+  Widget _buildQrView() {
+    // Null guard while QrImage is being built (should only be one frame)
+    if (_qrImage == null) {
+      return Container(color: Colors.grey[200]);
+    }
+    return PrettyQrView(
+      qrImage: _qrImage!,
+      decoration:
+          QrDecorationBuilder.buildDecoration(widget.customization),
     );
   }
 
@@ -131,6 +170,8 @@ class QRPreviewWidget extends StatelessWidget {
         return 'mailto:example@email.com?subject=Hello&body=Sample message';
       case QRType.location:
         return 'geo:37.7749,-122.4194?q=37.7749,-122.4194(Sample Location)';
+      case QRType.event:
+        return 'BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:Sample Event\nDTSTART:20260501T100000\nEND:VEVENT\nEND:VCALENDAR';
     }
   }
 
@@ -148,7 +189,48 @@ class QRPreviewWidget extends StatelessWidget {
         return 'Email with pre-filled content';
       case QRType.location:
         return 'GPS coordinates and location';
+      case QRType.event:
+        return 'Calendar event (iCal format)';
     }
+  }
+}
+
+/// Private badge widget showing QR type with gradient chip + icon
+class _TypeBadge extends StatelessWidget {
+  final QRType qrType;
+
+  const _TypeBadge({required this.qrType});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: qrType.gradientColors.map((c) => Color(c)).toList(),
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            _getIconData(qrType.iconName),
+            color: Colors.white,
+            size: 16,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            qrType.getDisplayName(context),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   IconData _getIconData(String iconName) {
@@ -165,6 +247,8 @@ class QRPreviewWidget extends StatelessWidget {
         return Icons.email_rounded;
       case 'location_on_rounded':
         return Icons.location_on_rounded;
+      case 'event_rounded':
+        return Icons.event_rounded;
       default:
         return Icons.qr_code_rounded;
     }

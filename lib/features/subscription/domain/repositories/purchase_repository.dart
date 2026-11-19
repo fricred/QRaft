@@ -14,7 +14,7 @@ class PurchaseResult {
     this.error,
   });
 
-  factory PurchaseResult.success(CustomerInfo customerInfo) => PurchaseResult._(
+  factory PurchaseResult.success(CustomerInfo? customerInfo) => PurchaseResult._(
         success: true,
         customerInfo: customerInfo,
       );
