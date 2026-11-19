@@ -39,6 +39,7 @@ const Map<String, String> _es = {
   'Eyes': 'Ojos',
   'Logo': 'Logo',
   'Frame': 'Marco',
+  'yourbusiness.com': 'tunegocio.com',
   'Step 2 of 2': 'Paso 2 de 2',
   'PNG or SVG · max 1 MB': 'PNG o SVG · máx. 1 MB',
   'Welcome to Pro!': '¡Bienvenido a Pro!',
