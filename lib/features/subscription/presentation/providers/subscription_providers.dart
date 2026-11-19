@@ -65,7 +65,8 @@ final isFreeUserProvider = Provider<bool>((ref) {
 final currentQRCountProvider = Provider<int>((ref) {
   final qrCodesAsync = ref.watch(userQRCodesProvider);
   // Last known count while reloading.
-  return qrCodesAsync.value?.length ?? 0;
+  // Paid dynamic QRs never count toward the plan limit (same rule as the server).
+  return qrCodesAsync.value?.where((q) => !q.isDynamic).length ?? 0;
 });
 
 /// Provider to get remaining QR codes count

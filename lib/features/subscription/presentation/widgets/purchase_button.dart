@@ -1,3 +1,4 @@
+import '../../../../core/utils/inline_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:qraft/l10n/app_localizations.dart';
@@ -165,9 +166,9 @@ class PurchaseSuccessOverlay extends StatelessWidget {
                 .fadeIn(duration: 300.ms)
                 .scale(begin: const Offset(0.5, 0.5), duration: 400.ms),
             const SizedBox(height: 24),
-            const Text(
-              'Welcome to Pro!',
-              style: TextStyle(
+            Text(
+              tr('Welcome to Pro!'),
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -175,7 +176,7 @@ class PurchaseSuccessOverlay extends StatelessWidget {
             ).animate().fadeIn(delay: 200.ms, duration: 300.ms),
             const SizedBox(height: 8),
             Text(
-              'All premium features are now unlocked',
+              tr('All premium features are now unlocked'),
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.7),
                 fontSize: 14,
@@ -195,9 +196,9 @@ class PurchaseSuccessOverlay extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
-                'Get Started',
-                style: TextStyle(
+              child: Text(
+                tr('Get Started'),
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),

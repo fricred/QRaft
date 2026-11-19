@@ -95,6 +95,9 @@ int _colorToArgb(Color c) =>
 
 /// What the editor returns in [QRCanvasEditorScreen.contentOnly] mode: the payload a
 /// static QR of [type] would encode, without saving anything.
+/// Longest text a QR keeps readable at the editor's error-correction level.
+const int _kTextMaxChars = 1000;
+
 class QrContentResult {
   const QrContentResult({required this.type, required this.payload, required this.display});
   final QRType type;
@@ -304,7 +307,11 @@ startDateTime: _typedEventDate ??
           final origMinute = DateTime(origStart.year, origStart.month, origStart.day,
               origStart.hour, origStart.minute);
           if (typed == origMinute) return end; // start not really changed
-          return end.add(typed.difference(origStart));
+          // The form keeps showing the original end time, so save exactly that time on
+          // the new day (an end at or before the start means the next day).
+          var e = DateTime(typed.year, typed.month, typed.day, end.hour, end.minute);
+          if (!e.isAfter(typed)) e = e.add(const Duration(days: 1));
+          return e;
         })(),
         description: _formData['description'] as String?,
       ),
@@ -778,9 +785,12 @@ startDateTime: _typedEventDate ??
       }
       if (mounted) {
         setState(() => _saving = false);
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
           SnackBar(
             // Never show raw server errors (QRAFT-1).
+            duration: const Duration(seconds: 6),
             content: Text(
               friendlyErrorMessage(e, spanish: Localizations.localeOf(context).languageCode == 'es'),
               style: const TextStyle(color: Colors.white),
@@ -836,10 +846,27 @@ startDateTime: _typedEventDate ??
     if (dataModel is URLData) {
       final problem = dynamicUrlProblem(dataModel.url);
       if (problem != null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(dynamicQrErrorText(context, DynamicQrException(problem))),
-          duration: const Duration(seconds: 6),
-        ));
+        final es = Localizations.localeOf(context).languageCode == 'es';
+        await showDialog<void>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            backgroundColor: _kSurface,
+            icon: const Icon(Icons.gpp_bad_rounded, color: Color(0xFFFFB020)),
+            title: Text(es ? 'Cambia el link' : 'Change the link', style: const TextStyle(color: Colors.white)),
+            content: Text(
+              '${dynamicQrErrorText(context, DynamicQrException(problem))}\n\n${es ? 'No se hizo ningún cobro.' : 'You were not charged.'}',
+              style: const TextStyle(color: Colors.white, height: 1.4),
+            ),
+            actions: [
+              TextButton(
+                key: const Key('dynamic_link_blocked_ok_button'),
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text(es ? 'Cambiar el link' : 'Change the link'),
+              ),
+            ],
+          ),
+        );
+        if (!mounted) return;
         _openDataSheet();
         return;
       }
@@ -2183,9 +2210,9 @@ class _LogoSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'PNG or SVG · max 1 MB',
-              style: TextStyle(color: Color(0xFF888888), fontSize: 12),
+            Text(
+              tr('PNG or SVG · max 1 MB'),
+              style: const TextStyle(color: Color(0xFF888888), fontSize: 12),
             ),
           ],
         ),
@@ -2239,9 +2266,9 @@ class _FrameSheetState extends State<_FrameSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
-          'Frame',
-          style: TextStyle(
+        Text(
+          tr('Frame'),
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Colors.white,
@@ -2542,7 +2569,7 @@ class _DataSheetState extends State<_DataSheet> {
       (
         key: 'url',
         label: 'URL *',
-        hint: 'https://example.com',
+        hint: 'e.g. yourbusiness.com',
         required: true,
         multi: false,
         keyboard: TextInputType.url,
@@ -2918,6 +2945,8 @@ class _DataSheetState extends State<_DataSheet> {
                                     }
                                   },
                           maxLines: f.multi ? 4 : 1,
+                          // A QR only holds so much: show the limit while typing (QRAFT-18).
+                          maxLength: (widget.qrType == QRType.text && f.key == 'text') ? _kTextMaxChars : null,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 15,
@@ -2927,6 +2956,7 @@ class _DataSheetState extends State<_DataSheet> {
                             labelText: _trField(f.label),
                             hintText: _trField(f.hint),
                             errorText: f.key == 'url' ? _urlError : null,
+                            counterStyle: const TextStyle(color: Color(0xFF888888)),
                             errorMaxLines: 2,
                             labelStyle: const TextStyle(
                               color: Color(0xFF888888),

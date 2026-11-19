@@ -94,7 +94,7 @@ class DashboardScreen extends ConsumerWidget {
                       Semantics(
                         identifier: 'dashboard_profile_button',
                         button: true,
-                        label: 'Profile',
+                        label: Localizations.localeOf(context).languageCode == 'es' ? 'Perfil' : 'Profile',
                         child: GestureDetector(
                           key: const Key('dashboard_profile_button'),
                           onTap: () {

@@ -2,6 +2,7 @@
 // TypePicker → [this screen] → QRCanvasEditorScreen
 import 'package:flutter/material.dart';
 import '../../../../core/utils/inline_l10n.dart';
+import '../../../../core/utils/friendly_error.dart' show deviceIsSpanish;
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
@@ -70,9 +71,9 @@ class _QRTemplatesScreenState extends ConsumerState<QRTemplatesScreen> {
                     onTap: () => Navigator.of(context).pop(),
                   ),
                   const Spacer(),
-                  const Text(
-                    'Step 2 of 2',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF888888)),
+                  Text(
+                    tr('Step 2 of 2'),
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF888888)),
                   ),
                   const SizedBox(width: 40),
                 ],
@@ -113,7 +114,9 @@ class _QRTemplatesScreenState extends ConsumerState<QRTemplatesScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'For ${widget.qrType.getDisplayName(context)} · You can change anything next',
+                          deviceIsSpanish()
+                              ? 'Para ${widget.qrType.getDisplayName(context)} · Después puedes cambiar todo'
+                              : 'For ${widget.qrType.getDisplayName(context)} · You can change anything next',
                           style: const TextStyle(fontSize: 13, color: Color(0xFF888888)),
                           overflow: TextOverflow.ellipsis,
                         ),

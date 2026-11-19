@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +7,8 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../qr_generator/domain/entities/qr_code_entity.dart';
+import '../../qr_generator/domain/services/qr_decoration_builder.dart';
+import '../../qr_generator/domain/services/qr_export_service.dart';
 import '../../qr_generator/presentation/controllers/qr_customization_controller.dart';
 import '../../qr_generator/presentation/pages/qr_canvas_editor_screen.dart';
 import '../../qr_library/presentation/providers/qr_library_providers.dart';
@@ -92,6 +96,40 @@ class _DynamicQrDetailScreenState extends ConsumerState<DynamicQrDetailScreen> {
       await ref.read(dynamicQrRepositoryProvider).revoke(code.redirectId);
       if (mounted) Navigator.of(context).pop();
     });
+  }
+
+  /// Shares the code as a print-ready PNG (same design as on screen) plus its link, so
+  /// the owner can save or print the code they paid for (QRAFT-34 D4).
+  Future<void> _shareImage(DynamicQr code) async {
+    if (code.status == DynamicQrStatus.pendingPayment) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(
+          content: Text(dqT(context, 'Este código se activa cuando se confirme el pago. Aún no lo compartas ni lo imprimas.',
+              "This code turns on once the payment is confirmed. Don't share or print it yet.")),
+        ));
+      return;
+    }
+    try {
+      final c = code.qr?.customization ?? const QRCustomization();
+      final bytes = await QrExportService.exportDigitalOnly(
+        QrDecorationBuilder.buildQrImage(code.url, c),
+        QrDecorationBuilder.buildDecoration(c),
+        size: 1080,
+      );
+      final safe = code.name.replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '_');
+      final file = File('${Directory.systemTemp.path}/qraft_${safe}_${DateTime.now().millisecondsSinceEpoch}.png');
+      await file.writeAsBytes(bytes);
+      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: '${code.name}: ${code.url}'));
+    } catch (e) {
+      debugPrint('Dynamic QR share failed: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(
+          content: Text(dqT(context, 'No pudimos preparar la imagen. Inténtalo de nuevo.', "We couldn't prepare the image. Please try again.")),
+        ));
+    }
   }
 
   Future<void> _editDesign(DynamicQr code) async {
@@ -291,8 +329,8 @@ class _DynamicQrDetailScreenState extends ConsumerState<DynamicQrDetailScreen> {
                   paused ? dqT(context, 'Reactivar', 'Resume') : dqT(context, 'Pausar', 'Pause'), () => _togglePause(code),
                   key: const Key('dynamic_detail_pause_button')),
             _action(Icons.palette_outlined, dqT(context, 'Diseño', 'Design'), () => _editDesign(code)),
-            _action(Icons.ios_share_rounded, dqT(context, 'Compartir', 'Share'),
-                () => SharePlus.instance.share(ShareParams(text: '${code.name}: ${code.url}'))),
+            _action(Icons.ios_share_rounded, dqT(context, 'Compartir imagen', 'Share image'),
+                () => _shareImage(code), key: const Key('dynamic_detail_share_button')),
             if (!pending) _action(Icons.history_rounded, dqT(context, 'Historial', 'History'), () => _history(code)),
           ],
         ),

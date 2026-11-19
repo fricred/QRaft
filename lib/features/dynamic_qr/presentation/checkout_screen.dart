@@ -331,7 +331,9 @@ class _DynamicQrCheckoutScreenState extends ConsumerState<DynamicQrCheckoutScree
           icon: Icons.error_outline_rounded,
           color: kDqError,
           title: dqT(context, 'No se completó el pago', "The payment didn't go through"),
-          body: _error ?? '',
+          body: _created
+              ? '${_error ?? ''}\n\n${dqT(context, 'Tu código quedó guardado sin activar. Puedes pagarlo después desde tu biblioteca.', 'Your code was saved but is not active. You can pay for it later from your library.')}'
+              : (_error ?? ''),
           actions: [
             _primary(dqT(context, 'Intentar de nuevo', 'Try again'), _pay, key: const Key('dynamic_checkout_retry_button')),
             _secondary(

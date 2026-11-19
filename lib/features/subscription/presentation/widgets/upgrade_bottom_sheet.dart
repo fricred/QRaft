@@ -1,3 +1,4 @@
+import '../../../../core/utils/inline_l10n.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -366,7 +367,7 @@ class _UpgradeBottomSheetState extends ConsumerState<UpgradeBottomSheet> {
           Icon(Icons.error_outline, size: 40, color: Colors.red[300]),
           const SizedBox(height: 12),
           Text(
-            'Unable to load products',
+            tr('Unable to load products'),
             style: TextStyle(
               color: Colors.red[300],
               fontSize: 16,
@@ -375,7 +376,7 @@ class _UpgradeBottomSheetState extends ConsumerState<UpgradeBottomSheet> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Please check your connection and try again',
+            tr('Please check your connection and try again'),
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.6),
               fontSize: 13,
@@ -385,7 +386,7 @@ class _UpgradeBottomSheetState extends ConsumerState<UpgradeBottomSheet> {
           const SizedBox(height: 16),
           TextButton(
             onPressed: () => ref.invalidate(purchaseProductsProvider),
-            child: const Text('Retry'),
+            child: Text(tr('Retry')),
           ),
         ],
       ),

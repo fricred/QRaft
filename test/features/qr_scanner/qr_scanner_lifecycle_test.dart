@@ -15,6 +15,7 @@ import 'package:qraft/l10n/app_localizations.dart';
 // We import the screen under test via a source-level import.
 // The test can verify structural properties of the class.
 import 'package:qraft/features/qr_scanner/qr_scanner_screen.dart';
+import 'package:qraft/features/main/main_scaffold.dart' show navigationIndexProvider;
 
 
 /// testWidgets + teardown: the screen's entrance animations schedule delayed timers, so
@@ -50,8 +51,10 @@ void main() {
     );
   });
 
-  Widget buildTestApp() {
+  // The scanner only sets the camera up while its tab (index 2) is the visible one.
+  Widget buildTestApp({int tab = 2}) {
     return ProviderScope(
+      overrides: [navigationIndexProvider.overrideWith((ref) => tab)],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -159,6 +162,62 @@ void main() {
         findsOneWidget,
         reason: '_buildPermissionDeniedView should show scanner_open_settings_button when permanently denied',
       );
+
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+        const MethodChannel('flutter.baseflow.com/permissions/methods'),
+        null,
+      );
+    });
+  });
+
+  group('QRScannerScreen - camera permission only on the scanner tab (QRAFT-35)', () {
+    testScreen('Does not ask for the camera while another tab is visible',
+        (WidgetTester tester) async {
+      final calls = <String>[];
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+        const MethodChannel('flutter.baseflow.com/permissions/methods'),
+        (MethodCall methodCall) async {
+          calls.add(methodCall.method);
+          if (methodCall.method == 'checkPermissionStatus') return 0; // denied
+          if (methodCall.method == 'requestPermissions') return {1: 0};
+          return null;
+        },
+      );
+
+      await tester.pumpWidget(buildTestApp(tab: 1));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(calls, isEmpty, reason: 'creating a QR must never trigger the camera permission');
+      expect(find.byType(SnackBar), findsNothing);
+
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+        const MethodChannel('flutter.baseflow.com/permissions/methods'),
+        null,
+      );
+    });
+
+    testScreen('A denied permission is shown inside the scanner, never as a snackbar',
+        (WidgetTester tester) async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+        const MethodChannel('flutter.baseflow.com/permissions/methods'),
+        (MethodCall methodCall) async {
+          if (methodCall.method == 'checkPermissionStatus') return 0; // denied
+          if (methodCall.method == 'requestPermissions') return {1: 0};
+          return null;
+        },
+      );
+
+      await tester.pumpWidget(buildTestApp());
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.byKey(const Key('scanner_open_settings_button')), findsOneWidget);
+      expect(find.byType(SnackBar), findsNothing);
 
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(

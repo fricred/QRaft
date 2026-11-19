@@ -191,7 +191,7 @@ class ProfileScreen extends ConsumerWidget {
               Semantics(
                 identifier: 'profile_sign_out_button',
                 button: true,
-                label: 'Sign out',
+                label: l10n.signOut,
                 child: GlassButton(
                   key: const Key('profile_sign_out_button'),
                   text: l10n.signOut,
@@ -489,7 +489,7 @@ class ProfileScreen extends ConsumerWidget {
               return Semantics(
                 identifier: 'profile_sign_out_confirm_button',
                 button: true,
-                label: 'Confirm sign out',
+                label: deviceIsSpanish() ? 'Confirmar cierre de sesión' : 'Confirm sign out',
                 child: TextButton(
                   key: const Key('profile_sign_out_confirm_button'),
                   onPressed: authProvider.isLoading ? null : () async {
@@ -605,7 +605,7 @@ class ProfileScreen extends ConsumerWidget {
 
     // Show renewal or expiration date
     if (plan.expiresAt != null) {
-      final dateStr = DateFormat.yMMMd().format(plan.expiresAt!);
+      final dateStr = DateFormat.yMMMd(deviceIsSpanish() ? 'es' : 'en').add_Hm().format(plan.expiresAt!.toLocal());
       if (plan.status == SubscriptionStatus.cancelled) {
         return l10n.expiresOn(dateStr);
       }

@@ -11,6 +11,7 @@ import 'providers/qr_scanner_provider.dart';
 import 'models/scan_result.dart';
 import 'scan_result_screen.dart';
 import 'widgets/scan_history_screen.dart';
+import '../main/main_scaffold.dart' show navigationIndexProvider;
 
 class QRScannerScreen extends ConsumerStatefulWidget {
   const QRScannerScreen({super.key});
@@ -30,17 +31,40 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
   MobileScannerController? _controller;
   bool _isControllerInitialized = false;
   bool _isPermissionPermanentlyDenied = false;
+  bool _isPermissionDenied = false;
+  bool _setupStarted = false;
+
+  /// Index of this screen in the main IndexedStack.
+  static const int _scannerTabIndex = 2;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _checkPermissionsAndSetupController();
+    // The scanner lives in an IndexedStack, so it is built at app start. Only ask for
+    // the camera once the user actually opens this tab (QRAFT-35): creating a QR must
+    // never depend on the camera permission.
+    if (ref.read(navigationIndexProvider) == _scannerTabIndex) {
+      _setupStarted = true;
+      _checkPermissionsAndSetupController();
+    }
+    ref.listenManual<int>(navigationIndexProvider, (previous, next) {
+      if (next != _scannerTabIndex) return;
+      if (!_setupStarted || (_controller == null && _isPermissionDenied)) {
+        _setupStarted = true;
+        _checkPermissionsAndSetupController(askAgain: !_isPermissionDenied);
+      }
+    });
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final controller = _controller;
+    // Coming back from Settings after granting the camera: set the scanner up.
+    if (state == AppLifecycleState.resumed && controller == null && _isPermissionDenied) {
+      _checkPermissionsAndSetupController(askAgain: false);
+      return;
+    }
     if (controller == null || !_isControllerInitialized) return;
     switch (state) {
       case AppLifecycleState.inactive:
@@ -52,27 +76,29 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
     }
   }
 
-  void _checkPermissionsAndSetupController() async {
+  void _checkPermissionsAndSetupController({bool askAgain = true}) async {
     try {
       // Check camera permissions first
       final status = await Permission.camera.status;
       if (!status.isGranted) {
-        final result = await Permission.camera.request();
+        final result = askAgain ? await Permission.camera.request() : status;
         if (!result.isGranted) {
+          // Shown inline in the scanner area, never as a floating message: a snackbar
+          // would sit on top of other tabs' buttons (QRAFT-35).
           if (mounted) {
-            final isPermanent = result.isPermanentlyDenied;
             setState(() {
-              _isPermissionPermanentlyDenied = isPermanent;
+              _isPermissionDenied = true;
+              _isPermissionPermanentlyDenied = result.isPermanentlyDenied;
             });
-            ref.read(qrScannerProvider.notifier).logDetailedError(
-              'Camera Permission',
-              isPermanent
-                  ? 'Camera permission permanently denied'
-                  : 'Camera permission denied',
-            );
           }
           return;
         }
+      }
+      if (mounted && _isPermissionDenied) {
+        setState(() {
+          _isPermissionDenied = false;
+          _isPermissionPermanentlyDenied = false;
+        });
       }
 
       // Create controller with autoStart: true - it will start when MobileScanner widget is built
@@ -125,7 +151,8 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
 
     // Listen to errors
     ref.listen<String?>(scannerErrorProvider, (previous, next) {
-      if (next != null) {
+      // Scanner messages belong to the scanner tab only.
+      if (next != null && ref.read(navigationIndexProvider) == _scannerTabIndex) {
         _showErrorSnackBar(next);
       }
     });
@@ -231,7 +258,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
         child: Stack(
           children: [
             // Camera preview
-            if (_isPermissionPermanentlyDenied)
+            if (_isPermissionDenied)
               _buildPermissionDeniedView()
             else if (_controller != null && _isControllerInitialized)
               MobileScanner(
@@ -412,7 +439,9 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              l10n.cameraPermissionDenied,
+              Localizations.localeOf(context).languageCode == 'es'
+                  ? 'Sin acceso a la cámara'
+                  : 'No camera access',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -424,7 +453,9 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Text(
-                l10n.cameraPermissionDeniedMessage,
+                Localizations.localeOf(context).languageCode == 'es'
+                    ? 'Para escanear códigos, permite el acceso a la cámara. Crear y guardar QR funciona sin ella.'
+                    : 'To scan codes, allow camera access. Creating and saving QR codes works without it.',
                 style: TextStyle(color: Colors.grey[400], fontSize: 14),
                 textAlign: TextAlign.center,
               ),
@@ -434,9 +465,17 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
               identifier: 'scanner_open_settings_button',
               child: ElevatedButton.icon(
                 key: const Key('scanner_open_settings_button'),
-                onPressed: _openAppSettings,
-                icon: const Icon(Icons.settings_rounded),
-                label: Text(l10n.openSettings),
+                onPressed: _isPermissionPermanentlyDenied
+                    ? _openAppSettings
+                    : () => _checkPermissionsAndSetupController(),
+                icon: Icon(_isPermissionPermanentlyDenied
+                    ? Icons.settings_rounded
+                    : Icons.photo_camera_rounded),
+                label: Text(_isPermissionPermanentlyDenied
+                    ? l10n.openSettings
+                    : (Localizations.localeOf(context).languageCode == 'es'
+                        ? 'Permitir cámara'
+                        : 'Allow camera')),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF00FF88),
                   foregroundColor: Colors.black,
@@ -835,8 +874,14 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen>
     // Check if this is a permission-related error
     final isPermissionError = error.toLowerCase().contains('permission');
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
       SnackBar(
+        // An action makes a snackbar stay forever under accessibility services, which
+        // blocked every later message (QRAFT-13). Force the timeout.
+        persist: false,
+        duration: const Duration(seconds: 5),
         content: Row(
           children: [
             Icon(
